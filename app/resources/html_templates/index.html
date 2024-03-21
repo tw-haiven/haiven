@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" class="no-js">
+
+<head>
+    <meta charset="utf-8">
+    <!-- For all browsers -->
+    <link rel="stylesheet" href="/static/main.css">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+    </noscript>
+
+    
+</head>
+<body class="layout--splash">
+    <div class="masthead">
+        <div class="masthead__inner-wrap">
+            <div class="masthead__menu">
+                <nav id="site-nav" class="greedy-nav">
+                    <a class="site-logo"><img src="/static/thoughtworks_logo_grey.png"
+                            alt="Team AI"></a>
+                    <a class="site-title">
+                        Team AI
+                    </a>
+    
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="initial-content">
+        <div id="main" role="main">
+            <article>
+    
+                <section class="page__content" itemprop="text">
+                    
+                        <div>
+                            {% if user %}    
+                                <h2>Hello {{ user["given_name"] }}!</h2>
+                                <p>
+                                    <a href="/teamai">Team AI</a>
+                                    <br>
+                                    <a href="/logout">Logout</a>
+                                </p>
+                            {% else %}
+                                <a href="/login">Login</a>
+                            {% endif %}
+                        </div>
+    
+                    
+    
+                </section>
+            </article>
+        </div>
+    
+    </div>
+    
+</body>
+
+</html>

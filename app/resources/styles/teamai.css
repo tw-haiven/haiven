@@ -1,0 +1,175 @@
+:root {
+    --color-flamingo: #f2617aff;
+    --color-light-gray: #EDF1F3;
+    --color-dark-blue: #003D4F;
+    --color-sapphire: #47A1AD;
+
+    --checkbox-background-color: #EDF1F3;
+    --checkbox-background-color-selected: var(--color-flamingo);
+
+    --link-text-color: var(--color-flamingo);
+    --link-text-color-active: var(--color-flamingo);
+    --link-text-color-hover: var(--color-flamingo);
+    --link-text-color-visited: var(--color-flamingo);
+}
+
+img {
+    width: 150px;
+    float: right;
+}
+
+.disclaimer {
+    background-color: var(--color-flamingo);
+    font-weight: bold;
+    padding-left: 0.5em;
+}
+.disclaimer p {
+    color: white !important;
+}
+.disclaimer a {
+    color: white !important;
+}
+
+.model-settings {
+    background-color: var(--background-fill-secondary) !important;
+}
+
+.model-settings-service label .wrap {
+    font-size: 0.9em !important;
+    background-color: var(--checkbox-label-background-fill) !important;
+}
+
+.hint {
+    font-size: 0.8em !important;
+}
+
+
+
+.prompt-choice .prompt-help {
+    padding-left: 5px;
+    background-color: var(--background-fill-secondary);
+}
+
+.user-help-col {
+    background-color: var(--color-light-gray);
+    font-size: 0.9em !important;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+
+.message {
+    font-size: var(--body-text-size) !important;
+}
+
+.header {
+    background-color: var(--color-dark-blue);
+    padding: 1em;
+}
+.header-title h1 {
+    color: white !important;
+}
+.header-title .subtitle h3 {
+    color: var(--color-flamingo);
+    margin-top: 0;
+}
+
+.navigation {
+    display: flex;
+    flex-direction: row;
+}
+
+.navigation .item {
+    display: flex;
+}
+
+.navigation .item-link {
+    background-color: #00000000;
+    font-weight: bold;
+    color: white !important;
+    text-decoration: none !important;
+    padding: 0;
+    margin-right: 1em;
+}
+
+.navigation .item-link.selected {
+    color: var(--color-flamingo) !important;
+}
+
+.navigation .item-link.knowledge {
+    color: var(--color-sapphire) !important;
+}
+
+.navigation .icon {
+    width: 1.5em;
+    float: left;
+    margin-right: 0.3em;
+}
+
+.documentation-tab img {
+    float: none;
+    width: 50em;
+}
+
+.about img {
+    float: none;
+    width: 50em;
+}
+
+.teamai-group .primary {
+    border: 1em solid var(--background-fill-secondary)  !important;
+}
+
+.teamai-group .secondary {
+    border: 1em solid var(--background-fill-secondary) !important;
+}
+
+.teamai-group-title {
+    padding-left: 5px;
+    background-color: var(--background-fill-secondary);
+    color: var(--block-title-text-color) !important;
+}
+.teamai-group-title h2 {
+    color: var(--block-title-text-color) !important;
+}
+
+.knowledge-advice .knowledge-label label span {
+    background-image: url('/static/icon_knowledge_blue.png');
+    background-repeat: no-repeat;
+    background-position: left center;
+    padding-left: 2em;
+}
+
+.prompt-help.knowledge.prose {
+    margin-top: 0.5em;
+    color: var(--color-sapphire);
+
+    background-image: url('/static/icon_knowledge_blue.png');
+    background-repeat: no-repeat;
+    background-position: left center;
+    padding-left: 2em;
+}
+
+.knowledge-button {
+    background-color: var(--color-sapphire);
+    color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+    .model-settings {
+        background-color: var(--block-background-fill) !important;
+    }
+
+    .model-settings label {
+        color: black !important;
+    }
+
+    .user-help-col {
+        background-color: var(--block-background-fill) !important;
+    }
+
+    .primary {
+        background-color: var(--color-flamingo) !important;
+    }
+
+}

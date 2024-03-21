@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.16.4
+    hooks:
+      - id: gitleaks
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.0
+    hooks:
+      - id: ruff
+        args: [ --fix ]
+      - id: ruff-format
+  - repo: local
+    hooks:
+      - id: check-header
+        name: Check for license header
+        entry: .precommit/check_header.sh
+        language: system
+        files: '\.py$'  # Adjust file pattern as needed
+        exclude: '^$'

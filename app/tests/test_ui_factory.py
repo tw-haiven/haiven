@@ -1,0 +1,553 @@
+# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
+import unittest
+from unittest.mock import patch, Mock, MagicMock
+from shared.ui_factory import UIFactory
+
+
+class TestUIFactory(unittest.TestCase):
+    @patch("shared.ui_factory.gr.State")
+    @patch("shared.ui_factory.gr.Blocks")
+    @patch("shared.ui_factory.gr.Tabs")
+    @patch("shared.ui_factory.enable_chat")
+    @patch("shared.ui_factory.enable_brainstorming")
+    @patch("shared.ui_factory.enable_image_chat")
+    @patch("shared.ui_factory.enable_knowledge_chat")
+    @patch("shared.ui_factory.enable_db_exploration")
+    def test_create_ui_coding(
+        self,
+        mock_enable_db_exploration,
+        mock_enable_knowledge_chat,
+        mock_enable_image_chat,
+        mock_enable_brainstorming,
+        mock_enable_chat,
+        mock_tabs,
+        mock_blocks,
+        mock_state,
+    ):
+        # Setup
+        ui = Mock()
+        prompts_factory = MagicMock()
+        navigation_manager = MagicMock()
+        event_handler = MagicMock()
+        prompts_parent_dir = "test_parent_dir"
+        knowledge_base_markdown = MagicMock()
+        knowledge_base_documents = MagicMock()
+        knowledge_base_pdfs = MagicMock()
+        documentation_base = MagicMock()
+        content_manager = MagicMock()
+        content_manager.knowledge_base_markdown = knowledge_base_markdown
+        content_manager.knowledge_base_documents = knowledge_base_documents
+        content_manager.knowledge_base_pdfs = knowledge_base_pdfs
+        content_manager.documentation_base = documentation_base
+        chat_session_memory = MagicMock()
+
+        ui_factory = UIFactory(
+            ui=ui,
+            prompts_factory=prompts_factory,
+            navigation_manager=navigation_manager,
+            event_handler=event_handler,
+            prompts_parent_dir=prompts_parent_dir,
+            content_manager=content_manager,
+            chat_session_memory=chat_session_memory,
+        )
+
+        blocks = MagicMock()
+        mock_blocks.return_value = blocks
+        state = MagicMock()
+        mock_state.return_value = state
+        all_tabs = MagicMock()
+        tabs = MagicMock()
+        tabs.__enter__.return_value = all_tabs
+        mock_tabs.return_value = tabs
+        category_filter = ["coding", "architecture"]
+        all_prompts = MagicMock()
+        prompts_factory.create_all_prompts.return_value = all_prompts
+        theme = MagicMock()
+        css = MagicMock()
+        ui.styling.return_value = (theme, css)
+        llm_config = MagicMock()
+        ui.create_llm_settings_ui.return_value = (MagicMock(), MagicMock(), llm_config)
+        navigation = MagicMock()
+        category_metadata = MagicMock()
+        ui_factory.navigation_manager.get_coding_navigation.return_value = (
+            navigation,
+            category_metadata,
+        )
+
+        # Action
+        returned_blocks = ui_factory.create_ui(ui_type="coding")
+
+        # Assert
+        ui.styling.assert_called_once()
+        mock_blocks.assert_called_with(theme=theme, css=css, title="Team AI")
+        navigation_manager.get_coding_navigation.assert_called_once()
+        ui.ui_header.assert_called_with(navigation=navigation)
+        prompts_factory.create_all_prompts.assert_called_with(knowledge_base_markdown)
+        ui.create_about_tab_for_task_area.assert_called_with(
+            category_filter,
+            category_metadata,
+            all_prompts,
+            "\n#### Test DB Exploration\n\nUse natural language queries to explore the test database",
+        )
+        mock_enable_chat.assert_called_with(
+            knowledge_base_markdown,
+            knowledge_base_documents,
+            chat_session_memory,
+            prompts_factory,
+            llm_config,
+            state,
+            category_filter,
+        )
+        mock_enable_brainstorming.assert_called_with(
+            knowledge_base_markdown,
+            chat_session_memory,
+            prompts_factory,
+            llm_config,
+            state,
+            category_filter,
+        )
+        mock_enable_image_chat.assert_called_with(
+            knowledge_base_markdown,
+            knowledge_base_documents,
+            chat_session_memory,
+            prompts_factory,
+            llm_config,
+            state,
+            category_filter,
+        )
+        mock_enable_knowledge_chat.assert_called_with(
+            chat_session_memory,
+            knowledge_base_pdfs,
+            knowledge_base_documents,
+            llm_config,
+            state,
+            category_filter,
+        )
+        mock_enable_db_exploration.assert_called_with(category_filter)
+        ui.create_tabs_from_documentation.assert_called_with(
+            category_filter, documentation_base
+        )
+        blocks.load.assert_called_with(
+            event_handler.on_ui_load_with_tab_deeplink, None, [all_tabs, state]
+        )
+        blocks.queue.assert_called_once()
+
+        assert returned_blocks == blocks
+
+    @patch("shared.ui_factory.gr.State")
+    @patch("shared.ui_factory.gr.Blocks")
+    @patch("shared.ui_factory.gr.Tabs")
+    @patch("shared.ui_factory.enable_chat")
+    @patch("shared.ui_factory.enable_brainstorming")
+    @patch("shared.ui_factory.enable_image_chat")
+    @patch("shared.ui_factory.enable_knowledge_chat")
+    @patch("shared.ui_factory.enable_db_exploration")
+    def test_create_ui_testing(
+        self,
+        mock_enable_db_exploration,
+        mock_enable_knowledge_chat,
+        mock_enable_image_chat,
+        mock_enable_brainstorming,
+        mock_enable_chat,
+        mock_tabs,
+        mock_blocks,
+        mock_state,
+    ):
+        # Setup
+        ui = Mock()
+        prompts_factory = MagicMock()
+        navigation_manager = MagicMock()
+        event_handler = MagicMock()
+        prompts_parent_dir = "test_parent_dir"
+        knowledge_base_markdown = MagicMock()
+        knowledge_base_documents = MagicMock()
+        knowledge_base_pdfs = MagicMock()
+        documentation_base = MagicMock()
+        content_manager = MagicMock()
+        content_manager.knowledge_base_markdown = knowledge_base_markdown
+        content_manager.knowledge_base_documents = knowledge_base_documents
+        content_manager.knowledge_base_pdfs = knowledge_base_pdfs
+        content_manager.documentation_base = documentation_base
+        chat_session_memory = MagicMock()
+
+        ui_factory = UIFactory(
+            ui=ui,
+            prompts_factory=prompts_factory,
+            navigation_manager=navigation_manager,
+            event_handler=event_handler,
+            prompts_parent_dir=prompts_parent_dir,
+            content_manager=content_manager,
+            chat_session_memory=chat_session_memory,
+        )
+
+        blocks = MagicMock()
+        mock_blocks.return_value = blocks
+        state = MagicMock()
+        mock_state.return_value = state
+        all_tabs = MagicMock()
+        tabs = MagicMock()
+        tabs.__enter__.return_value = all_tabs
+        mock_tabs.return_value = tabs
+        category_filter = ["testing"]
+        all_prompts = MagicMock()
+        prompts_factory.create_all_prompts.return_value = all_prompts
+        theme = MagicMock()
+        css = MagicMock()
+        ui.styling.return_value = (theme, css)
+        llm_config = MagicMock()
+        ui.create_llm_settings_ui.return_value = (MagicMock(), MagicMock(), llm_config)
+        navigation = MagicMock()
+        category_metadata = MagicMock()
+        ui_factory.navigation_manager.get_testing_navigation.return_value = (
+            navigation,
+            category_metadata,
+        )
+
+        # Action
+        returned_blocks = ui_factory.create_ui(ui_type="testing")
+
+        # # Assert
+        ui.styling.assert_called_once()
+        mock_blocks.assert_called_with(theme=theme, css=css, title="Team AI")
+        navigation_manager.get_testing_navigation.assert_called_once()
+        ui.ui_header.assert_called_with(navigation=navigation)
+        prompts_factory.create_all_prompts.assert_called_with(knowledge_base_markdown)
+        ui.create_about_tab_for_task_area.assert_called_with(
+            category_filter,
+            category_metadata,
+            all_prompts,
+            "\n#### Test DB Exploration\n\nUse natural language queries to explore the test database",
+        )
+        mock_enable_chat.assert_called_with(
+            knowledge_base_markdown,
+            knowledge_base_documents,
+            chat_session_memory,
+            prompts_factory,
+            llm_config,
+            state,
+            category_filter,
+        )
+        mock_enable_brainstorming.assert_called_with(
+            knowledge_base_markdown,
+            chat_session_memory,
+            prompts_factory,
+            llm_config,
+            state,
+            category_filter,
+        )
+        mock_enable_image_chat.assert_called_with(
+            knowledge_base_markdown,
+            knowledge_base_documents,
+            chat_session_memory,
+            prompts_factory,
+            llm_config,
+            state,
+            category_filter,
+        )
+        mock_enable_knowledge_chat.assert_called_with(
+            chat_session_memory,
+            knowledge_base_pdfs,
+            knowledge_base_documents,
+            llm_config,
+            state,
+            category_filter,
+        )
+        mock_enable_db_exploration.assert_called_with(category_filter)
+        ui.create_tabs_from_documentation.assert_called_with(
+            category_filter, documentation_base
+        )
+        blocks.load.assert_called_with(
+            event_handler.on_ui_load_with_tab_deeplink, None, [all_tabs, state]
+        )
+        blocks.queue.assert_called_once()
+
+        assert returned_blocks == blocks
+
+    @patch("shared.ui_factory.gr.State")
+    @patch("shared.ui_factory.gr.Blocks")
+    @patch("shared.ui_factory.gr.Tabs")
+    @patch("shared.ui_factory.enable_chat")
+    @patch("shared.ui_factory.enable_brainstorming")
+    @patch("shared.ui_factory.enable_image_chat")
+    @patch("shared.ui_factory.enable_knowledge_chat")
+    def test_create_ui_analysts(
+        self,
+        mock_enable_knowledge_chat,
+        mock_enable_image_chat,
+        mock_enable_brainstorming,
+        mock_enable_chat,
+        mock_tabs,
+        mock_blocks,
+        mock_state,
+    ):
+        # Setup
+        ui = Mock()
+        prompts_factory = MagicMock()
+        navigation_manager = MagicMock()
+        event_handler = MagicMock()
+        prompts_parent_dir = "test_parent_dir"
+        knowledge_base_markdown = MagicMock()
+        knowledge_base_documents = MagicMock()
+        knowledge_base_pdfs = MagicMock()
+        documentation_base = MagicMock()
+        content_manager = MagicMock()
+        content_manager.knowledge_base_markdown = knowledge_base_markdown
+        content_manager.knowledge_base_documents = knowledge_base_documents
+        content_manager.knowledge_base_pdfs = knowledge_base_pdfs
+        content_manager.documentation_base = documentation_base
+        chat_session_memory = MagicMock()
+
+        ui_factory = UIFactory(
+            ui=ui,
+            prompts_factory=prompts_factory,
+            navigation_manager=navigation_manager,
+            event_handler=event_handler,
+            prompts_parent_dir=prompts_parent_dir,
+            content_manager=content_manager,
+            chat_session_memory=chat_session_memory,
+        )
+
+        blocks = MagicMock()
+        mock_blocks.return_value = blocks
+        state = MagicMock()
+        mock_state.return_value = state
+        all_tabs = MagicMock()
+        tabs = MagicMock()
+        tabs.__enter__.return_value = all_tabs
+        mock_tabs.return_value = tabs
+        category_filter = ["analysis"]
+        all_prompts = MagicMock()
+        prompts_factory.create_all_prompts.return_value = all_prompts
+        theme = MagicMock()
+        css = MagicMock()
+        ui.styling.return_value = (theme, css)
+        llm_config = MagicMock()
+        ui.create_llm_settings_ui.return_value = (MagicMock(), MagicMock(), llm_config)
+        navigation = MagicMock()
+        category_metadata = MagicMock()
+        ui_factory.navigation_manager.get_analysis_navigation.return_value = (
+            navigation,
+            category_metadata,
+        )
+
+        # Action
+        returned_blocks = ui_factory.create_ui(ui_type="analysts")
+
+        # Assert
+        ui.styling.assert_called_once()
+        mock_blocks.assert_called_with(theme=theme, css=css, title="Team AI")
+        navigation_manager.get_analysis_navigation.assert_called_once()
+        ui.ui_header.assert_called_with(navigation=navigation)
+        prompts_factory.create_all_prompts.assert_called_with(knowledge_base_markdown)
+        ui.create_about_tab_for_task_area.assert_called_with(
+            category_filter,
+            category_metadata,
+            all_prompts,
+        )
+        mock_enable_chat.assert_called_with(
+            knowledge_base_markdown,
+            knowledge_base_documents,
+            chat_session_memory,
+            prompts_factory,
+            llm_config,
+            state,
+            category_filter,
+        )
+        mock_enable_brainstorming.assert_called_with(
+            knowledge_base_markdown,
+            chat_session_memory,
+            prompts_factory,
+            llm_config,
+            state,
+            category_filter,
+        )
+        mock_enable_image_chat.assert_called_with(
+            knowledge_base_markdown,
+            knowledge_base_documents,
+            chat_session_memory,
+            prompts_factory,
+            llm_config,
+            state,
+            category_filter,
+        )
+        mock_enable_knowledge_chat.assert_called_with(
+            chat_session_memory,
+            knowledge_base_pdfs,
+            knowledge_base_documents,
+            llm_config,
+            state,
+            category_filter,
+        )
+        ui.create_tabs_from_documentation.assert_called_with(
+            category_filter, documentation_base
+        )
+        blocks.load.assert_called_with(
+            event_handler.on_ui_load_with_tab_deeplink, None, [all_tabs, state]
+        )
+        blocks.queue.assert_called_once()
+
+        assert returned_blocks == blocks
+
+    @patch("shared.ui_factory.gr.Blocks")
+    def test_create_ui_knowledge(self, mock_blocks):
+        # Setup
+        ui = Mock()
+        prompts_factory = MagicMock()
+        navigation_manager = MagicMock()
+        event_handler = MagicMock()
+        prompts_parent_dir = "test_parent_dir"
+        knowledge_base_markdown = MagicMock()
+        knowledge_base_documents = MagicMock()
+        knowledge_base_pdfs = MagicMock()
+        documentation_base = MagicMock()
+        content_manager = MagicMock()
+        content_manager.knowledge_base_markdown = knowledge_base_markdown
+        content_manager.knowledge_base_documents = knowledge_base_documents
+        content_manager.knowledge_base_pdfs = knowledge_base_pdfs
+        content_manager.documentation_base = documentation_base
+        chat_session_memory = MagicMock()
+
+        ui_factory = UIFactory(
+            ui=ui,
+            prompts_factory=prompts_factory,
+            navigation_manager=navigation_manager,
+            event_handler=event_handler,
+            prompts_parent_dir=prompts_parent_dir,
+            content_manager=content_manager,
+            chat_session_memory=chat_session_memory,
+        )
+
+        blocks = MagicMock()
+        mock_blocks.return_value = blocks
+        theme = MagicMock()
+        css = MagicMock()
+        ui_factory.ui.styling.return_value = (theme, css)
+        ui_factory.navigation_manager.get_knowledge_navigation.return_value = (
+            MagicMock(),
+            MagicMock(),
+        )
+
+        # Action
+        returned_blocks = ui_factory.create_ui("knowledge")
+
+        # Assert
+        mock_blocks.assert_called_with(theme=theme, css=css, title="Team AI")
+        ui_factory.ui.styling.assert_called_once()
+        ui_factory.navigation_manager.get_knowledge_navigation.assert_called_once()
+        ui_factory.ui.ui_header.assert_called_once()
+        ui_factory.ui.ui_show_knowledge.assert_called_with(
+            knowledge_base_markdown, knowledge_base_pdfs
+        )
+
+        assert returned_blocks == blocks
+
+    @patch("shared.ui_factory.gr.Blocks")
+    def test_create_ui_about(self, mock_blocks):
+        # Setup
+        ui = Mock()
+        prompts_factory = MagicMock()
+        navigation_manager = MagicMock()
+        event_handler = MagicMock()
+        prompts_parent_dir = "test_parent_dir"
+        knowledge_base_markdown = MagicMock()
+        knowledge_base_documents = MagicMock()
+        knowledge_base_pdfs = MagicMock()
+        documentation_base = MagicMock()
+        content_manager = MagicMock()
+        content_manager.knowledge_base_markdown = knowledge_base_markdown
+        content_manager.knowledge_base_documents = knowledge_base_documents
+        content_manager.knowledge_base_pdfs = knowledge_base_pdfs
+        content_manager.documentation_base = documentation_base
+        chat_session_memory = MagicMock()
+
+        ui_factory = UIFactory(
+            ui=ui,
+            prompts_factory=prompts_factory,
+            navigation_manager=navigation_manager,
+            event_handler=event_handler,
+            prompts_parent_dir=prompts_parent_dir,
+            content_manager=content_manager,
+            chat_session_memory=chat_session_memory,
+        )
+
+        blocks = MagicMock()
+        mock_blocks.return_value = blocks
+        theme = MagicMock()
+        css = MagicMock()
+        ui_factory.ui.styling.return_value = (theme, css)
+        navigation = MagicMock()
+        category_metadata = MagicMock()
+        ui_factory.navigation_manager.get_about_navigation.return_value = (
+            navigation,
+            category_metadata,
+        )
+
+        # Action
+        returned_blocks = ui_factory.create_ui(ui_type="about")
+
+        # Assert
+        mock_blocks.assert_called_with(theme=theme, css=css, title="About Team AI")
+        ui_factory.ui.styling.assert_called_once()
+        ui_factory.navigation_manager.get_about_navigation.assert_called_once()
+        ui_factory.ui.ui_header.assert_called_once()
+        ui_factory.ui.ui_show_about.assert_called_once()
+
+        assert returned_blocks == blocks
+
+    @patch("shared.ui_factory.gr.Blocks")
+    @patch("shared.ui_factory.gr.Row")
+    @patch("shared.ui_factory.gr.State")
+    @patch("shared.ui_factory.enable_plain_chat")
+    def test_create_plain_chat(
+        self, mock_enable_plain_chat, mock_state, mock_row, mock_blocks
+    ):
+        # Setup
+        ui = Mock()
+        prompts_factory = MagicMock()
+        navigation_manager = MagicMock()
+        event_handler = MagicMock()
+        prompts_parent_dir = "test_parent_dir"
+        knowledge_base_markdown = MagicMock()
+        knowledge_base_documents = MagicMock()
+        knowledge_base_pdfs = MagicMock()
+        documentation_base = MagicMock()
+        content_manager = MagicMock()
+        content_manager.knowledge_base_markdown = knowledge_base_markdown
+        content_manager.knowledge_base_documents = knowledge_base_documents
+        content_manager.knowledge_base_pdfs = knowledge_base_pdfs
+        content_manager.documentation_base = documentation_base
+        chat_session_memory = MagicMock()
+
+        ui_factory = UIFactory(
+            ui=ui,
+            prompts_factory=prompts_factory,
+            navigation_manager=navigation_manager,
+            event_handler=event_handler,
+            prompts_parent_dir=prompts_parent_dir,
+            content_manager=content_manager,
+            chat_session_memory=chat_session_memory,
+        )
+
+        theme = MagicMock()
+        css = MagicMock()
+
+        ui.styling.return_value = (theme, css)
+        blocks = MagicMock()
+        mock_blocks.return_value = blocks
+        row = MagicMock()
+        mock_row.return_value = row
+        state = MagicMock()
+        mock_state.return_value = state
+
+        # Action
+        returned_blocks = ui_factory.create_ui(ui_type="plain_chat")
+
+        # Assert
+        ui.styling.assert_called_once()
+        mock_blocks.assert_called_with(theme=theme, css=css, title="Team AI")
+        ui.ui_header.assert_called_once()
+        blocks.load.assert_called_with(event_handler.on_ui_load, None, outputs=[state])
+        mock_enable_plain_chat.assert_called_with(chat_session_memory, state)
+        blocks.queue.assert_called_once()
+
+        assert returned_blocks == blocks

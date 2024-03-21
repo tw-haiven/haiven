@@ -1,0 +1,148 @@
+knowledge_pack:
+  path: ${TEAM_CONTENT_PATH}
+  domain:
+    name: ${DOMAIN_NAME}
+
+enabled_providers: ${ENABLED_PROVIDERS}
+
+default_models:
+  chat:
+  vision: ${ENABLED_VISION_MODEL}
+  embeddings: ${ENABLED_EMBEDDINGS_MODEL}
+
+models:
+  - id: azure-gpt35
+    name: GPT-3.5 on Azure
+    provider: Azure
+    features:
+      - text-generation
+      - stop-sequence
+    config:
+      azure_endpoint: https://tw-genai-pod-openai.openai.azure.com
+      api_version: 2023-05-15
+      azure_deployment: genai-pod-experiments-gpt35-16k
+      api_key: ${AZURE_OPENAI_API_KEY}
+
+  - id: azure-gpt4
+    name: GPT-4 on Azure
+    provider: Azure
+    features:
+      - text-generation
+      - stop-sequence
+    config:
+      azure_endpoint: https://tw-genai-pod-openai.openai.azure.com
+      api_version: 2023-05-15
+      azure_deployment: genai-pod-experiments-gpt4-_8XPm-7dcj
+      api_key: ${AZURE_OPENAI_API_KEY}
+
+  - id: azure-gpt4-with-vision
+    name: GPT-4 with Vision on Azure
+    provider: Azure
+    features:
+      - text-generation
+      - stop-sequence
+      - image-to-text
+    config:
+      azure_endpoint: https://genai-pod-teamai-ai-aiservices197713008.openai.azure.com
+      api_version: 2023-12-01-preview
+      azure_deployment: gpt-4-with-vision
+      api_key: ${AZURE_AI_VISION_API_KEY}
+
+  - id: google-gemini
+    name: Gemini on Google
+    provider: GCP
+    features:
+      - text-generation
+      - stop-sequence
+      - image-to-text
+    config:
+      model: gemini-pro
+
+  - id: aws-claude-v2
+    name: Claude v2 on AWS
+    provider: AWS
+    features:
+      - text-generation
+      - stop-sequence
+    config:
+      model_id: anthropic.claude-v2
+      region_name: ${AWS_BEDROCK_REGION}
+
+  - id: aws-claude-v3
+    name: Claude v3 on AWS
+    provider: AWS
+    features:
+      - text-generation
+      - stop-sequence
+      - image-to-text
+    config:
+      model_id: anthropic.claude-3-sonnet-20240229-v1:0
+      anthropic_version: bedrock-2023-05-31
+      region_name: ${AWS_BEDROCK_REGION}
+
+  - id: openai-gpt35
+    name: GPT-3.5 on OpenAI
+    provider: OPENAI
+    features:
+      - text-generation
+      - stop-sequence
+    config:
+      model_name: gpt-3.5-turbo-16k
+      api_key: ${OPENAI_API_KEY}
+
+  - id: lmstudio-local-model
+    name: Local - LM Studio
+    provider: lmstudio
+    features:
+      - text-generation
+      - stop-sequence
+    config:
+      base_url: http://localhost:1234/v1
+      model_name: local
+
+  - id: ollama-local-llama2
+    name: Local - Ollama llama2
+    provider: ollama
+    features:
+      - text-generation
+    config:
+      base_url: ${OLLAMA_BASE_URL}
+      model: llama2
+
+  - id: ollama-local-mistral
+    name: Local - Ollama Mistral
+    provider: ollama
+    features:
+      - text-generation
+    config:
+      base_url: ${OLLAMA_BASE_URL}
+      model: mistral
+
+embeddings:
+  - id: text-embedding-ada-002
+    name: Text Embedding Ada 002 on Azure
+    provider: azure
+    config:
+      azure_endpoint: https://tw-genai-pod-openai.openai.azure.com
+      api_version: 2023-05-15
+      azure_deployment: genai-pod-experiments-embeddings
+      api_key: ${AZURE_OPENAI_API_KEY}
+
+  - id: open-ai-text-embedding-ada-002
+    name: Text Embedding Ada v2 on OpenAI
+    provider: OpenAI
+    config:
+      model: text-embedding-ada-002
+      api_key: ${OPENAI_API_KEY}
+
+  - id: amazon.titan-text-express-v1
+    name: Titan text Embedding on AWS
+    provider: AWS
+    config:
+      aws_region: us-east-1
+
+  - id: ollama
+    name: Ollama Embeddings (local)
+    provider: ollama
+    config:
+      base_url: ${OLLAMA_BASE_URL}

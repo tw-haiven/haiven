@@ -1,0 +1,26 @@
+{ 
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": true,
+        "scminput": false,
+        "yaml": false,
+        "json": false,
+        "typescript": true,
+        "javascript": true,
+        "html": true,
+        "stylesheets": true,
+        "python": true,
+        "shellscript": true,
+        "scss": true,
+        "terraform": true
+    },
+    "python.testing.pytestArgs": [
+        "app"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "github-actions.workflows.pinned.workflows": [
+        ".github/workflows/main.yml"
+    ]
+}
