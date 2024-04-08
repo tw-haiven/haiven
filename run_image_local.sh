@@ -17,7 +17,7 @@ docker run \
         -v ./tmp/team-ai-community-knowledge-pack:/app/teams \
         --env-file $pathToEnvFileWithOauthValues \
         -e TEAM_CONTENT_PATH=/app/teams \
-        -e DOMAIN_NAME=team_demo \
+        -e DOMAIN_NAME=team_local \
         -e ENABLED_PROVIDERS=ollama \
         -e ENABLED_EMBEDDINGS_MODEL=ollama \
         -e ENABLED_VISION_MODEL=google-gemini \
