@@ -23,8 +23,8 @@ jobs:
       image_digest: ${{ steps.kaniko-base.outputs.digest }}
     steps:
       - uses: 'actions/checkout@v4.1.1'
-        with:
-          lfs: true
+        # with:
+        #   lfs: true
       # - name: Set up Python
       #   id: setup_python
       #   uses: actions/setup-python@v4
