@@ -5,10 +5,18 @@
 ! rm -rf tmp
 ! mkdir tmp
 git clone git@github.com:twlabs/Team-AI-on-Google.git tmp/Team-AI-on-Google/
+
+! rm -rf app
 cp -r tmp/Team-AI-on-Google/app .
-cp -r tmp/Team-AI-on-Google/docs .
+
+# NOT cp -r tmp/Team-AI-on-Google/docs . # Starting fresh set of docs here. Copy files from other repo over deliberately
+
+! rm -rf cli
 cp -r tmp/Team-AI-on-Google/cli .
+
+! rm -rf .vscode
 cp -r tmp/Team-AI-on-Google/.vscode .
+
 # NOT cp tmp/Team-AI-on-Google/README.md . # preparing new README in this repo, don't override with old one
 # NOT cp tmp/Team-AI-on-Google/.gitattributes . # LFS not necessary in this repo
 cp tmp/Team-AI-on-Google/.gitignore .
