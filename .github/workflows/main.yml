@@ -2,7 +2,6 @@ name: Team AI
 run-name: Test and Build
 
 env:
-  IMAGE_NAME: "team-ai-base"
   REGISTRY: "ghcr.io"
   
 on:
@@ -72,7 +71,7 @@ jobs:
         id: metadata
         # auto generate image tags image based on branch name
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
@@ -89,6 +88,6 @@ jobs:
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
           cache: true
-          cache-repository: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/cache
+          cache-repository: ${{ env.REGISTRY }}/${{ github.repository }}/cache
           push: true
           context: ./app
