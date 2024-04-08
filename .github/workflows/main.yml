@@ -60,9 +60,10 @@ jobs:
           source .venv/bin/activate && \
           pytest -m 'not integration'
 
-  BuildBase:
+  Build:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    needs: [Test]
     permissions:
       contents: 'read'
       id-token: 'write'
