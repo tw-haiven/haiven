@@ -15,7 +15,7 @@ git clone git@github.com:birgitta410/team-ai-community-knowledge-pack.git tmp/te
 docker pull ghcr.io/birgitta410/team-ai:main
 docker run \
         -v ./tmp/team-ai-community-knowledge-pack:/app/teams \
-        --env-file $pathToEnvFileWithOauthValues \
+        -e AUTH_SWITCHED_OFF=true \
         -e TEAM_CONTENT_PATH=/app/teams \
         -e DOMAIN_NAME=team_local \
         -e ENABLED_PROVIDERS=ollama \
