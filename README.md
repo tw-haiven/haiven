@@ -8,45 +8,26 @@ This codebase provides the scaffolding to build a one-container web application 
 
 TODO: Add a demo gif
 
-## Try it out
+## Quickest way to try it out
 TODO:
-- Remove the need for auth
 - Have a "latest" tag on the image?
 
-### With OpenAI
-
-TODO:
-- Add OpenAI GPT-4 with vision to config.yaml? 
-
-```
-git clone git@github.com:birgitta410/team-ai-community-knowledge-pack.git
-docker run \
-        -v ./tmp/team-ai-community-knowledge-pack:/app/teams \
-        -e OPENAI_API_KEY=<your API KEY>
-        -e TEAM_CONTENT_PATH=/app/teams \
-        -e DOMAIN_NAME=team_openai \
-        -e ENABLED_PROVIDERS=ollama \
-        -e ENABLED_EMBEDDINGS_MODEL=ollama \
-        -e ENABLED_VISION_MODEL=google-gemini \
-        -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
-        -p 8080:8080 \
-        ghcr.io/birgitta410/team-ai:main
-```
-
 ### With Ollama, locally
-TODO:
-- Local vision model?
+
+Install [Ollama](https://ollama.com/).
 
 ```
+ollama pull llama2
+ollama pull llava:7b
 git clone git@github.com:birgitta410/team-ai-community-knowledge-pack.git
 docker run \
         -v ./tmp/team-ai-community-knowledge-pack:/app/teams \
-        --env-file $pathToEnvFileWithOauthValues \
+        -e AUTH_SWITCHED_OFF=true \
         -e TEAM_CONTENT_PATH=/app/teams \
         -e DOMAIN_NAME=team_local \
         -e ENABLED_PROVIDERS=ollama \
         -e ENABLED_EMBEDDINGS_MODEL=ollama \
-        -e ENABLED_VISION_MODEL=google-gemini \
+        -e ENABLED_VISION_MODEL=llava:7b \
         -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
         -p 8080:8080 \
         ghcr.io/birgitta410/team-ai:main
@@ -80,4 +61,5 @@ But of course, it comes with limitations:
 - Users cannot edit and persist anything at runtime in the application
 - User chat sessions are not persisted
 - Limits to scalability, and to size of the knowledge packs, as everything needs to fit into memory
+- Very simple in-memory RAG (Retrieval-Augmented Generation) implementation, just enough to get an idea of the potential in the day-to-day work
 
