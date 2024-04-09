@@ -9,8 +9,6 @@ This codebase provides the scaffolding to build a one-container web application 
 TODO: Add a demo gif
 
 ## Quickest way to try it out
-TODO:
-- Have a "latest" tag on the image?
 
 ### With Ollama, locally
 
