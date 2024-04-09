@@ -8,6 +8,7 @@ on:
   push:
     paths-ignore:
       - '.vscode/**'
+  workflow_dispatch: # allows for manual invocation
 
 jobs:
 
