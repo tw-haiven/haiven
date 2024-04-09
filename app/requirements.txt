@@ -12,6 +12,7 @@ langchain-google-genai
 langchain-google-vertexai
 langchain-openai
 loguru
+ollama
 openai==1.8.0
 pyarrow
 pypdf

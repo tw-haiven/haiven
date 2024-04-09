@@ -43,6 +43,29 @@ class App:
 
         self.knowledge_service.index(file_content, metadata, model)
 
+    def index_all_files(self, source_dir: str, embedding_model: str, config_path: str):
+        if not source_dir:
+            raise ValueError("please provide directory path for source_dir option")
+
+        embedding_models = self.config_service.load_embeddings(config_path)
+        model = self._get_embedding(embedding_model, embedding_models)
+        if model is None:
+            current_models = self._get_defined_embedding_models_ids(embedding_models)
+            raise ValueError(
+                f"embeddings are not defined in {config_path}\n{current_models}"
+            )
+
+        files = self.file_service.get_files_path_from_directory(source_dir)
+        for file in files:
+            file_content = None
+            metadata = None
+            if file.endswith(".txt"):
+                file_content, metadata = self._get_txt_file_text_and_metadata(file)
+            else:
+                file_content, metadata = self._get_pdf_file_text_and_metadata(file)
+
+            self.knowledge_service.index(file_content, metadata, model)
+
     def _get_txt_file_text_and_metadata(self, source_path: str):
         with open(source_path, "r") as file:
             return [file.read()], [{"file": source_path}]

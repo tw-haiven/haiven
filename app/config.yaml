@@ -90,16 +90,6 @@ models:
       model_name: gpt-3.5-turbo-16k
       api_key: ${OPENAI_API_KEY}
 
-  - id: lmstudio-local-model
-    name: Local - LM Studio
-    provider: lmstudio
-    features:
-      - text-generation
-      - stop-sequence
-    config:
-      base_url: http://localhost:1234/v1
-      model_name: local
-
   - id: ollama-local-llama2
     name: Local - Ollama llama2
     provider: ollama
@@ -117,6 +107,15 @@ models:
     config:
       base_url: ${OLLAMA_BASE_URL}
       model: mistral
+
+  - id: ollama-local-llava
+    name: Local - Ollama Llava
+    provider: ollama
+    features:
+      - text-generation
+    config:
+      base_url: ${OLLAMA_BASE_URL}
+      model: llava:7b
 
 embeddings:
   - id: text-embedding-ada-002

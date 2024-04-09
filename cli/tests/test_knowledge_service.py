@@ -82,7 +82,7 @@ class TestKnowledgeService:
         text_splitter.create_documents.assert_called_once_with(texts, metadatas)
         mock_embedding_service.load_embeddings.assert_called_once_with(embedding_model)
         mock_faiss.from_documents.assert_called_once_with(documents, embeddings)
-        mock_faiss.load_local.assert_called_once_with(knowledge_base_path)
+        mock_faiss.load_local.assert_called_once_with(knowledge_base_path, embeddings)
         local_db.save_local.assert_called_once_with(knowledge_base_path)
 
     @patch("services.knowledge_service.FAISS")
@@ -124,6 +124,6 @@ class TestKnowledgeService:
         text_splitter.create_documents.assert_called_once_with(texts, metadatas)
         mock_embedding_service.load_embeddings.assert_called_once_with(embedding_model)
         mock_faiss.from_documents.assert_called_once_with(documents, embeddings)
-        mock_faiss.load_local.assert_called_once_with(knowledge_base_path)
+        mock_faiss.load_local.assert_called_once_with(knowledge_base_path, embeddings)
         db.merge_from.assert_called_once_with(local_db)
         db.save_local.assert_called_once_with(knowledge_base_path)

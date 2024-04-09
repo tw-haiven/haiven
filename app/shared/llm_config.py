@@ -90,18 +90,6 @@ class LLMChatFactory:
                     model_kwargs=model_kwargs,
                 )
 
-            case "lmstudio":
-                model_kwargs = {}
-                if stop is not None:
-                    model_kwargs["stop"] = [stop]
-                return ChatOpenAI(
-                    api_key="",  # LMStudio doesn't need an API key
-                    base_url=model.config.get("base_url"),
-                    model_name=model.config.get("model_name"),
-                    temperature=llm_config.temperature,
-                    model_kwargs=model_kwargs,
-                )
-
             case "ollama":
                 model_kwargs = {}
                 if stop is not None:

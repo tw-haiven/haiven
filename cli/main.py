@@ -40,6 +40,7 @@ def index_all_files(
     config_service = ConfigService()
     file_service = FileService()
     app = App(config_service, file_service, knowledge_service)
+    print("Indexing all files")
     app.index_all_files(source_dir, embedding_model, config_path)
 
 

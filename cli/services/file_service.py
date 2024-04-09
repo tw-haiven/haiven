@@ -28,3 +28,10 @@ class FileService:
 
         with open(f"{output_dir}/{pickle_file_path}", "wb") as f:
             pickle.dump(documents, f)
+
+    def get_files_path_from_directory(self, source_dir: str):
+        files = []
+        for root, _, filenames in os.walk(source_dir):
+            for filename in filenames:
+                files.append(os.path.join(root, filename))
+        return files

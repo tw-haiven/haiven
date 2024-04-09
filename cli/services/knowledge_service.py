@@ -28,10 +28,10 @@ class KnowledgeService:
 
         db = FAISS.from_documents(documents, embeddings)
         try:
-            local_db = FAISS.load_local(self.knowledge_base_path)
+            local_db = FAISS.load_local(self.knowledge_base_path, embeddings)
             local_db.merge_from(db)
         except ValueError:
-            print("indexing to new path")
+            print("Indexing to new path")
             local_db = db
 
         local_db.save_local(self.knowledge_base_path)

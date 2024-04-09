@@ -29,6 +29,9 @@ class Server:
 
         @app.get("/")
         async def homepage(request: Request):
+            if os.environ.get("AUTH_SWITCHED_OFF") == "true":
+                return RedirectResponse(url=self.url.analysis())
+
             user = request.session.get("user")
             json.dumps(user)
 
@@ -72,26 +75,32 @@ class Server:
 
         @app.middleware("http")
         async def check_oauth2_authentication(request: Request, call_next):
-            whitelist = [
-                "/",
-                "/auth",
-                "/login",
-                "/logout",
-                "/index.html",
-                "/static/main.css",
-                "/static/thoughtworks_logo_grey.png",
-            ]
+            if os.environ.get("AUTH_SWITCHED_OFF") == "true":
+                return await call_next(request)
+            else:
+                whitelist = [
+                    "/",
+                    "/auth",
+                    "/login",
+                    "/logout",
+                    "/index.html",
+                    "/static/main.css",
+                    "/static/thoughtworks_logo_grey.png",
+                ]
 
-            if "/api/" not in request.url.path and request.url.path not in whitelist:
-                try:
-                    user = request.session.get("user")
-                    if not user:
-                        return auth_error_response({})
-                    return await call_next(request)
-                except AssertionError as error:
-                    print(f"AssertionError {error}")
-                    return auth_error_response(error)
-            return await call_next(request)
+                if (
+                    "/api/" not in request.url.path
+                    and request.url.path not in whitelist
+                ):
+                    try:
+                        user = request.session.get("user")
+                        if not user:
+                            return auth_error_response({})
+                        return await call_next(request)
+                    except AssertionError as error:
+                        print(f"AssertionError {error}")
+                        return auth_error_response(error)
+                return await call_next(request)
 
         app.add_middleware(SessionMiddleware, secret_key="!secret")
         oauth = OAuth()

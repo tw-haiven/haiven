@@ -11,6 +11,7 @@ from shared.models.model import Model
 from shared.services.models_service import ModelsService
 from shared.services.config_service import ConfigService
 from vertexai.preview.generative_models import GenerativeModel, Part
+import ollama
 
 DEFAULT_PROMPT = "I am a member of a software development team. This image is part of our documentation, please describe the image to me."
 
@@ -117,6 +118,8 @@ class ImageDescriptionService:
                 return self._describe_image_with_aws_anthropic(
                     image_from_gradio, user_input
                 )
+            case "ollama":
+                return self._describe_image_with_ollama(image_from_gradio, user_input)
             case _:
                 return "Provider not supported"
 
@@ -239,6 +242,23 @@ class ImageDescriptionService:
             message = err.response["Error"]["Message"]
             print("A client error occured: " + format(message))
             return "Error: " + message
+
+    def _describe_image_with_ollama(
+        self, gradio_image: Image.Image, user_input: str
+    ) -> str:
+        res = ollama.chat(
+            model=self.model_definition.config.get("model"),
+            messages=[
+                {
+                    "role": "user",
+                    "content": user_input,
+                    "images": [self._get_image_bytes(gradio_image)],
+                }
+            ],
+        )
+
+        print(res["message"]["content"])
+        return res["message"]["content"]
 
     def _get_image_bytes(self, image):
         buffered = BytesIO()

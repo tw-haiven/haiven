@@ -63,10 +63,6 @@ class TestModelsService:
         models = self.service.get_models(providers=["azure"])
         assert len(models) == 2
 
-    def test_get_models_by_provider_returns_empty_list_when_provider_not_found(self):
-        models = self.service.get_models(providers=["lmstudio"])
-        assert len(models) == 0
-
     def test_get_models_by_feature(self):
         models = self.service.get_models(features=["image-to-text"])
         assert len(models) == 2

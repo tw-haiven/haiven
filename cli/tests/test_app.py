@@ -125,3 +125,102 @@ class TestApp:
         knowledge_service.index.assert_called_once_with(
             file_content, metadatas, embedding
         )
+
+    def test_index_all_files_fails_if_source_dir_is_not_set(self):
+        source_dir = ""
+        embedding_model = "embedding_model"
+        config_path = "config_path"
+
+        config_service = MagicMock()
+        file_service = MagicMock()
+        knowledge_service = MagicMock()
+        app = App(config_service, file_service, knowledge_service)
+
+        with pytest.raises(ValueError) as e:
+            app.index_all_files(source_dir, embedding_model, config_path)
+
+        assert str(e.value) == "please provide directory path for source_dir option"
+
+    def test_index_all_files_fails_if_embedding_model_is_not_defined_in_config(self):
+        source_dir = "source_dir"
+        embedding_model = "embedding_model"
+        config_path = "config_path"
+
+        config_service = MagicMock()
+        config_service.load_embeddings.return_value = []
+        file_service = MagicMock()
+        knowledge_service = MagicMock()
+        app = App(config_service, file_service, knowledge_service)
+
+        with pytest.raises(ValueError) as e:
+            app.index_all_files(source_dir, embedding_model, config_path)
+
+        assert (
+            str(e.value)
+            == "embeddings are not defined in config_path\nUsable models according to config file:"
+        )
+
+    def test_index_all_files_does_not_index_non_pdf_or_txt_files(self):
+        source_dir = "source_dir"
+        embedding_model = "embedding_model"
+        config_path = "config_path"
+
+        embedding = MagicMock()
+        type(embedding).id = PropertyMock(return_value=embedding_model)
+        config_embeddings = [embedding]
+        config_service = MagicMock()
+        config_service.load_embeddings.return_value = config_embeddings
+        file_path = "file_path"
+        file_service = MagicMock()
+        file_service.get_files_from_directory.return_value = [file_path]
+        knowledge_service = MagicMock()
+        app = App(config_service, file_service, knowledge_service)
+
+        app.index_all_files(source_dir, embedding_model, config_path)
+
+        file_service.get_files_path_from_directory.assert_called_once_with(source_dir)
+        assert knowledge_service.index.call_count == 0
+
+    @patch("builtins.open", new_callable=mock_open)
+    def test_index_all_files(self, mock_file):
+        source_dir = "source_dir"
+        embedding_model = "embedding_model"
+        config_path = "config_path"
+
+        embedding = MagicMock()
+        type(embedding).id = PropertyMock(return_value=embedding_model)
+        config_embeddings = [embedding]
+        config_service = MagicMock()
+        config_service.load_embeddings.return_value = config_embeddings
+        first_file_path = "file_path.txt"
+
+        first_file_content = "the file content"
+        first_file = MagicMock()
+        first_file.read.return_value = first_file_content
+
+        second_file_path = "file_path.pdf"
+        second_file_content = "the second file content"
+        second_file_metadata = MagicMock()
+        second_file = MagicMock()
+
+        mock_file.return_value.__enter__.side_effect = [first_file, second_file]
+
+        file_service = MagicMock()
+        file_service.get_files_path_from_directory.return_value = (
+            first_file_path,
+            second_file_path,
+        )
+
+        knowledge_service = MagicMock()
+        file_service.get_text_and_metadata_from_pdf.return_value = (
+            second_file_content,
+            second_file_metadata,
+        )
+
+        app = App(config_service, file_service, knowledge_service)
+        app.index_all_files(source_dir, embedding_model, config_path)
+
+        file_service.get_files_path_from_directory.assert_called_once_with(source_dir)
+        file_service.get_text_and_metadata_from_pdf.assert_called_once_with(second_file)
+
+        knowledge_service.index.call_count == 2

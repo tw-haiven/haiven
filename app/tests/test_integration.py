@@ -177,10 +177,3 @@ def test_REAL_CALL_gemini():
     load_dotenv()
 
     smoke_test_model("google-gemini")
-
-
-@pytest.mark.integration
-def test_REAL_CALL_lm_studio():
-    load_dotenv()
-
-    smoke_test_model("lmstudio-local-model")

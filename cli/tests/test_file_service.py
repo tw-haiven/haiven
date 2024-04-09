@@ -70,3 +70,17 @@ class TestFileService:
 
         assert first_text in text
         assert second_text in text
+
+    @patch("services.file_service.os")
+    def test_get_files_path_from_directory(self, mock_os):
+        source_dir = "source_dir"
+        file_path = "file_path"
+        mock_os.walk.return_value = [(source_dir, [], [file_path])]
+        mock_os.path.join.return_value = os.path.join(source_dir, file_path)
+        file_service = FileService()
+
+        files = file_service.get_files_path_from_directory(source_dir)
+
+        assert len(files) == 1
+        assert files[0] == f"{source_dir}/{file_path}"
+        mock_os.walk.assert_called_once_with(source_dir)
