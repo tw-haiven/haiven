@@ -8,6 +8,9 @@ on:
   push:
     paths-ignore:
       - '.vscode/**'
+      - 'docs/**'
+      - 'README.md'
+      - '.gitignore'
   workflow_dispatch: # allows for manual invocation
 
 jobs:

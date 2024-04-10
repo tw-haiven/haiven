@@ -6,6 +6,10 @@ This codebase provides the scaffolding to build a one-container web application 
 
 ![Overview](./docs/images/overview.png)
 
+It lets you codify your practices and knowledge and make it available to an AI assistant, to surface it to team members just-in-time when they are working on a task.
+
+![Overview in more detail](./docs/images/overview_more_details.png)
+
 TODO: Add a demo gif
 
 ## Quickest way to try it out
