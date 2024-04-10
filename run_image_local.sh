@@ -9,10 +9,10 @@ pathToEnvFileWithOauthValues=$1
 
 ! rm -rf tmp
 ! mkdir tmp
-git clone git@github.com:birgitta410/team-ai-community-knowledge-pack.git tmp/team-ai-community-knowledge-pack/
+git clone git@github.com:team-aide/team-ai-community-knowledge-pack.git tmp/team-ai-community-knowledge-pack/
 
 # docker login ghcr.io -u <USERNAME> -p <personal access token with read:packages permission>
-docker pull ghcr.io/birgitta410/team-ai:main
+docker pull ghcr.io/team-aide/team-ai:main
 docker run \
         -v ./tmp/team-ai-community-knowledge-pack:/app/teams \
         -e AUTH_SWITCHED_OFF=true \
@@ -23,4 +23,4 @@ docker run \
         -e ENABLED_VISION_MODEL=google-gemini \
         -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
         -p 8080:8080 \
-        ghcr.io/birgitta410/team-ai:main
+        ghcr.io/team-aide/team-ai:main

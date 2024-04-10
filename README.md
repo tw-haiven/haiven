@@ -17,7 +17,7 @@ Install [Ollama](https://ollama.com/).
 ```
 ollama pull llama2
 ollama pull llava:7b
-git clone git@github.com:birgitta410/team-ai-community-knowledge-pack.git
+git clone git@github.com:team-aide/team-ai-community-knowledge-pack.git
 docker run \
         -v ./tmp/team-ai-community-knowledge-pack:/app/teams \
         -e AUTH_SWITCHED_OFF=true \
@@ -28,7 +28,7 @@ docker run \
         -e ENABLED_VISION_MODEL=llava:7b \
         -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
         -p 8080:8080 \
-        ghcr.io/birgitta410/team-ai:main
+        ghcr.io/team-aide/team-ai:main
 ```
 
 ## Why?
