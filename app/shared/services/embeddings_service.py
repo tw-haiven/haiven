@@ -12,6 +12,15 @@ from shared.services.in_memory_embeddings_db_service import InMemoryEmbeddingsDB
 
 
 class EmbeddingsService:
+    """
+    EmbeddingsService is a singleton class responsible for managing embeddings operations. It provides functionalities to initialize and retrieve the singleton instance, load embeddings, and perform similarity searches on documents. The class uses an embeddings provider to generate embeddings and an in-memory database to store and retrieve embeddings.
+
+    Attributes:
+        _instance (EmbeddingsService): The singleton instance of the EmbeddingsService.
+        _embeddings_store (InMemoryEmbeddingsDB): The in-memory database for storing embeddings.
+        _embeddings_provider (Embeddings): The provider used for generating embeddings.
+    """
+
     _instance = None
     _embeddings_store: InMemoryEmbeddingsDB = None
 
@@ -34,6 +43,15 @@ class EmbeddingsService:
 
     @staticmethod
     def get_instance():
+        """
+        Returns the singleton instance of the EmbeddingsService. If the instance has not been initialized, it raises an exception.
+
+        Returns:
+            EmbeddingsService: The singleton instance of the EmbeddingsService.
+
+        Raises:
+            Exception: If the EmbeddingsService has not been initialized.
+        """
         if EmbeddingsService._instance is None:
             raise Exception(
                 "EmbeddingsService has to be initialized first. First use initialize() before using EmbeddingsService"
@@ -43,15 +61,30 @@ class EmbeddingsService:
 
     @staticmethod
     def initialize(embeddings_provider: Embeddings = None):
+        """
+        Initializes the EmbeddingsService singleton with an optional embeddings provider. This method must be called before any other operations if the EmbeddingsService instance has not been created.
+
+        Parameters:
+            embeddings_provider (Embeddings, optional): The embeddings provider to use. Defaults to None, in which case the default provider is loaded.
+        """
         if EmbeddingsService._instance is None:
             EmbeddingsService(embeddings_provider)
 
     @staticmethod
     def reset_instance() -> None:
+        """
+        Resets the singleton instance of the EmbeddingsService. This is useful for testing purposes or reinitializing the service with different configurations.
+        """
         EmbeddingsService._instance = None
 
     @staticmethod
     def load_document(document_path: str) -> None:
+        """
+        Loads a document from the specified path, generates its embedding using the configured embeddings provider, and stores it in the in-memory database. This method is static and can be called without instantiating the class.
+
+        Parameters:
+            document_path (str): The file system path to the document to be loaded.
+        """
         instance = EmbeddingsService.get_instance()
         instance._load_document(document_path)
 
@@ -61,35 +94,87 @@ class EmbeddingsService:
         document_metadata: dict,
         content: Tuple[List[str], List[dict]],
     ) -> None:
+        """
+        Generates a document embedding from provided text content and metadata, then stores it. This allows for dynamic creation of document embeddings from text that may not be persisted to disk.
+
+        Parameters:
+            document_key (str): A unique key identifying the document.
+            document_metadata (dict): Metadata associated with the document.
+            content (Tuple[List[str], List[dict]]): The text content of the document and any associated metadata.
+        """
         instance = EmbeddingsService.get_instance()
         instance._generate_document_from_text(document_key, document_metadata, content)
 
     @staticmethod
     def get_embedded_document(document_key: str) -> DocumentEmbedding:
+        """
+        Retrieves a specific document embedding by its key. This method is useful for accessing the embedding of a previously loaded or generated document.
+
+        Parameters:
+            document_key (str): The key of the document whose embedding is to be retrieved.
+
+        Returns:
+            DocumentEmbedding: The embedding of the specified document.
+        """
         instance = EmbeddingsService.get_instance()
         return instance._embeddings_store.get_embedding(document_key)
 
     @staticmethod
     def get_embedded_documents() -> List[DocumentEmbedding]:
+        """
+        Retrieves all stored document embeddings. This method provides access to the complete set of embeddings currently managed by the service.
+
+        Returns:
+            List[DocumentEmbedding]: A list of all document embeddings stored in the service.
+        """
         instance = EmbeddingsService.get_instance()
         return instance._embeddings_store.get_embeddings()
 
     @staticmethod
     def load_knowledge_pack(knowledge_pack_path: str) -> None:
+        """
+        Loads multiple documents from a specified directory, often referred to as a knowledge pack. Each document in the directory is loaded, processed, and its embedding is stored.
+
+        Parameters:
+            knowledge_pack_path (str): The file system path to the directory containing the knowledge pack documents.
+        """
         instance = EmbeddingsService.get_instance()
         instance._load_knowledge_pack(knowledge_pack_path)
 
     @staticmethod
     def similarity_search_with_scores(
-        query: str, k: int = 5, score_threshold: float = 0.4
+        query: str, k: int = 5, score_threshold: float = None
     ) -> List[Tuple[Document, float]]:
+        """
+        Performs a similarity search across all stored document embeddings, returning a list of documents and their similarity scores relative to the query. This method supports specifying the number of results (k) and an optional score threshold.
+
+        Parameters:
+            query (str): The search query.
+            k (int, optional): The number of results to return. Defaults to 5.
+            score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
+
+        Returns:
+            List[Tuple[Document, float]]: A list of tuples, each containing a Document and its similarity score.
+        """
         instance = EmbeddingsService.get_instance()
         return instance._similarity_search_with_scores(query, k, score_threshold)
 
     @staticmethod
     def similarity_search_on_single_document_with_scores(
-        query: str, document_key: str, k: int = 5, score_threshold: float = 0.4
+        query: str, document_key: str, k: int = 5, score_threshold: float = None
     ) -> List[Tuple[Document, float]]:
+        """
+        Performs a similarity search on a single document's embedding, returning similar documents and their scores. This method is useful for focused searches within a specific document's context.
+
+        Parameters:
+            query (str): The search query.
+            document_key (str): The key of the document to search within.
+            k (int, optional): The number of results to return. Defaults to 5.
+            score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
+
+        Returns:
+            List[Tuple[Document, float]]: A list of tuples, each containing a Document and its similarity score.
+        """
         instance = EmbeddingsService.get_instance()
         return instance._similarity_search_on_single_document_with_scores(
             query, document_key, k, score_threshold
@@ -97,8 +182,20 @@ class EmbeddingsService:
 
     @staticmethod
     def similarity_search_on_single_document(
-        query: str, document_key: str, k: int = 5, score_threshold: float = 0.4
+        query: str, document_key: str, k: int = 5, score_threshold: float = None
     ) -> List[Document]:
+        """
+        Similar to the method above but returns only the documents without their similarity scores. This provides a simpler interface when only the documents are needed.
+
+        Parameters:
+            query (str): The search query.
+            document_key (str): The key of the document to search within.
+            k (int, optional): The number of results to return. Defaults to 5.
+            score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
+
+        Returns:
+            List[Document]: A list of documents that are similar to the query.
+        """
         instance = EmbeddingsService.get_instance()
         return instance._similarity_search_on_single_document(
             query, document_key, k, score_threshold
@@ -106,8 +203,19 @@ class EmbeddingsService:
 
     @staticmethod
     def similarity_search(
-        query: str, k: int = 5, score_threshold: float = 0.4
+        query: str, k: int = 5, score_threshold: float = None
     ) -> List[Document]:
+        """
+        Performs a similarity search across all documents, returning only the documents that match the query criteria. This method abstracts away the scores for use cases where only the matching documents are required.
+
+        Parameters:
+            query (str): The search query.
+            k (int, optional): The number of results to return. Defaults to 5.
+            score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
+
+        Returns:
+            List[Document]: A list of documents that are similar to the query.
+        """
         instance = EmbeddingsService.get_instance()
         return instance._similarity_search(query, k, score_threshold)
 
@@ -163,9 +271,6 @@ class EmbeddingsService:
         document_metadata: dict,
         content: Tuple[List[str], List[dict]],
     ) -> None:
-        print(
-            f"@debug EmbeddingsService._generate_document_from_text: metadatas={document_metadata}"
-        )
         embedding = DocumentEmbedding(
             key=document_key,
             title=document_metadata.get("title", document_key),
@@ -179,19 +284,13 @@ class EmbeddingsService:
         self._embeddings_store.add_embedding(embedding.key, embedding)
 
     def _similarity_search_with_scores(
-        self, query: str, k: int = 5, score_threshold: float = 0.4
+        self, query: str, k: int = 5, score_threshold: float = None
     ) -> List[Tuple[Document, float]]:
         similar_documents = []
 
         for embedding_key in self._embeddings_store.get_keys():
-            print(
-                f"@debug EmbeddingsService._similarity_search_with_scores searching in: embedding_key={embedding_key}"
-            )
             partial_results = self._similarity_search_on_single_document_with_scores(
                 query, embedding_key, k, score_threshold
-            )
-            print(
-                f"@debug EmbeddingsService._similarity_search_with_scores: partial_results={len(partial_results)}"
             )
             similar_documents.extend(partial_results)
 
@@ -201,7 +300,7 @@ class EmbeddingsService:
         return similar_documents
 
     def _similarity_search_on_single_document_with_scores(
-        self, query: str, document_key: str, k: int = 5, score_threshold: float = 0.4
+        self, query: str, document_key: str, k: int = 5, score_threshold: float = None
     ) -> List[Tuple[Document, float]]:
         embedding = self._embeddings_store.get_embedding(document_key)
         similar_documents = embedding.retriever.similarity_search_with_score(
@@ -211,7 +310,7 @@ class EmbeddingsService:
         return similar_documents
 
     def _similarity_search_on_single_document(
-        self, query: str, key: str, k: int = 5, score_threshold: float = 0.4
+        self, query: str, key: str, k: int = 5, score_threshold: float = None
     ) -> List[Document]:
         documents_with_scores = self._similarity_search_on_single_document_with_scores(
             query, key, k, score_threshold
@@ -220,7 +319,7 @@ class EmbeddingsService:
         return documents
 
     def _similarity_search(
-        self, query: str, k: int = 5, score_threshold: float = 0.4
+        self, query: str, k: int = 5, score_threshold: float = None
     ) -> List[Document]:
         documents_with_scores = self._similarity_search_with_scores(
             query, k, score_threshold

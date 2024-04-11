@@ -41,18 +41,36 @@ class TestsEmbeddingsService:
     def test_similarity_search_on_single_document_with_scores_return_documents_and_scores(
         self,
     ):
+        score_threshold = 0.3
         similarity_results = (
             self.service.similarity_search_on_single_document_with_scores(
                 query="When Ingenuity was launched?",
                 document_key="ingenuity-wikipedia",
                 k=3,
-                score_threshold=0.3,
+                score_threshold=score_threshold,
             )
         )
 
+        assert len(similarity_results) > 0
         assert len(similarity_results) <= 3
         assert len(similarity_results[0][0].page_content) > 1
-        assert similarity_results[0][1] < 0.3
+        assert similarity_results[0][1] < score_threshold
+
+    @pytest.mark.integration
+    def test_similarity_search_on_single_document_with_scores_without_score_threshold_return_documents_and_scores(
+        self,
+    ):
+        similarity_results = (
+            self.service.similarity_search_on_single_document_with_scores(
+                query="When Team AIDE was released?",
+                document_key="ingenuity-wikipedia",
+                k=3,
+            )
+        )
+
+        assert len(similarity_results) > 0
+        assert len(similarity_results) <= 3
+        assert len(similarity_results[0][0].page_content) > 1
 
     @pytest.mark.integration
     def test_similarity_search_on_single_document_with_scores_default_score_threshold(
@@ -70,7 +88,7 @@ class TestsEmbeddingsService:
             assert score <= 0.4
 
     @pytest.mark.integration
-    def test_similarity_search_with_scores_default_score_threshold_return_results_from_different_documents(
+    def test_similarity_search_with_scores_return_results_from_different_documents(
         self,
     ):
         similarity_results = self.service.similarity_search_with_scores(
@@ -81,5 +99,3 @@ class TestsEmbeddingsService:
 
         assert len(similarity_results) <= 5
         assert len(set(extracted_files)) == 2
-        for _, score in similarity_results:
-            assert score <= 0.4
