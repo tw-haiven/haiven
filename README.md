@@ -61,7 +61,7 @@ But of course, it comes with limitations:
 
 ## HOW TO USE
 
-### Prepare access to Large Language Models
+### 1. Prepare access to Large Language Models
 
 There are 4 options:
 - Ollama (locally)
@@ -69,25 +69,26 @@ There are 4 options:
 - AWS Bedrock
 - Google AI
 
-#### Use Ollama locally on your machine
+#### Option 1: Use Ollama locally on your machine
 
 - Install [Ollama](https://ollama.com/) on your machine, as described by their website
 - Pull one of the models defined in the [config.yaml](app/config.yaml) file, e.g. `ollama pull llama2`
 - Create an `.env` file: `cp app/.env.ollama.template app/.env`
 
-#### Setup credentials for Azure, GCP or AWS
+#### Option 2: Setup credentials for Azure, GCP or AWS
 
 - Prepare the model setup and credentials in your respective Cloud environment. Check `[app/config.yaml](app/config.yaml)` for the models that are currently configured out of the box, or read below about how to configure additional models.
 - Create .env file from the respective template: Pick the template file that represents the provider you want to use, e.g. `cp ./app/.env.azure.template ./app/.env`.
 - Look at the defined environment variables in your new `.env` file and set the corresponding credentials.
 
-### Get a "knowledge pack"
+### 2. Get a "knowledge pack"
 
 - A "knowledge pack"
   - You can clone the [Community Knowledge Pack](https://github.com/tw-aide/team-ai-community-knowledge-pack) to get started
   - You can then adapt it to your own needs, e.g. add more knowledge sources with our [CLI tool](cli/README.md), and edit and adjust the prompts
 
-### Run the base image locally
+### 3. Run locally
+#### Option 1: Run the base image locally
 
 Example for running with Ollama:
 
@@ -109,23 +110,21 @@ docker run \
 
 If you want to use Azure, GCP or AWS, you need to set the corresponding environment variables as documented in the `.env.***.template` files.
 
-### Run the code locally
+#### Option 2: Run the code locally
 
-#### Prerequisites
-
+Prerequisites:
 - Python3
 - Just CLI for running helper scripts. [Install Just](https://just.systems/man/en/chapter_4.html) and use `just -l` to list available scripts.
+- If you don't have OAuth credentials set up, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
 
-#### Run
-
-Note that if you don't have OAuth credentials set up, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
+Run:
 
 ```
 just init
 just run
 ```
 
-### Deploy your own instance
+### 4. Deploy your own instance
 
 #### Set up OAuth integration
 
