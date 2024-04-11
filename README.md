@@ -1,3 +1,5 @@
+![Build status](https://github.com/team-aide/team-ai/actions/workflows/main.yml/badge.svg)
+
 # Team AI
 
 "Team AI" is an accelerator we use to pilot the use of Generative AI assistance for software delivery tasks beyond coding. 
