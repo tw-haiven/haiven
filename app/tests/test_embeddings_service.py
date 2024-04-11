@@ -29,6 +29,7 @@ class TestsEmbeddingsService:
 
         self.service = EmbeddingsService.get_instance()
 
+    @pytest.mark.integration
     def test_generate_load_knowledge_pack_should_load_two_embedding(self):
         assert len(self.service._embeddings_store._embeddings) == 2
         assert len(self.service._embeddings_store.get_keys()) == 2
@@ -36,6 +37,7 @@ class TestsEmbeddingsService:
         assert "ingenuity-wikipedia" in self.service._embeddings_store.get_keys()
         assert "automotive-spice" in self.service._embeddings_store.get_keys()
 
+    @pytest.mark.integration
     def test_similarity_search_on_single_document_with_scores_return_documents_and_scores(
         self,
     ):
@@ -52,6 +54,7 @@ class TestsEmbeddingsService:
         assert len(similarity_results[0][0].page_content) > 1
         assert similarity_results[0][1] < 0.3
 
+    @pytest.mark.integration
     def test_similarity_search_on_single_document_with_scores_default_score_threshold(
         self,
     ):
@@ -66,6 +69,7 @@ class TestsEmbeddingsService:
         for _, score in similarity_results:
             assert score <= 0.4
 
+    @pytest.mark.integration
     def test_similarity_search_with_scores_default_score_threshold_return_results_from_different_documents(
         self,
     ):
