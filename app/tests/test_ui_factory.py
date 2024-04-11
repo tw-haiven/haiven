@@ -91,7 +91,6 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_chat.assert_called_with(
             knowledge_base_markdown,
-            knowledge_base_documents,
             chat_session_memory,
             prompts_factory,
             llm_config,
@@ -108,7 +107,6 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_image_chat.assert_called_with(
             knowledge_base_markdown,
-            knowledge_base_documents,
             chat_session_memory,
             prompts_factory,
             llm_config,
@@ -117,8 +115,6 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_knowledge_chat.assert_called_with(
             chat_session_memory,
-            knowledge_base_pdfs,
-            knowledge_base_documents,
             llm_config,
             state,
             category_filter,
@@ -220,7 +216,6 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_chat.assert_called_with(
             knowledge_base_markdown,
-            knowledge_base_documents,
             chat_session_memory,
             prompts_factory,
             llm_config,
@@ -237,7 +232,6 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_image_chat.assert_called_with(
             knowledge_base_markdown,
-            knowledge_base_documents,
             chat_session_memory,
             prompts_factory,
             llm_config,
@@ -246,8 +240,6 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_knowledge_chat.assert_called_with(
             chat_session_memory,
-            knowledge_base_pdfs,
-            knowledge_base_documents,
             llm_config,
             state,
             category_filter,
@@ -346,7 +338,6 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_chat.assert_called_with(
             knowledge_base_markdown,
-            knowledge_base_documents,
             chat_session_memory,
             prompts_factory,
             llm_config,
@@ -363,7 +354,6 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_image_chat.assert_called_with(
             knowledge_base_markdown,
-            knowledge_base_documents,
             chat_session_memory,
             prompts_factory,
             llm_config,
@@ -372,8 +362,6 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_knowledge_chat.assert_called_with(
             chat_session_memory,
-            knowledge_base_pdfs,
-            knowledge_base_documents,
             llm_config,
             state,
             category_filter,
@@ -435,9 +423,7 @@ class TestUIFactory(unittest.TestCase):
         ui_factory.ui.styling.assert_called_once()
         ui_factory.navigation_manager.get_knowledge_navigation.assert_called_once()
         ui_factory.ui.ui_header.assert_called_once()
-        ui_factory.ui.ui_show_knowledge.assert_called_with(
-            knowledge_base_markdown, knowledge_base_pdfs
-        )
+        ui_factory.ui.ui_show_knowledge.assert_called_with(knowledge_base_markdown)
 
         assert returned_blocks == blocks
 

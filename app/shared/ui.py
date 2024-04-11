@@ -3,9 +3,10 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
+from shared.services.embeddings_service import EmbeddingsService
 from shared.services.config_service import ConfigService
 from shared.services.models_service import ModelsService
-from shared.knowledge import DocumentationBase, KnowledgeBaseMarkdown, KnowledgeBasePDFs
+from shared.knowledge import DocumentationBase, KnowledgeBaseMarkdown
 from shared.llm_config import LLMConfig
 from shared.prompts import PromptList
 
@@ -76,11 +77,10 @@ class UI:
     def ui_show_knowledge(
         self,
         knowledge_base_markdown: KnowledgeBaseMarkdown,
-        knowledge_base_pdfs: KnowledgeBasePDFs,
     ):
         with gr.Row():
             with gr.Column(scale=2):
-                gr.Markdown("## Plain text knowledge")
+                gr.Markdown("## Domain knowledge")
                 for key in knowledge_base_markdown.get_all_keys():
                     gr.Textbox(
                         knowledge_base_markdown.get_content(key),
@@ -89,15 +89,15 @@ class UI:
                         show_copy_button=True,
                     )
             with gr.Column(scale=2):
-                gr.Markdown("## PDFs")
-                pdf_knowledge = knowledge_base_pdfs.get_knowledge()
-                for key in pdf_knowledge:
+                gr.Markdown("## Documents")
+                pdf_knowledge = EmbeddingsService.get_embedded_documents()
+                for knowledge in pdf_knowledge:
                     gr.Markdown(f"""
-    ### {pdf_knowledge[key].title}
+    ### {knowledge.title}
 
-    **File:** {pdf_knowledge[key].source}
+    **File:** {knowledge.source}
 
-    **Description:** {pdf_knowledge[key].description}
+    **Description:** {knowledge.description}
 
                     """)
 

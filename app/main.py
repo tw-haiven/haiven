@@ -1,17 +1,19 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 
-from dotenv import load_dotenv
 import os
-import uvicorn
 
+import uvicorn
+from dotenv import load_dotenv
+from shared.embeddings import Embeddings
 from shared.app import App
 from shared.chats import ServerChatSessionMemory
 from shared.content_manager import ContentManager
 from shared.event_handler import EventHandler
 from shared.logger import TeamAILogger
-from shared.services.config_service import ConfigService
 from shared.navigation import NavigationManager
 from shared.prompts_factory import PromptsFactory
+from shared.services.config_service import ConfigService
+from shared.services.embeddings_service import EmbeddingsService
 from shared.ui import UI
 from shared.ui_factory import UIFactory
 
@@ -21,8 +23,15 @@ def create_server():
     os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
     DEFAULT_CONFIG_PATH = "config.yaml"
 
-    config_service = ConfigService
-    knowledge_pack = config_service.load_knowledge_pack(DEFAULT_CONFIG_PATH)
+    knowledge_pack = ConfigService.load_knowledge_pack(DEFAULT_CONFIG_PATH)
+    embedding_model = ConfigService.load_embedding_model(DEFAULT_CONFIG_PATH)
+    EmbeddingsService.initialize(Embeddings(embedding_model))
+    EmbeddingsService.load_knowledge_pack(
+        knowledge_pack.path + "/" + knowledge_pack.domain.name + "/knowledge/pdfs"
+    )
+    EmbeddingsService.load_knowledge_pack(
+        knowledge_pack.path + "/" + knowledge_pack.domain.name + "/knowledge/documents"
+    )
     content_manager = ContentManager(knowledge_pack.domain.name, knowledge_pack.path)
     ui_factory = UIFactory(
         ui=UI(),

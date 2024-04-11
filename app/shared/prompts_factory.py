@@ -1,5 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-from shared.knowledge import KnowledgeBaseDocuments, KnowledgeBaseMarkdown
+from shared.knowledge import KnowledgeBaseMarkdown
 from shared.prompts import PromptList
 
 
@@ -34,12 +34,10 @@ class PromptsFactory:
             "chat", knowledge_base_markdown, root_dir=self.prompts_parent_dir
         )
 
-    def create_diagrams_prompt(
-        self, knowledge_base_documents: KnowledgeBaseDocuments, variables
-    ):
+    def create_diagrams_prompt(self, knowledge_base: KnowledgeBaseMarkdown, variables):
         return PromptList(
             "diagrams",
-            knowledge_base_documents,
+            knowledge_base,
             variables=variables,
             root_dir=self.prompts_parent_dir,
         )

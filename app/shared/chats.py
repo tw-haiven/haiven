@@ -3,19 +3,16 @@ import os
 import time
 import uuid
 
-from langchain.chains import RetrievalQA
 from langchain.chains.question_answering import load_qa_chain
+from langchain.docstore.document import Document
 from langchain.prompts import PromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
-from langchain_community.vectorstores import FAISS
 from langchain_core.language_models.chat_models import BaseChatModel
 from shared.document_retriever import DocumentRetrieval
-from shared.documents_utils import get_text_and_metadata_from_pdf
-from shared.embeddings import Embeddings
-from shared.knowledge import KnowledgeEntryVectorStore
-from shared.llm_config import LLMConfig, LLMChatFactory
+from shared.llm_config import LLMChatFactory, LLMConfig
 from shared.logger import TeamAILogger
-from shared.services.config_service import ConfigService
+from shared.models.document_embedding import DocumentEmbedding
+from shared.services.embeddings_service import EmbeddingsService
 
 CONFIG_FILE_PATH = "config.yaml"
 
@@ -86,6 +83,7 @@ class StreamingChat(TeamAIBaseChat):
         )
 
     def run(self, message: str):
+        print(f"@debug StreamingChat.run: message={message}")
         self.memory.append(HumanMessage(content=message))
         self.log_run()
 
@@ -134,16 +132,25 @@ class StreamingChat(TeamAIBaseChat):
         summary = self.chat_model(copy_of_history)
         return summary.content
 
-    def next_advice_from_knowledge(
-        self, chat_history, knowledge: KnowledgeEntryVectorStore
-    ):
+    def next_advice_from_knowledge(self, chat_history, knowledge_document: str):
         # 1 summarise the conversation so far
         summary = self.summarise_conversation()
 
-        # 2 do a similarity search with the summary
-        context_documents = knowledge.get_documents(summary)
+        if knowledge_document == "all":
+            context_documents = EmbeddingsService.similarity_search_with_scores(summary)
+        else:
+            context_documents = (
+                EmbeddingsService.similarity_search_on_single_document_with_scores(
+                    summary, knowledge_document
+                )
+            )
+
+        print(
+            f"@debug next_advice_from_knowledge using {len(context_documents)} documents to generate advice"
+        )
+
         context_for_prompt = "\n---".join(
-            [f"{document.page_content}" for document in context_documents]
+            [f"{document.page_content}" for document, score in context_documents]
         )
         sources = DocumentRetrieval.get_unique_sources(context_documents)
         sources_markdown = (
@@ -171,7 +178,7 @@ class StreamingChat(TeamAIBaseChat):
         """
 
         chat_history += [
-            [f"Give me advice based on the content of '{knowledge.title}'", ""]
+            [f"Give me advice based on the content of '{knowledge_document}'", ""]
         ]
         chat_history[-1][1] += sources_markdown
         yield chat_history
@@ -232,118 +239,11 @@ class Q_A_Chat(TeamAIBaseChat):
         return self.run(human_message)
 
 
-class PDFChat(TeamAIBaseChat):
-    def __init__(
-        self,
-        llm_config: LLMConfig,
-        knowledge: FAISS,
-        system_message: str = "You are a helpful assistant",
-    ):
-        super().__init__(
-            llm_config, LLMChatFactory.new_llm_chat(llm_config), system_message
-        )
-        self.knowledge = knowledge
-        QA_PROMPT = PDFChat.question_answer_prompt()
-        self.qa_chain = PDFChat.create_chain(self.chat_model, QA_PROMPT, self.knowledge)
-
-    @staticmethod
-    def create_chain(chat_model, prompt, knowledge):
-        load_qa = load_qa_chain(
-            llm=chat_model, chain_type="stuff", prompt=prompt, verbose=True
-        )
-        return RetrievalQA(
-            combine_documents_chain=load_qa,
-            retriever=knowledge.as_retriever(),
-            return_source_documents=True,
-            verbose=True,
-        )
-
-    @staticmethod
-    def create_from_knowledge(
-        llm_config: LLMConfig,
-        knowledge_metadata: KnowledgeEntryVectorStore,
-        system_message: str = "You are a helpful assistant",
-    ):
-        return PDFChat(llm_config, knowledge_metadata.retriever, system_message)
-
-    @staticmethod
-    def create_from_uploaded_pdf(
-        llm_config: LLMConfig,
-        upload_file_name,
-        system_message: str = "You are a helpful assistant",
-    ):
-        with open(upload_file_name, "rb") as pdf_file:
-            text, metadata = get_text_and_metadata_from_pdf(pdf_file)
-            embeddings = Embeddings(
-                ConfigService.load_embedding_model(CONFIG_FILE_PATH)
-            )
-            knowledge = embeddings.generate_from_documents(text, metadata)
-        return PDFChat(llm_config, knowledge, system_message)
-
-    @staticmethod
-    def question_answer_prompt():
-        template = """Provide information over the following pieces of CONTEXT to answer the QUESTION at the end.
-        
-        CONTEXT:
-        ```
-        {context}
-        ```
-
-        QUESTION:
-        ```
-        In that CONTEXT, consider the following question: {question}
-        ```
-        
-        You can only answer based on the provided context. If an answer cannot be formed strictly using the context, 
-        say you cannot find information about that topic in the given context.
-        
-        Please provide an answer to the question based on the context in Markdown format.
-        
-        """
-
-        prompt = PromptTemplate(
-            input_variables=["context", "question"], template=template
-        )
-        return prompt
-
-    def sources_to_markdown(self, sources):
-        sources_table = "\n".join(
-            [
-                f"|{os.path.basename(source.metadata['file'])}|{source.metadata['page']}|"
-                for source in sources
-            ]
-        )
-        sources_table_header = """| File | Page |\n|------|-------------|\n"""
-        return (
-            "**Sources of this answer (ranked)**\n"
-            + sources_table_header
-            + sources_table
-        )
-
-    def run(self, message: str):
-        # !! PDFChat currently doesn't do anything with the chat history, it just answer one question at a time!!
-        # history could maybe included like this[https://github.com/langchain-ai/langchain/issues/4608#issuecomment-1618330705]?
-        # memory is only stored for consistency with other chats, and the endpoint to get chat session contents
-        self.memory.append(HumanMessage(content=message))
-
-        ai_message = self.qa_chain(message)
-        self.log_run()
-        self.memory.append(AIMessage(content=ai_message["result"]))
-
-        sources_markdown = self.sources_to_markdown(ai_message["source_documents"])
-        self.memory.append(AIMessage(content=sources_markdown))
-
-        return ai_message["result"], sources_markdown
-
-    def next(self, human_message):
-        return self.run(human_message)
-
-
 class DocumentsChat(TeamAIBaseChat):
     def __init__(
         self,
         llm_config: LLMConfig,
-        knowledge: KnowledgeEntryVectorStore,
+        knowledge: DocumentEmbedding,
         system_message: str = "You are a helpful assistant",
     ):
         super().__init__(
@@ -357,27 +257,42 @@ class DocumentsChat(TeamAIBaseChat):
     def create_chain(chat_model):
         return load_qa_chain(llm=chat_model, chain_type="stuff")
 
+    def get_source_title(self, source: Document) -> str:
+        if "title" in source.metadata:
+            return f"[{source.metadata['title']}]({source.metadata['source']})"
+        elif "file" in source.metadata:
+            return f"{os.path.basename(source.metadata['file'])}"
+        else:
+            return "unknown"
+
+    def get_source_page(self, source: Document) -> str:
+        if "page" in source.metadata:
+            return source.metadata["page"]
+        else:
+            return "NA"
+
     def run(self, message: str):
         self.log_run({"knowledge": self.knowledge.key})
         self.memory.append(HumanMessage(content=message))
 
-        documents = DocumentRetrieval.get_docs_and_sources_from_document_store(
-            self.document_retriever,
-            query=f"""What context could be relevant to the following query: ```{message}```
-                
-                Should some of the terms used in the query have multiple meanings,
-                Particularly consider information that would be relevant to the space of software delivery.""",
-            chat_history=[],
+        search_results = EmbeddingsService.similarity_search_on_single_document_with_scores(
+            query=f"What context could be relevant to the following query: ```{message}```",
+            document_key=self.knowledge.key,
+            k=5,
+            score_threshold=0.5,
         )
+        documents = [document for document, _ in search_results]
 
         ai_message = self.chain({"input_documents": documents, "question": message})
         self.memory.append(AIMessage(content=ai_message["output_text"]))
 
-        sources = DocumentRetrieval.get_unique_sources(documents)
         sources_markdown = (
             "**These articles were searched as input to try and answer the question:**\n"
             + "\n".join(
-                [f"- [{source['title']}]({source['source']})" for source in sources]
+                [
+                    f"- {self.get_source_title(document)} (page {self.get_source_page(document)})"
+                    for document in documents
+                ]
             )
         )
         self.memory.append(AIMessage(content=sources_markdown))
@@ -428,12 +343,18 @@ class ServerChatSessionMemory:
         }
         return session_key
 
-    def store_chat(self, session_key, chat_session: TeamAIBaseChat):
+    def store_chat(self, session_key: str, chat_session: TeamAIBaseChat):
         self.USER_CHATS[session_key]["chat"] = chat_session
 
-    def get_chat(self, session_key):
+    def get_chat(self, session_key: str):
         if session_key not in self.USER_CHATS:
-            raise ValueError("Invalid identifier, your chat session might have expired")
+            print(
+                "@debug ServerChatSessionMemory.get_chat: session_key not in USER_CHATS"
+            )
+
+            raise ValueError(
+                f"Invalid identifier {session_key}, your chat session might have expired"
+            )
         self.USER_CHATS[session_key]["last_access"] = time.time()
         return self.USER_CHATS[session_key]["chat"]
 
@@ -445,13 +366,20 @@ class ServerChatSessionMemory:
     def get_or_create_chat(
         self,
         fn_create_chat,
-        chat_session_key_value=None,
-        chat_category="unknown",
-        user_identifier="unknown",
+        chat_session_key_value: str = None,
+        chat_category: str = "unknown",
+        user_identifier: str = "unknown",
     ):
+        print(
+            f"@debug ServerChatSessionMemory.get_or_create_chat: chat_session_key_value={chat_session_key_value}, chat_category={chat_category}, user_identifier={user_identifier}",
+        )
+
         if chat_session_key_value is None or chat_session_key_value == "":
             chat_session_key_value = self.add_new_entry(chat_category, user_identifier)
             chat_session = fn_create_chat()
+            print(
+                f"@debug ServerChatSessionMemory.get_or_create_chat: chat_key={chat_session_key_value}, chat_session={chat_session}",
+            )
             self.store_chat(chat_session_key_value, chat_session)
         else:
             chat_session = self.get_chat(chat_session_key_value)

@@ -79,7 +79,6 @@ class UIFactory:
                     )
                     enable_chat(
                         self.content_manager.knowledge_base_markdown,
-                        self.content_manager.knowledge_base_documents,
                         self.chat_session_memory,
                         self.prompts_factory,
                         llm_config,
@@ -96,7 +95,6 @@ class UIFactory:
                     )
                     enable_image_chat(
                         self.content_manager.knowledge_base_markdown,
-                        self.content_manager.knowledge_base_documents,
                         self.chat_session_memory,
                         self.prompts_factory,
                         llm_config,
@@ -105,8 +103,6 @@ class UIFactory:
                     )
                     enable_knowledge_chat(
                         self.chat_session_memory,
-                        self.content_manager.knowledge_base_pdfs,
-                        self.content_manager.knowledge_base_documents,
                         llm_config,
                         user_identifier_state,
                         category_filter,
@@ -158,7 +154,6 @@ class UIFactory:
                     )
                     enable_chat(
                         self.content_manager.knowledge_base_markdown,
-                        self.content_manager.knowledge_base_documents,
                         self.chat_session_memory,
                         self.prompts_factory,
                         llm_config,
@@ -175,7 +170,6 @@ class UIFactory:
                     )
                     enable_image_chat(
                         self.content_manager.knowledge_base_markdown,
-                        self.content_manager.knowledge_base_documents,
                         self.chat_session_memory,
                         self.prompts_factory,
                         llm_config,
@@ -184,8 +178,6 @@ class UIFactory:
                     )
                     enable_knowledge_chat(
                         self.chat_session_memory,
-                        self.content_manager.knowledge_base_pdfs,
-                        self.content_manager.knowledge_base_documents,
                         llm_config,
                         user_identifier_state,
                         category_filter,
@@ -237,7 +229,6 @@ class UIFactory:
                     )
                     enable_chat(
                         self.content_manager.knowledge_base_markdown,
-                        self.content_manager.knowledge_base_documents,
                         self.chat_session_memory,
                         self.prompts_factory,
                         llm_config,
@@ -254,7 +245,6 @@ class UIFactory:
                     )
                     enable_image_chat(
                         self.content_manager.knowledge_base_markdown,
-                        self.content_manager.knowledge_base_documents,
                         self.chat_session_memory,
                         self.prompts_factory,
                         llm_config,
@@ -263,8 +253,6 @@ class UIFactory:
                     )
                     enable_knowledge_chat(
                         self.chat_session_memory,
-                        self.content_manager.knowledge_base_pdfs,
-                        self.content_manager.knowledge_base_documents,
                         llm_config,
                         user_identifier_state,
                         category_filter,
@@ -291,10 +279,7 @@ class UIFactory:
             )
             self.ui.ui_header(navigation=navigation)
 
-            self.ui.ui_show_knowledge(
-                self.content_manager.knowledge_base_markdown,
-                self.content_manager.knowledge_base_pdfs,
-            )
+            self.ui.ui_show_knowledge(self.content_manager.knowledge_base_markdown)
 
         return blocks
 

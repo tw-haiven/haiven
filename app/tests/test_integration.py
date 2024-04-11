@@ -1,39 +1,14 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import os
+
 import pytest
-from shared.prompts import PromptList
-from shared.knowledge import (
-    KnowledgeBaseDocuments,
-    KnowledgeBaseMarkdown,
-    KnowledgeBasePDFs,
-    KnowledgeEntryVectorStore,
-)
-from shared.chats import DocumentsChat, PDFChat, StreamingChat
-from shared.llm_config import LLMConfig
-
 from dotenv import load_dotenv
-
-
-def get_knowledge_entry_pdfs(key) -> KnowledgeEntryVectorStore:
-    # Fix root path for the tests
-    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    teams_dir = os.path.join(root_dir, "teams")
-    knowledge_base_pdfs = KnowledgeBasePDFs(
-        "team_demo", root_dir=teams_dir, config_file_path="config.yaml"
-    )
-
-    return knowledge_base_pdfs.get(key)
-
-
-def get_knowledge_entry_documents(key) -> KnowledgeEntryVectorStore:
-    # Fix root path for the tests
-    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    teams_dir = os.path.join(root_dir, "teams")
-    knowledge_base_documents = KnowledgeBaseDocuments(
-        "team_demo", root_dir=teams_dir, config_file_path="config.yaml"
-    )
-
-    return knowledge_base_documents.get(key)
+from shared.chats import DocumentsChat, StreamingChat
+from shared.knowledge import KnowledgeBaseMarkdown
+from shared.llm_config import LLMConfig
+from shared.models.document_embedding import DocumentEmbedding
+from shared.prompts import PromptList
+from shared.services.embeddings_service import EmbeddingsService
 
 
 def render_prompt(key, user_input):
@@ -52,6 +27,11 @@ def render_prompt(key, user_input):
 @pytest.fixture(scope="session", autouse=True)
 def setup_before_tests():
     os.chdir("./app")
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    teams_dir = os.path.join(root_dir, "teams")
+    EmbeddingsService.reset_instance()
+    EmbeddingsService.initialize()
+    EmbeddingsService.load_knowledge_pack(teams_dir + "/team_demo/knowledge/documents")
 
 
 @pytest.mark.integration
@@ -93,7 +73,7 @@ def test_REAL_CALLS_streaming_chat_request_knowledge_advice():
         "0d76c75b-c064-464a-9295-2a3ccec2c799",
         "I want sales managers to be able to plan activities to contact their customers. They should be able to plan dates and times for contacts, and document the activities.",
     )
-    mf_knowledge: KnowledgeEntryVectorStore = get_knowledge_entry_documents("mf-bliki")
+    mf_knowledge: str = "mf-bliki"
 
     history = []
     for chat_history_chunk in chat_session.start_with_prompt(epic_breakdown_prompt):
@@ -111,27 +91,9 @@ def test_REAL_CALLS_streaming_chat_request_knowledge_advice():
 
 
 @pytest.mark.integration
-def test_REAL_CALLS_chat_with_pdf():
-    load_dotenv()
-
-    knowledge: KnowledgeEntryVectorStore = get_knowledge_entry_pdfs("test-wikipedia")
-    chat_session = PDFChat.create_from_knowledge(
-        llm_config=LLMConfig("azure-gpt35", 0.8),
-        knowledge_metadata=knowledge,
-    )
-
-    answer, sources_markdown = chat_session.next("How long was the first flight?")
-
-    print(answer)
-    assert "39.1 seconds" in answer
-    assert "Sources of this answer" in sources_markdown
-
-
-@pytest.mark.integration
 def test_REAL_CALLS_chat_with_document():
     load_dotenv()
-
-    knowledge: KnowledgeEntryVectorStore = get_knowledge_entry_documents("mf-bliki")
+    knowledge: DocumentEmbedding = EmbeddingsService.get_embedded_document("mf-bliki")
     chat_session = DocumentsChat(
         llm_config=LLMConfig("azure-gpt35", 0.8),
         knowledge=knowledge,

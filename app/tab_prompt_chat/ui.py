@@ -1,17 +1,17 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import gradio as gr
 from dotenv import load_dotenv
+from shared.services.embeddings_service import EmbeddingsService
 from shared.llm_config import LLMConfig
 from shared.prompts_factory import PromptsFactory
 from shared.chats import ServerChatSessionMemory, StreamingChat
-from shared.knowledge import KnowledgeBaseDocuments, KnowledgeBaseMarkdown
+from shared.knowledge import KnowledgeBaseMarkdown
 from shared.models.chat_context import ChatContext
 from shared.user_feedback import UserFeedback
 
 
 def enable_chat(
     knowledge_base: KnowledgeBaseMarkdown,
-    knowledge_base_documents: KnowledgeBaseDocuments,
     CHAT_SESSION_MEMORY: ServerChatSessionMemory,
     prompts_factory: PromptsFactory,
     llm_config: LLMConfig,
@@ -44,7 +44,9 @@ def enable_chat(
     def on_change_user_input(prompt_choice: str, user_input: str):
         return {ui_prompt: prompt_list.render_prompt(prompt_choice, user_input)}
 
-    with gr.Tab(interaction_pattern_name, id=tab_id):
+    main_tab = gr.Tab(interaction_pattern_name, id=tab_id)
+
+    with main_tab:
         with gr.Row():
             with gr.Column(scale=3):
                 with gr.Group(elem_classes=["prompt-choice", "teamai-group"]):
@@ -87,8 +89,15 @@ def enable_chat(
 
                     with gr.Group():
                         with gr.Row(elem_classes="knowledge-advice"):
+                            knowledge_documents = [("All documents", "all")]
+                            knowledge_documents.extend(
+                                [
+                                    (embedding.title, embedding.key)
+                                    for embedding in EmbeddingsService.get_embedded_documents()
+                                ]
+                            )
                             ui_knowledge_choice = gr.Dropdown(
-                                knowledge_base_documents.get_title_id_tuples(),
+                                knowledge_documents,
                                 elem_classes="knowledge-label",
                                 label="Team knowledge",
                             )
@@ -158,7 +167,7 @@ def enable_chat(
                 raise ValueError("No knowledge base selected")
 
             for chat_history_chunk in chat_session.next_advice_from_knowledge(
-                chat_history, knowledge_base_documents.get(knowledge_choice)
+                chat_history, knowledge_choice
             ):
                 yield {ui_chatbot: chat_history_chunk}
 
@@ -205,5 +214,23 @@ def enable_chat(
             )
 
         ui_chatbot.like(on_vote, None, None)
+
+    def on_tab_selected():
+        choices = [("All documents", "all")]
+        choices.extend(
+            [
+                (embedding.title, embedding.key)
+                for embedding in EmbeddingsService.get_embedded_documents()
+            ]
+        )
+        udated_dd = gr.update(choices=choices)
+
+        return udated_dd
+
+    main_tab.select(
+        on_tab_selected,
+        inputs=None,
+        outputs=ui_knowledge_choice,
+    )
 
     return ui_prompt_dropdown
