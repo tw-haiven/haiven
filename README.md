@@ -118,10 +118,22 @@ If you want to use Azure, GCP or AWS, you need to set the corresponding environm
 
 #### Run
 
+Note that if you don't have OAuth credentials set up, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
+
 ```
 just init
 just run
 ```
+
+### Deploy your own instance
+
+#### Set up OAuth integration
+
+If you want to integrate your own OAuth provider, check out the OAuth-related environment variables as described in the `.env.***.template` files.
+
+#### Build an image with your knowledge pack
+
+Look at the [Community Knowledge Pack repository](https://github.com/team-aide/team-ai-community-knowledge-pack) for an example of a `Dockerfile` that helps you bake your own knowledge pack into a Team AI image that you can then deploy to your own environment. When you do the deployment, remember to set the environment variables and secrets described in the `.env` template files in that runtime.
 
 ### Configure more models
 #### Setup models
