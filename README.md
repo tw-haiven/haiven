@@ -1,4 +1,4 @@
-# Team AI (TODO: Rename)
+# Team AI
 
 "Team AI" is an accelerator we use to pilot the use of Generative AI assistance for software delivery tasks beyond coding. 
 
@@ -10,7 +10,7 @@ It lets you codify your practices and knowledge and make it available to an AI a
 
 ![Overview in more detail](./docs/images/overview_more_details.png)
 
-TODO: Add a demo gif
+[![Demo video showing epic breakdown with Team AI](docs/images/demo_thumbnail.png)](https://drive.google.com/file/d/16Acc_eDC6iphHk9wQLrNsl8rksP_wjXz/view?usp=sharing)
 
 ## Quickest way to try it out
 
