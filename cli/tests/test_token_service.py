@@ -1,10 +1,10 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-from services.token_service import TokenService
+from teamai_cli.services.token_service import TokenService
 from unittest.mock import MagicMock, patch
 
 
 class TestTokenService:
-    @patch("services.token_service.tiktoken")
+    @patch("teamai_cli.services.token_service.tiktoken")
     def test_get_tokens_length(self, mock_tiktoken):
         tokens = [1, 1, 1]
         tokenizer = MagicMock()

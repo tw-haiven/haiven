@@ -26,43 +26,29 @@ jobs:
         id: setup_python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
-      - name: Cache App virtualenv
-        uses: actions/cache@v3
+          python-version: '3.11'
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
         with:
-          key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version}}-${{ hashFiles('requirements.txt') }}
-          path: app/.venv
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
       - name: Install App dependencies
         run: |
-          cd app && \
-          python -m venv .venv && \
-          source .venv/bin/activate && \
-          python -m pip install -r requirements.txt && \
-          echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH && \
-          echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
+          cd app
+          poetry install --no-interaction --no-root
       - name: Run App unit tests
         run: |
-          cd app && \
-          source .venv/bin/activate && \
-          pytest -m 'not integration'
-      - name: Cache Cli virtualenv
-        uses: actions/cache@v3
-        with:
-          key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version}}-${{ hashFiles('requirements.txt') }}
-          path: cli/.venv
-      - name: Install Cli dependencies
+          cd app
+          poetry run pytest -m 'not integration' tests/
+      - name: Install CLI dependencies
         run: |
-          cd cli && \
-          python -m venv .venv && \
-          source .venv/bin/activate && \
-          python -m pip install -r requirements.txt && \
-          echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH && \
-          echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
-      - name: Run Cli unit tests
+          cd cli
+          poetry install --no-interaction --no-root
+      - name: Run tests
         run: |
-          cd cli && \
-          source .venv/bin/activate && \
-          pytest -m 'not integration'
+          cd cli
+          poetry run pytest tests/
 
   Build:
     if: github.ref == 'refs/heads/main'

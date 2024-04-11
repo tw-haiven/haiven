@@ -1,0 +1,11 @@
+© 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | Patent Pending
+
+This license is granted solely to Thoughtworks’ client. As used herein, “Thoughtworks’ client” means the entity to which this software has been provided by Thoughtworks pursuant to the purchase of professional services by such entity from Thoughtworks. All rights not explicitly granted herein are reserved. The software in this repository is Thoughtworks pre-existing intellectual property and is provided to Thoughtworks’ client solely under this separate license. 
+
+Thoughtworks hereby grants to client a perpetual, paid-up, limited, revocable, non-exclusive, non-transferable, worldwide license, without the right to grant sublicenses (except that client may grant sublicenses to its affiliated group companies or subsidiaries) to use, copy and modify, solely in furtherance of client’s business, Thoughtworks’ intellectual property rights associated with and necessary to use the software including, but not limited to, Thoughtworks’ copyrights (whether registered or unregistered) and patent rights resulting from the patent application(s) pending on this technology.
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the software.
+
+The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and non-infringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
+
+The terms of this license supersede and replace all prior or contemporaneous understandings, representations, communications, or agreements, written or oral, including any additional or contrary terms contained in any other agreement between Thoughtworks and its client, any purchase order or other procurement document in any way related to Thoughtworks intellectual property. No amendment or modification of any provision of this License will be effective unless it is in writing and signed by a named executive officer of Thoughtworks.

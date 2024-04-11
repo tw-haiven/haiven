@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import pytest
 
-from app.app import App
+from teamai_cli.app.app import App
 from unittest.mock import MagicMock, PropertyMock, patch, mock_open
 
 
@@ -14,7 +14,9 @@ class TestApp:
         config_service = MagicMock()
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        app = App(config_service, file_service, knowledge_service)
+        web_page_service = MagicMock()
+
+        app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
             app.index_individual_file(source_path, embedding_model, config_path)
@@ -29,7 +31,9 @@ class TestApp:
         config_service = MagicMock()
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        app = App(config_service, file_service, knowledge_service)
+        web_page_service = MagicMock()
+
+        app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
             app.index_individual_file(source_path, embedding_model, config_path)
@@ -48,7 +52,9 @@ class TestApp:
         config_service.load_embeddings.return_value = config_embeddings
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        app = App(config_service, file_service, knowledge_service)
+        web_page_service = MagicMock()
+
+        app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
             app.index_individual_file(source_path, embedding_model, config_path)
@@ -81,7 +87,9 @@ class TestApp:
         file.read.return_value = file_content
         mock_file.return_value.__enter__.return_value = file
 
-        app = App(config_service, file_service, knowledge_service)
+        web_page_service = MagicMock()
+
+        app = App(config_service, file_service, knowledge_service, web_page_service)
 
         app.index_individual_file(source_path, embedding_model, config_path)
 
@@ -116,7 +124,9 @@ class TestApp:
             metadatas,
         )
 
-        app = App(config_service, file_service, knowledge_service)
+        web_page_service = MagicMock()
+
+        app = App(config_service, file_service, knowledge_service, web_page_service)
         app.index_individual_file(source_path, embedding_model, config_path)
 
         config_service.load_embeddings.assert_called_once_with(config_path)
@@ -134,7 +144,9 @@ class TestApp:
         config_service = MagicMock()
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        app = App(config_service, file_service, knowledge_service)
+        web_page_service = MagicMock()
+
+        app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
             app.index_all_files(source_dir, embedding_model, config_path)
@@ -150,7 +162,9 @@ class TestApp:
         config_service.load_embeddings.return_value = []
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        app = App(config_service, file_service, knowledge_service)
+        web_page_service = MagicMock()
+
+        app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
             app.index_all_files(source_dir, embedding_model, config_path)
@@ -174,7 +188,9 @@ class TestApp:
         file_service = MagicMock()
         file_service.get_files_from_directory.return_value = [file_path]
         knowledge_service = MagicMock()
-        app = App(config_service, file_service, knowledge_service)
+        web_page_service = MagicMock()
+
+        app = App(config_service, file_service, knowledge_service, web_page_service)
 
         app.index_all_files(source_dir, embedding_model, config_path)
 
@@ -217,10 +233,52 @@ class TestApp:
             second_file_metadata,
         )
 
-        app = App(config_service, file_service, knowledge_service)
+        web_page_service = MagicMock()
+
+        app = App(config_service, file_service, knowledge_service, web_page_service)
         app.index_all_files(source_dir, embedding_model, config_path)
 
         file_service.get_files_path_from_directory.assert_called_once_with(source_dir)
         file_service.get_text_and_metadata_from_pdf.assert_called_once_with(second_file)
 
         knowledge_service.index.call_count == 2
+
+    def test_index_web_page_fails_if_url_is_not_set(self):
+        url = ""
+        destination_path = "destination_path"
+        html_filter = "html_filter"
+
+        config_service = MagicMock()
+        file_service = MagicMock()
+        knowledge_service = MagicMock()
+        web_page_service = MagicMock()
+        app = App(config_service, file_service, knowledge_service, web_page_service)
+
+        with pytest.raises(ValueError) as e:
+            app.index_web_page(url, html_filter, destination_path)
+
+        assert str(e.value) == "please provide url for url option"
+
+    def test_index_web_page(self):
+        url = "url"
+        embedding_model = "embedding_model"
+        destination_path = "destination_path"
+        html_filter = "html_filter"
+
+        embedding = MagicMock()
+        type(embedding).id = PropertyMock(return_value=embedding_model)
+        config_embeddings = [embedding]
+        config_service = MagicMock()
+        config_service.load_embeddings.return_value = config_embeddings
+        file_service = MagicMock()
+        knowledge_service = MagicMock()
+        web_page_article = MagicMock()
+        web_page_service = MagicMock()
+        web_page_service.get_single_page.return_value = web_page_article
+        app = App(config_service, file_service, knowledge_service, web_page_service)
+
+        app.index_web_page(url, html_filter, destination_path)
+
+        knowledge_service.pickle_documents.assert_called_once_with(
+            web_page_article, destination_path
+        )

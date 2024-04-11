@@ -1,11 +1,12 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-from langchain_community.chat_models import BedrockChat, ChatOllama
+from langchain_community.chat_models import ChatOllama
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from shared.logger import TeamAILogger
 from shared.models.model import Model
 from shared.services.models_service import ModelsService
+from shared.aws_chat import AWSChat
 
 
 class LLMConfig:
@@ -72,7 +73,7 @@ class LLMChatFactory:
                 model_kwargs = {"temperature": llm_config.temperature}
                 if stop is not None:
                     model_kwargs["stop_sequences"] = [stop]
-                return BedrockChat(
+                return AWSChat(
                     model_id=model.config.get("model_id"),
                     region_name=model.config.get("region_name"),
                     model_kwargs=model_kwargs,

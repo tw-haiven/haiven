@@ -21,3 +21,8 @@ cp -r tmp/Team-AI-on-Google/.vscode .
 # NOT cp tmp/Team-AI-on-Google/.gitattributes . # LFS not necessary in this repo
 cp tmp/Team-AI-on-Google/.gitignore .
 cp tmp/Team-AI-on-Google/.pre-commit-config.yaml .
+cp tmp/Team-AI-on-Google/justfile .
+cp tmp/Team-AI-on-Google/LICENSE.md .
+
+cp ../../Team-AI-on-Google/app/.env ./app/
+echo "Change TEAM_CONTENT_PATH=../../team-ai-tw-knowledge-pack"

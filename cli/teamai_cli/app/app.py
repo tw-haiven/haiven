@@ -1,8 +1,10 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-from models.embedding_model import EmbeddingModel
-from services.config_service import ConfigService
-from services.file_service import FileService
-from services.knowledge_service import KnowledgeService
+from teamai_cli.models.embedding_model import EmbeddingModel
+from teamai_cli.services.config_service import ConfigService
+from teamai_cli.services.file_service import FileService
+from teamai_cli.models.html_filter import HtmlFilter
+from teamai_cli.services.knowledge_service import KnowledgeService
+from teamai_cli.services.web_page_service import WebPageService
 from typing import List
 
 
@@ -12,10 +14,12 @@ class App:
         config_service: ConfigService,
         file_service: FileService,
         knowledge_service: KnowledgeService,
+        web_page_service: WebPageService,
     ):
         self.config_service = config_service
         self.file_service = file_service
         self.knowledge_service = knowledge_service
+        self.web_page_service = web_page_service
 
     def index_individual_file(
         self, source_path: str, embedding_model: str, config_path: str
@@ -65,6 +69,15 @@ class App:
                 file_content, metadata = self._get_pdf_file_text_and_metadata(file)
 
             self.knowledge_service.index(file_content, metadata, model)
+
+    def index_web_page(self, url: str, html_filter: str, destination_path: str):
+        if not url:
+            raise ValueError("please provide url for url option")
+
+        web_page_article = self.web_page_service.get_single_page(
+            url, HtmlFilter(html_filter)
+        )
+        self.knowledge_service.pickle_documents(web_page_article, destination_path)
 
     def _get_txt_file_text_and_metadata(self, source_path: str):
         with open(source_path, "r") as file:

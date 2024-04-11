@@ -3,12 +3,12 @@
 import os
 
 from langchain_core.documents import Document
-from services.file_service import FileService
+from teamai_cli.services.file_service import FileService
 from unittest.mock import patch, MagicMock, mock_open, PropertyMock
 
 
 class TestFileService:
-    @patch("services.file_service.pickle")
+    @patch("teamai_cli.services.file_service.pickle")
     @patch("builtins.open", new_callable=mock_open)
     def test_write_pickles(self, mock_file, mock_pickle):
         document = Document(page_content="content", metadata={"metadata": "metadata"})
@@ -24,7 +24,7 @@ class TestFileService:
         mock_pickle.dump.assert_called_once_with(documents, mock_file())
         os.rmdir(output_dir)
 
-    @patch("services.file_service.pickle")
+    @patch("teamai_cli.services.file_service.pickle")
     @patch("builtins.open", new_callable=mock_open)
     def test_write_pickles_creates_output_dir_if_it_does_not_exist(
         self, mock_file, mock_pickle
@@ -40,7 +40,7 @@ class TestFileService:
         assert os.path.exists(output_dir)
         os.rmdir(output_dir)
 
-    @patch("services.file_service.PdfReader")
+    @patch("teamai_cli.services.file_service.PdfReader")
     def test_get_text_and_metadata_from_pdf(self, mock_pdf_reader):
         pdf_file_name = "pdf_file_path.pdf"
         pdf_file = MagicMock()
@@ -71,7 +71,7 @@ class TestFileService:
         assert first_text in text
         assert second_text in text
 
-    @patch("services.file_service.os")
+    @patch("teamai_cli.services.file_service.os")
     def test_get_files_path_from_directory(self, mock_os):
         source_dir = "source_dir"
         file_path = "file_path"

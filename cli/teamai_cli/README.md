@@ -1,5 +1,10 @@
 # `teamai-cli`
 
+**Installation**:
+```console
+$ just cli-install
+```
+
 **Usage**:
 
 ```console
@@ -14,13 +19,10 @@ $ teamai-cli [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `index-all-files`: Index all pdf or text files in a directory...
-* `index-file`: Index single pdf or text file to a given...
-* `pickle-web-page`: Index a web page to a given destination path.
+* `index-all-files`
+* `index-file`
 
 ## `teamai-cli index-all-files`
-
-Index all pdf or text files in a directory to a given destination directory.
 
 **Usage**:
 
@@ -41,8 +43,6 @@ $ teamai-cli index-all-files [OPTIONS] SOURCE_DIR
 
 ## `teamai-cli index-file`
 
-Index single pdf or text file to a given destination directory.
-
 **Usage**:
 
 ```console
@@ -58,24 +58,4 @@ $ teamai-cli index-file [OPTIONS] SOURCE_PATH
 * `--destination-dir TEXT`: [default: new_knowledge_base.kb]
 * `--embedding-model TEXT`: [default: openai]
 * `--config-path TEXT`: [default: ../app/config.yaml]
-* `--help`: Show this message and exit.
-
-## `teamai-cli pickle-web-page`
-
-Index a web page to a given destination path.
-
-**Usage**:
-
-```console
-$ teamai-cli pickle-web-page [OPTIONS] URL
-```
-
-**Arguments**:
-
-* `URL`: [required]
-
-**Options**:
-
-* `--destination-path TEXT`: [default: web_page.pickle]
-* `--html-filter TEXT`: [default: p]
 * `--help`: Show this message and exit.

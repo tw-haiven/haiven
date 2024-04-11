@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import os
 import pytest
-from services.config_service import ConfigService
+from teamai_cli.services.config_service import ConfigService
 
 
 class TestConfigService:

@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-
-from services.page_helper import PageHelper
-from models.page_data import PageData
+from teamai_cli.models.html_filter import HtmlFilter
+from teamai_cli.services.page_helper import PageHelper
+from teamai_cli.models.page_data import PageData
 from unittest.mock import MagicMock
 
 
@@ -38,7 +38,8 @@ class TestPageHelper:
 
     def test_find_text(self):
         page_content = MagicMock()
-        html_filter = "p"
+        html_filter_type = "p"
+        html_filter = HtmlFilter(type=html_filter_type)
         section1 = MagicMock()
         section2 = MagicMock()
         section1.get_text.return_value = "text1"
@@ -50,5 +51,31 @@ class TestPageHelper:
 
         returned_text = page_helper.find_text(page_data, html_filter)
 
-        page_content.find_all.assert_called_with(html_filter)
+        page_content.find_all.assert_called_with(html_filter_type)
         assert returned_text == "text1 text2"
+
+    def test_get_article(self):
+        title = "title"
+        url = "url"
+        text = "text"
+        html_filter_type = "p"
+        html_filter = HtmlFilter(type=html_filter_type)
+
+        title_header = MagicMock()
+        title_header.get_text.return_value = title
+
+        content = MagicMock()
+        content.get_text.return_value = text
+        page_content = MagicMock()
+        page_content.find.return_value = title_header
+        page_content.find_all.return_value = [content]
+
+        page_data = PageData(url=url, content=page_content)
+        page_helper = PageHelper()
+
+        returned_document = page_helper.get_article(page_data, html_filter)
+
+        page_content.find.assert_called_with("h1")
+        title_header.get_text.assert_called_with(strip=True)
+        assert returned_document.metadata == {"title": title, "url": url}
+        assert returned_document.page_content == text

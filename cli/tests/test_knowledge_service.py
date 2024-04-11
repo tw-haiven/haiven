@@ -1,8 +1,8 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import pytest
 
-from services.knowledge_service import KnowledgeService
-from unittest.mock import MagicMock, patch
+from teamai_cli.services.knowledge_service import KnowledgeService
+from unittest.mock import MagicMock, patch, mock_open
 
 
 class TestKnowledgeService:
@@ -44,9 +44,9 @@ class TestKnowledgeService:
             knowledge_service.index(text, metadatas, embedding_model)
         assert str(e.value) == "embedding model has no value"
 
-    @patch("services.knowledge_service.FAISS")
-    @patch("services.knowledge_service.EmbeddingService")
-    @patch("services.knowledge_service.RecursiveCharacterTextSplitter")
+    @patch("teamai_cli.services.knowledge_service.FAISS")
+    @patch("teamai_cli.services.knowledge_service.EmbeddingService")
+    @patch("teamai_cli.services.knowledge_service.RecursiveCharacterTextSplitter")
     def test_save_knowledge_to_new_path(
         self, mock_text_splitter, mock_embedding_service, mock_faiss
     ):
@@ -85,9 +85,9 @@ class TestKnowledgeService:
         mock_faiss.load_local.assert_called_once_with(knowledge_base_path, embeddings)
         local_db.save_local.assert_called_once_with(knowledge_base_path)
 
-    @patch("services.knowledge_service.FAISS")
-    @patch("services.knowledge_service.EmbeddingService")
-    @patch("services.knowledge_service.RecursiveCharacterTextSplitter")
+    @patch("teamai_cli.services.knowledge_service.FAISS")
+    @patch("teamai_cli.services.knowledge_service.EmbeddingService")
+    @patch("teamai_cli.services.knowledge_service.RecursiveCharacterTextSplitter")
     def test_save_knowledge_to_existing_path(
         self, mock_text_splitter, mock_embedding_service, mock_faiss
     ):
@@ -127,3 +127,16 @@ class TestKnowledgeService:
         mock_faiss.load_local.assert_called_once_with(knowledge_base_path, embeddings)
         db.merge_from.assert_called_once_with(local_db)
         db.save_local.assert_called_once_with(knowledge_base_path)
+
+    @patch("builtins.open", new_callable=mock_open)
+    @patch("teamai_cli.services.knowledge_service.pickle")
+    def test_pickle_documents(self, mock_pickle, mock_file):
+        file = MagicMock()
+        mock_file.return_value.__enter__.return_value = file
+        documents = [MagicMock()]
+        path = "test path"
+        knowledge_service = KnowledgeService("test knowledge base path", MagicMock())
+        knowledge_service.pickle_documents(documents, path)
+
+        mock_file.assert_called_once_with(path, "wb")
+        mock_pickle.dump.assert_called_once_with(documents, file)

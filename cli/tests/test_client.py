@@ -1,12 +1,12 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 
 from unittest.mock import call, patch, MagicMock, PropertyMock
-from services.client import Client
+from teamai_cli.services.client import Client
 
 
 class TestClient:
-    @patch("services.client.BeautifulSoup")
-    @patch("services.client.requests")
+    @patch("teamai_cli.services.client.BeautifulSoup")
+    @patch("teamai_cli.services.client.requests")
     def test_get_pages(self, mock_request, mock_beautifulsoup):
         first_url = "a url"
         second_url = "another url"
@@ -51,8 +51,8 @@ class TestClient:
         assert second_page.status_code == 200
         assert second_page.failure is None
 
-    @patch("services.client.BeautifulSoup")
-    @patch("services.client.requests")
+    @patch("teamai_cli.services.client.BeautifulSoup")
+    @patch("teamai_cli.services.client.requests")
     def test_get_pages_with_failure(self, mock_request, mock_beautifulsoup):
         first_url = "a url"
         second_url = "another url"

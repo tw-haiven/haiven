@@ -2,6 +2,5 @@
 
 
 class HtmlFilter:
-    def __init__(self, type, attribute):
+    def __init__(self, type: str):
         self.type = type
-        self.attribute = attribute

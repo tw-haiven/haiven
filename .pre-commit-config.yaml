@@ -17,3 +17,7 @@ repos:
         language: system
         files: '\.py$'  # Adjust file pattern as needed
         exclude: '^$'
+      - id: check-cli-readme
+        name: Check if the CLI Readme needs an update
+        entry: .precommit/check_cli_readme.sh
+        language: system
