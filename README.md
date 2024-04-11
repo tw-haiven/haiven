@@ -47,12 +47,6 @@ However, when it comes to software delivery tasks other than coding, there is no
 * Use the models provided by your cloud provider of choice (AWS, Google Cloud, or Azure), instead of running a risk assessment for and creating contracts with a new vendor
 * Add your own SSO for access control
 
-## How?
-
-- You can do the technical setup yourself, see below
-- But, the devil is in the data and the practices
-- Ask us about our consulting services to help you run your own pilot and shape a knowledge pack for your organisation
-
 ## Limited-by-design
 
 For now, this is a one-container web application. Everything is baked into the container image you build, and everything happens in memory. The only persistence are the logs written by the application. This is by design, to keep the infrastructure setup as simple as possible, and reduce the barrier to experimentation. 
@@ -65,3 +59,90 @@ But of course, it comes with limitations:
 - Limits to scalability, and to size of the knowledge packs, as everything needs to fit into memory
 - Very simple in-memory RAG (Retrieval-Augmented Generation) implementation, just enough to get an idea of the potential in the day-to-day work
 
+## HOW TO USE
+
+### Prepare access to Large Language Models
+
+There are 4 options:
+- Ollama (locally)
+- Azure OpenAI Services
+- AWS Bedrock
+- Google AI
+
+#### Use Ollama locally on your machine
+
+- Install [Ollama](https://ollama.com/) on your machine, as described by their website
+- Pull one of the models defined in the [config.yaml](app/config.yaml) file, e.g. `ollama pull llama2`
+- Create an `.env` file: `cp app/.env.ollama.template app/.env`
+
+#### Setup credentials for Azure, GCP or AWS
+
+- Prepare the model setup and credentials in your respective Cloud environment. Check `[app/config.yaml](app/config.yaml)` for the models that are currently configured out of the box, or read below about how to configure additional models.
+- Create .env file from the respective template: Pick the template file that represents the provider you want to use, e.g. `cp ./app/.env.azure.template ./app/.env`.
+- Look at the defined environment variables in your new `.env` file and set the corresponding credentials.
+
+### Get a "knowledge pack"
+
+- A "knowledge pack"
+  - You can clone the [Community Knowledge Pack](https://github.com/tw-aide/team-ai-community-knowledge-pack) to get started
+  - You can then adapt it to your own needs, e.g. add more knowledge sources with our [CLI tool](cli/README.md), and edit and adjust the prompts
+
+### Run the base image locally
+
+Example for running with Ollama:
+
+```
+ollama pull llama2
+docker pull ghcr.io/team-aide/team-ai:main
+docker run \
+        -v ../local/path/to/a/knowledge-pack/team-ai-community-knowledge-pack:/app/teams \
+        -e AUTH_SWITCHED_OFF=true \
+        -e TEAM_CONTENT_PATH=/app/teams \
+        -e DOMAIN_NAME=team_local \
+        -e ENABLED_PROVIDERS=ollama \
+        -e ENABLED_EMBEDDINGS_MODEL=ollama \
+        -e ENABLED_VISION_MODEL=ollama \
+        -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+        -p 8080:8080 \
+        ghcr.io/team-aide/team-ai:main
+```
+
+If you want to use Azure, GCP or AWS, you need to set the corresponding environment variables as documented in the `.env.***.template` files.
+
+### Run the code locally
+
+#### Prerequisites
+
+- Python3
+- Just CLI for running helper scripts. [Install Just](https://just.systems/man/en/chapter_4.html) and use `just -l` to list available scripts.
+
+#### Run
+
+```
+just init
+just run
+```
+
+### Configure more models
+#### Setup models
+
+[`app/config.yaml`](app/config.yaml) is where the configuration for the models and embeddings is set. You can add or remove models from the configuration file. It is pre-populated with some working examples. Note that if you want to add a new type of embeddings, the code would also have to change to support that.
+
+Secrets should not be added to `app/config.yaml`. For that matter in `app/config.yaml`, if one of the values is considered a secret, you must use a placeholder for an environment variable using the following format: `${ENV_VAR_NAME}`, where `ENV_VAR_NAME` is the name of the environment variable. This value will be replaced on runtime with the value of the environment variable, which can be securely set at deployment time.
+
+> Note: Embeddings model cannot be changed after app initialization. The same embeddings model is used independentely of the LLM model selected.
+
+##### Setup default models
+
+You can fix the models to be used by different use cases by setting the `chat`, `vision` and `embeddings` properties to a valid model `id` value, in the `default_models` section of the `app/config.yaml` file.
+
+Example:
+
+```yaml
+default_models:
+  chat: azure-gpt4
+  vision: google-gemini
+  embeddings: text-embedding-ada-002
+```
+
+Only embeddings is mandatory. When chat or vision are not set, the app will show a dropdown allowing the user to select the model to use.
