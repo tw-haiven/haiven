@@ -18,18 +18,7 @@ class CliConfigService:
 
     def set_config_path(self, config_path: str):
         if os.path.exists(self.cli_config_path):
-            new_content = ""
-            with open(self.cli_config_path, "r") as f:
-                content = f.read()
-                lines = content.split("\n")
-                for line in lines:
-                    print(f"DEBUG a line {line}")
-                    if line.startswith(CONFIG_PATH_KEY):
-                        new_content += f"{CONFIG_PATH_KEY}: {config_path}\n"
-                    else:
-                        new_content += f"{line}\n"
-            with open(self.cli_config_path, "w") as f:
-                f.write(new_content)
+            self._update_value_in_file(self.cli_config_path, CONFIG_PATH_KEY, config_path)
         else:
             self.initialize_config(config_path)
 
@@ -38,6 +27,20 @@ class CliConfigService:
 
     def set_env_path(self, env_path: str):
         pass
+
+    def _update_value_in_file(self, config_path: str, key: str, value: str):
+        new_content = ""
+        with open(config_path, "r") as f:
+            content = f.read()
+            lines = content.split("\n")
+            for line in lines:
+                print(f"DEBUG a line {line}")
+                if line.startswith(key):
+                    new_content += f"{key}: {value}\n"
+                else:
+                    new_content += f"{line}\n"
+        with open(config_path, "w") as f:
+            f.write(new_content)
 
     def _get_value_from_file(self, config_path: str, key: str):
         with open(config_path, "r") as f:
