@@ -14,7 +14,7 @@ class EventHandler:
         self.logger_factory.get().analytics(
             f"User {self.get_user(request)} loaded UI at {request.url}"
         )
-        return request.session.get("user", {}).get("sub")
+        return self.get_user(request)
 
     def on_ui_load_with_tab_deeplink(self, request: gr.Request):
         self.logger_factory.get().analytics(
