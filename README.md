@@ -159,3 +159,9 @@ default_models:
 ```
 
 Only embeddings is mandatory. When chat or vision are not set, the app will show a dropdown allowing the user to select the model to use.
+
+### 5. Add custom interaction modes
+
+Because the application uses Gradio, a frontend framework that is meant for quick UI prototyping with machine learning models, it is quite easy to add additional tabs and UI elements to the application. Beyond the interaction modes available, you can think about what other more custom interactions would be helpful to your delivery team.
+
+The code shows one common example: Querying a database with natural language. You can adapt that to be connected to your own database, e.g. a database in a test environment, to be used by testers, new team members who are not familiar with the schema yet, or even business stakeholders.
