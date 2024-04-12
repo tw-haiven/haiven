@@ -25,15 +25,7 @@ def index_file(
     config_path: str = CONFIG_FILE_PATH,
 ):
     """Index single pdf or text file to a given destination directory."""
-    tiktoken_service = TokenService(ENCODING)
-    knowledge_service = KnowledgeService(destination_dir, tiktoken_service)
-    env_path_file = CliConfigService().get_env_path()
-    config_service = ConfigService(env_file_path=env_path_file)
-    file_service = FileService()
-    client = Client()
-    page_helper = PageHelper()
-    web_page_service = WebPageService(client, page_helper)
-    app = App(config_service, file_service, knowledge_service, web_page_service)
+    app = get_app(destination_dir)
     app.index_individual_file(source_path, embedding_model, config_path)
 
 
@@ -45,15 +37,7 @@ def index_all_files(
     config_path: str = CONFIG_FILE_PATH,
 ):
     """Index all pdf or text files in a directory to a given destination directory."""
-    token_service = TokenService(ENCODING)
-    knowledge_service = KnowledgeService(destination_dir, token_service)
-    env_path_file = CliConfigService().get_env_path()
-    config_service = ConfigService(env_file_path=env_path_file)
-    file_service = FileService()
-    client = Client()
-    page_helper = PageHelper()
-    web_page_service = WebPageService(client, page_helper)
-    app = App(config_service, file_service, knowledge_service, web_page_service)
+    app = get_app(destination_dir)
     print("Indexing all files")
     app.index_all_files(source_dir, embedding_model, config_path)
 
@@ -65,15 +49,7 @@ def pickle_web_page(
     html_filter="p",
 ):
     """Index a web page to a given destination path."""
-    token_service = TokenService(ENCODING)
-    knowledge_service = KnowledgeService(destination_path, token_service)
-    env_path_file = CliConfigService().get_env_path()
-    config_service = ConfigService(env_file_path=env_path_file)
-    file_service = FileService()
-    client = Client()
-    page_helper = PageHelper()
-    web_page_service = WebPageService(client, page_helper)
-    app = App(config_service, file_service, knowledge_service, web_page_service)
+    app = get_app(destination_path)
     app.index_web_page(
         url=url, html_filter=html_filter, destination_path=destination_path
     )
@@ -108,6 +84,19 @@ def set_env_path(
     config_service = CliConfigService()
     config_service.set_env_path(env_path)
     print(f"Env path set to {env_path}")
+
+
+def get_app(destination_dir):
+    token_service = TokenService(ENCODING)
+    knowledge_service = KnowledgeService(destination_dir, token_service)
+    env_path_file = CliConfigService().get_env_path()
+    config_service = ConfigService(env_file_path=env_path_file)
+    file_service = FileService()
+    client = Client()
+    page_helper = PageHelper()
+    web_page_service = WebPageService(client, page_helper)
+    app = App(config_service, file_service, knowledge_service, web_page_service)
+    return app
 
 
 if __name__ == "__main__":
