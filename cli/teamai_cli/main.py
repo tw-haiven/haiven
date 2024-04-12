@@ -4,13 +4,14 @@ import typer
 from teamai_cli.app.app import App
 from teamai_cli.services.client import Client
 from teamai_cli.services.config_service import ConfigService
+from teamai_cli.services.cli_config_service import CliConfigService
 from teamai_cli.services.file_service import FileService
 from teamai_cli.services.knowledge_service import KnowledgeService
 from teamai_cli.services.page_helper import PageHelper
 from teamai_cli.services.token_service import TokenService
 from teamai_cli.services.web_page_service import WebPageService
 
-CONFIG_FILE_PATH = "../app/config.yaml"
+CONFIG_FILE_PATH = "config.yaml"
 ENCODING = "cl100k_base"
 
 cli = typer.Typer(no_args_is_help=True)
@@ -73,6 +74,17 @@ def pickle_web_page(
     app.index_web_page(
         url=url, html_filter=html_filter, destination_path=destination_path
     )
+
+
+@cli.command()
+def init(
+    config_path: str = CONFIG_FILE_PATH,
+    env_path: str = "",
+):
+    """Initialize the config file with the given config and env paths."""
+    config_service = CliConfigService()
+    config_service.initialize_config(config_path=config_path, env_path=env_path)
+    print(f"Config file initialized at {config_service.cli_config_path}")
 
 
 if __name__ == "__main__":

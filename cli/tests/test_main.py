@@ -1,6 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from unittest.mock import patch, MagicMock
-from teamai_cli.main import index_file, index_all_files, pickle_web_page
+from teamai_cli.main import index_file, index_all_files, pickle_web_page, init
 
 
 class TestMain:
@@ -155,4 +155,18 @@ class TestMain:
         mock_web_page_service.assert_called_once_with(client, page_helper)
         app.index_web_page.assert_called_once_with(
             url=source_url, html_filter=html_filter, destination_path=destination_path
+        )
+
+    @patch("teamai_cli.main.CliConfigService")
+    def test_init(self, mock_cli_config_service):
+        cli_config_service = MagicMock()
+        mock_cli_config_service.return_value = cli_config_service
+
+        config_path = "config_path"
+        env_path = "env_path"
+
+        init(config_path, env_path)
+
+        cli_config_service.initialize_config.assert_called_once_with(
+            config_path=config_path, env_path=env_path
         )
