@@ -87,5 +87,25 @@ def init(
     print(f"Config file initialized at {config_service.cli_config_path}")
 
 
+@cli.command()
+def set_config_path(
+    config_path: str,
+):
+    """Set the config path in the config file."""
+    config_service = CliConfigService()
+    config_service.set_config_path(config_path)
+    print(f"Config path set to {config_path}")
+
+
+@cli.command()
+def set_env_path(
+    env_path: str,
+):
+    """Set the env path in the config file."""
+    config_service = CliConfigService()
+    config_service.set_env_path(env_path)
+    print(f"Env path set to {env_path}")
+
+
 if __name__ == "__main__":
     cli()
