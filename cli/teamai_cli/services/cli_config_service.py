@@ -1,16 +1,21 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import os
 
+DEFAULT_CLI_CONFIG_DIR = "~/.teamai"
 CONFIG_PATH_KEY = "config_path"
 ENV_PATH_KEY = "env_path"
 
 
 class CliConfigService:
-    def __init__(self, cli_config_path: str = "~/.teamai/config"):
-        self.cli_config_path = cli_config_path
+    def __init__(self, cli_config_dir: str = DEFAULT_CLI_CONFIG_DIR):
+        self.cli_config_dir = cli_config_dir
+        self.cli_config_path = f"{cli_config_dir}/config"
 
     def initialize_config(self, config_path: str = "", env_path: str = ""):
-        with open(self.cli_config_path, "w") as f:
+        if not os.path.exists(self.cli_config_dir):
+            os.makedirs(os.path.expanduser(self.cli_config_dir), exist_ok=True)
+        file_path = os.path.expanduser(self.cli_config_path)
+        with open(file_path, "w") as f:
             f.write(f"{CONFIG_PATH_KEY}: {config_path}\n{ENV_PATH_KEY}: {env_path}")
 
     def get_config_path(self):
