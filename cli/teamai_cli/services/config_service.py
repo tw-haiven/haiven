@@ -8,8 +8,10 @@ from teamai_cli.models.embedding_model import EmbeddingModel
 
 
 class ConfigService:
-    @staticmethod
-    def load_embeddings(path: str = "config.yaml") -> List[EmbeddingModel]:
+    def __init__(self, env_file_path: str = ".env"):
+        self.env_file_path = env_file_path
+
+    def load_embeddings(self, path: str = "config.yaml") -> List[EmbeddingModel]:
         """
         Load a List of embedding models from a YAML config file.
 
@@ -19,7 +21,7 @@ class ConfigService:
         Returns:
             EmbeddingModel: The loaded embedding model for the given provider
         """
-        data = ConfigService._load_yaml(path)
+        data = _load_yaml(path, self.env_file_path)
 
         embeddings = []
         embeddings_data_list = data["embeddings"]
@@ -34,55 +36,54 @@ class ConfigService:
 
         return embeddings
 
-    def _load_yaml(path: str) -> dict:
-        """
-        Load YAML data from a config file.
 
-        Args:
-            path (str): The path to the YAML file.
+def _load_yaml(path: str, env_file_path: str) -> dict:
+    """
+    Load YAML data from a config file.
 
-        Returns:
-            dict: The loaded YAML data.
-        """
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"Path {path} is not valid")
+    Args:
+        path (str): The path to the YAML file.
 
-        data = None
+    Returns:
+        dict: The loaded YAML data.
+    """
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Path {path} is not valid")
 
-        yaml.SafeLoader.add_constructor(
-            "tag:yaml.org,2002:timestamp", ConfigService._string_constructor
-        )
+    data = None
 
-        with open(path, "r") as file:
-            try:
-                data = yaml.load(file, Loader=yaml.SafeLoader)
-            except yaml.YAMLError as exc:
-                print(exc)
+    yaml.SafeLoader.add_constructor("tag:yaml.org,2002:timestamp", _string_constructor)
 
-        return _resolve_config_values(data)
+    with open(path, "r") as file:
+        try:
+            data = yaml.load(file, Loader=yaml.SafeLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
 
-    @staticmethod
-    def _string_constructor(loader, node):
-        """
-        Custom constructor for handling YAML strings.
-
-        Args:
-            loader: The YAML loader.
-            node: The YAML node.
-
-        Returns:
-            str: The constructed string.
-        """
-        return loader.construct_scalar(node)
+    return _resolve_config_values(data, env_file_path)
 
 
-def _resolve_config_values(config: dict[str, str]):
-    load_dotenv()
+def _string_constructor(loader, node):
+    """
+    Custom constructor for handling YAML strings.
+
+    Args:
+        loader: The YAML loader.
+        node: The YAML node.
+
+    Returns:
+        str: The constructed string.
+    """
+    return loader.construct_scalar(node)
+
+
+def _resolve_config_values(config: dict[str, str], env_file_path: str):
+    load_dotenv(env_file_path)
     for key, value in config.items():
         if isinstance(value, dict):
-            _resolve_config_values(value)
+            _resolve_config_values(value, env_file_path)
         elif isinstance(value, list):
-            _resolve_config_list_values(config, key, value)
+            _resolve_config_list_values(config, key, value, env_file_path)
         else:
             config[key] = _replace_by_env_var(config[key])
             if _is_comma_separated_list(config[key]):
@@ -95,11 +96,11 @@ def _is_comma_separated_list(value: str) -> bool:
     return isinstance(value, str) and "," in value
 
 
-def _resolve_config_list_values(config, key, value):
+def _resolve_config_list_values(config, key, value, env_file_path):
     list = []
     for i, item in enumerate(value):
         if isinstance(item, dict):
-            list.append(_resolve_config_values(item))
+            list.append(_resolve_config_values(item, env_file_path))
         else:
             list.append(_replace_by_env_var(item))
 

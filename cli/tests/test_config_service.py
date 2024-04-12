@@ -1,23 +1,31 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import os
 import pytest
+import unittest
 from teamai_cli.services.config_service import ConfigService
 
+TEST_ENV_FILE_PATH = ".test-env-file"
 
-class TestConfigService:
+
+class TestConfigService(unittest.TestCase):
+    def tearDown(self):
+        if os.path.exists(TEST_ENV_FILE_PATH):
+            os.remove(TEST_ENV_FILE_PATH)
+
     def test_config_initialization_fails_if_path_is_not_valid(self):
         # given I have an invalid path
         path = "invalid_path"
         # when I call the function __init__ an error should be raised
         with pytest.raises(FileNotFoundError) as e:
-            ConfigService.load_embeddings(path)
+            ConfigService(TEST_ENV_FILE_PATH).load_embeddings(path)
         assert str(e.value) == f"Path {path} is not valid"
 
     def test_config_initialization(self):
         # given I have a valid config file
         api_key = "api-key"
         secret_api_key = r"${AZURE_API_KEY}"
-        os.environ["AZURE_API_KEY"] = api_key
+        with open(TEST_ENV_FILE_PATH, "w") as f:
+            f.write(f"AZURE_API_KEY={api_key}")
         first_embedding_id = "text-embedding-ada-002"
         first_embedding_name = "Ada"
         first_embedding_provider = "Azure"
@@ -47,7 +55,7 @@ class TestConfigService:
         with open(config_path, "w") as f:
             f.write(config_content)
 
-        embeddings = ConfigService.load_embeddings(config_path)
+        embeddings = ConfigService(TEST_ENV_FILE_PATH).load_embeddings(config_path)
 
         first_embedding = embeddings[0]
         assert first_embedding.id == first_embedding_id

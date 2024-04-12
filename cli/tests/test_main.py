@@ -11,6 +11,7 @@ from teamai_cli.main import (
 
 
 class TestMain:
+    @patch("teamai_cli.main.CliConfigService")
     @patch("teamai_cli.main.WebPageService")
     @patch("teamai_cli.main.TokenService")
     @patch("teamai_cli.main.KnowledgeService")
@@ -25,6 +26,7 @@ class TestMain:
         mock_knowledge_service,
         mock_token_service,
         mock_web_page_service,
+        mock_cli_config_service,
     ):
         source_path = "source_path"
         destination_dir = "destination_dir"
@@ -36,6 +38,11 @@ class TestMain:
 
         knowledge_service = MagicMock()
         mock_knowledge_service.return_value = knowledge_service
+
+        env_file_path = ".test_env"
+        cli_config_service = MagicMock()
+        cli_config_service.get_env_path.return_value = env_file_path
+        mock_cli_config_service.return_value = cli_config_service
 
         config_service = MagicMock()
         mock_config_service.return_value = config_service
@@ -53,6 +60,7 @@ class TestMain:
 
         mock_token_service.assert_called_once_with("cl100k_base")
         mock_knowledge_service.assert_called_once_with(destination_dir, token_service)
+        mock_config_service.assert_called_once_with(env_file_path=env_file_path)
         mock_app.assert_called_once_with(
             config_service, file_service, knowledge_service, web_page_service
         )
@@ -60,6 +68,7 @@ class TestMain:
             source_path, embedding_model, config_path
         )
 
+    @patch("teamai_cli.main.CliConfigService")
     @patch("teamai_cli.main.WebPageService")
     @patch("teamai_cli.main.TokenService")
     @patch("teamai_cli.main.KnowledgeService")
@@ -74,6 +83,7 @@ class TestMain:
         mock_knowledge_service,
         mock_token_service,
         mock_web_page_service,
+        mock_cli_config_service,
     ):
         source_dir = "source_dir"
         destination_dir = "destination_dir"
@@ -85,6 +95,11 @@ class TestMain:
 
         knowledge_service = MagicMock()
         mock_knowledge_service.return_value = knowledge_service
+
+        env_file_path = ".test_env"
+        cli_config_service = MagicMock()
+        cli_config_service.get_env_path.return_value = env_file_path
+        mock_cli_config_service.return_value = cli_config_service
 
         config_service = MagicMock()
         mock_config_service.return_value = config_service
@@ -102,6 +117,7 @@ class TestMain:
 
         mock_token_service.assert_called_once_with("cl100k_base")
         mock_knowledge_service.assert_called_once_with(destination_dir, token_service)
+        mock_config_service.assert_called_once_with(env_file_path=env_file_path)
         mock_app.assert_called_once_with(
             config_service, file_service, knowledge_service, web_page_service
         )
@@ -109,6 +125,7 @@ class TestMain:
             source_dir, embedding_model, config_path
         )
 
+    @patch("teamai_cli.main.CliConfigService")
     @patch("teamai_cli.main.Client")
     @patch("teamai_cli.main.PageHelper")
     @patch("teamai_cli.main.WebPageService")
@@ -127,6 +144,7 @@ class TestMain:
         mock_web_page_service,
         mock_page_helper,
         mock_client,
+        mock_cli_config_service,
     ):
         source_url = "source_url"
         destination_path = "destination_path"
@@ -137,6 +155,11 @@ class TestMain:
 
         knowledge_service = MagicMock()
         mock_knowledge_service.return_value = knowledge_service
+
+        env_file_path = ".test_env"
+        cli_config_service = MagicMock()
+        cli_config_service.get_env_path.return_value = env_file_path
+        mock_cli_config_service.return_value = cli_config_service
 
         config_service = MagicMock()
         mock_config_service.return_value = config_service
@@ -159,6 +182,7 @@ class TestMain:
         pickle_web_page(source_url, destination_path, html_filter)
 
         mock_knowledge_service.assert_called_once_with(destination_path, token_service)
+        mock_config_service.assert_called_once_with(env_file_path=env_file_path)
         mock_web_page_service.assert_called_once_with(client, page_helper)
         app.index_web_page.assert_called_once_with(
             url=source_url, html_filter=html_filter, destination_path=destination_path

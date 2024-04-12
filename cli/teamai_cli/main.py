@@ -27,7 +27,8 @@ def index_file(
     """Index single pdf or text file to a given destination directory."""
     tiktoken_service = TokenService(ENCODING)
     knowledge_service = KnowledgeService(destination_dir, tiktoken_service)
-    config_service = ConfigService()
+    env_path_file = CliConfigService().get_env_path()
+    config_service = ConfigService(env_file_path=env_path_file)
     file_service = FileService()
     client = Client()
     page_helper = PageHelper()
@@ -46,7 +47,8 @@ def index_all_files(
     """Index all pdf or text files in a directory to a given destination directory."""
     token_service = TokenService(ENCODING)
     knowledge_service = KnowledgeService(destination_dir, token_service)
-    config_service = ConfigService()
+    env_path_file = CliConfigService().get_env_path()
+    config_service = ConfigService(env_file_path=env_path_file)
     file_service = FileService()
     client = Client()
     page_helper = PageHelper()
@@ -65,7 +67,8 @@ def pickle_web_page(
     """Index a web page to a given destination path."""
     token_service = TokenService(ENCODING)
     knowledge_service = KnowledgeService(destination_path, token_service)
-    config_service = ConfigService()
+    env_path_file = CliConfigService().get_env_path()
+    config_service = ConfigService(env_file_path=env_path_file)
     file_service = FileService()
     client = Client()
     page_helper = PageHelper()
