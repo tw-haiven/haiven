@@ -1,8 +1,10 @@
+# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import os
 import unittest
 from teamai_cli.services.cli_config_service import CliConfigService
 
 TEST_CLI_CONFIG_PATH = "test-cli-config"
+
 
 class TestCliConfigService(unittest.TestCase):
     def tearDown(self):
@@ -19,13 +21,12 @@ class TestCliConfigService(unittest.TestCase):
         assert os.path.exists(TEST_CLI_CONFIG_PATH)
 
         file_content = None
-        with open(TEST_CLI_CONFIG_PATH, 'r') as file:
+        with open(TEST_CLI_CONFIG_PATH, "r") as file:
             file_content = file.read()
 
         assert file_content == f"config_path: {config_path}\nenv_path: {env_path}"
         assert cli_config_service.get_config_path() == config_path
         assert cli_config_service.get_env_path() == env_path
-
 
     def test_set_config_path_creates_cli_config_file_if_not_exists(self):
         cli_config_service = CliConfigService(TEST_CLI_CONFIG_PATH)
@@ -36,12 +37,11 @@ class TestCliConfigService(unittest.TestCase):
         assert os.path.exists(TEST_CLI_CONFIG_PATH)
 
         file_content = None
-        with open(TEST_CLI_CONFIG_PATH, 'r') as file:
+        with open(TEST_CLI_CONFIG_PATH, "r") as file:
             file_content = file.read()
 
         assert file_content == f"config_path: {new_config_path}\nenv_path: "
         assert cli_config_service.get_config_path() == new_config_path
-
 
     def test_set_config_path_update_config_path_value_if_cli_config_file_exists(self):
         cli_config_service = CliConfigService(TEST_CLI_CONFIG_PATH)
@@ -54,7 +54,7 @@ class TestCliConfigService(unittest.TestCase):
         cli_config_service.set_config_path(new_config_path)
 
         file_content = None
-        with open(TEST_CLI_CONFIG_PATH, 'r') as file:
+        with open(TEST_CLI_CONFIG_PATH, "r") as file:
             file_content = file.read()
 
         assert file_content == f"config_path: {new_config_path}\nenv_path: {env_path}\n"

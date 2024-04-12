@@ -1,7 +1,9 @@
+# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import os
 
 CONFIG_PATH_KEY = "config_path"
 ENV_PATH_KEY = "env_path"
+
 
 class CliConfigService:
     def __init__(self, cli_config_path: str = "~/.teamai/config"):
