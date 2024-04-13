@@ -2,7 +2,7 @@
 import pytest
 
 from teamai_cli.app.app import App
-from unittest.mock import MagicMock, PropertyMock, patch, mock_open
+from unittest.mock import call, MagicMock, PropertyMock, patch, mock_open
 
 
 class TestApp:
@@ -208,13 +208,13 @@ class TestApp:
         config_embeddings = [embedding]
         config_service = MagicMock()
         config_service.load_embeddings.return_value = config_embeddings
-        first_file_path = "file_path.txt"
+        first_file_path = "text_file_path.txt"
 
         first_file_content = "the file content"
         first_file = MagicMock()
         first_file.read.return_value = first_file_content
 
-        second_file_path = "file_path.pdf"
+        second_file_path = "pdf_file_path.pdf"
         second_file_content = "the second file content"
         second_file_metadata = MagicMock()
         second_file = MagicMock()
@@ -242,6 +242,22 @@ class TestApp:
         file_service.get_text_and_metadata_from_pdf.assert_called_once_with(second_file)
 
         knowledge_service.index.call_count == 2
+        knowledge_service.index.assert_has_calls(
+            [
+                call(
+                    [first_file_content],
+                    [{"file": first_file_path}],
+                    embedding,
+                    "text_file_path.kb",
+                ),
+                call(
+                    second_file_content,
+                    second_file_metadata,
+                    embedding,
+                    "pdf_file_path.kb",
+                ),
+            ]
+        )
 
     def test_index_web_page_fails_if_url_is_not_set(self):
         url = ""

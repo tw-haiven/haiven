@@ -69,7 +69,8 @@ class App:
             else:
                 file_content, metadata = self._get_pdf_file_text_and_metadata(file)
 
-            self.knowledge_service.index(file_content, metadata, model)
+            output_dir = f"{_remove_file_suffix(file)}.kb"
+            self.knowledge_service.index(file_content, metadata, model, output_dir)
 
     def index_web_page(self, url: str, html_filter: str, destination_path: str):
         if not url:
