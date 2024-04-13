@@ -96,7 +96,7 @@ class TestApp:
         config_service.load_embeddings.assert_called_once_with(config_path)
         mock_file.assert_called_once_with(source_path, "r")
         knowledge_service.index.assert_called_once_with(
-            [file_content], [{"file": source_path}], embedding
+            [file_content], [{"file": source_path}], embedding, "file.kb"
         )
 
     @patch("builtins.open", new_callable=mock_open)
@@ -133,7 +133,7 @@ class TestApp:
         mock_file.assert_called_once_with(source_path, "rb")
         file_service.get_text_and_metadata_from_pdf.assert_called_once_with(file)
         knowledge_service.index.assert_called_once_with(
-            file_content, metadatas, embedding
+            file_content, metadatas, embedding, "file.kb"
         )
 
     def test_index_all_files_fails_if_source_dir_is_not_set(self):

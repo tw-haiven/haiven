@@ -31,9 +31,9 @@ class App:
             raise ValueError("source file needs to be .txt or .pdf file")
 
         embedding_models = self.config_service.load_embeddings(config_path)
-        model = self._get_embedding(embedding_model, embedding_models)
+        model = _get_embedding(embedding_model, embedding_models)
         if model is None:
-            current_models = self._get_defined_embedding_models_ids(embedding_models)
+            current_models = _get_defined_embedding_models_ids(embedding_models)
             raise ValueError(
                 f"embeddings are not defined in {config_path}\n{current_models}"
             )
@@ -45,16 +45,17 @@ class App:
         else:
             file_content, metadata = self._get_pdf_file_text_and_metadata(source_path)
 
-        self.knowledge_service.index(file_content, metadata, model)
+        output_dir = f"{_remove_file_suffix(source_path)}.kb"
+        self.knowledge_service.index(file_content, metadata, model, output_dir)
 
     def index_all_files(self, source_dir: str, embedding_model: str, config_path: str):
         if not source_dir:
             raise ValueError("please provide directory path for source_dir option")
 
         embedding_models = self.config_service.load_embeddings(config_path)
-        model = self._get_embedding(embedding_model, embedding_models)
+        model = _get_embedding(embedding_model, embedding_models)
         if model is None:
-            current_models = self._get_defined_embedding_models_ids(embedding_models)
+            current_models = _get_defined_embedding_models_ids(embedding_models)
             raise ValueError(
                 f"embeddings are not defined in {config_path}\n{current_models}"
             )
@@ -87,18 +88,22 @@ class App:
         with open(source_path, "rb") as pdf_file:
             return self.file_service.get_text_and_metadata_from_pdf(pdf_file)
 
-    def _get_embedding(
-        self, embedding_model: str, embedding_models: List[EmbeddingModel]
-    ) -> EmbeddingModel:
-        for model in embedding_models:
-            if embedding_model == model.id:
-                return model
-        return None
 
-    def _get_defined_embedding_models_ids(
-        self, embedding_models: List[EmbeddingModel]
-    ) -> str:
-        models_ids = "Usable models according to config file:"
-        for model in embedding_models:
-            models_ids = f"{models_ids}\n- {model.id}"
-        return models_ids
+def _get_embedding(
+    embedding_model: str, embedding_models: List[EmbeddingModel]
+) -> EmbeddingModel:
+    for model in embedding_models:
+        if embedding_model == model.id:
+            return model
+    return None
+
+
+def _get_defined_embedding_models_ids(embedding_models: List[EmbeddingModel]) -> str:
+    models_ids = "Usable models according to config file:"
+    for model in embedding_models:
+        models_ids = f"{models_ids}\n- {model.id}"
+    return models_ids
+
+
+def _remove_file_suffix(file_path: str) -> str:
+    return file_path.split(".")[0]

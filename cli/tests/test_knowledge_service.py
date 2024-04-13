@@ -10,38 +10,38 @@ class TestKnowledgeService:
         text = None
         metadatas = {}
         embedding_model = MagicMock()
-        knowledge_base_path = "test knowledge base path"
+        ouput_dir = "test knowledge base path"
 
         token_service = MagicMock()
-        knowledge_service = KnowledgeService(knowledge_base_path, token_service)
+        knowledge_service = KnowledgeService(token_service)
 
         with pytest.raises(ValueError) as e:
-            knowledge_service.index(text, metadatas, embedding_model)
+            knowledge_service.index(text, metadatas, embedding_model, ouput_dir)
         assert str(e.value) == "file content has no value"
 
     def test_save_knowledge_to_path_raises_error_if_text_is_empty(self):
         text = ""
         metadatas = {}
         embedding_model = MagicMock()
-        knowledge_base_path = "test knowledge base path"
+        ouput_dir = "test knowledge base path"
 
         token_service = MagicMock()
-        knowledge_service = KnowledgeService(knowledge_base_path, token_service)
+        knowledge_service = KnowledgeService(token_service)
 
         with pytest.raises(ValueError) as e:
-            knowledge_service.index(text, metadatas, embedding_model)
+            knowledge_service.index(text, metadatas, embedding_model, ouput_dir)
         assert str(e.value) == "file content has no value"
 
     def test_save_knowledge_to_path_raises_error_if_embedding_is_none(self):
         text = "something cool"
         metadatas = {}
         embedding_model = None
-        knowledge_base_path = "test knowledge base path"
+        ouput_dir = "test knowledge base path"
         token_service = MagicMock()
-        knowledge_service = KnowledgeService(knowledge_base_path, token_service)
+        knowledge_service = KnowledgeService(token_service)
 
         with pytest.raises(ValueError) as e:
-            knowledge_service.index(text, metadatas, embedding_model)
+            knowledge_service.index(text, metadatas, embedding_model, ouput_dir)
         assert str(e.value) == "embedding model has no value"
 
     @patch("teamai_cli.services.knowledge_service.FAISS")
@@ -54,7 +54,7 @@ class TestKnowledgeService:
         texts = [text]
         metadatas = {}
         embedding_model = MagicMock()
-        knowledge_base_path = "test knowledge base path"
+        ouput_dir = "test knowledge base path"
 
         token_service = MagicMock()
 
@@ -70,8 +70,8 @@ class TestKnowledgeService:
         mock_faiss.from_documents.return_value = local_db
         mock_faiss.load_local.side_effect = ValueError("Some Error")
 
-        knowledge_service = KnowledgeService(knowledge_base_path, token_service)
-        knowledge_service.index(texts, metadatas, embedding_model)
+        knowledge_service = KnowledgeService(token_service)
+        knowledge_service.index(texts, metadatas, embedding_model, ouput_dir)
 
         mock_text_splitter.assert_called_once_with(
             chunk_size=100,
@@ -82,8 +82,8 @@ class TestKnowledgeService:
         text_splitter.create_documents.assert_called_once_with(texts, metadatas)
         mock_embedding_service.load_embeddings.assert_called_once_with(embedding_model)
         mock_faiss.from_documents.assert_called_once_with(documents, embeddings)
-        mock_faiss.load_local.assert_called_once_with(knowledge_base_path, embeddings)
-        local_db.save_local.assert_called_once_with(knowledge_base_path)
+        mock_faiss.load_local.assert_called_once_with(ouput_dir, embeddings)
+        local_db.save_local.assert_called_once_with(ouput_dir)
 
     @patch("teamai_cli.services.knowledge_service.FAISS")
     @patch("teamai_cli.services.knowledge_service.EmbeddingService")
@@ -95,7 +95,7 @@ class TestKnowledgeService:
         texts = [text]
         metadatas = {}
         embedding_model = MagicMock()
-        knowledge_base_path = "test knowledge base path"
+        ouput_dir = "test knowledge base path"
 
         token_service = MagicMock()
 
@@ -112,8 +112,8 @@ class TestKnowledgeService:
         db = MagicMock()
         mock_faiss.load_local.return_value = db
 
-        knowledge_service = KnowledgeService(knowledge_base_path, token_service)
-        knowledge_service.index(texts, metadatas, embedding_model)
+        knowledge_service = KnowledgeService(token_service)
+        knowledge_service.index(texts, metadatas, embedding_model, ouput_dir)
 
         mock_text_splitter.assert_called_once_with(
             chunk_size=100,
@@ -124,9 +124,9 @@ class TestKnowledgeService:
         text_splitter.create_documents.assert_called_once_with(texts, metadatas)
         mock_embedding_service.load_embeddings.assert_called_once_with(embedding_model)
         mock_faiss.from_documents.assert_called_once_with(documents, embeddings)
-        mock_faiss.load_local.assert_called_once_with(knowledge_base_path, embeddings)
+        mock_faiss.load_local.assert_called_once_with(ouput_dir, embeddings)
         db.merge_from.assert_called_once_with(local_db)
-        db.save_local.assert_called_once_with(knowledge_base_path)
+        db.save_local.assert_called_once_with(ouput_dir)
 
     @patch("builtins.open", new_callable=mock_open)
     @patch("teamai_cli.services.knowledge_service.pickle")
@@ -135,7 +135,7 @@ class TestKnowledgeService:
         mock_file.return_value.__enter__.return_value = file
         documents = [MagicMock()]
         path = "test path"
-        knowledge_service = KnowledgeService("test knowledge base path", MagicMock())
+        knowledge_service = KnowledgeService(MagicMock())
         knowledge_service.pickle_documents(documents, path)
 
         mock_file.assert_called_once_with(path, "wb")

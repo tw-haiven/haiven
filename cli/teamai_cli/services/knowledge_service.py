@@ -9,11 +9,10 @@ from typing import List
 
 
 class KnowledgeService:
-    def __init__(self, knowledge_base_path: str, token_service: TokenService):
-        self.knowledge_base_path = knowledge_base_path
+    def __init__(self, token_service: TokenService):
         self.token_service = token_service
 
-    def index(self, texts, metadatas, embedding_model):
+    def index(self, texts, metadatas, embedding_model, output_dir):
         if texts is None or len(texts) == 0 or texts[0] == "":
             raise ValueError("file content has no value")
 
@@ -31,13 +30,13 @@ class KnowledgeService:
 
         db = FAISS.from_documents(documents, embeddings)
         try:
-            local_db = FAISS.load_local(self.knowledge_base_path, embeddings)
+            local_db = FAISS.load_local(output_dir, embeddings)
             local_db.merge_from(db)
         except ValueError:
             print("Indexing to new path")
             local_db = db
 
-        local_db.save_local(self.knowledge_base_path)
+        local_db.save_local(output_dir)
 
     def pickle_documents(self, documents: List[Document], path: str):
         with open(path, "wb") as file:
