@@ -35,3 +35,11 @@ class FileService:
             for filename in filenames:
                 files.append(os.path.join(root, filename))
         return files
+
+    def write_metadata_file(self, metadata: List[dict], output_path: str):
+        metadata_file_content = "---\n"
+        for metadata_item in metadata:
+            metadata_file_content += f"{metadata_item}: {metadata[metadata_item]}\n"
+        metadata_file_content += "---\n"
+        with open(output_path, "w") as f:
+            f.write(str(metadata_file_content))

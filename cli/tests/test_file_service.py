@@ -84,3 +84,42 @@ class TestFileService:
         assert len(files) == 1
         assert files[0] == f"{source_dir}/{file_path}"
         mock_os.walk.assert_called_once_with(source_dir)
+
+    def test_write_metadata_file(self):
+        key = "a key"
+        title = "a title"
+        description = "a description"
+        source = "a source"
+        path = "a path"
+        provider = "a provider"
+        sample_question = "a sample question"
+
+        metadata = {
+            "key": key,
+            "title": title,
+            "description": description,
+            "source": source,
+            "path": path,
+            "provider": provider,
+            "sample_question": sample_question,
+        }
+        metadata_file_path = "test_metadata.yml"
+
+        file_service = FileService()
+        file_service.write_metadata_file(metadata, metadata_file_path)
+
+        expected_metadata_file_content = f"""---
+key: {key}
+title: {title}
+description: {description}
+source: {source}
+path: {path}
+provider: {provider}
+sample_question: {sample_question}
+---
+"""
+        with open(metadata_file_path, "r") as f:
+            metadata_file_content = f.read()
+            assert metadata_file_content == expected_metadata_file_content
+
+        os.remove(metadata_file_path)

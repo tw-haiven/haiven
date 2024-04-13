@@ -51,7 +51,7 @@ cli-run +command='':
 
 cli-test:
     cd cli && \
-    poetry run pytest -v
+    poetry run pytest -vv
 
 cli-update-docs:
     cd cli && \
