@@ -10,6 +10,7 @@ class TestApp:
         source_path = ""
         embedding_model = "an embedding model"
         config_path = "a config path"
+        metadata = {}
 
         config_service = MagicMock()
         file_service = MagicMock()
@@ -19,7 +20,9 @@ class TestApp:
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
-            app.index_individual_file(source_path, embedding_model, config_path)
+            app.index_individual_file(
+                source_path, embedding_model, config_path, metadata
+            )
 
         assert str(e.value) == "please provide file path for source_path option"
 
@@ -27,6 +30,7 @@ class TestApp:
         source_path = "file.whatever"
         embedding_model = "an embedding model"
         config_path = "a config path"
+        metadata = {}
 
         config_service = MagicMock()
         file_service = MagicMock()
@@ -36,7 +40,9 @@ class TestApp:
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
-            app.index_individual_file(source_path, embedding_model, config_path)
+            app.index_individual_file(
+                source_path, embedding_model, config_path, metadata
+            )
 
         assert str(e.value) == "source file needs to be .txt or .pdf file"
 
@@ -46,6 +52,7 @@ class TestApp:
         source_path = "file.txt"
         embedding_model = "an embedding model"
         config_path = "test_config.yaml"
+        metadata = {}
 
         config_embeddings = []
         config_service = MagicMock()
@@ -57,7 +64,9 @@ class TestApp:
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
-            app.index_individual_file(source_path, embedding_model, config_path)
+            app.index_individual_file(
+                source_path, embedding_model, config_path, metadata
+            )
 
         config_service.load_embeddings.assert_called_once_with(config_path)
         assert (
@@ -70,6 +79,7 @@ class TestApp:
         source_path = "file.txt"
         embedding_model = "an embedding model"
         config_path = "test_config.yaml"
+        metadata = {}
 
         embedding = MagicMock()
         type(embedding).id = PropertyMock(return_value=embedding_model)
@@ -91,19 +101,21 @@ class TestApp:
 
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
-        app.index_individual_file(source_path, embedding_model, config_path)
+        app.index_individual_file(source_path, embedding_model, config_path, metadata)
 
         config_service.load_embeddings.assert_called_once_with(config_path)
         mock_file.assert_called_once_with(source_path, "r")
         knowledge_service.index.assert_called_once_with(
             [file_content], [{"file": source_path}], embedding, "file.kb"
         )
+        file_service.write_metadata_file.assert_called_once_with(metadata, "file.md")
 
     @patch("builtins.open", new_callable=mock_open)
     def test_index_individual_pdf_file(self, mock_file):
         source_path = "file.pdf"
         embedding_model = "an embedding model"
         config_path = "test_config.yaml"
+        metadata = {}
 
         embedding = MagicMock()
         type(embedding).id = PropertyMock(return_value=embedding_model)
@@ -127,7 +139,7 @@ class TestApp:
         web_page_service = MagicMock()
 
         app = App(config_service, file_service, knowledge_service, web_page_service)
-        app.index_individual_file(source_path, embedding_model, config_path)
+        app.index_individual_file(source_path, embedding_model, config_path, metadata)
 
         config_service.load_embeddings.assert_called_once_with(config_path)
         mock_file.assert_called_once_with(source_path, "rb")
@@ -135,11 +147,13 @@ class TestApp:
         knowledge_service.index.assert_called_once_with(
             file_content, metadatas, embedding, "file.kb"
         )
+        file_service.write_metadata_file.assert_called_once_with(metadata, "file.md")
 
     def test_index_all_files_fails_if_source_dir_is_not_set(self):
         source_dir = ""
         embedding_model = "embedding_model"
         config_path = "config_path"
+        metadata = {}
 
         config_service = MagicMock()
         file_service = MagicMock()
@@ -149,7 +163,7 @@ class TestApp:
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
-            app.index_all_files(source_dir, embedding_model, config_path)
+            app.index_all_files(source_dir, embedding_model, config_path, metadata)
 
         assert str(e.value) == "please provide directory path for source_dir option"
 
@@ -157,6 +171,7 @@ class TestApp:
         source_dir = "source_dir"
         embedding_model = "embedding_model"
         config_path = "config_path"
+        metadata = {}
 
         config_service = MagicMock()
         config_service.load_embeddings.return_value = []
@@ -167,7 +182,7 @@ class TestApp:
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
-            app.index_all_files(source_dir, embedding_model, config_path)
+            app.index_all_files(source_dir, embedding_model, config_path, metadata)
 
         assert (
             str(e.value)
@@ -178,6 +193,7 @@ class TestApp:
         source_dir = "source_dir"
         embedding_model = "embedding_model"
         config_path = "config_path"
+        metadata = {}
 
         embedding = MagicMock()
         type(embedding).id = PropertyMock(return_value=embedding_model)
@@ -192,7 +208,7 @@ class TestApp:
 
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
-        app.index_all_files(source_dir, embedding_model, config_path)
+        app.index_all_files(source_dir, embedding_model, config_path, metadata)
 
         file_service.get_files_path_from_directory.assert_called_once_with(source_dir)
         assert knowledge_service.index.call_count == 0
@@ -202,6 +218,7 @@ class TestApp:
         source_dir = "source_dir"
         embedding_model = "embedding_model"
         config_path = "config_path"
+        metadata = {}
 
         embedding = MagicMock()
         type(embedding).id = PropertyMock(return_value=embedding_model)
@@ -236,12 +253,11 @@ class TestApp:
         web_page_service = MagicMock()
 
         app = App(config_service, file_service, knowledge_service, web_page_service)
-        app.index_all_files(source_dir, embedding_model, config_path)
+        app.index_all_files(source_dir, embedding_model, config_path, metadata)
 
         file_service.get_files_path_from_directory.assert_called_once_with(source_dir)
         file_service.get_text_and_metadata_from_pdf.assert_called_once_with(second_file)
 
-        knowledge_service.index.call_count == 2
         knowledge_service.index.assert_has_calls(
             [
                 call(
@@ -256,6 +272,13 @@ class TestApp:
                     embedding,
                     "pdf_file_path.kb",
                 ),
+            ]
+        )
+
+        file_service.write_metadata_file.assert_has_calls(
+            [
+                call(metadata, "text_file_path.md"),
+                call(metadata, "pdf_file_path.md"),
             ]
         )
 

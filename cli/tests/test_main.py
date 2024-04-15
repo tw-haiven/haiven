@@ -1,5 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, PropertyMock
 from teamai_cli.main import (
     index_file,
     index_all_files,
@@ -9,8 +9,8 @@ from teamai_cli.main import (
     set_env_path,
 )
 
-
 class TestMain:
+    @patch("teamai_cli.main.EmbeddingService")
     @patch("teamai_cli.main.CliConfigService")
     @patch("teamai_cli.main.WebPageService")
     @patch("teamai_cli.main.TokenService")
@@ -27,11 +27,13 @@ class TestMain:
         mock_token_service,
         mock_web_page_service,
         mock_cli_config_service,
+        mock_embedding_service,
     ):
-        source_path = "source_path"
-        destination_dir = "destination_dir"
+        source_path = "source_path.pdf"
         embedding_model = "embedding_model"
         config_path = "config_path"
+        description = "description"
+        provider = "provider"
 
         token_service = MagicMock()
         mock_token_service.return_value = token_service
@@ -45,6 +47,10 @@ class TestMain:
         mock_cli_config_service.return_value = cli_config_service
 
         config_service = MagicMock()
+        model = MagicMock()
+        type(model).id = PropertyMock(return_value=embedding_model)
+        type(model).provider = PropertyMock(return_value=provider)
+        config_service.load_embeddings.return_value = [model]
         mock_config_service.return_value = config_service
 
         file_service = MagicMock()
@@ -56,18 +62,29 @@ class TestMain:
         app = MagicMock()
         mock_app.return_value = app
 
-        index_file(source_path, destination_dir, embedding_model, config_path)
+        index_file(source_path, embedding_model, config_path, description)
+
+        expected_metadata = {
+            "title": "source_path",
+            "description": description,
+            "source": source_path,
+            "path": "source_path.kb",
+            "provider": provider,
+        }
 
         mock_token_service.assert_called_once_with("cl100k_base")
-        mock_knowledge_service.assert_called_once_with(destination_dir, token_service)
+        mock_knowledge_service.assert_called_once_with(
+            token_service, mock_embedding_service
+        )
         mock_config_service.assert_called_once_with(env_file_path=env_file_path)
         mock_app.assert_called_once_with(
             config_service, file_service, knowledge_service, web_page_service
         )
         app.index_individual_file.assert_called_once_with(
-            source_path, embedding_model, config_path
+            source_path, embedding_model, config_path, expected_metadata
         )
 
+    @patch("teamai_cli.main.EmbeddingService")
     @patch("teamai_cli.main.CliConfigService")
     @patch("teamai_cli.main.WebPageService")
     @patch("teamai_cli.main.TokenService")
@@ -84,6 +101,7 @@ class TestMain:
         mock_token_service,
         mock_web_page_service,
         mock_cli_config_service,
+        mock_embedding_service,
     ):
         source_dir = "source_dir"
         destination_dir = "destination_dir"
@@ -116,7 +134,9 @@ class TestMain:
         index_all_files(source_dir, destination_dir, embedding_model, config_path)
 
         mock_token_service.assert_called_once_with("cl100k_base")
-        mock_knowledge_service.assert_called_once_with(destination_dir, token_service)
+        mock_knowledge_service.assert_called_once_with(
+            token_service, mock_embedding_service
+        )
         mock_config_service.assert_called_once_with(env_file_path=env_file_path)
         mock_app.assert_called_once_with(
             config_service, file_service, knowledge_service, web_page_service
@@ -125,6 +145,7 @@ class TestMain:
             source_dir, embedding_model, config_path
         )
 
+    @patch("teamai_cli.main.EmbeddingService")
     @patch("teamai_cli.main.CliConfigService")
     @patch("teamai_cli.main.Client")
     @patch("teamai_cli.main.PageHelper")
@@ -145,6 +166,7 @@ class TestMain:
         mock_page_helper,
         mock_client,
         mock_cli_config_service,
+        mock_embedding_service,
     ):
         source_url = "source_url"
         destination_path = "destination_path"
@@ -181,7 +203,9 @@ class TestMain:
 
         pickle_web_page(source_url, destination_path, html_filter)
 
-        mock_knowledge_service.assert_called_once_with(destination_path, token_service)
+        mock_knowledge_service.assert_called_once_with(
+            token_service, mock_embedding_service
+        )
         mock_config_service.assert_called_once_with(env_file_path=env_file_path)
         mock_web_page_service.assert_called_once_with(client, page_helper)
         app.index_web_page.assert_called_once_with(

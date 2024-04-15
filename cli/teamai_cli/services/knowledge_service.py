@@ -9,8 +9,11 @@ from typing import List
 
 
 class KnowledgeService:
-    def __init__(self, token_service: TokenService):
+    def __init__(
+        self, token_service: TokenService, embedding_service: EmbeddingService
+    ):
         self.token_service = token_service
+        self.embedding_service = embedding_service
 
     def index(self, texts, metadatas, embedding_model, output_dir):
         if texts is None or len(texts) == 0 or texts[0] == "":
@@ -26,7 +29,7 @@ class KnowledgeService:
             separators=["\n\n", "\n", " ", ""],
         )
         documents = text_splitter.create_documents(texts, metadatas)
-        embeddings = EmbeddingService.load_embeddings(embedding_model)
+        embeddings = self.embedding_service.load_embeddings(embedding_model)
 
         db = FAISS.from_documents(documents, embeddings)
         try:

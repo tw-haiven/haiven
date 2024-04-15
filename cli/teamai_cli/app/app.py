@@ -22,7 +22,11 @@ class App:
         self.web_page_service = web_page_service
 
     def index_individual_file(
-        self, source_path: str, embedding_model: str, config_path: str
+        self,
+        source_path: str,
+        embedding_model: str,
+        config_path: str,
+        metadata: List[dict],
     ):
         if not source_path:
             raise ValueError("please provide file path for source_path option")
@@ -39,16 +43,24 @@ class App:
             )
 
         file_content = None
-        metadata = None
+        file_metadata = None
         if source_path.endswith(".txt"):
-            file_content, metadata = self._get_txt_file_text_and_metadata(source_path)
+            file_content, file_metadata = self._get_txt_file_text_and_metadata(
+                source_path
+            )
         else:
-            file_content, metadata = self._get_pdf_file_text_and_metadata(source_path)
+            file_content, file_metadata = self._get_pdf_file_text_and_metadata(
+                source_path
+            )
 
-        output_dir = f"{_remove_file_suffix(source_path)}.kb"
-        self.knowledge_service.index(file_content, metadata, model, output_dir)
+        file_path_prefix = _remove_file_suffix(source_path)
+        output_dir = f"{file_path_prefix}.kb"
+        self.knowledge_service.index(file_content, file_metadata, model, output_dir)
+        self.file_service.write_metadata_file(metadata, f"{file_path_prefix}.md")
 
-    def index_all_files(self, source_dir: str, embedding_model: str, config_path: str):
+    def index_all_files(
+        self, source_dir: str, embedding_model: str, config_path: str, metadata: {}
+    ):
         if not source_dir:
             raise ValueError("please provide directory path for source_dir option")
 
@@ -63,14 +75,23 @@ class App:
         files = self.file_service.get_files_path_from_directory(source_dir)
         for file in files:
             file_content = None
-            metadata = None
+            first_metadata = None
             if file.endswith(".txt"):
-                file_content, metadata = self._get_txt_file_text_and_metadata(file)
+                file_content, first_metadata = self._get_txt_file_text_and_metadata(
+                    file
+                )
             else:
-                file_content, metadata = self._get_pdf_file_text_and_metadata(file)
+                file_content, first_metadata = self._get_pdf_file_text_and_metadata(
+                    file
+                )
 
             output_dir = f"{_remove_file_suffix(file)}.kb"
-            self.knowledge_service.index(file_content, metadata, model, output_dir)
+            self.knowledge_service.index(
+                file_content, first_metadata, model, output_dir
+            )
+            self.file_service.write_metadata_file(
+                metadata, f"{_remove_file_suffix(file)}.md"
+            )
 
     def index_web_page(self, url: str, html_filter: str, destination_path: str):
         if not url:
