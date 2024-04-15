@@ -10,6 +10,7 @@ class TestApp:
         source_path = ""
         embedding_model = "an embedding model"
         config_path = "a config path"
+        output_dir = "output_dir"
         metadata = {}
 
         config_service = MagicMock()
@@ -21,7 +22,7 @@ class TestApp:
 
         with pytest.raises(ValueError) as e:
             app.index_individual_file(
-                source_path, embedding_model, config_path, metadata
+                source_path, embedding_model, config_path, output_dir, metadata
             )
 
         assert str(e.value) == "please provide file path for source_path option"
@@ -30,6 +31,7 @@ class TestApp:
         source_path = "file.whatever"
         embedding_model = "an embedding model"
         config_path = "a config path"
+        output_dir = "output_dir"
         metadata = {}
 
         config_service = MagicMock()
@@ -41,7 +43,7 @@ class TestApp:
 
         with pytest.raises(ValueError) as e:
             app.index_individual_file(
-                source_path, embedding_model, config_path, metadata
+                source_path, embedding_model, config_path, output_dir, metadata
             )
 
         assert str(e.value) == "source file needs to be .txt or .pdf file"
@@ -52,6 +54,7 @@ class TestApp:
         source_path = "file.txt"
         embedding_model = "an embedding model"
         config_path = "test_config.yaml"
+        output_dir = "output_dir"
         metadata = {}
 
         config_embeddings = []
@@ -65,7 +68,7 @@ class TestApp:
 
         with pytest.raises(ValueError) as e:
             app.index_individual_file(
-                source_path, embedding_model, config_path, metadata
+                source_path, embedding_model, config_path, output_dir, metadata
             )
 
         config_service.load_embeddings.assert_called_once_with(config_path)
@@ -79,6 +82,7 @@ class TestApp:
         source_path = "file.txt"
         embedding_model = "an embedding model"
         config_path = "test_config.yaml"
+        output_dir = "output_dir"
         metadata = {}
 
         embedding = MagicMock()
@@ -101,20 +105,25 @@ class TestApp:
 
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
-        app.index_individual_file(source_path, embedding_model, config_path, metadata)
+        app.index_individual_file(
+            source_path, embedding_model, config_path, output_dir, metadata
+        )
 
         config_service.load_embeddings.assert_called_once_with(config_path)
         mock_file.assert_called_once_with(source_path, "r")
         knowledge_service.index.assert_called_once_with(
-            [file_content], [{"file": source_path}], embedding, "file.kb"
+            [file_content], [{"file": source_path}], embedding, "output_dir/file.kb"
         )
-        file_service.write_metadata_file.assert_called_once_with(metadata, "file.md")
+        file_service.write_metadata_file.assert_called_once_with(
+            metadata, "output_dir/file.md"
+        )
 
     @patch("builtins.open", new_callable=mock_open)
     def test_index_individual_pdf_file(self, mock_file):
         source_path = "file.pdf"
         embedding_model = "an embedding model"
         config_path = "test_config.yaml"
+        output_dir = "output_dir"
         metadata = {}
 
         embedding = MagicMock()
@@ -139,15 +148,19 @@ class TestApp:
         web_page_service = MagicMock()
 
         app = App(config_service, file_service, knowledge_service, web_page_service)
-        app.index_individual_file(source_path, embedding_model, config_path, metadata)
+        app.index_individual_file(
+            source_path, embedding_model, config_path, output_dir, metadata
+        )
 
         config_service.load_embeddings.assert_called_once_with(config_path)
         mock_file.assert_called_once_with(source_path, "rb")
         file_service.get_text_and_metadata_from_pdf.assert_called_once_with(file)
         knowledge_service.index.assert_called_once_with(
-            file_content, metadatas, embedding, "file.kb"
+            file_content, metadatas, embedding, "output_dir/file.kb"
         )
-        file_service.write_metadata_file.assert_called_once_with(metadata, "file.md")
+        file_service.write_metadata_file.assert_called_once_with(
+            metadata, "output_dir/file.md"
+        )
 
     def test_index_all_files_fails_if_source_dir_is_not_set(self):
         source_dir = ""

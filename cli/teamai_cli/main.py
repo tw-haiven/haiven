@@ -24,6 +24,7 @@ def index_file(
     embedding_model="openai",
     config_path: str = CONFIG_FILE_PATH,
     description: str = "",
+    output_dir: str = "new_knowledge_base",
 ):
     """Index single pdf or text file to a given destination directory."""
 
@@ -43,7 +44,9 @@ def index_file(
 
     metadata = _get_single_file_metadata(source_path, description, provider)
     app = create_app(config_service)
-    app.index_individual_file(source_path, embedding_model, config_path, metadata)
+    app.index_individual_file(
+        source_path, embedding_model, config_path, output_dir, metadata
+    )
 
 
 @cli.command()

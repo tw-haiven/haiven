@@ -141,8 +141,7 @@ class StreamingChat(TeamAIBaseChat):
         else:
             context_documents = (
                 EmbeddingsService.similarity_search_on_single_document_with_scores(
-                    query=summary,
-                    document_key=knowledge_document_key
+                    query=summary, document_key=knowledge_document_key
                 )
             )
 
@@ -278,7 +277,7 @@ class DocumentsChat(TeamAIBaseChat):
 
         search_results = EmbeddingsService.similarity_search_on_single_document_with_scores(
             query=f"What context could be relevant to the following query: ```{message}```",
-            document_key=self.knowledge.key
+            document_key=self.knowledge.key,
         )
         documents = [document for document, _ in search_results]
 

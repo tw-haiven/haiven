@@ -9,6 +9,7 @@ from teamai_cli.main import (
     set_env_path,
 )
 
+
 class TestMain:
     @patch("teamai_cli.main.EmbeddingService")
     @patch("teamai_cli.main.CliConfigService")
@@ -33,6 +34,7 @@ class TestMain:
         embedding_model = "embedding_model"
         config_path = "config_path"
         description = "description"
+        output_dir = "output_dir"
         provider = "provider"
 
         token_service = MagicMock()
@@ -62,7 +64,7 @@ class TestMain:
         app = MagicMock()
         mock_app.return_value = app
 
-        index_file(source_path, embedding_model, config_path, description)
+        index_file(source_path, embedding_model, config_path, description, output_dir)
 
         expected_metadata = {
             "title": "source_path",
@@ -81,7 +83,7 @@ class TestMain:
             config_service, file_service, knowledge_service, web_page_service
         )
         app.index_individual_file.assert_called_once_with(
-            source_path, embedding_model, config_path, expected_metadata
+            source_path, embedding_model, config_path, output_dir, expected_metadata
         )
 
     @patch("teamai_cli.main.EmbeddingService")

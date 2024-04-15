@@ -26,6 +26,7 @@ class App:
         source_path: str,
         embedding_model: str,
         config_path: str,
+        output_dir: str,
         metadata: List[dict],
     ):
         if not source_path:
@@ -54,9 +55,11 @@ class App:
             )
 
         file_path_prefix = _remove_file_suffix(source_path)
-        output_dir = f"{file_path_prefix}.kb"
-        self.knowledge_service.index(file_content, file_metadata, model, output_dir)
-        self.file_service.write_metadata_file(metadata, f"{file_path_prefix}.md")
+        output_kb_dir = f"{output_dir}/{file_path_prefix}.kb"
+        self.knowledge_service.index(file_content, file_metadata, model, output_kb_dir)
+        self.file_service.write_metadata_file(
+            metadata, f"{output_dir}/{file_path_prefix}.md"
+        )
 
     def index_all_files(
         self, source_dir: str, embedding_model: str, config_path: str, metadata: {}
