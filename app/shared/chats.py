@@ -279,7 +279,7 @@ class DocumentsChat(TeamAIBaseChat):
             query=f"What context could be relevant to the following query: ```{message}```",
             document_key=self.knowledge.key,
             k=5,
-            score_threshold=0.5,
+            score_threshold=None,
         )
         documents = [document for document, _ in search_results]
 
