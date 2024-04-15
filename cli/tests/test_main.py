@@ -45,9 +45,6 @@ class TestMain:
         knowledge_service = MagicMock()
         mock_knowledge_service.return_value = knowledge_service
 
-        metadata_service = MagicMock()
-        mock_metadata_service.return_value = metadata_service
-
         env_file_path = ".test_env"
         cli_config_service = MagicMock()
         cli_config_service.get_env_path.return_value = env_file_path
@@ -81,7 +78,7 @@ class TestMain:
             file_service,
             knowledge_service,
             web_page_service,
-            metadata_service,
+            mock_metadata_service,
         )
         app.index_individual_file.assert_called_once_with(
             source_path, embedding_model, config_path, output_dir, description
@@ -134,9 +131,6 @@ class TestMain:
         web_page_service = MagicMock()
         mock_web_page_service.return_value = web_page_service
 
-        metadata_service = MagicMock()
-        mock_metadata_service.return_value = metadata_service
-
         app = MagicMock()
         mock_app.return_value = app
 
@@ -154,7 +148,7 @@ class TestMain:
             file_service,
             knowledge_service,
             web_page_service,
-            metadata_service,
+            mock_metadata_service,
         )
         app.index_all_files.assert_called_once_with(
             source_dir, embedding_model, config_path, output_dir, description

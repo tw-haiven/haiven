@@ -4,7 +4,7 @@ from teamai_cli.services.metadata_service import MetadataService
 
 class TestMetadataService:
     def test_create_metadata(self):
-        source_file_path = "source_file_path.pdf"
+        source_file_path = "/very/long/path/to/source_file_path.pdf"
         description = "a description"
         provider = "provider"
         metadata = MetadataService.create_metadata(
@@ -13,7 +13,7 @@ class TestMetadataService:
         assert metadata == {
             "title": "source_file_path",
             "description": "a description",
-            "source": "source_file_path.pdf",
+            "source": "/very/long/path/to/source_file_path.pdf",
             "path": "source_file_path.kb",
             "provider": "provider",
         }
