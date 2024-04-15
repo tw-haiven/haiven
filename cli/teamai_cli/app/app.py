@@ -1,4 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
+import os
 from teamai_cli.models.embedding_model import EmbeddingModel
 from teamai_cli.services.config_service import ConfigService
 from teamai_cli.services.file_service import FileService
@@ -57,7 +58,7 @@ class App:
                 source_path
             )
 
-        file_path_prefix = _remove_file_suffix(source_path)
+        file_path_prefix = _format_file_name(source_path)
         output_kb_dir = f"{output_dir}/{file_path_prefix}.kb"
         self.knowledge_service.index(file_content, file_metadata, model, output_kb_dir)
         metadata = self.metadata_service.create_metadata(
@@ -99,7 +100,7 @@ class App:
                     file
                 )
 
-            output_kb_dir = f"{output_dir}/{_remove_file_suffix(file)}.kb"
+            output_kb_dir = f"{output_dir}/{_format_file_name(file)}.kb"
             self.knowledge_service.index(
                 file_content, first_metadata, model, output_kb_dir
             )
@@ -107,7 +108,7 @@ class App:
                 file, description, model.provider
             )
             self.file_service.write_metadata_file(
-                metadata, f"{output_dir}/{_remove_file_suffix(file)}.md"
+                metadata, f"{output_dir}/{_format_file_name(file)}.md"
             )
 
     def index_web_page(self, url: str, html_filter: str, destination_path: str):
@@ -144,5 +145,6 @@ def _get_defined_embedding_models_ids(embedding_models: List[EmbeddingModel]) ->
     return models_ids
 
 
-def _remove_file_suffix(file_path: str) -> str:
-    return file_path.split(".")[0]
+def _format_file_name(file_path: str) -> str:
+    file_prefix = file_path.split(".")[0]
+    return os.path.basename(os.path.normpath(file_prefix))

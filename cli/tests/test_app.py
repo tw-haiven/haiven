@@ -100,7 +100,7 @@ class TestApp:
 
     @patch("builtins.open", new_callable=mock_open)
     def test_index_individual_file_from_txt_file(self, mock_file):
-        source_path = "file.txt"
+        source_path = "/path/to/file.txt"
         embedding_model = "an embedding model"
         config_path = "test_config.yaml"
         output_dir = "output_dir"
@@ -154,7 +154,7 @@ class TestApp:
 
     @patch("builtins.open", new_callable=mock_open)
     def test_index_individual_pdf_file(self, mock_file):
-        source_path = "file.pdf"
+        source_path = "/path/to/file.pdf"
         embedding_model = "an embedding model"
         config_path = "test_config.yaml"
         output_dir = "output_dir"
