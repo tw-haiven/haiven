@@ -11,6 +11,7 @@ from teamai_cli.main import (
 
 
 class TestMain:
+    @patch("teamai_cli.main.MetadataService")
     @patch("teamai_cli.main.EmbeddingService")
     @patch("teamai_cli.main.CliConfigService")
     @patch("teamai_cli.main.WebPageService")
@@ -29,6 +30,7 @@ class TestMain:
         mock_web_page_service,
         mock_cli_config_service,
         mock_embedding_service,
+        mock_metadata_service,
     ):
         source_path = "source_path.pdf"
         embedding_model = "embedding_model"
@@ -42,6 +44,9 @@ class TestMain:
 
         knowledge_service = MagicMock()
         mock_knowledge_service.return_value = knowledge_service
+
+        metadata_service = MagicMock()
+        mock_metadata_service.return_value = metadata_service
 
         env_file_path = ".test_env"
         cli_config_service = MagicMock()
@@ -66,26 +71,23 @@ class TestMain:
 
         index_file(source_path, embedding_model, config_path, description, output_dir)
 
-        expected_metadata = {
-            "title": "source_path",
-            "description": description,
-            "source": source_path,
-            "path": "source_path.kb",
-            "provider": provider,
-        }
-
         mock_token_service.assert_called_once_with("cl100k_base")
         mock_knowledge_service.assert_called_once_with(
             token_service, mock_embedding_service
         )
         mock_config_service.assert_called_once_with(env_file_path=env_file_path)
         mock_app.assert_called_once_with(
-            config_service, file_service, knowledge_service, web_page_service
+            config_service,
+            file_service,
+            knowledge_service,
+            web_page_service,
+            metadata_service,
         )
         app.index_individual_file.assert_called_once_with(
-            source_path, embedding_model, config_path, output_dir, expected_metadata
+            source_path, embedding_model, config_path, output_dir, description
         )
 
+    @patch("teamai_cli.main.MetadataService")
     @patch("teamai_cli.main.EmbeddingService")
     @patch("teamai_cli.main.CliConfigService")
     @patch("teamai_cli.main.WebPageService")
@@ -104,10 +106,12 @@ class TestMain:
         mock_web_page_service,
         mock_cli_config_service,
         mock_embedding_service,
+        mock_metadata_service,
     ):
         source_dir = "source_dir"
         output_dir = "destination_dir"
         embedding_model = "embedding_model"
+        description = "description"
         config_path = "config_path"
 
         token_service = MagicMock()
@@ -130,10 +134,15 @@ class TestMain:
         web_page_service = MagicMock()
         mock_web_page_service.return_value = web_page_service
 
+        metadata_service = MagicMock()
+        mock_metadata_service.return_value = metadata_service
+
         app = MagicMock()
         mock_app.return_value = app
 
-        index_all_files(source_dir, output_dir, embedding_model, config_path)
+        index_all_files(
+            source_dir, output_dir, embedding_model, description, config_path
+        )
 
         mock_token_service.assert_called_once_with("cl100k_base")
         mock_knowledge_service.assert_called_once_with(
@@ -141,12 +150,17 @@ class TestMain:
         )
         mock_config_service.assert_called_once_with(env_file_path=env_file_path)
         mock_app.assert_called_once_with(
-            config_service, file_service, knowledge_service, web_page_service
+            config_service,
+            file_service,
+            knowledge_service,
+            web_page_service,
+            metadata_service,
         )
         app.index_all_files.assert_called_once_with(
-            source_dir, embedding_model, config_path, output_dir, {}
+            source_dir, embedding_model, config_path, output_dir, description
         )
 
+    @patch("teamai_cli.main.MetadataService")
     @patch("teamai_cli.main.EmbeddingService")
     @patch("teamai_cli.main.CliConfigService")
     @patch("teamai_cli.main.Client")
@@ -169,6 +183,7 @@ class TestMain:
         mock_client,
         mock_cli_config_service,
         mock_embedding_service,
+        mock_metadata_service,
     ):
         source_url = "source_url"
         destination_path = "destination_path"
@@ -190,6 +205,9 @@ class TestMain:
 
         file_service = MagicMock()
         mock_file_service.return_value = file_service
+
+        metadata_service = MagicMock()
+        mock_metadata_service.return_value = metadata_service
 
         client = MagicMock()
         mock_client.return_value = client

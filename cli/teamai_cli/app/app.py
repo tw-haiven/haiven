@@ -5,6 +5,7 @@ from teamai_cli.services.file_service import FileService
 from teamai_cli.models.html_filter import HtmlFilter
 from teamai_cli.services.knowledge_service import KnowledgeService
 from teamai_cli.services.web_page_service import WebPageService
+from teamai_cli.services.metadata_service import MetadataService
 from typing import List
 
 
@@ -15,11 +16,13 @@ class App:
         file_service: FileService,
         knowledge_service: KnowledgeService,
         web_page_service: WebPageService,
+        metadata_service: MetadataService,
     ):
         self.config_service = config_service
         self.file_service = file_service
         self.knowledge_service = knowledge_service
         self.web_page_service = web_page_service
+        self.metadata_service = metadata_service
 
     def index_individual_file(
         self,
@@ -27,7 +30,7 @@ class App:
         embedding_model: str,
         config_path: str,
         output_dir: str,
-        metadata: List[dict],
+        description: str,
     ):
         if not source_path:
             raise ValueError("please provide file path for source_path option")
@@ -57,6 +60,9 @@ class App:
         file_path_prefix = _remove_file_suffix(source_path)
         output_kb_dir = f"{output_dir}/{file_path_prefix}.kb"
         self.knowledge_service.index(file_content, file_metadata, model, output_kb_dir)
+        metadata = self.metadata_service.create_metadata(
+            source_path, description, model.provider
+        )
         self.file_service.write_metadata_file(
             metadata, f"{output_dir}/{file_path_prefix}.md"
         )
@@ -67,7 +73,7 @@ class App:
         embedding_model: str,
         config_path: str,
         output_dir: str,
-        metadata: {},
+        description: str,
     ):
         if not source_dir:
             raise ValueError("please provide directory path for source_dir option")
@@ -96,6 +102,9 @@ class App:
             output_kb_dir = f"{output_dir}/{_remove_file_suffix(file)}.kb"
             self.knowledge_service.index(
                 file_content, first_metadata, model, output_kb_dir
+            )
+            metadata = self.metadata_service.create_metadata(
+                file, description, model.provider
             )
             self.file_service.write_metadata_file(
                 metadata, f"{output_dir}/{_remove_file_suffix(file)}.md"

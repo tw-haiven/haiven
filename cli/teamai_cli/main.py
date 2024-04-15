@@ -11,6 +11,7 @@ from teamai_cli.services.knowledge_service import KnowledgeService
 from teamai_cli.services.page_helper import PageHelper
 from teamai_cli.services.token_service import TokenService
 from teamai_cli.services.web_page_service import WebPageService
+from teamai_cli.services.metadata_service import MetadataService
 
 CONFIG_FILE_PATH = "config.yaml"
 ENCODING = "cl100k_base"
@@ -30,22 +31,12 @@ def index_file(
 
     cli_config_service = CliConfigService()
     env_path_file = cli_config_service.get_env_path()
-    target_config_path = cli_config_service.get_config_path()
-    if not target_config_path:
-        target_config_path = config_path
 
     config_service = ConfigService(env_file_path=env_path_file)
-    embeddings = config_service.load_embeddings(target_config_path)
-    provider = ""
-    for embedding in embeddings:
-        if embedding.id == embedding_model:
-            provider = embedding.provider
-            break
 
-    metadata = _get_single_file_metadata(source_path, description, provider)
     app = create_app(config_service)
     app.index_individual_file(
-        source_path, embedding_model, config_path, output_dir, metadata
+        source_path, embedding_model, config_path, output_dir, description
     )
 
 
@@ -54,6 +45,7 @@ def index_all_files(
     source_dir: str,
     output_dir="new_knowledge_base",
     embedding_model="openai",
+    description: str = "",
     config_path: str = CONFIG_FILE_PATH,
 ):
     """Index all pdf or text files in a directory to a given destination directory."""
@@ -63,7 +55,9 @@ def index_all_files(
     config_service = ConfigService(env_file_path=env_path_file)
     app = create_app(config_service)
     print("Indexing all files")
-    app.index_all_files(source_dir, embedding_model, config_path, output_dir, {})
+    app.index_all_files(
+        source_dir, embedding_model, config_path, output_dir, description
+    )
 
 
 @cli.command()
@@ -117,25 +111,15 @@ def set_env_path(
 def create_app(config_service: ConfigService):
     token_service = TokenService(ENCODING)
     knowledge_service = KnowledgeService(token_service, EmbeddingService)
-    file_service = FileService()
-    client = Client()
-    page_helper = PageHelper()
-    web_page_service = WebPageService(client, page_helper)
-    app = App(config_service, file_service, knowledge_service, web_page_service)
+    web_page_service = WebPageService(Client(), PageHelper())
+    app = App(
+        config_service,
+        FileService(),
+        knowledge_service,
+        web_page_service,
+        MetadataService(),
+    )
     return app
-
-
-def _get_single_file_metadata(
-    source_path: str, description: str, provider: str
-) -> dict:
-    title = f"{source_path.split('.')[0]}"
-    return {
-        "title": title,
-        "description": description,
-        "source": source_path,
-        "path": f"{title}.kb",
-        "provider": provider,
-    }
 
 
 if __name__ == "__main__":
