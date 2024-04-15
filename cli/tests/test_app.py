@@ -166,6 +166,7 @@ class TestApp:
         source_dir = ""
         embedding_model = "embedding_model"
         config_path = "config_path"
+        output_dir = "output_dir"
         metadata = {}
 
         config_service = MagicMock()
@@ -176,7 +177,7 @@ class TestApp:
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
-            app.index_all_files(source_dir, embedding_model, config_path, metadata)
+            app.index_all_files(source_dir, embedding_model, config_path, output_dir, metadata)
 
         assert str(e.value) == "please provide directory path for source_dir option"
 
@@ -184,6 +185,7 @@ class TestApp:
         source_dir = "source_dir"
         embedding_model = "embedding_model"
         config_path = "config_path"
+        output_dir = "output_dir"
         metadata = {}
 
         config_service = MagicMock()
@@ -195,7 +197,7 @@ class TestApp:
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
-            app.index_all_files(source_dir, embedding_model, config_path, metadata)
+            app.index_all_files(source_dir, embedding_model, config_path, output_dir, metadata)
 
         assert (
             str(e.value)
@@ -206,6 +208,7 @@ class TestApp:
         source_dir = "source_dir"
         embedding_model = "embedding_model"
         config_path = "config_path"
+        output_dir = "output_dir"
         metadata = {}
 
         embedding = MagicMock()
@@ -221,7 +224,7 @@ class TestApp:
 
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
-        app.index_all_files(source_dir, embedding_model, config_path, metadata)
+        app.index_all_files(source_dir, embedding_model, config_path, output_dir, metadata)
 
         file_service.get_files_path_from_directory.assert_called_once_with(source_dir)
         assert knowledge_service.index.call_count == 0
@@ -231,6 +234,7 @@ class TestApp:
         source_dir = "source_dir"
         embedding_model = "embedding_model"
         config_path = "config_path"
+        output_dir = "output_dir"
         metadata = {}
 
         embedding = MagicMock()
@@ -266,7 +270,7 @@ class TestApp:
         web_page_service = MagicMock()
 
         app = App(config_service, file_service, knowledge_service, web_page_service)
-        app.index_all_files(source_dir, embedding_model, config_path, metadata)
+        app.index_all_files(source_dir, embedding_model, config_path, output_dir, metadata)
 
         file_service.get_files_path_from_directory.assert_called_once_with(source_dir)
         file_service.get_text_and_metadata_from_pdf.assert_called_once_with(second_file)
@@ -277,21 +281,21 @@ class TestApp:
                     [first_file_content],
                     [{"file": first_file_path}],
                     embedding,
-                    "text_file_path.kb",
+                    "output_dir/text_file_path.kb",
                 ),
                 call(
                     second_file_content,
                     second_file_metadata,
                     embedding,
-                    "pdf_file_path.kb",
+                    "output_dir/pdf_file_path.kb",
                 ),
             ]
         )
 
         file_service.write_metadata_file.assert_has_calls(
             [
-                call(metadata, "text_file_path.md"),
-                call(metadata, "pdf_file_path.md"),
+                call(metadata, "output_dir/text_file_path.md"),
+                call(metadata, "output_dir/pdf_file_path.md"),
             ]
         )
 

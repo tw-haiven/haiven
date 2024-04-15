@@ -62,7 +62,7 @@ class App:
         )
 
     def index_all_files(
-        self, source_dir: str, embedding_model: str, config_path: str, metadata: {}
+        self, source_dir: str, embedding_model: str, config_path: str, output_dir: str, metadata: {}
     ):
         if not source_dir:
             raise ValueError("please provide directory path for source_dir option")
@@ -88,12 +88,12 @@ class App:
                     file
                 )
 
-            output_dir = f"{_remove_file_suffix(file)}.kb"
+            output_kb_dir = f"{output_dir}/{_remove_file_suffix(file)}.kb"
             self.knowledge_service.index(
-                file_content, first_metadata, model, output_dir
+                file_content, first_metadata, model, output_kb_dir
             )
             self.file_service.write_metadata_file(
-                metadata, f"{_remove_file_suffix(file)}.md"
+                metadata, f"{output_dir}/{_remove_file_suffix(file)}.md"
             )
 
     def index_web_page(self, url: str, html_filter: str, destination_path: str):
