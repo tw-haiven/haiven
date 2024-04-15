@@ -1,0 +1,53 @@
+name: 'Image Cleaner Workflow'
+
+env:
+  IMAGE_NAME_DEMO: "team-ai-demo"
+  REGISTRY_URL: "us-central1-docker.pkg.dev/team-ai-7a96/team-ai"
+  WIF_PROVIDER: "projects/466643530990/locations/global/workloadIdentityPools/github-wif-pool-2/providers/githubwif"
+  SERVICE_ACCOUNT: "gactions-wif@team-ai-7a96.iam.gserviceaccount.com"
+
+on:
+  schedule:
+    - cron: '0 0 */1 * *' # runs daily
+  workflow_dispatch: # allows for manual invocation
+
+jobs:
+  artifact-registry-cleaner:
+
+    permissions:
+        id-token: 'write'
+
+    runs-on: 'ubuntu-latest'
+    steps:
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.SERVICE_ACCOUNT }}
+      
+      - name: Login to GAR
+        uses: docker/login-action@v2
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+      
+      - name: Clean demo image main repo
+        uses: 'docker://us-docker.pkg.dev/gcr-cleaner/gcr-cleaner/gcr-cleaner-cli'
+        with:
+          # delete images older than 30 days and keep a minimum of 20 images
+          args: >-
+            -repo=${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_DEMO }}
+            -grace=720h 
+            -keep=20
+      - name: Clean demo image cache repo
+        uses: 'docker://us-docker.pkg.dev/gcr-cleaner/gcr-cleaner/gcr-cleaner-cli'
+        with:
+          # delete kaniko cache older than 5 days and keep a minimum of 10 images
+          args: >-
+            -repo=${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_DEMO }}/cache
+            -grace=120h 
+            -tag-filter-any="^[a-zA-Z0-9]{64}$"
+            -keep=10
