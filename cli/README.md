@@ -1,4 +1,11 @@
-t statu# `teamai-cli`
+# `teamai-cli`
+
+**Installation**:
+
+```console
+$ just cli-install
+$ teamai-cli init --config-path <CONFIG_PATH> --env-path <ENV_PATH>
+```
 
 **Usage**:
 
