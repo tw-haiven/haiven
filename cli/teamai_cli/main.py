@@ -30,6 +30,9 @@ def index_file(
     """Index single pdf or text file to a given destination directory."""
 
     cli_config_service = CliConfigService()
+    if cli_config_service.get_config_path() and config_path == CONFIG_FILE_PATH:
+        config_path = cli_config_service.get_config_path()
+
     env_path_file = cli_config_service.get_env_path()
 
     config_service = ConfigService(env_file_path=env_path_file)
@@ -50,6 +53,9 @@ def index_all_files(
 ):
     """Index all pdf or text files in a directory to a given destination directory."""
     cli_config_service = CliConfigService()
+    if cli_config_service.get_config_path() and config_path == CONFIG_FILE_PATH:
+        config_path = cli_config_service.get_config_path()
+
     env_path_file = cli_config_service.get_env_path()
 
     config_service = ConfigService(env_file_path=env_path_file)
@@ -117,7 +123,7 @@ def create_app(config_service: ConfigService):
         FileService(),
         knowledge_service,
         web_page_service,
-        MetadataService(),
+        MetadataService,
     )
     return app
 

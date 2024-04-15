@@ -1,7 +1,8 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import os
+from pathlib import Path
 
-DEFAULT_CLI_CONFIG_DIR = "~/.teamai"
+DEFAULT_CLI_CONFIG_DIR = f"{Path.home()}/.teamai"
 CONFIG_PATH_KEY = "config_path"
 ENV_PATH_KEY = "env_path"
 
