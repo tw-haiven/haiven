@@ -62,7 +62,12 @@ class App:
         )
 
     def index_all_files(
-        self, source_dir: str, embedding_model: str, config_path: str, output_dir: str, metadata: {}
+        self,
+        source_dir: str,
+        embedding_model: str,
+        config_path: str,
+        output_dir: str,
+        metadata: {},
     ):
         if not source_dir:
             raise ValueError("please provide directory path for source_dir option")

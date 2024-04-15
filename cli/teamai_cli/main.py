@@ -52,7 +52,7 @@ def index_file(
 @cli.command()
 def index_all_files(
     source_dir: str,
-    destination_dir="new_knowledge_base.kb",
+    output_dir="new_knowledge_base",
     embedding_model="openai",
     config_path: str = CONFIG_FILE_PATH,
 ):
@@ -63,7 +63,7 @@ def index_all_files(
     config_service = ConfigService(env_file_path=env_path_file)
     app = create_app(config_service)
     print("Indexing all files")
-    app.index_all_files(source_dir, embedding_model, config_path)
+    app.index_all_files(source_dir, embedding_model, config_path, output_dir, {})
 
 
 @cli.command()

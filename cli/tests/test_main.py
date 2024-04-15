@@ -106,7 +106,7 @@ class TestMain:
         mock_embedding_service,
     ):
         source_dir = "source_dir"
-        destination_dir = "destination_dir"
+        output_dir = "destination_dir"
         embedding_model = "embedding_model"
         config_path = "config_path"
 
@@ -133,7 +133,7 @@ class TestMain:
         app = MagicMock()
         mock_app.return_value = app
 
-        index_all_files(source_dir, destination_dir, embedding_model, config_path)
+        index_all_files(source_dir, output_dir, embedding_model, config_path)
 
         mock_token_service.assert_called_once_with("cl100k_base")
         mock_knowledge_service.assert_called_once_with(
@@ -144,7 +144,7 @@ class TestMain:
             config_service, file_service, knowledge_service, web_page_service
         )
         app.index_all_files.assert_called_once_with(
-            source_dir, embedding_model, config_path
+            source_dir, embedding_model, config_path, output_dir, {}
         )
 
     @patch("teamai_cli.main.EmbeddingService")

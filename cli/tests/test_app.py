@@ -177,7 +177,9 @@ class TestApp:
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
-            app.index_all_files(source_dir, embedding_model, config_path, output_dir, metadata)
+            app.index_all_files(
+                source_dir, embedding_model, config_path, output_dir, metadata
+            )
 
         assert str(e.value) == "please provide directory path for source_dir option"
 
@@ -197,7 +199,9 @@ class TestApp:
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
         with pytest.raises(ValueError) as e:
-            app.index_all_files(source_dir, embedding_model, config_path, output_dir, metadata)
+            app.index_all_files(
+                source_dir, embedding_model, config_path, output_dir, metadata
+            )
 
         assert (
             str(e.value)
@@ -224,7 +228,9 @@ class TestApp:
 
         app = App(config_service, file_service, knowledge_service, web_page_service)
 
-        app.index_all_files(source_dir, embedding_model, config_path, output_dir, metadata)
+        app.index_all_files(
+            source_dir, embedding_model, config_path, output_dir, metadata
+        )
 
         file_service.get_files_path_from_directory.assert_called_once_with(source_dir)
         assert knowledge_service.index.call_count == 0
@@ -270,7 +276,9 @@ class TestApp:
         web_page_service = MagicMock()
 
         app = App(config_service, file_service, knowledge_service, web_page_service)
-        app.index_all_files(source_dir, embedding_model, config_path, output_dir, metadata)
+        app.index_all_files(
+            source_dir, embedding_model, config_path, output_dir, metadata
+        )
 
         file_service.get_files_path_from_directory.assert_called_once_with(source_dir)
         file_service.get_text_and_metadata_from_pdf.assert_called_once_with(second_file)
