@@ -132,16 +132,17 @@ class StreamingChat(TeamAIBaseChat):
         summary = self.chat_model(copy_of_history)
         return summary.content
 
-    def next_advice_from_knowledge(self, chat_history, knowledge_document: str):
+    def next_advice_from_knowledge(self, chat_history, knowledge_document_key: str):
         # 1 summarise the conversation so far
         summary = self.summarise_conversation()
 
-        if knowledge_document == "all":
+        if knowledge_document_key == "all":
             context_documents = EmbeddingsService.similarity_search_with_scores(summary)
         else:
             context_documents = (
                 EmbeddingsService.similarity_search_on_single_document_with_scores(
-                    summary, knowledge_document
+                    query=summary,
+                    document_key=knowledge_document_key
                 )
             )
 
@@ -178,7 +179,7 @@ class StreamingChat(TeamAIBaseChat):
         """
 
         chat_history += [
-            [f"Give me advice based on the content of '{knowledge_document}'", ""]
+            [f"Give me advice based on the content of '{knowledge_document_key}'", ""]
         ]
         chat_history[-1][1] += sources_markdown
         yield chat_history
@@ -277,9 +278,7 @@ class DocumentsChat(TeamAIBaseChat):
 
         search_results = EmbeddingsService.similarity_search_on_single_document_with_scores(
             query=f"What context could be relevant to the following query: ```{message}```",
-            document_key=self.knowledge.key,
-            k=5,
-            score_threshold=None,
+            document_key=self.knowledge.key
         )
         documents = [document for document, _ in search_results]
 
