@@ -7,13 +7,14 @@ class TestMetadataService:
         source_file_path = "/very/long/path/to/source_file_path.pdf"
         description = "a description"
         provider = "provider"
+        output_dir = "output_dir"
         metadata = MetadataService.create_metadata(
-            source_file_path, description, provider
+            source_file_path, description, provider, output_dir
         )
         assert metadata == {
             "title": "source_file_path",
             "description": "a description",
             "source": "/very/long/path/to/source_file_path.pdf",
-            "path": "source_file_path.kb",
+            "path": "output_dir/source_file_path.kb",
             "provider": "provider",
         }

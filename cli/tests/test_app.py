@@ -146,7 +146,7 @@ class TestApp:
             [file_content], [{"file": source_path}], embedding, "output_dir/file.kb"
         )
         metadata_service.create_metadata.assert_called_once_with(
-            source_path, description, embedding.provider
+            source_path, description, embedding.provider, output_dir
         )
         file_service.write_metadata_file.assert_called_once_with(
             metadata, "output_dir/file.md"
@@ -203,7 +203,7 @@ class TestApp:
             file_content, metadatas, embedding, "output_dir/file.kb"
         )
         metadata_service.create_metadata.assert_called_once_with(
-            source_path, description, embedding.provider
+            source_path, description, embedding.provider, output_dir
         )
         file_service.write_metadata_file.assert_called_once_with(
             metadata, "output_dir/file.md"
@@ -393,8 +393,8 @@ class TestApp:
 
         metadata_service.create_metadata.assert_has_calls(
             [
-                call(first_file_path, description, provider),
-                call(second_file_path, description, provider),
+                call(first_file_path, description, provider, output_dir),
+                call(second_file_path, description, provider, output_dir),
             ]
         )
 

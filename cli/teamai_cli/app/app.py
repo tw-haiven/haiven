@@ -62,7 +62,7 @@ class App:
         output_kb_dir = f"{output_dir}/{file_path_prefix}.kb"
         self.knowledge_service.index(file_content, file_metadata, model, output_kb_dir)
         metadata = self.metadata_service.create_metadata(
-            source_path, description, model.provider
+            source_path, description, model.provider, output_dir
         )
         self.file_service.write_metadata_file(
             metadata, f"{output_dir}/{file_path_prefix}.md"
@@ -105,7 +105,7 @@ class App:
                 file_content, first_metadata, model, output_kb_dir
             )
             metadata = self.metadata_service.create_metadata(
-                file, description, model.provider
+                file, description, model.provider, output_dir
             )
             self.file_service.write_metadata_file(
                 metadata, f"{output_dir}/{_format_file_name(file)}.md"
