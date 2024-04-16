@@ -47,7 +47,8 @@ def _load_yaml(path: str, env_file_path: str) -> dict:
     Returns:
         dict: The loaded YAML data.
     """
-    if not os.path.exists(path):
+    config_path = os.path.expanduser(path)
+    if not os.path.exists(config_path):
         raise FileNotFoundError(f"Path {path} is not valid")
 
     data = None
