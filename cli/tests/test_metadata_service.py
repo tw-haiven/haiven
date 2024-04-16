@@ -12,9 +12,10 @@ class TestMetadataService:
             source_file_path, description, provider, output_dir
         )
         assert metadata == {
-            "title": "source_file_path",
+            "key": "source_file_path",
+            "title": "source file path",
             "description": "a description",
-            "source": "/very/long/path/to/source_file_path.pdf",
-            "path": "output_dir/source_file_path.kb",
+            "source": "source_file_path.pdf",
+            "path": "source_file_path.kb",
             "provider": "provider",
         }
