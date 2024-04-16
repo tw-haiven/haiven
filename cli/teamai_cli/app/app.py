@@ -89,6 +89,7 @@ class App:
 
         files = self.file_service.get_files_path_from_directory(source_dir)
         for file in files:
+            print(f"creating knowledge for {file} in {output_dir}")
             file_content = None
             first_metadata = None
             if file.endswith(".txt"):
@@ -146,5 +147,7 @@ def _get_defined_embedding_models_ids(embedding_models: List[EmbeddingModel]) ->
 
 
 def _format_file_name(file_path: str) -> str:
-    file_prefix = file_path.split(".")[0]
-    return os.path.basename(os.path.normpath(file_prefix))
+    split_file = file_path.split(".")
+    file_prefix = split_file[-2]
+    formatted_file = os.path.basename(os.path.normpath(file_prefix))
+    return formatted_file
