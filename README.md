@@ -1,4 +1,4 @@
-![Build status](https://github.com/team-aide/team-ai/actions/workflows/main.yml/badge.svg)
+![Build status](https://github.com/tw-team-ai/team-ai/actions/workflows/main.yml/badge.svg)
 
 # Team AI
 
@@ -23,7 +23,7 @@ Install [Ollama](https://ollama.com/).
 ```
 ollama pull llama2
 ollama pull llava:7b
-git clone git@github.com:team-aide/team-ai-community-knowledge-pack.git
+git clone git@github.com:tw-team-ai/team-ai-community-knowledge-pack.git
 docker run \
         -v ./tmp/team-ai-community-knowledge-pack:/app/teams \
         -e AUTH_SWITCHED_OFF=true \
@@ -34,7 +34,7 @@ docker run \
         -e ENABLED_VISION_MODEL=llava:7b \
         -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
         -p 8080:8080 \
-        ghcr.io/team-aide/team-ai:main
+        ghcr.io/tw-team-ai/team-ai:main
 ```
 
 ## Why?
@@ -96,7 +96,7 @@ Example for running with Ollama:
 
 ```
 ollama pull llama2
-docker pull ghcr.io/team-aide/team-ai:main
+docker pull ghcr.io/tw-team-ai/team-ai:main
 docker run \
         -v ../local/path/to/a/knowledge-pack/team-ai-community-knowledge-pack:/app/teams \
         -e AUTH_SWITCHED_OFF=true \
@@ -107,7 +107,7 @@ docker run \
         -e ENABLED_VISION_MODEL=ollama \
         -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
         -p 8080:8080 \
-        ghcr.io/team-aide/team-ai:main
+        ghcr.io/tw-team-ai/team-ai:main
 ```
 
 If you want to use Azure, GCP or AWS, you need to set the corresponding environment variables as documented in the `.env.***.template` files.
@@ -134,7 +134,7 @@ If you want to integrate your own OAuth provider, check out the OAuth-related en
 
 #### Build an image with your knowledge pack
 
-Look at the [Community Knowledge Pack repository](https://github.com/team-aide/team-ai-community-knowledge-pack) for an example of a `Dockerfile` that helps you bake your own knowledge pack into a Team AI image that you can then deploy to your own environment. When you do the deployment, remember to set the environment variables and secrets described in the `.env` template files in that runtime.
+Look at the [Community Knowledge Pack repository](https://github.com/tw-team-ai/team-ai-community-knowledge-pack) for an example of a `Dockerfile` that helps you bake your own knowledge pack into a Team AI image that you can then deploy to your own environment. When you do the deployment, remember to set the environment variables and secrets described in the `.env` template files in that runtime.
 
 ### Configure more models
 #### Setup models

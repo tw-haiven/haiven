@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "team-aide"
+name = "team-ai"
 version = "0.1.0"
 description = ""
 authors = ["Team-aide incubation <team-aide@thoughtworks.com>"]
