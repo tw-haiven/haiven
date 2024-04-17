@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from shared.services.embeddings_service import EmbeddingsService
 from shared.services.config_service import ConfigService
 from shared.services.models_service import ModelsService
-from shared.knowledge import DocumentationBase, KnowledgeBaseMarkdown
+from shared.knowledge import KnowledgeBaseMarkdown
 from shared.llm_config import LLMConfig
 from shared.prompts import PromptList
 
@@ -206,14 +206,6 @@ class UI:
             section_title = category_metadata["title"]
             markdown = f"# {section_title}\n## Available prompts\n{prompt_list_markdown}\n{addendum_markdown}\n{videos_markdown}"
             gr.Markdown(markdown, line_breaks=True)
-
-    def create_tabs_from_documentation(
-        self, category_names: str, documentation_base: DocumentationBase
-    ):
-        for doc in documentation_base.get_documentation_filtered(category_names):
-            with gr.Tab(doc.metadata.get("title")):
-                gr.Markdown(doc.content, elem_classes="documentation-tab")
-
 
 def _get_valid_tone_values() -> List[tuple[str, float]]:
     return [

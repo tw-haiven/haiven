@@ -108,9 +108,6 @@ class UIFactory:
                         category_filter,
                     )
                     enable_db_exploration(category_filter)
-                    self.ui.create_tabs_from_documentation(
-                        category_filter, self.content_manager.documentation_base
-                    )
 
             blocks.load(
                 self.event_handler.on_ui_load_with_tab_deeplink,
@@ -183,9 +180,6 @@ class UIFactory:
                         category_filter,
                     )
                     enable_db_exploration(category_filter)
-                    self.ui.create_tabs_from_documentation(
-                        category_filter, self.content_manager.documentation_base
-                    )
 
             blocks.load(
                 self.event_handler.on_ui_load_with_tab_deeplink,
@@ -256,9 +250,6 @@ class UIFactory:
                         llm_config,
                         user_identifier_state,
                         category_filter,
-                    )
-                    self.ui.create_tabs_from_documentation(
-                        category_filter, self.content_manager.documentation_base
                     )
 
             blocks.load(

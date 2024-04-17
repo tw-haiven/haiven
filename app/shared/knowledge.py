@@ -5,13 +5,12 @@ import frontmatter
 
 
 class KnowledgeBaseMarkdown:
-    def __init__(self, team_name, root_dir="teams"):
-        directory = root_dir + "/" + team_name + "/knowledge"
+    def __init__(self, path: str):
         knowledge_files = sorted(
-            [f for f in os.listdir(directory) if f.endswith(".md") and f != "README.md"]
+            [f for f in os.listdir(path) if f.endswith(".md") and f != "README.md"]
         )
         file_contents = [
-            frontmatter.load(os.path.join(directory, filename))
+            frontmatter.load(os.path.join(path, filename))
             for filename in knowledge_files
         ]
 
@@ -35,31 +34,3 @@ class KnowledgeBaseMarkdown:
 
     def get_knowledge_content_dict(self):
         return self._knowledge_content_dict
-
-
-class DocumentationBase:
-    def __init__(self, root_dir="teams"):
-        directory = root_dir + "/documentation"
-        doc_files = sorted(
-            [f for f in os.listdir(directory) if f.endswith(".md") and f != "README.md"]
-        )
-        self._documentation = [
-            frontmatter.load(os.path.join(directory, filename))
-            for filename in doc_files
-        ]
-
-    def get_documentation_filtered(self, filter_categories):
-        if filter_categories is not None:
-            return list(
-                filter(
-                    lambda prompt: (
-                        not prompt.metadata["categories"]
-                        or any(
-                            category in prompt.metadata["categories"]
-                            for category in filter_categories
-                        )
-                    ),
-                    self._documentation,
-                )
-            )
-        return self._documentation
