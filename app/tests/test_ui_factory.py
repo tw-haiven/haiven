@@ -367,10 +367,15 @@ class TestUIFactory(unittest.TestCase):
 
         assert returned_blocks == blocks
 
+    @patch("shared.ui_factory.enable_chat")
     @patch("shared.ui_factory.gr.Blocks")
-    def test_create_ui_knowledge(self, mock_blocks):
+    def test_create_ui_knowledge(self, mock_blocks, mock_enable_chat):
         # Setup
-        ui = Mock()
+        model_select = MagicMock()
+        tone_select = MagicMock()
+        llm_config = MagicMock()
+        ui = MagicMock()
+        ui.create_llm_settings_ui.return_value = model_select, tone_select, llm_config
         prompts_factory = MagicMock()
         navigation_manager = MagicMock()
         event_handler = MagicMock()
