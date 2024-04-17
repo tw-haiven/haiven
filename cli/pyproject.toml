@@ -5,8 +5,8 @@ description = ""
 authors = ["TeamAI <teamai@thoughtworks.com>"]
 readme = "README.md"
 
-#[tool.poetry.scripts]
-#teamai-cli = "teamai_cli.main:cli"
+[tool.poetry.scripts]
+teamai-cli = "teamai_cli.main:cli"
 
 [tool.poetry.dependencies]
 python = "^3.11"
