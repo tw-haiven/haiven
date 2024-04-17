@@ -279,40 +279,7 @@ class UIFactory:
             )
             self.ui.ui_header(navigation=navigation)
 
-            with gr.Row():
-                category_filter = ["prompting"]
-                with gr.Tabs():
-                    user_identifier_state = gr.State()
-                    with gr.Tab("Knowledge"):
-                        self.ui.ui_show_knowledge(
-                            self.content_manager.knowledge_base_markdown
-                        )
-                    # TODO: Change tab title to "Prompt development"? And move the LLM choice in there??!
-                    with gr.Tab("Prompt Development"):
-                        with gr.Group(elem_classes="teamai-group"):
-                            with gr.Row():
-                                model_select, tone_select, llm_config = (
-                                    self.ui.create_llm_settings_ui()
-                                )
-                                model_select.change(
-                                    fn=llm_config.change_model, inputs=model_select
-                                )
-                                tone_select.change(
-                                    fn=llm_config.change_temperature, inputs=tone_select
-                                )
-                        gr.Markdown(
-                            "Experimental feature to support prompt development - still in development",
-                            elem_classes="disclaimer",
-                        )
-                        enable_chat(
-                            self.content_manager.knowledge_base_markdown,
-                            self.chat_session_memory,
-                            self.prompts_factory,
-                            llm_config,
-                            user_identifier_state,
-                            category_filter,
-                            as_tab=False,
-                        )
+            self.ui.ui_show_knowledge(self.content_manager.knowledge_base_markdown)
 
         return blocks
 

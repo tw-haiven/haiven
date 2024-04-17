@@ -17,7 +17,6 @@ def enable_chat(
     llm_config: LLMConfig,
     user_identifier_state: gr.State,
     prompt_categories=None,
-    as_tab=True,
 ):
     load_dotenv()
     tab_id = "chat"
@@ -45,10 +44,7 @@ def enable_chat(
     def on_change_user_input(prompt_choice: str, user_input: str):
         return {ui_prompt: prompt_list.render_prompt(prompt_choice, user_input)}
 
-    if as_tab:
-        main_tab = gr.Tab(interaction_pattern_name, id=tab_id)
-    else:
-        main_tab = gr.Row()
+    main_tab = gr.Tab(interaction_pattern_name, id=tab_id)
 
     with main_tab:
         with gr.Row():
@@ -231,11 +227,10 @@ def enable_chat(
 
         return udated_dd
 
-    if as_tab:
-        main_tab.select(
-            on_tab_selected,
-            inputs=None,
-            outputs=ui_knowledge_choice,
-        )
+    main_tab.select(
+        on_tab_selected,
+        inputs=None,
+        outputs=ui_knowledge_choice,
+    )
 
     return ui_prompt_dropdown
