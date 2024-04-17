@@ -49,11 +49,6 @@ def enable_knowledge_chat(
                                 knowledge_documents,
                                 label="Choose an existing knowledge base",
                             )
-                            ui_upload_button = gr.UploadButton(
-                                "...or upload a PDF file",
-                                file_types=["pdf"],
-                                variant="primary",
-                            )
                         with gr.Row():
                             ui_loaded_file_label = gr.Markdown("Loaded: None")
 
@@ -154,16 +149,6 @@ def enable_knowledge_chat(
             ],
         )
 
-        ui_upload_button.upload(
-            load_pdf,
-            [ui_upload_button],
-            outputs=[
-                ui_loaded_file_label,
-                ui_question,
-                ui_chatbot,
-                ui_knowledge_choice,
-            ],
-        )
         ui_question.submit(
             ask_question,
             [ui_question, state_chat_session_key],
