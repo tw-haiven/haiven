@@ -17,7 +17,7 @@ def render_prompt(key, user_input):
 
     prompt_list = PromptList(
         "chat",
-        KnowledgeBaseMarkdown("team_demo", root_dir=teams_dir),
+        KnowledgeBaseMarkdown(path=teams_dir + "/team_demo/knowledge"),
         root_dir=teams_dir,
     )
     return prompt_list.render_prompt(key, user_input)

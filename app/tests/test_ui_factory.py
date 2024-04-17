@@ -120,9 +120,6 @@ class TestUIFactory(unittest.TestCase):
             category_filter,
         )
         mock_enable_db_exploration.assert_called_with(category_filter)
-        ui.create_tabs_from_documentation.assert_called_with(
-            category_filter, documentation_base
-        )
         blocks.load.assert_called_with(
             event_handler.on_ui_load_with_tab_deeplink, None, [all_tabs, state]
         )
@@ -245,9 +242,6 @@ class TestUIFactory(unittest.TestCase):
             category_filter,
         )
         mock_enable_db_exploration.assert_called_with(category_filter)
-        ui.create_tabs_from_documentation.assert_called_with(
-            category_filter, documentation_base
-        )
         blocks.load.assert_called_with(
             event_handler.on_ui_load_with_tab_deeplink, None, [all_tabs, state]
         )
@@ -365,9 +359,6 @@ class TestUIFactory(unittest.TestCase):
             llm_config,
             state,
             category_filter,
-        )
-        ui.create_tabs_from_documentation.assert_called_with(
-            category_filter, documentation_base
         )
         blocks.load.assert_called_with(
             event_handler.on_ui_load_with_tab_deeplink, None, [all_tabs, state]

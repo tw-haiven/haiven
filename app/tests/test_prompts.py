@@ -40,7 +40,7 @@ def create_knowledge_base(tmpdir):
             "---\nkey: frontend_coding_patterns\n---\n\nfrontend coding patterns knowledge"
         )
 
-    return KnowledgeBaseMarkdown("team_test", root_dir=tmpdir)
+    return KnowledgeBaseMarkdown(path=tmpdir + "/team_test/knowledge")
 
 
 def test_init_should_load_files():

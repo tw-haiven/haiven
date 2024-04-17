@@ -15,7 +15,7 @@ def test_rendering_of_chat_prompts():
 
     prompt_list = PromptList(
         "chat",
-        KnowledgeBaseMarkdown("team_demo", root_dir=teams_dir),
+        KnowledgeBaseMarkdown(path=teams_dir + "/team_demo/knowledge"),
         root_dir=teams_dir,
     )
 
@@ -35,7 +35,7 @@ def test_rendering_of_brainstorming_prompts():
 
     prompt_list = PromptList(
         "brainstorming",
-        KnowledgeBaseMarkdown("team_demo", root_dir=teams_dir),
+        KnowledgeBaseMarkdown(path=teams_dir + "/team_demo/knowledge"),
         root_dir=teams_dir,
     )
 
@@ -55,7 +55,7 @@ def test_rendering_of_diagram_prompts():
 
     prompt_list = PromptList(
         "diagrams",
-        KnowledgeBaseMarkdown("team_demo", root_dir=teams_dir),
+        KnowledgeBaseMarkdown(path=teams_dir + "/team_demo/knowledge"),
         ["image_description"],
         root_dir=teams_dir,
     )
