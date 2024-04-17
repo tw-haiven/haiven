@@ -14,7 +14,9 @@ def test_markdown_knowledge():
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     teams_dir = os.path.join(root_dir, "teams")
 
-    knowledge_base_markdown = KnowledgeBaseMarkdown(path=teams_dir + "/team_demo/knowledge")
+    knowledge_base_markdown = KnowledgeBaseMarkdown(
+        path=teams_dir + "/team_demo/knowledge"
+    )
 
     knowledge_dict = knowledge_base_markdown.get_knowledge_content_dict()
 

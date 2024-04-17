@@ -25,14 +25,12 @@ def create_server():
 
     knowledge_pack = ConfigService.load_knowledge_pack(DEFAULT_CONFIG_PATH)
     embedding_model = ConfigService.load_embedding_model(DEFAULT_CONFIG_PATH)
-    knowledge_base_path = knowledge_pack.path + "/" + knowledge_pack.domain.name + "/knowledge"
+    knowledge_base_path = (
+        knowledge_pack.path + "/" + knowledge_pack.domain.name + "/knowledge"
+    )
     EmbeddingsService.initialize(Embeddings(embedding_model))
-    EmbeddingsService.load_knowledge_pack(
-        knowledge_base_path + "/pdfs"
-    )
-    EmbeddingsService.load_knowledge_pack(
-        knowledge_base_path + "/documents"
-    )
+    EmbeddingsService.load_knowledge_pack(knowledge_base_path + "/pdfs")
+    EmbeddingsService.load_knowledge_pack(knowledge_base_path + "/documents")
     content_manager = ContentManager(knowledge_base_path)
     ui_factory = UIFactory(
         ui=UI(),

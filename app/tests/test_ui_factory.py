@@ -378,7 +378,9 @@ class TestUIFactory(unittest.TestCase):
         change_model = MagicMock()
         type(llm_config).change_model = PropertyMock(return_value=change_model)
         change_temperature = MagicMock()
-        type(llm_config).change_temperature = PropertyMock(return_value=change_temperature)
+        type(llm_config).change_temperature = PropertyMock(
+            return_value=change_temperature
+        )
         ui = MagicMock()
         ui.create_llm_settings_ui.return_value = model_select, tone_select, llm_config
         prompts_factory = MagicMock()

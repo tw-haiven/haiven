@@ -207,6 +207,7 @@ class UI:
             markdown = f"# {section_title}\n## Available prompts\n{prompt_list_markdown}\n{addendum_markdown}\n{videos_markdown}"
             gr.Markdown(markdown, line_breaks=True)
 
+
 def _get_valid_tone_values() -> List[tuple[str, float]]:
     return [
         ("More creative (0.8)", 0.8),
