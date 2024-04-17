@@ -35,9 +35,13 @@ unstructured = "^0.13.2"
 uvicorn = "^0.29.0"
 langchain-openai = "^0.1.2"
 python-dotenv = "^1.0.1"
+pytest-cov = "^5.0.0"
 
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.run]
+omit = ["tests/*"]

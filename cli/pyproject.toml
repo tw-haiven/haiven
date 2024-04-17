@@ -5,8 +5,8 @@ description = ""
 authors = ["TeamAI <teamai@thoughtworks.com>"]
 readme = "README.md"
 
-[tool.poetry.scripts]
-teamai-cli = "teamai_cli.main:cli"
+#[tool.poetry.scripts]
+#teamai-cli = "teamai_cli.main:cli"
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -26,7 +26,11 @@ typer-cli = "^0.12.2"
 typer-slim = "^0.12.2"
 typing-extensions = "^4.11.0"
 typing-inspect = "^0.9.0"
+pytest-cov = "^5.0.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.run]
+omit = ["tests/*"]

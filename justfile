@@ -13,6 +13,11 @@ test:
     cd app && \
     poetry run pytest -m 'not integration'
 
+coverage:
+    cd app && \
+    poetry run pytest --cov=. --cov-report=term  -m 'not integration'
+
+
 # builds local docker image
 build-docker-image:
     cd app && \
@@ -52,6 +57,10 @@ cli-run +command='':
 cli-test:
     cd cli && \
     poetry run pytest -vv
+
+cli-coverage:
+    cd cli && \
+    poetry run pytest --cov=. --cov-report=term  -m 'not integration'
 
 cli-update-docs:
     cd cli && \
