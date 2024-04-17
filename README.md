@@ -86,7 +86,7 @@ There are 4 options:
 ### 2. Get a "knowledge pack"
 
 - A "knowledge pack"
-  - You can clone the [Community Knowledge Pack](https://github.com/tw-aide/team-ai-community-knowledge-pack) to get started
+  - You can clone the [Community Knowledge Pack](https://github.com/tw-team-ai/team-ai-community-knowledge-pack) to get started
   - You can then adapt it to your own needs, e.g. add more knowledge sources with our [CLI tool](cli/README.md), and edit and adjust the prompts
 
 ### 3. Run locally
