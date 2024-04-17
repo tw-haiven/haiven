@@ -1,6 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import unittest
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch, Mock, MagicMock, PropertyMock
 from shared.ui_factory import UIFactory
 
 
@@ -368,12 +368,17 @@ class TestUIFactory(unittest.TestCase):
         assert returned_blocks == blocks
 
     @patch("shared.ui_factory.enable_chat")
+    @patch("shared.ui_factory.gr.State")
     @patch("shared.ui_factory.gr.Blocks")
-    def test_create_ui_knowledge(self, mock_blocks, mock_enable_chat):
+    def test_create_ui_knowledge(self, mock_blocks, mock_state, mock_enable_chat):
         # Setup
         model_select = MagicMock()
         tone_select = MagicMock()
         llm_config = MagicMock()
+        change_model = MagicMock()
+        type(llm_config).change_model = PropertyMock(return_value=change_model)
+        change_temperature = MagicMock()
+        type(llm_config).change_temperature = PropertyMock(return_value=change_temperature)
         ui = MagicMock()
         ui.create_llm_settings_ui.return_value = model_select, tone_select, llm_config
         prompts_factory = MagicMock()
@@ -410,6 +415,8 @@ class TestUIFactory(unittest.TestCase):
             MagicMock(),
             MagicMock(),
         )
+        user_identifier_state = MagicMock()
+        mock_state.return_value = user_identifier_state
 
         # Action
         returned_blocks = ui_factory.create_ui("knowledge")
@@ -420,6 +427,17 @@ class TestUIFactory(unittest.TestCase):
         ui_factory.navigation_manager.get_knowledge_navigation.assert_called_once()
         ui_factory.ui.ui_header.assert_called_once()
         ui_factory.ui.ui_show_knowledge.assert_called_with(knowledge_base_markdown)
+        ui.create_llm_settings_ui.assert_called_once()
+        model_select.change.assert_called_with(fn=change_model, inputs=model_select)
+        tone_select.change.assert_called_with(fn=change_temperature, inputs=tone_select)
+        mock_enable_chat.assert_called_with(
+            knowledge_base_markdown,
+            chat_session_memory,
+            prompts_factory,
+            llm_config,
+            user_identifier_state,
+            ["prompting"],
+        )
 
         assert returned_blocks == blocks
 
