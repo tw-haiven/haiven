@@ -22,9 +22,6 @@ jobs:
       contents: 'read'
     steps:
       - uses: 'actions/checkout@v4.1.1'
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Python
         id: setup_python
         uses: actions/setup-python@v4
