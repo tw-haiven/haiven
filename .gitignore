@@ -40,7 +40,6 @@ ENV/
 *.pickle
 
 # Ignore Poetry-specific files
-poetry.lock
 .venv/
 
 # Ignore operating system specific files

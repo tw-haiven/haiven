@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "devscripts"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+packages = [
+    { include = "devscripts" },
+]
+
+[tool.poetry.scripts]
+init = "devscripts.main:app_init"
+test = "devscripts.main:app_test"
+app = "devscripts.main:app_run"
+coverage = "devscripts.main:app_coverage"
+build-docker-image = "devscripts.main:build_docker_image"
+run-docker-image = "devscripts.main:run_docker_image"
+get-secret = "devscripts.main:get_secret"
+cli-init = "devscripts.main:cli_init"
+cli-test = "devscripts.main:cli_test"
+cli = "devscripts.main:cli_run"
+cli-coverage = "devscripts.main:cli_coverage"
+cli-install = "devscripts.main:cli_install"
+cli-update-docs = "devscripts.main:cli_update_docs"

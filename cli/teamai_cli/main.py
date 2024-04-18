@@ -1,17 +1,17 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import typer
 
-from teamai_cli.app.app import App
-from teamai_cli.services.client import Client
-from teamai_cli.services.config_service import ConfigService
-from teamai_cli.services.cli_config_service import CliConfigService
-from teamai_cli.services.embedding_service import EmbeddingService
-from teamai_cli.services.file_service import FileService
-from teamai_cli.services.knowledge_service import KnowledgeService
-from teamai_cli.services.page_helper import PageHelper
-from teamai_cli.services.token_service import TokenService
-from teamai_cli.services.web_page_service import WebPageService
-from teamai_cli.services.metadata_service import MetadataService
+from cli.teamai_cli.app.app import App
+from cli.teamai_cli.services.client import Client
+from cli.teamai_cli.services.config_service import ConfigService
+from cli.teamai_cli.services.cli_config_service import CliConfigService
+from cli.teamai_cli.services.embedding_service import EmbeddingService
+from cli.teamai_cli.services.file_service import FileService
+from cli.teamai_cli.services.knowledge_service import KnowledgeService
+from cli.teamai_cli.services.page_helper import PageHelper
+from cli.teamai_cli.services.token_service import TokenService
+from cli.teamai_cli.services.web_page_service import WebPageService
+from cli.teamai_cli.services.metadata_service import MetadataService
 
 CONFIG_FILE_PATH = "config.yaml"
 ENCODING = "cl100k_base"
