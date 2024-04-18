@@ -3,7 +3,7 @@
 import requests
 
 from typing import List, Tuple
-from cli.teamai_cli.models.page_data import PageData
+from teamai_cli.models.page_data import PageData
 from bs4 import BeautifulSoup
 
 

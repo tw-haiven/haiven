@@ -1,12 +1,12 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import os
-from cli.teamai_cli.models.embedding_model import EmbeddingModel
-from cli.teamai_cli.services.config_service import ConfigService
-from cli.teamai_cli.services.file_service import FileService
-from cli.teamai_cli.models.html_filter import HtmlFilter
-from cli.teamai_cli.services.knowledge_service import KnowledgeService
-from cli.teamai_cli.services.web_page_service import WebPageService
-from cli.teamai_cli.services.metadata_service import MetadataService
+from teamai_cli.models.embedding_model import EmbeddingModel
+from teamai_cli.services.config_service import ConfigService
+from teamai_cli.services.file_service import FileService
+from teamai_cli.models.html_filter import HtmlFilter
+from teamai_cli.services.knowledge_service import KnowledgeService
+from teamai_cli.services.web_page_service import WebPageService
+from teamai_cli.services.metadata_service import MetadataService
 from typing import List
 
 

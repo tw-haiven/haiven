@@ -3,8 +3,8 @@ import pickle
 from langchain_core.documents import Document
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from cli.teamai_cli.services.embedding_service import EmbeddingService
-from cli.teamai_cli.services.token_service import TokenService
+from teamai_cli.services.embedding_service import EmbeddingService
+from teamai_cli.services.token_service import TokenService
 from typing import List
 
 

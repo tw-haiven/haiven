@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from langchain_community.embeddings import BedrockEmbeddings, OllamaEmbeddings
 from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
-from cli.teamai_cli.models.embedding_model import EmbeddingModel
+from teamai_cli.models.embedding_model import EmbeddingModel
 
 
 class EmbeddingService:

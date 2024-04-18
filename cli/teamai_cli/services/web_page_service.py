@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-from cli.teamai_cli.services.client import Client
-from cli.teamai_cli.models.html_filter import HtmlFilter
-from cli.teamai_cli.services.page_helper import PageHelper
+from teamai_cli.services.client import Client
+from teamai_cli.models.html_filter import HtmlFilter
+from teamai_cli.services.page_helper import PageHelper
 
 
 class WebPageService:
