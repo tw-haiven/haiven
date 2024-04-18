@@ -1,9 +1,9 @@
-name: Team AI 
+name: Team AI
 run-name: Test and Build
 
 env:
   REGISTRY: "ghcr.io"
-  
+
 on:
   push:
     paths-ignore:
@@ -43,11 +43,11 @@ jobs:
           poetry run pytest -m 'not integration' tests/
       - name: Install CLI dependencies
         run: |
-          cd cli
+          cd cli && \
           poetry install --no-interaction --no-root
       - name: Run tests
         run: |
-          cd cli
+          cd cli && \
           poetry run pytest tests/
 
   Build:
