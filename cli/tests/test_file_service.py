@@ -143,3 +143,27 @@ sample_question: {sample_question}
             assert arch_file_content == expected_arch_file_content
 
         os.remove(arch_file_path)
+
+    def test_write_business_context_file(self):
+        business_context_file_path = "test_business_context.md"
+        business_context_description = "a description of the business context"
+        file_service = FileService()
+        file_service.write_business_context_file(
+            business_context_file_path, business_context_description
+        )
+
+        expected_business_context_file_content = """---
+        key: business
+        title: Domain
+
+        a description of the business context
+        ---
+        """
+
+        with open(business_context_file_path, "r") as f:
+            business_context_file_content = f.read()
+            assert (
+                business_context_file_content == expected_business_context_file_content
+            )
+
+        os.remove(business_context_file_path)

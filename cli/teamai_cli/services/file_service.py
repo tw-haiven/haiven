@@ -56,3 +56,16 @@ class FileService:
         """
         with open(arch_file_path, "w") as f:
             f.write(file_content)
+
+    def write_business_context_file(
+        self, business_context_file_path: str, business_context_description: str = ""
+    ):
+        file_content = f"""---
+        key: business
+        title: Domain
+
+        {business_context_description}
+        ---
+        """
+        with open(business_context_file_path, "w") as f:
+            f.write(file_content)
