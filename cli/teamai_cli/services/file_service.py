@@ -16,7 +16,7 @@ class FileService:
         page_number = 1
         for page in pdf_reader.pages:
             text.append(page.extract_text())
-            metadatas.append({"page": page_number, "source": pdf_file.name, "title": pdf_reader.metadata.title, "author": pdf_reader.metadata.author})
+            metadatas.append({"page": page_number, "source": pdf_file.name, "title": pdf_reader.metadata.title, "authors": [pdf_reader.metadata.author]})
             page_number += 1
         return text, metadatas
 
