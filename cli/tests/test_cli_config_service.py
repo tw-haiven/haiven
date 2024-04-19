@@ -31,6 +31,36 @@ class TestCliConfigService(unittest.TestCase):
         assert cli_config_service.get_config_path() == config_path
         assert cli_config_service.get_env_path() == env_path
 
+    def test_initialize_config_does_not_overwrite_config_path_if_exists(self):
+        cli_config_service = CliConfigService(TEST_CLI_CONFIG_DIR)
+        config_content = (
+            "config_path: existing-test-config\nenv_path: existing-test-env"
+        )
+        os.makedirs(TEST_CLI_CONFIG_DIR, exist_ok=True)
+        with open(f"{TEST_CLI_CONFIG_DIR}/config", "w") as file:
+            file.write(config_content)
+
+        env_path = "test-env"
+        cli_config_service.initialize_config(env_path=env_path)
+
+        assert cli_config_service.get_env_path() == env_path
+        assert cli_config_service.get_config_path() == "existing-test-config"
+
+    def test_initialize_config_does_not_overwrite_env_path_if_exists(self):
+        cli_config_service = CliConfigService(TEST_CLI_CONFIG_DIR)
+        config_content = (
+            "config_path: existing-test-config\nenv_path: existing-test-env"
+        )
+        os.makedirs(TEST_CLI_CONFIG_DIR, exist_ok=True)
+        with open(f"{TEST_CLI_CONFIG_DIR}/config", "w") as file:
+            file.write(config_content)
+
+        config_path = "test-config"
+        cli_config_service.initialize_config(config_path=config_path)
+
+        assert cli_config_service.get_env_path() == "existing-test-env"
+        assert cli_config_service.get_config_path() == config_path
+
     def test_set_config_path_creates_cli_config_file_if_not_exists(self):
         cli_config_service = CliConfigService(TEST_CLI_CONFIG_DIR)
 

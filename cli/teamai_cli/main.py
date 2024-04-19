@@ -13,7 +13,6 @@ from teamai_cli.services.token_service import TokenService
 from teamai_cli.services.web_page_service import WebPageService
 from teamai_cli.services.metadata_service import MetadataService
 
-CONFIG_FILE_PATH = "config.yaml"
 ENCODING = "cl100k_base"
 
 cli = typer.Typer(no_args_is_help=True)
@@ -23,14 +22,14 @@ cli = typer.Typer(no_args_is_help=True)
 def index_file(
     source_path: str,
     embedding_model="openai",
-    config_path: str = CONFIG_FILE_PATH,
+    config_path: str = "",
     description: str = "",
     output_dir: str = "new_knowledge_base",
 ):
     """Index single pdf or text file to a given destination directory."""
 
     cli_config_service = CliConfigService()
-    if cli_config_service.get_config_path() and config_path == CONFIG_FILE_PATH:
+    if cli_config_service.get_config_path() and config_path == "":
         config_path = cli_config_service.get_config_path()
 
     env_path_file = cli_config_service.get_env_path()
@@ -49,11 +48,11 @@ def index_all_files(
     output_dir="new_knowledge_base",
     embedding_model="openai",
     description: str = "",
-    config_path: str = CONFIG_FILE_PATH,
+    config_path: str = "",
 ):
     """Index all pdf or text files in a directory to a given destination directory."""
     cli_config_service = CliConfigService()
-    if cli_config_service.get_config_path() and config_path == CONFIG_FILE_PATH:
+    if cli_config_service.get_config_path() and config_path == "":
         config_path = cli_config_service.get_config_path()
 
     env_path_file = cli_config_service.get_env_path()
@@ -95,7 +94,7 @@ def pickle_web_page(
 
 @cli.command()
 def init(
-    config_path: str = CONFIG_FILE_PATH,
+    config_path: str = "",
     env_path: str = "",
 ):
     """Initialize the config file with the given config and env paths."""

@@ -15,9 +15,14 @@ class CliConfigService:
     def initialize_config(self, config_path: str = "", env_path: str = ""):
         if not os.path.exists(os.path.expanduser(self.cli_config_dir)):
             os.makedirs(os.path.expanduser(self.cli_config_dir), exist_ok=True)
-        file_path = os.path.expanduser(self.cli_config_path)
-        with open(file_path, "w") as f:
-            f.write(f"{CONFIG_PATH_KEY}: {config_path}\n{ENV_PATH_KEY}: {env_path}")
+            file_path = os.path.expanduser(self.cli_config_path)
+            with open(file_path, "w") as f:
+                f.write(f"{CONFIG_PATH_KEY}: {config_path}\n{ENV_PATH_KEY}: {env_path}")
+        else:
+            if config_path:
+                self.set_config_path(config_path)
+            if env_path:
+                self.set_env_path(env_path)
 
     def get_config_path(self):
         cli_config_path = os.path.expanduser(self.cli_config_path)
