@@ -53,3 +53,5 @@ app/config.local.yaml
 tmp
 
 .coverage
+*.faiss
+*.pkl

@@ -277,5 +277,5 @@ class TestMain:
             f"{parent_dir}/{domain_name}/architecture.md"
         )
         file_service.write_business_context_file.assert_called_once_with(
-            f"{parent_dir}/{domain_name}/business.md"
+            f"{parent_dir}/{domain_name}/business_context.md"
         )
