@@ -43,3 +43,16 @@ class FileService:
         metadata_file_content += "---\n"
         with open(output_path, "w") as f:
             f.write(str(metadata_file_content))
+
+    def write_architecture_file(
+        self, arch_file_path: str, architecture_description: str = ""
+    ):
+        file_content = f"""---
+        key: architecture
+        title: Architecture
+
+        {architecture_description}
+        ---
+        """
+        with open(arch_file_path, "w") as f:
+            f.write(file_content)

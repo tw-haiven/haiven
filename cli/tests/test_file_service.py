@@ -123,3 +123,23 @@ sample_question: {sample_question}
             assert metadata_file_content == expected_metadata_file_content
 
         os.remove(metadata_file_path)
+
+    def test_write_architecture_file(self):
+        arch_file_path = "test_architecture.md"
+        arch_description = "a description of the architecture"
+        file_service = FileService()
+        file_service.write_architecture_file(arch_file_path, arch_description)
+
+        expected_arch_file_content = """---
+        key: architecture
+        title: Architecture
+
+        a description of the architecture
+        ---
+        """
+
+        with open(arch_file_path, "r") as f:
+            arch_file_content = f.read()
+            assert arch_file_content == expected_arch_file_content
+
+        os.remove(arch_file_path)
