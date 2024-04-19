@@ -1,6 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from unittest.mock import patch, MagicMock, PropertyMock
 from teamai_cli.main import (
+    create_domain_package,
     index_file,
     index_all_files,
     pickle_web_page,
@@ -258,3 +259,17 @@ class TestMain:
         set_env_path(env_path)
 
         cli_config_service.set_env_path.assert_called_once_with(env_path)
+
+    @patch("teamai_cli.main.FileService")
+    def test_create_domain_package(self, mock_file_service):
+        domain_name = "domain_name"
+        parent_dir = "parent_dir"
+
+        file_service = MagicMock()
+        mock_file_service.return_value = file_service
+
+        create_domain_package(domain_name, parent_dir)
+
+        file_service.create_domain_structure.assert_called_once_with(
+            domain_name, parent_dir
+        )

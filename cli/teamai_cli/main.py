@@ -67,6 +67,16 @@ def index_all_files(
 
 
 @cli.command()
+def create_domain_package(
+    domain_name: str,
+    parent_dir: str,
+):
+    """Create a domain package base structure."""
+    file_service = FileService()
+    file_service.create_domain_structure(domain_name, parent_dir)
+
+
+@cli.command()
 def pickle_web_page(
     url: str,
     destination_path="web_page.pickle",
