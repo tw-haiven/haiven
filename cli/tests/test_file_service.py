@@ -1,6 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 
 import os
+import shutil
 
 from langchain_core.documents import Document
 from teamai_cli.services.file_service import FileService
@@ -167,3 +168,14 @@ sample_question: {sample_question}
             )
 
         os.remove(business_context_file_path)
+
+    def test_create_domain_structure(self):
+        domain_name = "domain_name"
+        parent_dir = "test_parent_dir"
+        file_service = FileService()
+        file_service.create_domain_structure(domain_name, parent_dir)
+
+        assert os.path.exists(f"{parent_dir}/{domain_name}/prompts")
+        assert os.path.exists(f"{parent_dir}/{domain_name}/embeddings")
+
+        shutil.rmtree(f"{parent_dir}")

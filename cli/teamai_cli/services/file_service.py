@@ -69,3 +69,7 @@ class FileService:
         """
         with open(business_context_file_path, "w") as f:
             f.write(file_content)
+
+    def create_domain_structure(self, domain_name: str, parent_dir: str):
+        os.makedirs(f"{parent_dir}/{domain_name}/embeddings", exist_ok=True)
+        os.makedirs(f"{parent_dir}/{domain_name}/prompts", exist_ok=True)
