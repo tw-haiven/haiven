@@ -1,4 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
+import os
 import pytest
 
 from teamai_cli.app.app import App
@@ -452,4 +453,83 @@ class TestApp:
 
         knowledge_service.pickle_documents.assert_called_once_with(
             web_page_article, destination_path
+        )
+
+    def test_create_domain_structure_fails_if_domain_name_is_not_set(self):
+        domain_name = ""
+        parent_dir = "parent_dir"
+
+        config_service = MagicMock()
+        file_service = MagicMock()
+        knowledge_service = MagicMock()
+        web_page_service = MagicMock()
+        metadata_service = MagicMock()
+
+        app = App(
+            config_service,
+            file_service,
+            knowledge_service,
+            web_page_service,
+            metadata_service,
+        )
+
+        with pytest.raises(ValueError) as e:
+            app.create_domain_structure(domain_name, parent_dir)
+
+        assert str(e.value) == "please provide domain name for domain_name option"
+
+    def test_create_domain_structure_fails_if_parent_dir_does_not_exist(self):
+        domain_name = "domain_name"
+        parent_dir = "parent_dir"
+
+        config_service = MagicMock()
+        file_service = MagicMock()
+        knowledge_service = MagicMock()
+        web_page_service = MagicMock()
+        metadata_service = MagicMock()
+
+        app = App(
+            config_service,
+            file_service,
+            knowledge_service,
+            web_page_service,
+            metadata_service,
+        )
+
+        with pytest.raises(ValueError) as e:
+            app.create_domain_structure(domain_name, parent_dir)
+
+        assert str(e.value) == "parent directory parent_dir does not exist"
+
+    def test_create_domain_structure(self):
+        domain_name = "domain_name"
+        parent_dir = "test_parent_dir"
+        os.makedirs(parent_dir, exist_ok=True)
+
+        config_service = MagicMock()
+        file_service = MagicMock()
+        knowledge_service = MagicMock()
+        web_page_service = MagicMock()
+        metadata_service = MagicMock()
+
+        app = App(
+            config_service,
+            file_service,
+            knowledge_service,
+            web_page_service,
+            metadata_service,
+        )
+
+        app.create_domain_structure(domain_name, parent_dir)
+
+        file_service.create_domain_structure.assert_called_once_with(
+            domain_name, parent_dir
+        )
+
+        file_service.write_architecture_file.assert_called_once_with(
+            f"{parent_dir}/{domain_name}/architecture.md"
+        )
+
+        file_service.write_business_context_file.assert_called_once_with(
+            f"{parent_dir}/{domain_name}/business-context.md"
         )

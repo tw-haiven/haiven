@@ -121,6 +121,21 @@ class App:
         )
         self.knowledge_service.pickle_documents(web_page_article, destination_path)
 
+    def create_domain_structure(self, domain_name: str, parent_dir: str = "./"):
+        if not domain_name:
+            raise ValueError("please provide domain name for domain_name option")
+
+        if not os.path.exists(parent_dir):
+            raise ValueError(f"parent directory {parent_dir} does not exist")
+
+        self.file_service.create_domain_structure(domain_name, parent_dir)
+        self.file_service.write_architecture_file(
+            f"{parent_dir}/{domain_name}/architecture.md"
+        )
+        self.file_service.write_business_context_file(
+            f"{parent_dir}/{domain_name}/business-context.md"
+        )
+
     def _get_txt_file_text_and_metadata(self, source_path: str):
         with open(source_path, "r") as file:
             return [file.read()], [{"file": source_path}]
