@@ -1,20 +1,15 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import pickle
-import os
 from os.path import exists
 from dotenv import load_dotenv
-from langchain_openai import OpenAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from shared.embeddings import Embeddings
+from shared.services.config_service import ConfigService
 from langchain_community.vectorstores import FAISS
 
 
-def split_docs(documents, chunk_size=600, chunk_overlap=20):
+def split_docs(documents, spliter):
     print("Splitting documents into chunks...")
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size, chunk_overlap=chunk_overlap
-    )
-    docs = text_splitter.split_documents(documents)
-
+    docs = spliter.split_documents(documents)
     return docs
 
 
@@ -28,6 +23,9 @@ def load_docs_from_pickle(filename):
 
 
 def index_docs_category(category):
+    team_ai_embeddings = Embeddings(ConfigService.load_embedding_model("config.yaml"))
+    spliter = team_ai_embeddings._load_text_splitter()
+
     pickles = [
         f"knowledge_scripts/mfcom/mfcom-{category}.pickle",
     ]
@@ -35,17 +33,30 @@ def index_docs_category(category):
     print("Loading extracted documents...")
     documents = sum(map(load_docs_from_pickle, pickles), [])
     print(f"Found {len(documents)} documents")
-    splitted_documents = split_docs(documents)
+    splitted_documents = split_docs(documents, spliter)
     print(f"Number of chunks: {len(splitted_documents)}")
 
     print("Setting up embedder...")
-    embeddings = OpenAIEmbeddings(openai_api_key=os.environ["OPENAI_API_KEY"])
+    embeddings = team_ai_embeddings._get_embeddings_provider()
 
-    print("Setting up FAISS vector store and calculating embeddings...")
-    db = FAISS.from_documents(splitted_documents, embeddings)
+    n = 4  # Example value, adjust based on requirements
+    document_collections = [splitted_documents[i::n] for i in range(n)]
 
-    print("Persisting faiss_index to disk...")
-    db.save_local(f"teams/team_demo/knowledge/documents/mfcom-{category}.kb")
+    dbs = []
+
+    for index, documents in enumerate(document_collections, start=1):
+        print(
+            f"Setting up FAISS vector store and calculating embeddings for collection {index}..."
+        )
+        dbs.append(FAISS.from_documents(documents, embeddings))
+
+    merged_db = dbs[0]
+    for db in dbs[1:]:
+        print("Merging dbs...")
+        merged_db.merge_from(db)
+
+    print(f"Persisting faiss_index for category {category} to disk...")
+    merged_db.save_local(f"knowledge_scripts/mfcom/embeddings/mfcom-{category}.kb")
 
     print("Done!")
 

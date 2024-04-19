@@ -119,6 +119,15 @@ def find_tags_in_article(content: BeautifulSoup) -> List[str]:
     return [link.get_text() for link in tag_links]
 
 
+def find_authors_in_article(content: BeautifulSoup) -> List[str]:
+    try:
+        authors = content.find_all("a", {"rel": "author"})
+        return [link.get_text() for link in authors]
+    except Exception as e:
+        print(f"Error extracting authors, defaulting to Martin - {e}")
+        return ["Martin Fowler"]
+
+
 def load_urls(urls, blacklist_tags=None):
     articles = []
 
@@ -135,8 +144,11 @@ def load_urls(urls, blacklist_tags=None):
                     soup = BeautifulSoup(content, "html.parser")
 
                     article_content = mf_page_parser(soup)
-
                     article_tags = find_tags_in_article(soup)
+                    article_authors = find_authors_in_article(soup)
+
+                    print(f"\tauthors: {article_authors} | tags: {article_tags}")
+
                     if blacklist_tags and all(
                         filter_tag in blacklist_tags for filter_tag in article_tags
                     ):
@@ -147,6 +159,7 @@ def load_urls(urls, blacklist_tags=None):
                         metadata = {
                             "title": find_title(soup),
                             "source": url,
+                            "authors": article_authors,
                             "tags": article_tags,
                         }
                         articles.append(
