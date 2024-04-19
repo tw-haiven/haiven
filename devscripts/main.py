@@ -1,4 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
+import os
 import subprocess
 import sys
 
@@ -121,8 +122,34 @@ def cli_coverage():
 
 
 def cli_update_docs():
-    command = """
+    cli_docs_start_key = "# `teamai-cli`"
+    cli_docs_path = "cli_docs.md"
+    command = f"""
     cd cli && \
-    poetry run typer teamai_cli.main utils docs --output README.md --name teamai-cli
+    poetry run typer teamai_cli.main utils docs --output {cli_docs_path} --name teamai-cli
     """
     subprocess.run(command, shell=True)
+    readme_path = "cli/README.md"
+    create_cli_readme(readme_path, f"cli/{cli_docs_path}", cli_docs_start_key)
+    os.remove(f"cli/{cli_docs_path}")
+
+
+def create_cli_readme(
+    readme_path: str, docs_content_path: str, cli_docs_start_key: str
+):
+    with open(readme_path, "r") as f:
+        readme_content = f.read()
+    with open(docs_content_path, "r") as f:
+        docs_content = f.read()
+
+    start_index = readme_content.find(cli_docs_start_key)
+
+    if start_index == -1:
+        raise ValueError(
+            f"cli docs start key {cli_docs_start_key} not found in README.md"
+        )
+
+    new_readme_content = f"{readme_content[: start_index]}{docs_content}"
+
+    with open(readme_path, "w") as f:
+        f.write(new_readme_content)

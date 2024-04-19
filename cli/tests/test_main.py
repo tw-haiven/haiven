@@ -273,3 +273,9 @@ class TestMain:
         file_service.create_domain_structure.assert_called_once_with(
             domain_name, parent_dir
         )
+        file_service.write_architecture_file.assert_called_once_with(
+            f"{parent_dir}/{domain_name}/architecture.md"
+        )
+        file_service.write_business_context_file.assert_called_once_with(
+            f"{parent_dir}/{domain_name}/business.md"
+        )

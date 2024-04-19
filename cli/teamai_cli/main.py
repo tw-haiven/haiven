@@ -73,6 +73,10 @@ def create_domain_package(
     """Create a domain package base structure."""
     file_service = FileService()
     file_service.create_domain_structure(domain_name, parent_dir)
+    file_service.write_architecture_file(f"{parent_dir}/{domain_name}/architecture.md")
+    file_service.write_business_context_file(
+        f"{parent_dir}/{domain_name}/business_context.md"
+    )
 
 
 @cli.command()
