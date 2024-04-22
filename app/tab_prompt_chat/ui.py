@@ -34,11 +34,11 @@ def enable_chat(
         message="",
     )
 
-    def on_change_prompt_choice(prompt_choice: str, user_input: str,request: gr.Request):
+    def on_change_prompt_choice(
+        prompt_choice: str, user_input: str, request: gr.Request
+    ):
         if prompt_choice:
-            user_context.set_value(
-                request, "chat_prompt_choice", prompt_choice
-            )
+            user_context.set_value(request, "chat_prompt_choice", prompt_choice)
             chat_context.prompt = prompt_list.get(prompt_choice).metadata.get(
                 "title", "Unnamed use case"
             )

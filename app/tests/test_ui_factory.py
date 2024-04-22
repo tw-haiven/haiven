@@ -141,7 +141,7 @@ class TestUIFactory(unittest.TestCase):
                 all_tabs.children[2],
                 all_tabs.children[3],
                 model_select,
-                tone_select
+                tone_select,
             ],
             [
                 all_tabs,
@@ -221,14 +221,14 @@ class TestUIFactory(unittest.TestCase):
         llm_config = MagicMock()
         model_select = MagicMock()
         tone_select = MagicMock()
-        ui.create_llm_settings_ui.return_value = (model_select,tone_select, llm_config)
+        ui.create_llm_settings_ui.return_value = (model_select, tone_select, llm_config)
         navigation = MagicMock()
         category_metadata = MagicMock()
         ui_factory.navigation_manager.get_testing_navigation.return_value = (
             navigation,
             category_metadata,
         )
-        
+
         # Mocking the tab controls
         element_ids = [
             "chat_prompt_choice",
@@ -294,7 +294,7 @@ class TestUIFactory(unittest.TestCase):
                 all_tabs.children[2],
                 all_tabs.children[3],
                 model_select,
-                tone_select
+                tone_select,
             ],
             [
                 all_tabs,
@@ -443,7 +443,7 @@ class TestUIFactory(unittest.TestCase):
                 all_tabs.children[2],
                 all_tabs.children[3],
                 model_select,
-                tone_select
+                tone_select,
             ],
             [
                 all_tabs,

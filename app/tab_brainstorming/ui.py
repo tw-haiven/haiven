@@ -174,8 +174,8 @@ def enable_brainstorming(
             )
 
         ui_chatbot.like(on_vote, None, None)
-        
+
         def on_tab_selected(request: gr.Request):
             user_context.set_value(request, "selected_tab", tab_id)
-            
+
         tab_brainstorming.select(on_tab_selected)

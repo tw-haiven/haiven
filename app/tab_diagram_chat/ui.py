@@ -80,10 +80,13 @@ def enable_image_chat(
                         elem_classes="teamai-group-title",
                     )
                     ui_prompt_dropdown = gr.Dropdown(
-                        prompt_list.get_title_id_tuples(), label="Choose a task",
-                        elem_id="diagram_chat_prompt_choice"
+                        prompt_list.get_title_id_tuples(),
+                        label="Choose a task",
+                        elem_id="diagram_chat_prompt_choice",
                     )
-                    ui_help = gr.Markdown(elem_classes="prompt-help",elem_id="diagram_chat_help")
+                    ui_help = gr.Markdown(
+                        elem_classes="prompt-help", elem_id="diagram_chat_help"
+                    )
                     ui_help_knowledge = gr.Markdown(
                         elem_classes=["prompt-help", "knowledge"],
                         elem_id="diagram_chat_help_knowledge",
