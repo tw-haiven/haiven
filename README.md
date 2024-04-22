@@ -83,11 +83,12 @@ There are 4 options:
 - Create .env file from the respective template: Pick the template file that represents the provider you want to use, e.g. `cp ./app/.env.azure.template ./app/.env`.
 - Look at the defined environment variables in your new `.env` file and set the corresponding credentials.
 
-### 2. Get a "knowledge pack"
+### 2. Get (and adapt) a "knowledge pack"
 
-- A "knowledge pack"
-  - You can clone the [Community Knowledge Pack](https://github.com/tw-team-ai/team-ai-community-knowledge-pack) to get started
-  - You can then adapt it to your own needs, e.g. add more knowledge sources with our [CLI tool](cli/README.md), and edit and adjust the prompts
+You can clone the [Community Knowledge Pack](https://github.com/tw-team-ai/team-ai-community-knowledge-pack) or the [Thoughtworks Knowledge Pack](https://github.com/tw-team-ai/team-ai-tw-knowledge-pack) to get started.
+
+[Find more documentation about knowledge packs here](docs/knowledge_packs.md).
+
 
 ### 3. Run locally
 #### Option 1: Run the base image locally
