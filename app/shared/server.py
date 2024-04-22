@@ -1,5 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import json
+from shared.services.config_service import ConfigService
 from shared.chats import ServerChatSessionMemory
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -120,7 +121,11 @@ class Server:
             "/static", StaticFiles(directory=static_dir, html=True), name="static"
         )
 
-        teams_static_dir = Path("./teams/static")
+        DEFAULT_CONFIG_PATH = "config.yaml"
+        data = ConfigService._load_yaml(DEFAULT_CONFIG_PATH)
+        knowledge_pack_path = data["knowledge_pack"]["path"]
+
+        teams_static_dir = Path(knowledge_pack_path + "/static")
         teams_static_dir.mkdir(parents=True, exist_ok=True)
         app.mount(
             "/team-docs",
