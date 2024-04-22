@@ -2,7 +2,7 @@
 The `teamai-cli` is a command line interface that provides a set of commands for indexing files, and creating knowledge packages.
 
 ### TEAMAI-CLI Installation
-Using [poetry](https://python-poetry.org/) run
+Run the [install_dev_dependencies](../install_dev_dependencies.sh) script to install the necessary dependencies for the cli.
 
 ```console
 $ poetry run cli-init

@@ -1,4 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
+import glob
 import os
 import subprocess
 import sys
@@ -84,14 +85,22 @@ def cli_init():
     subprocess.run(command, shell=True)
 
 
-def cli_install():
-    command = """
+def cli_build():
+    build_whl_command = """
     cd cli && \
     poetry install && \
-    poetry build && \
-    pip install dist/teamai_cli-0.1.0-py3-none-any.whl --force-reinstall
+    poetry build
     """
-    subprocess.run(command, shell=True)
+    subprocess.run(build_whl_command, shell=True)
+
+    whl_files = glob.glob("cli/dist/*.whl")
+    whl_file = whl_files[0] if whl_files else None
+    if not whl_file:
+        raise ValueError("poetry failed to build the whl file")
+
+    formatted_whl_file_path = os.path.abspath(whl_file)
+    with open("teamai_wheel_path.txt", "w") as f:
+        f.write(formatted_whl_file_path)
 
 
 def cli_run():
