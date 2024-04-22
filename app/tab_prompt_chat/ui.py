@@ -8,6 +8,7 @@ from shared.chats import ServerChatSessionMemory, StreamingChat
 from shared.knowledge import KnowledgeBaseMarkdown
 from shared.models.chat_context import ChatContext
 from shared.user_feedback import UserFeedback
+from shared.user_context import user_context
 
 
 def enable_chat(
@@ -33,13 +34,23 @@ def enable_chat(
         message="",
     )
 
-    def on_change_prompt_choice(prompt_choice: str, user_input: str):
-        chat_context.prompt = prompt_list.get(prompt_choice).metadata.get(
-            "title", "Unnamed use case"
-        )
-        help, knowledge = prompt_list.render_help_markdown(prompt_choice)
-        rendered_prompt = prompt_list.render_prompt(prompt_choice, user_input)
-        return {ui_prompt: rendered_prompt, ui_help: help, ui_help_knowledge: knowledge}
+    def on_change_prompt_choice(prompt_choice: str, user_input: str,request: gr.Request):
+        if prompt_choice:
+            user_context.set_value(
+                request, "chat_prompt_choice", prompt_choice
+            )
+            chat_context.prompt = prompt_list.get(prompt_choice).metadata.get(
+                "title", "Unnamed use case"
+            )
+            help, knowledge = prompt_list.render_help_markdown(prompt_choice)
+            rendered_prompt = prompt_list.render_prompt(prompt_choice, user_input)
+            return {
+                ui_prompt: rendered_prompt,
+                ui_help: help,
+                ui_help_knowledge: knowledge,
+            }
+        else:
+            return {ui_prompt: "", ui_help: "", ui_help_knowledge: ""}
 
     def on_change_user_input(prompt_choice: str, user_input: str):
         return {ui_prompt: prompt_list.render_prompt(prompt_choice, user_input)}
@@ -55,11 +66,16 @@ def enable_chat(
                         elem_classes="teamai-group-title",
                     )
                     ui_prompt_dropdown = gr.Dropdown(
-                        prompt_list.get_title_id_tuples(), label="Choose a task"
+                        prompt_list.get_title_id_tuples(),
+                        label="Choose a task",
+                        elem_id="chat_prompt_choice",
                     )
-                    ui_help = gr.Markdown(elem_classes="prompt-help")
+                    ui_help = gr.Markdown(
+                        elem_classes="prompt-help", elem_id="chat_help"
+                    )
                     ui_help_knowledge = gr.Markdown(
-                        elem_classes=["prompt-help", "knowledge"]
+                        elem_classes=["prompt-help", "knowledge"],
+                        elem_id="chat_help_knowledge",
                     )
                     ui_user_input = gr.Textbox(label="Your input", lines=5)
 
@@ -215,7 +231,8 @@ def enable_chat(
 
         ui_chatbot.like(on_vote, None, None)
 
-    def on_tab_selected():
+    def on_tab_selected(request: gr.Request):
+        user_context.set_value(request, "selected_tab", tab_id)
         choices = [("All documents", "all")]
         choices.extend(
             [

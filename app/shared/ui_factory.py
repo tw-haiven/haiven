@@ -12,6 +12,7 @@ from tab_diagram_chat.ui import enable_image_chat
 from tab_knowledge_chat.ui import enable_knowledge_chat
 from tab_plain_chat.ui import enable_plain_chat
 from tab_prompt_chat.ui import enable_chat
+from shared.user_context import user_context
 
 
 class UIFactory:
@@ -32,6 +33,31 @@ class UIFactory:
         self.prompts_parent_dir: str = prompts_parent_dir
         self.content_manager: ContentManager = content_manager
         self.chat_session_memory: ServerChatSessionMemory = chat_session_memory
+        self.__llm_config = None
+
+    def __model_chaged(self, model_select, request: gr.Request):
+        self.__llm_config.change_model(model_select)
+        user_context.set_value(request, "llm_model", model_select, app_level=True)
+
+    def __tone_changed(self, tone_select, request: gr.Request):
+        self.__llm_config.change_temperature(tone_select)
+        user_context.set_value(request, "llm_tone", tone_select, app_level=True)
+
+    def __get_children(self, tab):
+        def recurse_children(children):
+            children_dict = {}
+            for child in children:
+                if hasattr(child, "children"):
+                    children_dict.update(recurse_children(child.children))
+                if (
+                    (isinstance(child, gr.Markdown) or isinstance(child, gr.Dropdown))
+                    and hasattr(child, "elem_id")
+                    and child.elem_id
+                ):
+                    children_dict[child.elem_id] = child
+            return children_dict
+
+        return recurse_children(tab.children)
 
     def create_ui(self, ui_type):
         match ui_type:
@@ -59,13 +85,11 @@ class UIFactory:
             user_identifier_state = gr.State()
             with gr.Group(elem_classes="teamai-group"):
                 with gr.Row():
-                    model_select, tone_select, llm_config = (
+                    model_select, tone_select, self.__llm_config = (
                         self.ui.create_llm_settings_ui()
                     )
-                    model_select.change(fn=llm_config.change_model, inputs=model_select)
-                    tone_select.change(
-                        fn=llm_config.change_temperature, inputs=tone_select
-                    )
+                    model_select.change(fn=self.__model_chaged, inputs=model_select)
+                    tone_select.change(fn=self.__tone_changed, inputs=tone_select)
             with gr.Row():
                 with gr.Tabs() as all_tabs:
                     category_filter = ["coding", "architecture"]
@@ -81,7 +105,7 @@ class UIFactory:
                         self.content_manager.knowledge_base_markdown,
                         self.chat_session_memory,
                         self.prompts_factory,
-                        llm_config,
+                        self.__llm_config,
                         user_identifier_state,
                         category_filter,
                     )
@@ -89,7 +113,7 @@ class UIFactory:
                         self.content_manager.knowledge_base_markdown,
                         self.chat_session_memory,
                         self.prompts_factory,
-                        llm_config,
+                        self.__llm_config,
                         user_identifier_state,
                         category_filter,
                     )
@@ -97,22 +121,50 @@ class UIFactory:
                         self.content_manager.knowledge_base_markdown,
                         self.chat_session_memory,
                         self.prompts_factory,
-                        llm_config,
+                        self.__llm_config,
                         user_identifier_state,
                         category_filter,
                     )
                     enable_knowledge_chat(
                         self.chat_session_memory,
-                        llm_config,
+                        self.__llm_config,
                         user_identifier_state,
                         category_filter,
                     )
                     enable_db_exploration(category_filter)
 
+            components_to_persist = self.__get_children(all_tabs)
+            chat_prompt_choice = components_to_persist.get("chat_prompt_choice")
+            brainstorming_prompt_choice = components_to_persist.get(
+                "brainstorming_prompt_choice"
+            )
+            diagram_chat_prompt_choice = components_to_persist.get(
+                "diagram_chat_prompt_choice"
+            )
+            knowledge_chat_prompt_choice = components_to_persist.get(
+                "knowledge_chat_prompt_choice"
+            )
+
             blocks.load(
-                self.event_handler.on_ui_load_with_tab_deeplink,
-                None,
-                [all_tabs, user_identifier_state],
+                self.event_handler.on_load_ui,
+                [
+                    chat_prompt_choice,
+                    brainstorming_prompt_choice,
+                    diagram_chat_prompt_choice,
+                    knowledge_chat_prompt_choice,
+                    model_select,
+                    tone_select,
+                ],
+                [
+                    all_tabs,
+                    chat_prompt_choice,
+                    brainstorming_prompt_choice,
+                    diagram_chat_prompt_choice,
+                    knowledge_chat_prompt_choice,
+                    model_select,
+                    tone_select,
+                    user_identifier_state,
+                ],
             )
             blocks.queue()
 
@@ -129,13 +181,11 @@ class UIFactory:
 
             with gr.Group(elem_classes="teamai-group"):
                 with gr.Row():
-                    model_select, tone_select, llm_config = (
+                    model_select, tone_select, self.__llm_config = (
                         self.ui.create_llm_settings_ui()
                     )
-                    model_select.change(fn=llm_config.change_model, inputs=model_select)
-                    tone_select.change(
-                        fn=llm_config.change_temperature, inputs=tone_select
-                    )
+                    model_select.change(fn=self.__model_chaged, inputs=model_select)
+                    tone_select.change(fn=self.__tone_changed, inputs=tone_select)
             with gr.Row():
                 category_filter = ["testing"]
 
@@ -153,7 +203,7 @@ class UIFactory:
                         self.content_manager.knowledge_base_markdown,
                         self.chat_session_memory,
                         self.prompts_factory,
-                        llm_config,
+                        self.__llm_config,
                         user_identifier_state,
                         category_filter,
                     )
@@ -161,7 +211,7 @@ class UIFactory:
                         self.content_manager.knowledge_base_markdown,
                         self.chat_session_memory,
                         self.prompts_factory,
-                        llm_config,
+                        self.__llm_config,
                         user_identifier_state,
                         category_filter,
                     )
@@ -169,22 +219,50 @@ class UIFactory:
                         self.content_manager.knowledge_base_markdown,
                         self.chat_session_memory,
                         self.prompts_factory,
-                        llm_config,
+                        self.__llm_config,
                         user_identifier_state,
                         category_filter,
                     )
                     enable_knowledge_chat(
                         self.chat_session_memory,
-                        llm_config,
+                        self.__llm_config,
                         user_identifier_state,
                         category_filter,
                     )
                     enable_db_exploration(category_filter)
 
+            components_to_persist = self.__get_children(all_tabs)
+            chat_prompt_choice = components_to_persist.get("chat_prompt_choice")
+            brainstorming_prompt_choice = components_to_persist.get(
+                "brainstorming_prompt_choice"
+            )
+            diagram_chat_prompt_choice = components_to_persist.get(
+                "diagram_chat_prompt_choice"
+            )
+            knowledge_chat_prompt_choice = components_to_persist.get(
+                "knowledge_chat_prompt_choice"
+            )
+
             blocks.load(
-                self.event_handler.on_ui_load_with_tab_deeplink,
-                None,
-                [all_tabs, user_identifier_state],
+                self.event_handler.on_load_ui,
+                [
+                    chat_prompt_choice,
+                    brainstorming_prompt_choice,
+                    diagram_chat_prompt_choice,
+                    knowledge_chat_prompt_choice,
+                    model_select,
+                    tone_select,
+                ],
+                [
+                    all_tabs,
+                    chat_prompt_choice,
+                    brainstorming_prompt_choice,
+                    diagram_chat_prompt_choice,
+                    knowledge_chat_prompt_choice,
+                    model_select,
+                    tone_select,
+                    user_identifier_state,
+                ],
             )
             blocks.queue()
 
@@ -203,13 +281,12 @@ class UIFactory:
 
             with gr.Group(elem_classes="teamai-group"):
                 with gr.Row():
-                    model_select, tone_select, llm_config = (
+                    model_select, tone_select, self.__llm_config = (
                         self.ui.create_llm_settings_ui()
                     )
-                    model_select.change(fn=llm_config.change_model, inputs=model_select)
-                    tone_select.change(
-                        fn=llm_config.change_temperature, inputs=tone_select
-                    )
+
+                    model_select.change(fn=self.__model_chaged, inputs=model_select)
+                    tone_select.change(fn=self.__tone_changed, inputs=tone_select)
             with gr.Row():
                 category_filter = ["analysis"]
                 with gr.Tabs() as all_tabs:
@@ -225,7 +302,7 @@ class UIFactory:
                         self.content_manager.knowledge_base_markdown,
                         self.chat_session_memory,
                         self.prompts_factory,
-                        llm_config,
+                        self.__llm_config,
                         user_identifier_state,
                         category_filter,
                     )
@@ -233,7 +310,7 @@ class UIFactory:
                         self.content_manager.knowledge_base_markdown,
                         self.chat_session_memory,
                         self.prompts_factory,
-                        llm_config,
+                        self.__llm_config,
                         user_identifier_state,
                         category_filter,
                     )
@@ -241,21 +318,49 @@ class UIFactory:
                         self.content_manager.knowledge_base_markdown,
                         self.chat_session_memory,
                         self.prompts_factory,
-                        llm_config,
+                        self.__llm_config,
                         user_identifier_state,
                         category_filter,
                     )
                     enable_knowledge_chat(
                         self.chat_session_memory,
-                        llm_config,
+                        self.__llm_config,
                         user_identifier_state,
                         category_filter,
                     )
 
+            components_to_persist = self.__get_children(all_tabs)
+            chat_prompt_choice = components_to_persist.get("chat_prompt_choice")
+            brainstorming_prompt_choice = components_to_persist.get(
+                "brainstorming_prompt_choice"
+            )
+            diagram_chat_prompt_choice = components_to_persist.get(
+                "diagram_chat_prompt_choice"
+            )
+            knowledge_chat_prompt_choice = components_to_persist.get(
+                "knowledge_chat_prompt_choice"
+            )
+
             blocks.load(
-                self.event_handler.on_ui_load_with_tab_deeplink,
-                None,
-                [all_tabs, user_identifier_state],
+                self.event_handler.on_load_ui,
+                [
+                    chat_prompt_choice,
+                    brainstorming_prompt_choice,
+                    diagram_chat_prompt_choice,
+                    knowledge_chat_prompt_choice,
+                    model_select,
+                    tone_select,
+                ],
+                [
+                    all_tabs,
+                    chat_prompt_choice,
+                    brainstorming_prompt_choice,
+                    diagram_chat_prompt_choice,
+                    knowledge_chat_prompt_choice,
+                    model_select,
+                    tone_select,
+                    user_identifier_state,
+                ],
             )
             blocks.queue()
 

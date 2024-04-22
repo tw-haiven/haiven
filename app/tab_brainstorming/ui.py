@@ -6,6 +6,7 @@ from shared.chats import Q_A_Chat, ServerChatSessionMemory
 from shared.knowledge import KnowledgeBaseMarkdown
 from shared.models.chat_context import ChatContext
 from shared.user_feedback import UserFeedback
+from shared.user_context import user_context
 
 
 def enable_brainstorming(
@@ -31,18 +32,30 @@ def enable_brainstorming(
 
     prompt_list.filter(prompt_categories)
 
-    def on_change_prompt_choice(prompt_choice: str, user_input: str) -> dict:
-        chat_context.prompt = prompt_list.get(prompt_choice).metadata.get(
-            "title", "Unnamed use case"
-        )
-        help, knowledge = prompt_list.render_help_markdown(prompt_choice)
-        return {
-            ui_prompt: prompt_list.render_prompt(prompt_choice, user_input),
-            ui_help: help,
-            ui_help_knowledge: knowledge,
-        }
+    def on_change_prompt_choice(
+        prompt_choice: str, user_input: str, request: gr.Request
+    ) -> dict:
+        if prompt_choice:
+            user_context.set_value(
+                request, "brainstorming_prompt_choice", prompt_choice
+            )
+            chat_context.prompt = prompt_list.get(prompt_choice).metadata.get(
+                "title", "Unnamed use case"
+            )
+            help, knowledge = prompt_list.render_help_markdown(prompt_choice)
+            return {
+                ui_prompt: prompt_list.render_prompt(prompt_choice, user_input),
+                ui_help: help,
+                ui_help_knowledge: knowledge,
+            }
+        else:
+            return {
+                ui_prompt: "",
+                ui_help: "",
+                ui_help_knowledge: "",
+            }
 
-    with gr.Tab(interaction_pattern_name, id=tab_id):
+    with gr.Tab(interaction_pattern_name, id=tab_id) as tab_brainstorming:
         with gr.Row():
             gr.Markdown(
                 "This 'question and answer' pattern currently does not work with all models yet. The GPTs should work."
@@ -56,11 +69,16 @@ def enable_brainstorming(
                         elem_classes="teamai-group-title",
                     )
                     ui_prompt_dropdown = gr.Dropdown(
-                        prompt_list.get_title_id_tuples(), label="Choose a task"
+                        prompt_list.get_title_id_tuples(),
+                        label="Choose a task",
+                        elem_id="brainstorming_prompt_choice",
                     )
-                    ui_help = gr.Markdown(elem_classes="prompt-help")
+                    ui_help = gr.Markdown(
+                        elem_classes="prompt-help", elem_id="brainstorming_help"
+                    )
                     ui_help_knowledge = gr.Markdown(
-                        elem_classes=["prompt-help", "knowledge"]
+                        elem_classes=["prompt-help", "knowledge"],
+                        elem_id="brainstorming_help_knowledge",
                     )
                     ui_user_input = gr.Textbox(label="User input", lines=5)
 
@@ -156,3 +174,8 @@ def enable_brainstorming(
             )
 
         ui_chatbot.like(on_vote, None, None)
+        
+        def on_tab_selected(request: gr.Request):
+            user_context.set_value(request, "selected_tab", tab_id)
+            
+        tab_brainstorming.select(on_tab_selected)

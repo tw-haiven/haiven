@@ -10,7 +10,7 @@ import vertexai
 from shared.models.chat_context import ChatContext
 from shared.user_feedback import UserFeedback
 from vertexai.language_models import CodeGenerationModel, TextGenerationModel
-
+from shared.user_context import user_context
 
 class SqliteDatabaseManager:
     @staticmethod
@@ -238,9 +238,9 @@ def enable_db_exploration(category_filter: List[str]):
     schema_str = SqliteDatabaseManager.get_instance().get_db_schema()
 
     sample_questions = "which store has the most number of inventory items? || how many stores have the polo shirt product?"
-
+    tab_id="db_exploration"
     chat_context = ChatContext(
-        tab_id="db_exploration",
+        tab_id=tab_id,
         interaction_pattern=category_filter[0],
         model="code-bison@001",
         temperature=0,
@@ -248,7 +248,7 @@ def enable_db_exploration(category_filter: List[str]):
         message="",
     )
 
-    with gr.Tab("Test DB Exploration"):
+    with gr.Tab("Test DB Exploration",id=tab_id) as exploration_tab:
         with gr.Row():
             with gr.Column(scale=2):
                 gr.Code(schema_str, label="Schema", interactive=False)
@@ -333,3 +333,8 @@ def enable_db_exploration(category_filter: List[str]):
         )
 
     chatbot.like(on_vote, None, None)
+
+    def on_tab_selected(request: gr.Request):
+                user_context.set_value(request, "selected_tab", tab_id)
+            
+    exploration_tab.select(on_tab_selected)

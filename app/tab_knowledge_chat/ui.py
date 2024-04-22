@@ -10,6 +10,7 @@ from shared.llm_config import LLMConfig
 from shared.chats import DocumentsChat, ServerChatSessionMemory
 from shared.models.chat_context import ChatContext
 from shared.user_feedback import UserFeedback
+from shared.user_context import user_context
 
 
 def enable_knowledge_chat(
@@ -48,6 +49,7 @@ def enable_knowledge_chat(
                             ui_knowledge_choice = gr.Dropdown(
                                 knowledge_documents,
                                 label="Choose an existing knowledge base",
+                                elem_id="knowledge_chat_prompt_choice",
                             )
                         with gr.Row():
                             ui_loaded_file_label = gr.Markdown("Loaded: None")
@@ -95,30 +97,45 @@ def enable_knowledge_chat(
             }
 
         def load_knowledge(
-            knowledge_document_selected: str, user_identifier_state: str
+            knowledge_document_selected: str,
+            user_identifier_state: str,
+            request: gr.Request,
         ):
-            chat_context.prompt = "Knowledge chat - Existing"
-            knowledge = EmbeddingsService.get_embedded_document(
-                knowledge_document_selected
-            )
-
-            chat_session_key_value, chat_session = (
-                CHAT_SESSION_MEMORY.get_or_create_chat(
-                    lambda: DocumentsChat(llm_config=llm_config, knowledge=knowledge),
-                    None,
-                    "knowledge-chat",
-                    user_identifier_state,
+            if knowledge_document_selected:
+                user_context.set_value(
+                    request, "knowledge_chat_prompt_choice", knowledge_document_selected
                 )
-            )
+                chat_context.prompt = "Knowledge chat - Existing"
+                knowledge = EmbeddingsService.get_embedded_document(
+                    knowledge_document_selected
+                )
 
-            info_text = f'"{knowledge.title}" is loaded.\n\n**Source:** {knowledge.source}\n\n**Sample question:** {knowledge.sample_question}'
-            return {
-                ui_loaded_file_label: info_text,
-                state_chat_session_key: chat_session_key_value,
-                # clear the chat
-                ui_question: "",
-                ui_chatbot: [],
-            }
+                chat_session_key_value, chat_session = (
+                    CHAT_SESSION_MEMORY.get_or_create_chat(
+                        lambda: DocumentsChat(
+                            llm_config=llm_config, knowledge=knowledge
+                        ),
+                        None,
+                        "knowledge-chat",
+                        user_identifier_state,
+                    )
+                )
+
+                info_text = f'"{knowledge.title}" is loaded.\n\n**Source:** {knowledge.source}\n\n**Sample question:** {knowledge.sample_question}'
+                return {
+                    ui_loaded_file_label: info_text,
+                    state_chat_session_key: chat_session_key_value,
+                    # clear the chat
+                    ui_question: "",
+                    ui_chatbot: [],
+                }
+            else:
+                return {
+                    ui_loaded_file_label: "",
+                    state_chat_session_key: "",
+                    ui_question: "",
+                    ui_chatbot: [],
+                }
 
         def ask_question(question: str, chat_session_key_value: str):
             try:
@@ -167,7 +184,8 @@ def enable_knowledge_chat(
 
         ui_chatbot.like(on_vote, None, None)
 
-    def on_tab_selected():
+    def on_tab_selected(request: gr.Request):
+        user_context.set_value(request, "selected_tab", tab_id)
         choices = [
             (embedding.title, embedding.key)
             for embedding in EmbeddingsService.get_embedded_documents()

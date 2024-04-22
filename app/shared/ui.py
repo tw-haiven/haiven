@@ -198,7 +198,7 @@ class UI:
             )
             videos_markdown += "\n\nFor more examples, check out the 'About' sections of the other task areas."
 
-        with gr.Tab("ABOUT"):
+        with gr.Tab("ABOUT", elem_id="about"):
             gr.Markdown(
                 "[Remember to be mindful](https://central.thoughtworks.net/home/about-our-company/our-craft/technology-thoughtworks/generative-ai-thoughtworks/generative-ai-guardrails-for-practioners) of the data you enter and upload here.",
                 elem_classes="disclaimer",

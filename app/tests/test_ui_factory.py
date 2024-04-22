@@ -2,6 +2,7 @@
 import unittest
 from unittest.mock import patch, Mock, MagicMock, PropertyMock
 from shared.ui_factory import UIFactory
+import gradio as gr
 
 
 class TestUIFactory(unittest.TestCase):
@@ -66,7 +67,9 @@ class TestUIFactory(unittest.TestCase):
         css = MagicMock()
         ui.styling.return_value = (theme, css)
         llm_config = MagicMock()
-        ui.create_llm_settings_ui.return_value = (MagicMock(), MagicMock(), llm_config)
+        model_select = MagicMock()
+        tone_select = MagicMock()
+        ui.create_llm_settings_ui.return_value = (model_select, tone_select, llm_config)
         navigation = MagicMock()
         category_metadata = MagicMock()
         ui_factory.navigation_manager.get_coding_navigation.return_value = (
@@ -74,6 +77,16 @@ class TestUIFactory(unittest.TestCase):
             category_metadata,
         )
 
+        # Mocking the tab controls
+        element_ids = [
+            "chat_prompt_choice",
+            "brainstorming_prompt_choice",
+            "diagram_chat_prompt_choice",
+            "knowledge_chat_prompt_choice",
+        ]
+        all_tabs.children = []
+        for element_id in element_ids:
+            all_tabs.children.append(gr.Markdown(elem_id=element_id))
         # Action
         returned_blocks = ui_factory.create_ui(ui_type="coding")
 
@@ -121,7 +134,25 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_db_exploration.assert_called_with(category_filter)
         blocks.load.assert_called_with(
-            event_handler.on_ui_load_with_tab_deeplink, None, [all_tabs, state]
+            event_handler.on_load_ui,
+            [
+                all_tabs.children[0],
+                all_tabs.children[1],
+                all_tabs.children[2],
+                all_tabs.children[3],
+                model_select,
+                tone_select
+            ],
+            [
+                all_tabs,
+                all_tabs.children[0],
+                all_tabs.children[1],
+                all_tabs.children[2],
+                all_tabs.children[3],
+                model_select,
+                tone_select,
+                state,
+            ],
         )
         blocks.queue.assert_called_once()
 
@@ -188,13 +219,26 @@ class TestUIFactory(unittest.TestCase):
         css = MagicMock()
         ui.styling.return_value = (theme, css)
         llm_config = MagicMock()
-        ui.create_llm_settings_ui.return_value = (MagicMock(), MagicMock(), llm_config)
+        model_select = MagicMock()
+        tone_select = MagicMock()
+        ui.create_llm_settings_ui.return_value = (model_select,tone_select, llm_config)
         navigation = MagicMock()
         category_metadata = MagicMock()
         ui_factory.navigation_manager.get_testing_navigation.return_value = (
             navigation,
             category_metadata,
         )
+        
+        # Mocking the tab controls
+        element_ids = [
+            "chat_prompt_choice",
+            "brainstorming_prompt_choice",
+            "diagram_chat_prompt_choice",
+            "knowledge_chat_prompt_choice",
+        ]
+        all_tabs.children = []
+        for element_id in element_ids:
+            all_tabs.children.append(gr.Markdown(elem_id=element_id))
 
         # Action
         returned_blocks = ui_factory.create_ui(ui_type="testing")
@@ -243,7 +287,25 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_db_exploration.assert_called_with(category_filter)
         blocks.load.assert_called_with(
-            event_handler.on_ui_load_with_tab_deeplink, None, [all_tabs, state]
+            event_handler.on_load_ui,
+            [
+                all_tabs.children[0],
+                all_tabs.children[1],
+                all_tabs.children[2],
+                all_tabs.children[3],
+                model_select,
+                tone_select
+            ],
+            [
+                all_tabs,
+                all_tabs.children[0],
+                all_tabs.children[1],
+                all_tabs.children[2],
+                all_tabs.children[3],
+                model_select,
+                tone_select,
+                state,
+            ],
         )
         blocks.queue.assert_called_once()
 
@@ -308,13 +370,26 @@ class TestUIFactory(unittest.TestCase):
         css = MagicMock()
         ui.styling.return_value = (theme, css)
         llm_config = MagicMock()
-        ui.create_llm_settings_ui.return_value = (MagicMock(), MagicMock(), llm_config)
+        model_select = MagicMock()
+        tone_select = MagicMock()
+        ui.create_llm_settings_ui.return_value = (model_select, tone_select, llm_config)
         navigation = MagicMock()
         category_metadata = MagicMock()
         ui_factory.navigation_manager.get_analysis_navigation.return_value = (
             navigation,
             category_metadata,
         )
+
+        # Mocking the tab controls
+        element_ids = [
+            "chat_prompt_choice",
+            "brainstorming_prompt_choice",
+            "diagram_chat_prompt_choice",
+            "knowledge_chat_prompt_choice",
+        ]
+        all_tabs.children = []
+        for element_id in element_ids:
+            all_tabs.children.append(gr.Markdown(elem_id=element_id))
 
         # Action
         returned_blocks = ui_factory.create_ui(ui_type="analysts")
@@ -361,7 +436,25 @@ class TestUIFactory(unittest.TestCase):
             category_filter,
         )
         blocks.load.assert_called_with(
-            event_handler.on_ui_load_with_tab_deeplink, None, [all_tabs, state]
+            event_handler.on_load_ui,
+            [
+                all_tabs.children[0],
+                all_tabs.children[1],
+                all_tabs.children[2],
+                all_tabs.children[3],
+                model_select,
+                tone_select
+            ],
+            [
+                all_tabs,
+                all_tabs.children[0],
+                all_tabs.children[1],
+                all_tabs.children[2],
+                all_tabs.children[3],
+                model_select,
+                tone_select,
+                state,
+            ],
         )
         blocks.queue.assert_called_once()
 
