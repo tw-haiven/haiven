@@ -420,7 +420,10 @@ class UIFactory:
             )
             self.ui.ui_header(navigation=navigation)
 
-            self.ui.ui_show_about()
+            with gr.Tab("About"):
+                self.ui.ui_show_about()
+            with gr.Tab("Data processing"):
+                self.ui.ui_show_data_processing()
 
         return blocks
 
