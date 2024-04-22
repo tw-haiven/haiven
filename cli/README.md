@@ -1,6 +1,7 @@
-# `Setting up knowledge package using CLI`
+# `TEAMAI-CLI Quickstart Guide`
+The `teamai-cli` is a command line interface that provides a set of commands for indexing files, and creating knowledge packages.
 
-### Install CLI
+### TEAMAI-CLI Installation
 Using [poetry](https://python-poetry.org/) run
 
 ```console
@@ -8,15 +9,22 @@ $ poetry run cli-init
 $ poetry run cli-install
 ```
 
-### Setup CLI configuration
+### Setup the CLI configuration
+This will allow the cli to use the api keys and embedding models you have defined in the app configuration file.
 ```console
 $ teamai-cli init --config-path <CONFIG_PATH> --env-path <ENV_PATH>
 ```
-- CONFIG_PATH being the path to the app config file  ../app/config.yaml
-- ENV_PATH being the path to the app environment file ../app/.env
+- CONFIG_PATH being the app config yaml definition
+
+    By default you can use the one located at the following path `$(pwd)/app/config.yaml`
+
+- ENV_PATH being the path to the app environment variable file definition
+
+    By default you can use the one located at the following path `$(pwd)/app/.env`
 
 
 ### Create knowledge package structure
+This will create a knowledge package structure for a given domain name which will allow you to tailor the applicatioin to your specific needs.
 
 ```console
 $ teamai-cli create-domain-package domain_name <DOMAIN_NAME> parent_dir<PATH_TO_PARENT_DIR>
@@ -25,6 +33,7 @@ $ teamai-cli create-domain-package domain_name <DOMAIN_NAME> parent_dir<PATH_TO_
 - PATH_TO_PARENT_DIR being the path to the knowledge pack root directory.
 
 ### Index all files in the source directory
+This will convert the files you want to rely on into embeddings and store them in the knowledge package directory.
 ```console
 $ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embedding-model <EMBEDDING_MODEL> --output-dir <PATH_TO_PARENT_DIR>/<DOMAIN_NAME>/embeddings
 ```
