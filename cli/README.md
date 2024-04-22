@@ -60,12 +60,32 @@ $ teamai-cli [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
+* `create-domain-package`: Create a domain package base structure.
 * `index-all-files`: Index all pdf or text files in a directory...
 * `index-file`: Index single pdf or text file to a given...
 * `init`: Initialize the config file with the given...
 * `pickle-web-page`: Index a web page to a given destination path.
 * `set-config-path`: Set the config path in the config file.
 * `set-env-path`: Set the env path in the config file.
+
+## `teamai-cli create-domain-package`
+
+Create a domain package base structure.
+
+**Usage**:
+
+```console
+$ teamai-cli create-domain-package [OPTIONS] DOMAIN_NAME KNOWLEDGE_ROOT_DIR
+```
+
+**Arguments**:
+
+* `DOMAIN_NAME`: [required]
+* `KNOWLEDGE_ROOT_DIR`: [required]
+
+**Options**:
+
+* `--help`: Show this message and exit.
 
 ## `teamai-cli index-all-files`
 
@@ -86,7 +106,7 @@ $ teamai-cli index-all-files [OPTIONS] SOURCE_DIR
 * `--output-dir TEXT`: [default: new_knowledge_base]
 * `--embedding-model TEXT`: [default: openai]
 * `--description TEXT`
-* `--config-path TEXT`: [default: config.yaml]
+* `--config-path TEXT`
 * `--help`: Show this message and exit.
 
 ## `teamai-cli index-file`
@@ -106,7 +126,7 @@ $ teamai-cli index-file [OPTIONS] SOURCE_PATH
 **Options**:
 
 * `--embedding-model TEXT`: [default: openai]
-* `--config-path TEXT`: [default: config.yaml]
+* `--config-path TEXT`
 * `--description TEXT`
 * `--output-dir TEXT`: [default: new_knowledge_base]
 * `--help`: Show this message and exit.
@@ -123,7 +143,7 @@ $ teamai-cli init [OPTIONS]
 
 **Options**:
 
-* `--config-path TEXT`: [default: config.yaml]
+* `--config-path TEXT`
 * `--env-path TEXT`
 * `--help`: Show this message and exit.
 

@@ -125,13 +125,14 @@ def cli_update_docs():
     cli_docs_start_key = "# `teamai-cli`"
     cli_docs_path = "cli_docs.md"
     command = f"""
-    cd cli && \
+    poetry install --directory=cli 
     poetry run typer teamai_cli.main utils docs --output {cli_docs_path} --name teamai-cli
     """
     subprocess.run(command, shell=True)
     readme_path = "cli/README.md"
-    create_cli_readme(readme_path, f"cli/{cli_docs_path}", cli_docs_start_key)
-    os.remove(f"cli/{cli_docs_path}")
+    create_cli_readme(readme_path, f"{cli_docs_path}", cli_docs_start_key)
+    print(f"Removing {cli_docs_path}")
+    os.remove(f"{cli_docs_path}")
 
 
 def create_cli_readme(
@@ -150,6 +151,5 @@ def create_cli_readme(
         )
 
     new_readme_content = f"{readme_content[: start_index]}{docs_content}"
-
     with open(readme_path, "w") as f:
         f.write(new_readme_content)
