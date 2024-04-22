@@ -13,6 +13,12 @@ class CliConfigService:
         self.cli_config_path = f"{cli_config_dir}/config"
 
     def initialize_config(self, config_path: str = "", env_path: str = ""):
+        if not os.path.isabs(config_path) and config_path != "":
+            config_path = os.path.abspath(config_path)
+
+        if not os.path.isabs(env_path) and env_path != "":
+            env_path = os.path.abspath(env_path)
+
         if not os.path.exists(os.path.expanduser(self.cli_config_dir)):
             os.makedirs(os.path.expanduser(self.cli_config_dir), exist_ok=True)
             file_path = os.path.expanduser(self.cli_config_path)
@@ -29,6 +35,8 @@ class CliConfigService:
         return _get_value_from_file(cli_config_path, CONFIG_PATH_KEY)
 
     def set_config_path(self, config_path: str):
+        config_path = os.path.abspath(config_path)
+        print(config_path)
         if os.path.exists(self.cli_config_path):
             _update_value_in_file(self.cli_config_path, CONFIG_PATH_KEY, config_path)
         else:
@@ -38,7 +46,7 @@ class CliConfigService:
         return _get_value_from_file(self.cli_config_path, ENV_PATH_KEY)
 
     def set_env_path(self, env_path: str):
-        config_path = os.path.expanduser(self.cli_config_path)
+        config_path = os.path.abspath(self.cli_config_path)
         if os.path.exists(config_path):
             _update_value_in_file(config_path, ENV_PATH_KEY, env_path)
         else:

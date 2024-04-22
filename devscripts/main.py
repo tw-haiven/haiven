@@ -125,7 +125,7 @@ def cli_update_docs():
     cli_docs_start_key = "# `teamai-cli`"
     cli_docs_path = "cli_docs.md"
     command = f"""
-    poetry install --directory=cli 
+    poetry install --directory=cli
     poetry run typer teamai_cli.main utils docs --output {cli_docs_path} --name teamai-cli
     """
     subprocess.run(command, shell=True)
