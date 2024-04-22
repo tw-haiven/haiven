@@ -27,20 +27,20 @@ $ teamai-cli init --config-path <CONFIG_PATH> --env-path <ENV_PATH>
 This will create a knowledge package structure for a given domain name which will allow you to tailor the applicatioin to your specific needs.
 
 ```console
-$ teamai-cli create-domain-package domain_name <DOMAIN_NAME> parent_dir<PATH_TO_PARENT_DIR>
+$ teamai-cli create-domain-package domain_name <DOMAIN_NAME> parent_dir<KNOWLEDGE_ROOT_DIR>
 ```
 - DOMAIN_NAME being the name of the domain you want to create a knowledge package for.
-- PATH_TO_PARENT_DIR being the path to the knowledge pack root directory.
+- KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory.
 
 ### Index all files in the source directory
 This will convert the files you want to rely on into embeddings and store them in the knowledge package directory.
 ```console
-$ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embedding-model <EMBEDDING_MODEL> --output-dir <PATH_TO_PARENT_DIR>/<DOMAIN_NAME>/embeddings
+$ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embedding-model <EMBEDDING_MODEL> --output-dir <KNOWLEDGE_ROOT_DIR>/<DOMAIN_NAME>/embeddings
 ```
 - SOURCE_DIR being the path to the source directory containing the files you want to index.
 - DESCRIPTION being a description of the ensemble files you want to index.
 - EMBEDDING_MODEL being the embedding model you want to use for indexing.
-- PATH_TO_PARENT_DIR being the path to the knowledge pack root directory where the domain package is located.
+- KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory where the domain package is located.
 
 
 ___
