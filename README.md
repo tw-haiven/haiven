@@ -116,14 +116,20 @@ If you want to use Azure, GCP or AWS, you need to set the corresponding environm
 
 Prerequisites:
 - Python3
-- Just CLI for running helper scripts. [Install Just](https://just.systems/man/en/chapter_4.html) and use `just -l` to list available scripts.
+- [Pre-commit](https://pre-commit.com/)
+- [Poetry](https://python-poetry.org/)
 - If you don't have OAuth credentials set up, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
 
 Run:
 
 ```
-just init
-just run
+poetry run init
+poetry run app
+```
+
+Test:
+```
+poetry run test
 ```
 
 ### 4. Deploy your own instance
