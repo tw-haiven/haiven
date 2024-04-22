@@ -64,7 +64,6 @@ $ teamai-cli [OPTIONS] COMMAND [ARGS]...
 * `index-all-files`: Index all pdf or text files in a directory...
 * `index-file`: Index single pdf or text file to a given...
 * `init`: Initialize the config file with the given...
-* `pickle-web-page`: Index a web page to a given destination path.
 * `set-config-path`: Set the config path in the config file.
 * `set-env-path`: Set the env path in the config file.
 
@@ -145,26 +144,6 @@ $ teamai-cli init [OPTIONS]
 
 * `--config-path TEXT`
 * `--env-path TEXT`
-* `--help`: Show this message and exit.
-
-## `teamai-cli pickle-web-page`
-
-Index a web page to a given destination path.
-
-**Usage**:
-
-```console
-$ teamai-cli pickle-web-page [OPTIONS] URL
-```
-
-**Arguments**:
-
-* `URL`: [required]
-
-**Options**:
-
-* `--destination-path TEXT`: [default: web_page.pickle]
-* `--html-filter TEXT`: [default: p]
 * `--help`: Show this message and exit.
 
 ## `teamai-cli set-config-path`

@@ -81,7 +81,6 @@ def create_domain_package(
     )
 
 
-@cli.command()
 def pickle_web_page(
     url: str,
     destination_path="web_page.pickle",
