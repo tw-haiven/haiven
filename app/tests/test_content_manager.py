@@ -4,20 +4,29 @@ from shared.content_manager import ContentManager
 
 
 class TestContentManager:
+    @patch("shared.content_manager.Embeddings")
+    @patch("shared.content_manager.EmbeddingsService")
+    @patch("shared.content_manager.ConfigService")
     @patch("shared.content_manager.KnowledgeBaseMarkdown")
     def test_init(
         self,
-        KnowledgeBaseMarkdown,
+        mock_knowledge_base_markdown,
+        mock_config_service,
+        mock_embeddings_service,
+        mock_embeddings,
     ):
-        domain_name = "example.com"
-        root_dir = "/path/to/root"
+        knowledge_pack_path = "/path/to/root"
 
-        knowledge_base_markdown = MagicMock()
-        KnowledgeBaseMarkdown.return_value = knowledge_base_markdown
+        mock_config_service.load_embedding_model.return_value = {}
+        mock_knowledge_pack = MagicMock()
+        mock_knowledge_pack.path = knowledge_pack_path
 
-        knoeledge_path = root_dir + "/" + domain_name + "/knowledge"
-        content_manager = ContentManager(knoeledge_path)
+        _ = ContentManager(knowledge_pack=mock_knowledge_pack)
 
-        KnowledgeBaseMarkdown.assert_called_with(path=knoeledge_path)
+        mock_config_service.load_embedding_model.assert_called_once_with("config.yaml")
+        mock_embeddings_service.initialize.assert_called_once()
+        mock_embeddings_service.load_base_knowledge_pack.assert_called_once_with(
+            knowledge_pack_path + "/base-embeddings"
+        )
 
-        assert content_manager.knowledge_base_markdown == knowledge_base_markdown
+        mock_knowledge_base_markdown.assert_called_with(path=knowledge_pack_path)

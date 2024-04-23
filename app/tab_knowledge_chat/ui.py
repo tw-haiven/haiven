@@ -16,8 +16,10 @@ from shared.user_context import user_context
 def enable_knowledge_chat(
     CHAT_SESSION_MEMORY: ServerChatSessionMemory,
     llm_config: LLMConfig,
+    knowledge_pack_domain: str,
     user_identifier_state: gr.State,
-    category_filter: List[str] = None,
+    category_filter: List[str],
+    knowledge_pack_domain_select: gr.Dropdown = None,
 ):
     load_dotenv()
     tab_id = "knowledge_chat"
@@ -42,10 +44,14 @@ def enable_knowledge_chat(
                     )
                     with gr.Group():
                         with gr.Row(elem_classes="knowledge-advice"):
-                            knowledge_documents = [
+                            domain_selected = knowledge_pack_domain
+                            knowledge_documents = [("All documents", "all")]
+                            knowledge_documents.extend(
                                 (embedding.title, embedding.key)
-                                for embedding in EmbeddingsService.get_embedded_documents()
-                            ]
+                                for embedding in EmbeddingsService.get_embedded_documents(
+                                    kind=domain_selected
+                                )
+                            )
                             ui_knowledge_choice = gr.Dropdown(
                                 knowledge_documents,
                                 label="Choose an existing knowledge base",
@@ -69,11 +75,12 @@ def enable_knowledge_chat(
             with open(file, "rb") as pdf_file:
                 text, metadata = get_text_and_metadata_from_pdf(pdf_file)
                 documents = (text, metadata)
-                EmbeddingsService.generate_document_from_text(
+                EmbeddingsService.generate_base_document_from_text(
                     document_key=pdf_file.name,
                     document_metadata={
-                        "title": os.path.basename(pdf_file.name),
-                        "source": file,
+                        "title": metadata[0].title,
+                        "source": metadata[0].source,
+                        "author": metadata[0].author,
                         "sample_question": "",  # LLM can potentially generate this
                         "description": "",  # LLM can potentially generate this
                     },
@@ -110,32 +117,38 @@ def enable_knowledge_chat(
                     knowledge_document_selected
                 )
 
-                chat_session_key_value, chat_session = (
-                    CHAT_SESSION_MEMORY.get_or_create_chat(
-                        lambda: DocumentsChat(
-                            llm_config=llm_config, knowledge=knowledge
-                        ),
-                        None,
-                        "knowledge-chat",
-                        user_identifier_state,
-                    )
+            domain_selected = user_context.get_value(
+                request, "knowledge_pack_domain", True
+            )
+            chat_session_key_value, chat_session = (
+                CHAT_SESSION_MEMORY.get_or_create_chat(
+                    lambda: DocumentsChat(
+                        llm_config=llm_config,
+                        knowledge=knowledge_document_selected,
+                        kind=domain_selected,
+                    ),
+                    None,
+                    "knowledge-chat",
+                    user_identifier_state,
                 )
+            )
 
+            info_text = "No documents selected"
+
+            if knowledge_document_selected == "all":
+                info_text = "All documents are loaded."
+            elif knowledge_document_selected:
+                knowledge = EmbeddingsService.get_embedded_document(
+                    knowledge_document_selected
+                )
                 info_text = f'"{knowledge.title}" is loaded.\n\n**Source:** {knowledge.source}\n\n**Sample question:** {knowledge.sample_question}'
-                return {
-                    ui_loaded_file_label: info_text,
-                    state_chat_session_key: chat_session_key_value,
-                    # clear the chat
-                    ui_question: "",
-                    ui_chatbot: [],
-                }
-            else:
-                return {
-                    ui_loaded_file_label: "",
-                    state_chat_session_key: "",
-                    ui_question: "",
-                    ui_chatbot: [],
-                }
+            return {
+                ui_loaded_file_label: info_text,
+                state_chat_session_key: chat_session_key_value,
+                # clear the chat
+                ui_question: "",
+                ui_chatbot: [],
+            }
 
         def ask_question(question: str, chat_session_key_value: str):
             try:
@@ -184,19 +197,31 @@ def enable_knowledge_chat(
 
         ui_chatbot.like(on_vote, None, None)
 
-    def on_tab_selected(request: gr.Request):
-        user_context.set_value(request, "selected_tab", tab_id)
-        choices = [
+    def is_empty(value) -> bool:
+        return value is None or value == "" or len(value) == 0
+
+    def on_knowledge_pack_domain_selected(
+        knowledge_pack_domain_select, request: gr.Request
+    ):
+        if is_empty(knowledge_pack_domain_select):
+            return
+
+        choices = [("All Documents", "all")]
+        choices.extend(
             (embedding.title, embedding.key)
-            for embedding in EmbeddingsService.get_embedded_documents()
-        ]
+            for embedding in EmbeddingsService.get_embedded_documents(
+                kind=knowledge_pack_domain_select
+            )
+        )
 
         udated_dd = gr.update(choices=choices)
 
         return udated_dd
 
-    main_tab.select(
-        on_tab_selected,
-        inputs=None,
-        outputs=ui_knowledge_choice,
-    )
+    if knowledge_pack_domain_select:
+        gr.on(
+            triggers=[knowledge_pack_domain_select.change],
+            fn=on_knowledge_pack_domain_selected,
+            inputs=knowledge_pack_domain_select,
+            outputs=ui_knowledge_choice,
+        )

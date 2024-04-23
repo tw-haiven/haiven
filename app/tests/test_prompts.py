@@ -5,8 +5,8 @@ from shared.prompts import PromptList
 import tempfile
 
 
-def create_prompts_directory(tmpdir):
-    prompts_dir = os.path.join(tmpdir, "prompts")
+def create_base_prompts_directory(tmpdir):
+    prompts_dir = os.path.join(tmpdir, "base-prompts")
     os.makedirs(prompts_dir)
     chat_prompts_dir = os.path.join(prompts_dir, "chat")
     os.makedirs(chat_prompts_dir)
@@ -14,7 +14,7 @@ def create_prompts_directory(tmpdir):
 
 
 def create_some_prompt_files(tmpdir, count=3):
-    chat_prompts_dir = create_prompts_directory(tmpdir)
+    chat_prompts_dir = create_base_prompts_directory(tmpdir)
     for i in range(count):
         with open(os.path.join(chat_prompts_dir, f"test{i}.md"), "w") as f:
             f.write(f"---\nidentifier: uuid-{i}\ntitle: Test{i}\n---\nContent")
@@ -71,7 +71,7 @@ def test_init_should_exclude_readmes():
 
 def test_init_should_set_defaults_for_metadata():
     with tempfile.TemporaryDirectory() as tmpdir:
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         knowledge_base = create_knowledge_base(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test0.md"), "w") as f:
             f.write("""---\ntitle: Test0\n---\nContent""")
@@ -84,7 +84,7 @@ def test_init_should_set_defaults_for_metadata():
 
 def test_init_should_load_all_metadata():
     with tempfile.TemporaryDirectory() as tmpdir:
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         knowledge_base = create_knowledge_base(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test.md"), "w") as f:
             f.write("""---
@@ -120,7 +120,7 @@ def test_get_title_id_tuples():
 
 def test_get_should_return_prompt_data():
     with tempfile.TemporaryDirectory() as xtmpdir:
-        tmpdir = create_prompts_directory(xtmpdir)
+        tmpdir = create_base_prompts_directory(xtmpdir)
         knowledge_base = create_knowledge_base(tmpdir)
         create_some_prompt_files(tmpdir, 3)
 
@@ -131,7 +131,7 @@ def test_get_should_return_prompt_data():
 
 def test_create_template():
     with tempfile.TemporaryDirectory() as tmpdir:
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         knowledge_base = create_knowledge_base(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test.md"), "w") as f:
             f.write("---\nidentifier: uuid-x\ntitle: Test\n---\nContent")
@@ -144,7 +144,7 @@ def test_create_template():
 def test_create_and_render_template():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test.md"), "w") as f:
             f.write("---\nidentifier: uuid-x\ntitle: Test\n---\nContent {user_input}")
 
@@ -159,7 +159,7 @@ def test_create_and_render_template():
 def test_create_and_render_template_use_knowledge_base():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test.md"), "w") as f:
             f.write(
                 "---\nidentifier: uuid-x\ntitle: Test\n---\nContent: {user_input} | Business: {business}"
@@ -175,7 +175,7 @@ def test_create_and_render_template_use_knowledge_base():
 def test_create_and_render_template_overwrite_knowledge_base():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test.md"), "w") as f:
             f.write(
                 "---\nidentifier: uuid-x\ntitle: Test\n---\nContent: {user_input} | Business: {business}"
@@ -192,7 +192,7 @@ def test_create_and_render_template_overwrite_knowledge_base():
 def test_filter_should_filter_by_one_category():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test1.md"), "w") as f:
             f.write("""---
 title: 'Some title 1'
@@ -216,7 +216,7 @@ Content {user_input}
 def test_filter_should_filter_by_multiple_categories():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test1.md"), "w") as f:
             f.write("""---
 title: 'Some title 1'
@@ -239,7 +239,7 @@ Content {user_input}
 def test_filter_should_always_include_all_without_categories():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test.md"), "w") as f:
             f.write("""---
 title: 'Some title 1'
@@ -256,7 +256,7 @@ def test_render_prompt_with_business_context():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
 
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test.md"), "w") as f:
             f.write(
                 "---\nidentifier: uuid-x\ntitle: Test\n---\nContent {user_input} {business}"
@@ -270,7 +270,7 @@ def test_render_prompt_with_business_context():
 def test_render_prompt_with_architecture_context():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test.md"), "w") as f:
             f.write(
                 "---\nidentifier: uuid-x\ntitle: Test\n---\nContent {user_input} {architecture}"
@@ -284,7 +284,7 @@ def test_render_prompt_with_architecture_context():
 def test_render_prompt_with_additional_vars():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test.md"), "w") as f:
             f.write(
                 "---\nidentifier: uuid-x\ntitle: Test\n---\nContent {user_input} {business} {additional}"
@@ -300,7 +300,7 @@ def test_render_prompt_with_additional_vars():
 def test_render_prompt_without_prompt_choice():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        create_prompts_directory(tmpdir)
+        create_base_prompts_directory(tmpdir)
         prompt_list = PromptList("chat", knowledge_base, root_dir=tmpdir)
         rendered = prompt_list.render_prompt(None, "Some User Input")
         assert rendered == ""
@@ -309,7 +309,7 @@ def test_render_prompt_without_prompt_choice():
 def test_render_help_markdown():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test.md"), "w") as f:
             f.write(
                 "---\nidentifier: uuid-x\ntitle: Test\nhelp_user_input: User input description \nhelp_prompt_description: Prompt description\n---\nContent {business}"
@@ -327,7 +327,7 @@ def test_render_help_markdown():
 def test_render_help_markdown_when_values_are_empty():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test.md"), "w") as f:
             f.write("---\nidentifier: uuid-x\ntitle: Test\n---\nContent")
 
@@ -340,7 +340,7 @@ def test_render_help_markdown_when_values_are_empty():
 def test_create_markdown_summary():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "prompt1.md"), "w") as f:
             f.write(
                 "---\ntitle: Prompt 1\nhelp_user_input: User input description 1\nhelp_prompt_description: Prompt description 1\n---\nContent 1"
@@ -364,7 +364,7 @@ def test_create_markdown_summary():
 def test_get_knowledge_used():
     with tempfile.TemporaryDirectory() as tmpdir:
         knowledge_base = create_knowledge_base(tmpdir)
-        chat_prompts_dir = create_prompts_directory(tmpdir)
+        chat_prompts_dir = create_base_prompts_directory(tmpdir)
         with open(os.path.join(chat_prompts_dir, "test1.md"), "w") as f:
             f.write("""---
 identifier: 'test1'

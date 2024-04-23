@@ -30,6 +30,9 @@ class Embeddings:
         else:
             raise ValueError(f"Provider {self.embedding_model.provider} not supported")
 
+    def _get_embeddings_provider(self):
+        return self.__embeddings_provider
+
     def _load_text_splitter(self):
         return RecursiveCharacterTextSplitter(
             chunk_size=500,

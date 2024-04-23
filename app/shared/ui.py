@@ -59,6 +59,7 @@ class UI:
                     ![Team AI](../static/thoughtworks_logo.png)
                     """
                 )
+
         if navigation:
             with gr.Row(elem_classes="header"):
                 navigation_html = ""
@@ -74,17 +75,14 @@ class UI:
                     navigation_html += f"<div class='item'><a href='/{item['path']}' class='item-link {classes} {'selected' if navigation['selected'] == item['path'] else ''}'>{icon_html}{item['title']}</a></div>"
                 gr.HTML(f"<div class='navigation'>{navigation_html}</div>")
 
-    def ui_show_knowledge(
-        self,
-        knowledge_base_markdown: KnowledgeBaseMarkdown,
-    ):
+    def ui_show_knowledge(self, knowledge_base_markdown: KnowledgeBaseMarkdown):
         with gr.Row():
             with gr.Column(scale=2):
                 gr.Markdown("## Domain knowledge")
                 for key in knowledge_base_markdown.get_all_keys():
                     gr.Textbox(
                         knowledge_base_markdown.get_content(key),
-                        label=knowledge_base_markdown._knowledge.get(key)["title"],
+                        label=knowledge_base_markdown._base_knowledge.get(key)["title"],
                         lines=10,
                         show_copy_button=True,
                     )
@@ -180,6 +178,19 @@ class UI:
             The application does NOT persist the contents of the chat sessions.
             """)
 
+    def create_knowledge_pack_selector_ui(self):
+        knowledge_pack = ConfigService.load_knowledge_pack()
+        knowledge_packs_choices: List[tuple[str, str]] = [
+            (domain.name, domain.name) for domain in knowledge_pack.domains
+        ]
+        knowledge_packs_selector = gr.Dropdown(
+            knowledge_packs_choices,
+            label="Choose knowledge context",
+            interactive=True,
+            elem_classes=["knowledge-pack-selector"],
+        )
+        return knowledge_packs_selector
+
     def create_llm_settings_ui(
         self, features_filter: List[str] = []
     ) -> tuple[gr.Dropdown, gr.Radio, LLMConfig]:
@@ -199,9 +210,12 @@ class UI:
         )
         dropdown.value = available_options[0][1]
 
-        tone_radio = gr.Radio(
-            _get_valid_tone_values(),
-            label="Temperature",
+        tone_radio = gr.Slider(
+            minimum=0.2,
+            maximum=0.8,
+            step=0.3,
+            value=0.2,
+            label="Temperature (More precise 0.2 - 0.8 More creative)",
             interactive=True,
             elem_classes="model-settings",
         )

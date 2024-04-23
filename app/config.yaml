@@ -1,7 +1,12 @@
 knowledge_pack:
   path: ${TEAM_CONTENT_PATH}
-  domain:
-    name: ${DOMAIN_NAME}
+  domains:
+  - name: ${DOMAIN_NAME}
+    path: ${DOMAIN_NAME}
+  - name: Team AI
+    path: team_teamai
+  - name: Chativity
+    path: team_chativity
 
 enabled_providers: ${ENABLED_PROVIDERS}
 

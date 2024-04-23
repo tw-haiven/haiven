@@ -16,12 +16,18 @@ class PromptList:
         root_dir="teams",
     ):
         data_sources = {
-            "diagrams": {"dir": root_dir + "/prompts/diagrams", "title": "Diagrams"},
+            "diagrams": {
+                "dir": root_dir + "/base-prompts/diagrams",
+                "title": "Diagrams",
+            },
             "brainstorming": {
-                "dir": root_dir + "/prompts/brainstorming",
+                "dir": root_dir + "/base-prompts/brainstorming",
                 "title": "Brainstorming",
             },
-            "chat": {"dir": root_dir + "/prompts/chat", "title": "Chat"},
+            "chat": {
+                "dir": root_dir + "/base-prompts/chat",
+                "title": "Chat",
+            },
         }
 
         self.interaction_pattern_name = data_sources[interaction_type]["title"]
@@ -125,7 +131,7 @@ class PromptList:
             knowledge_keys = self.get_knowledge_used_keys(prompt_choice)
             knowledge = []
             for key in knowledge_keys:
-                found = self.knowledge_base._knowledge.get(key, None)
+                found = self.knowledge_base._base_knowledge.get(key, None)
                 if found:
                     knowledge.append(found.metadata)
 

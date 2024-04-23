@@ -1,4 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
+from typing import List
 import gradio as gr
 from dotenv import load_dotenv
 from shared.services.embeddings_service import EmbeddingsService
@@ -19,8 +20,10 @@ def enable_image_chat(
     CHAT_SESSION_MEMORY: ServerChatSessionMemory,
     prompts_factory: PromptsFactory,
     llm_config: LLMConfig,
+    knowledge_pack_domain: str,
     user_identifier_state: gr.State,
-    prompt_categories=None,
+    prompt_categories: List[str],
+    knowledge_pack_domain_select: gr.Dropdown = None,
 ):
     load_dotenv()
     tab_id = "diagrams"
@@ -42,6 +45,14 @@ def enable_image_chat(
     def on_change_prompt_choice(
         prompt_choice: str, user_input: str, image_description: str, request: gr.Request
     ):
+        domain_selected = user_context.get_value(
+            request, "knowledge_pack_domain", app_level=True
+        )
+
+        if domain_selected is None:
+            gr.Warning("Please select a knowledge context first")
+            return ["", "", "", ""]
+
         if prompt_choice:
             user_context.set_value(request, "diagram_chat_prompt_choice", prompt_choice)
             chat_context.prompt = prompt_list.get(prompt_choice).metadata.get(
@@ -49,19 +60,16 @@ def enable_image_chat(
             )
 
             help, knowledge = prompt_list.render_help_markdown(prompt_choice)
-            return {
-                ui_prompt: prompt_list.render_prompt(
+            return [
+                prompt_choice,
+                prompt_list.render_prompt(
                     prompt_choice, user_input, {"image_description": image_description}
                 ),
-                ui_help: help,
-                ui_help_knowledge: knowledge,
-            }
+                help,
+                knowledge,
+            ]
         else:
-            return {
-                ui_prompt: "",
-                ui_help: "",
-                ui_help_knowledge: "",
-            }
+            return [prompt_choice, "", "", ""]
 
     def on_change_user_inputs(
         prompt_choice: str, user_input: str, image_description: str
@@ -157,7 +165,7 @@ def enable_image_chat(
                 ui_prompt_dropdown.change(
                     fn=on_change_prompt_choice,
                     inputs=[ui_prompt_dropdown, ui_user_input, ui_image_description],
-                    outputs=[ui_prompt, ui_help, ui_help_knowledge],
+                    outputs=[ui_prompt_dropdown, ui_prompt, ui_help, ui_help_knowledge],
                 )
                 ui_image_upload.change(
                     fn=ImageDescriptionService.prompt_with_image,
@@ -194,11 +202,15 @@ def enable_image_chat(
 
                     with gr.Group():
                         with gr.Row(elem_classes="knowledge-advice"):
+                            domain_selected = knowledge_pack_domain
+
                             knowledge_documents = [("All documents", "all")]
                             knowledge_documents.extend(
                                 [
                                     (embedding.title, embedding.key)
-                                    for embedding in EmbeddingsService.get_embedded_documents()
+                                    for embedding in EmbeddingsService.get_embedded_documents(
+                                        kind=domain_selected
+                                    )
                                 ]
                             )
                             ui_knowledge_choice = gr.Dropdown(
@@ -229,27 +241,28 @@ def enable_image_chat(
                 }
 
         def chat(message_value: str, chat_history, chat_session_key_value: str):
-            print(
-                "@debug diagram chat: ",
-                message_value,
-                chat_history,
-                chat_session_key_value,
-            )
             chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)
 
             for chat_history_chunk in chat_session.next(message_value, chat_history):
                 yield {ui_message: "", ui_chatbot: chat_history_chunk}
 
         def chat_with_knowledge(
-            knowledge_choice: str, chat_history, chat_session_key_value
+            knowledge_choice: str,
+            chat_history,
+            chat_session_key_value,
+            request: gr.Request,
         ):
             chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)
 
             if knowledge_choice == []:
                 raise ValueError("No knowledge base selected")
 
+            domain_selected = user_context.get_value(
+                request, "knowledge_pack_domain", True
+            )
+
             for chat_history_chunk in chat_session.next_advice_from_knowledge(
-                chat_history, knowledge_choice
+                chat_history, knowledge_choice, domain_selected
             ):
                 yield {ui_chatbot: chat_history_chunk}
 
@@ -269,7 +282,11 @@ def enable_image_chat(
         )
         ui_get_knowledge_advice_button.click(
             chat_with_knowledge,
-            [ui_knowledge_choice, ui_chatbot, state_chat_session_key],
+            [
+                ui_knowledge_choice,
+                ui_chatbot,
+                state_chat_session_key,
+            ],
             [ui_chatbot],
             scroll_to_output=True,
         )
@@ -286,21 +303,31 @@ def enable_image_chat(
 
         ui_chatbot.like(on_vote, None, None)
 
-    def on_tab_selected(request: gr.Request):
-        user_context.set_value(request, "selected_tab", tab_id)
-        choices = [("All documents", "all")]
+    def is_empty(value) -> bool:
+        return value is None or value == "" or len(value) == 0
+
+    def on_knowledge_pack_domain_selected(
+        knowledge_pack_domain_select, request: gr.Request
+    ):
+        if is_empty(knowledge_pack_domain_select):
+            return
+
+        choices = [("All Documents", "all")]
         choices.extend(
-            [
-                (embedding.title, embedding.key)
-                for embedding in EmbeddingsService.get_embedded_documents()
-            ]
+            (embedding.title, embedding.key)
+            for embedding in EmbeddingsService.get_embedded_documents(
+                kind=knowledge_pack_domain_select
+            )
         )
+
         udated_dd = gr.update(choices=choices)
 
         return udated_dd
 
-    main_tab.select(
-        on_tab_selected,
-        inputs=None,
-        outputs=ui_knowledge_choice,
-    )
+    if knowledge_pack_domain_select:
+        gr.on(
+            triggers=[knowledge_pack_domain_select.change],
+            fn=on_knowledge_pack_domain_selected,
+            inputs=knowledge_pack_domain_select,
+            outputs=ui_knowledge_choice,
+        )

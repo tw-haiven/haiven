@@ -6,7 +6,7 @@ import yaml
 from dotenv import load_dotenv
 from shared.models.default_models import DefaultModels
 from shared.models.embedding_model import EmbeddingModel
-from shared.models.knowledge_pack import KnowledgePack, Domain
+from shared.models.knowledge_pack import KnowledgePack
 from shared.models.model import Model
 
 
@@ -60,19 +60,20 @@ class ConfigService:
         return models
 
     @staticmethod
-    def load_knowledge_pack(path: str = "config.yaml") -> KnowledgePack:
+    def load_knowledge_pack(config_file_path: str = "config.yaml") -> KnowledgePack:
         """
         Load a knowledge pack from a YAML config file.
 
         Args:
-            path (str): The path to the YAML file.
+            knowledge_pack_id (str): The id of the knowledge pack to load.
+            config_file_path (str): The path to the YAML file.
 
         Returns:
             KnowledgePack: The loaded knowledge pack.
         """
-        data = ConfigService._load_yaml(path)
-        knowledge_pack = KnowledgePack.from_dict(data["knowledge_pack"])
-        knowledge_pack.domain = Domain.from_dict(knowledge_pack.domain)
+        data = ConfigService._load_yaml(config_file_path)
+        knowledge_pack_raw = data["knowledge_pack"]
+        knowledge_pack = KnowledgePack.from_dict(knowledge_pack_raw)
 
         return knowledge_pack
 

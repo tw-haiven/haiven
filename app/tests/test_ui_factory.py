@@ -32,14 +32,10 @@ class TestUIFactory(unittest.TestCase):
         event_handler = MagicMock()
         prompts_parent_dir = "test_parent_dir"
         knowledge_base_markdown = MagicMock()
-        knowledge_base_documents = MagicMock()
-        knowledge_base_pdfs = MagicMock()
-        documentation_base = MagicMock()
+        domain_active = "test_domain"
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.knowledge_base_documents = knowledge_base_documents
-        content_manager.knowledge_base_pdfs = knowledge_base_pdfs
-        content_manager.documentation_base = documentation_base
+        content_manager.knowledge_pack_domain_active = domain_active
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
@@ -70,6 +66,8 @@ class TestUIFactory(unittest.TestCase):
         model_select = MagicMock()
         tone_select = MagicMock()
         ui.create_llm_settings_ui.return_value = (model_select, tone_select, llm_config)
+        domain_select = MagicMock()
+        ui.create_knowledge_pack_selector_ui.return_value = domain_select
         navigation = MagicMock()
         category_metadata = MagicMock()
         ui_factory.navigation_manager.get_coding_navigation.return_value = (
@@ -107,8 +105,10 @@ class TestUIFactory(unittest.TestCase):
             chat_session_memory,
             prompts_factory,
             llm_config,
+            domain_active,
             state,
             category_filter,
+            domain_select,
         )
         mock_enable_brainstorming.assert_called_with(
             knowledge_base_markdown,
@@ -123,34 +123,28 @@ class TestUIFactory(unittest.TestCase):
             chat_session_memory,
             prompts_factory,
             llm_config,
+            domain_active,
             state,
             category_filter,
+            domain_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
             chat_session_memory,
             llm_config,
+            domain_active,
             state,
             category_filter,
+            domain_select,
         )
         mock_enable_db_exploration.assert_called_with(category_filter)
         blocks.load.assert_called_with(
             event_handler.on_load_ui,
-            [
-                all_tabs.children[0],
-                all_tabs.children[1],
-                all_tabs.children[2],
-                all_tabs.children[3],
-                model_select,
-                tone_select,
-            ],
+            [model_select, tone_select, domain_select],
             [
                 all_tabs,
-                all_tabs.children[0],
-                all_tabs.children[1],
-                all_tabs.children[2],
-                all_tabs.children[3],
                 model_select,
                 tone_select,
+                domain_select,
                 state,
             ],
         )
@@ -184,14 +178,10 @@ class TestUIFactory(unittest.TestCase):
         event_handler = MagicMock()
         prompts_parent_dir = "test_parent_dir"
         knowledge_base_markdown = MagicMock()
-        knowledge_base_documents = MagicMock()
-        knowledge_base_pdfs = MagicMock()
-        documentation_base = MagicMock()
+        domain_active = "test_domain"
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.knowledge_base_documents = knowledge_base_documents
-        content_manager.knowledge_base_pdfs = knowledge_base_pdfs
-        content_manager.documentation_base = documentation_base
+        content_manager.knowledge_pack_domain_active = domain_active
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
@@ -222,6 +212,8 @@ class TestUIFactory(unittest.TestCase):
         model_select = MagicMock()
         tone_select = MagicMock()
         ui.create_llm_settings_ui.return_value = (model_select, tone_select, llm_config)
+        domain_select = MagicMock()
+        ui.create_knowledge_pack_selector_ui.return_value = domain_select
         navigation = MagicMock()
         category_metadata = MagicMock()
         ui_factory.navigation_manager.get_testing_navigation.return_value = (
@@ -260,8 +252,10 @@ class TestUIFactory(unittest.TestCase):
             chat_session_memory,
             prompts_factory,
             llm_config,
+            domain_active,
             state,
             category_filter,
+            domain_select,
         )
         mock_enable_brainstorming.assert_called_with(
             knowledge_base_markdown,
@@ -276,34 +270,28 @@ class TestUIFactory(unittest.TestCase):
             chat_session_memory,
             prompts_factory,
             llm_config,
+            domain_active,
             state,
             category_filter,
+            domain_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
             chat_session_memory,
             llm_config,
+            domain_active,
             state,
             category_filter,
+            domain_select,
         )
         mock_enable_db_exploration.assert_called_with(category_filter)
         blocks.load.assert_called_with(
             event_handler.on_load_ui,
-            [
-                all_tabs.children[0],
-                all_tabs.children[1],
-                all_tabs.children[2],
-                all_tabs.children[3],
-                model_select,
-                tone_select,
-            ],
+            [model_select, tone_select, domain_select],
             [
                 all_tabs,
-                all_tabs.children[0],
-                all_tabs.children[1],
-                all_tabs.children[2],
-                all_tabs.children[3],
                 model_select,
                 tone_select,
+                domain_select,
                 state,
             ],
         )
@@ -335,14 +323,10 @@ class TestUIFactory(unittest.TestCase):
         event_handler = MagicMock()
         prompts_parent_dir = "test_parent_dir"
         knowledge_base_markdown = MagicMock()
-        knowledge_base_documents = MagicMock()
-        knowledge_base_pdfs = MagicMock()
-        documentation_base = MagicMock()
+        domain_active = "test_domain"
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.knowledge_base_documents = knowledge_base_documents
-        content_manager.knowledge_base_pdfs = knowledge_base_pdfs
-        content_manager.documentation_base = documentation_base
+        content_manager.knowledge_pack_domain_active = domain_active
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
@@ -373,6 +357,8 @@ class TestUIFactory(unittest.TestCase):
         model_select = MagicMock()
         tone_select = MagicMock()
         ui.create_llm_settings_ui.return_value = (model_select, tone_select, llm_config)
+        domain_select = MagicMock()
+        ui.create_knowledge_pack_selector_ui.return_value = domain_select
         navigation = MagicMock()
         category_metadata = MagicMock()
         ui_factory.navigation_manager.get_analysis_navigation.return_value = (
@@ -410,8 +396,10 @@ class TestUIFactory(unittest.TestCase):
             chat_session_memory,
             prompts_factory,
             llm_config,
+            domain_active,
             state,
             category_filter,
+            domain_select,
         )
         mock_enable_brainstorming.assert_called_with(
             knowledge_base_markdown,
@@ -426,33 +414,27 @@ class TestUIFactory(unittest.TestCase):
             chat_session_memory,
             prompts_factory,
             llm_config,
+            domain_active,
             state,
             category_filter,
+            domain_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
             chat_session_memory,
             llm_config,
+            domain_active,
             state,
             category_filter,
+            domain_select,
         )
         blocks.load.assert_called_with(
             event_handler.on_load_ui,
-            [
-                all_tabs.children[0],
-                all_tabs.children[1],
-                all_tabs.children[2],
-                all_tabs.children[3],
-                model_select,
-                tone_select,
-            ],
+            [model_select, tone_select, domain_select],
             [
                 all_tabs,
-                all_tabs.children[0],
-                all_tabs.children[1],
-                all_tabs.children[2],
-                all_tabs.children[3],
                 model_select,
                 tone_select,
+                domain_select,
                 state,
             ],
         )
@@ -476,19 +458,17 @@ class TestUIFactory(unittest.TestCase):
         )
         ui = MagicMock()
         ui.create_llm_settings_ui.return_value = model_select, tone_select, llm_config
+        domain_select = MagicMock()
+        ui.create_knowledge_pack_selector_ui.return_value = domain_select
         prompts_factory = MagicMock()
         navigation_manager = MagicMock()
         event_handler = MagicMock()
         prompts_parent_dir = "test_parent_dir"
         knowledge_base_markdown = MagicMock()
-        knowledge_base_documents = MagicMock()
-        knowledge_base_pdfs = MagicMock()
-        documentation_base = MagicMock()
+        domain_active = "test_domain"
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.knowledge_base_documents = knowledge_base_documents
-        content_manager.knowledge_base_pdfs = knowledge_base_pdfs
-        content_manager.documentation_base = documentation_base
+        content_manager.knowledge_pack_domain_active = domain_active
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
@@ -523,15 +503,15 @@ class TestUIFactory(unittest.TestCase):
         ui_factory.ui.ui_header.assert_called_once()
         ui_factory.ui.ui_show_knowledge.assert_called_with(knowledge_base_markdown)
         ui.create_llm_settings_ui.assert_called_once()
-        model_select.change.assert_called_with(fn=change_model, inputs=model_select)
-        tone_select.change.assert_called_with(fn=change_temperature, inputs=tone_select)
         mock_enable_chat.assert_called_with(
             knowledge_base_markdown,
             chat_session_memory,
             prompts_factory,
             llm_config,
+            domain_active,
             user_identifier_state,
             ["prompting"],
+            domain_select,
         )
 
         assert returned_blocks == blocks
@@ -545,14 +525,9 @@ class TestUIFactory(unittest.TestCase):
         event_handler = MagicMock()
         prompts_parent_dir = "test_parent_dir"
         knowledge_base_markdown = MagicMock()
-        knowledge_base_documents = MagicMock()
-        knowledge_base_pdfs = MagicMock()
-        documentation_base = MagicMock()
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.knowledge_base_documents = knowledge_base_documents
-        content_manager.knowledge_base_pdfs = knowledge_base_pdfs
-        content_manager.documentation_base = documentation_base
+        content_manager.knowledge_pack_domain_active = None
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
@@ -603,14 +578,8 @@ class TestUIFactory(unittest.TestCase):
         event_handler = MagicMock()
         prompts_parent_dir = "test_parent_dir"
         knowledge_base_markdown = MagicMock()
-        knowledge_base_documents = MagicMock()
-        knowledge_base_pdfs = MagicMock()
-        documentation_base = MagicMock()
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.knowledge_base_documents = knowledge_base_documents
-        content_manager.knowledge_base_pdfs = knowledge_base_pdfs
-        content_manager.documentation_base = documentation_base
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(

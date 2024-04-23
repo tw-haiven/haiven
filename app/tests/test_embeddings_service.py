@@ -1,8 +1,10 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import os
+from unittest.mock import MagicMock
+
 import pytest
+from langchain.docstore.document import Document
 from shared.models.embedding_model import EmbeddingModel
-from shared.embeddings import Embeddings
 from shared.services.embeddings_service import EmbeddingsService
 
 
@@ -11,91 +13,193 @@ class TestsEmbeddingsService:
     def setup(self):
         EmbeddingsService.reset_instance()
 
-        api_key = os.environ.get("OPENAI_API_KEY")
-        embedding_config = EmbeddingModel(
-            id="open-ai-text-embedding-ada-002",
-            name="Text Embedding Ada v2 on OpenAI",
-            provider="openai",
-            config={"model": "text-embedding-ada-002", "api_key": api_key},
+        embedding_model = EmbeddingModel(
+            id="ollama-embeddings",
+            name="Ollama Embeddings",
+            provider="ollama",
+            config={"model": "ollama-embeddings", "api_key": "api_key"},
         )
 
-        embeddings_provider = Embeddings(embedding_config)
-        EmbeddingsService.initialize(embeddings_provider)
+        fake_similarity_results = [
+            (Document(page_content="document content A"), 0.2),
+            (Document(page_content="document content B"), 0.23),
+            (Document(page_content="document content C"), 0.27),
+            (Document(page_content="document content D"), 0.31),
+            (Document(page_content="document content E"), 0.35),
+        ]
 
-        root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        EmbeddingsService.load_knowledge_pack(
-            os.path.join(root_dir, "tests/test_data/test_knowledge_pack")
+        retriever_mock = MagicMock()
+        retriever_mock.similarity_search_with_score.return_value = (
+            fake_similarity_results
         )
+        embeddings_provider_mock = MagicMock()
+        embeddings_provider_mock.generate_from_filesystem.return_value = retriever_mock
+        embeddings_provider_mock.generate_from_documents.return_value = retriever_mock
+        embeddings_provider_mock.embedding_model = embedding_model
+        EmbeddingsService.initialize(embeddings_provider_mock)
 
         self.service = EmbeddingsService.get_instance()
+        self.service._embeddings_provider = embeddings_provider_mock
+        self.service._embeddings_provider.embedding_model = embedding_model
+        self.knowledge_pack_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "tests/test_data/test_knowledge_pack",
+        )
 
-    @pytest.mark.integration
-    def test_generate_load_knowledge_pack_should_load_two_embedding(self):
-        assert len(self.service._embeddings_store._embeddings) == 2
-        assert len(self.service._embeddings_store.get_keys()) == 2
-
-        assert "ingenuity-wikipedia" in self.service._embeddings_store.get_keys()
-        assert "automotive-spice" in self.service._embeddings_store.get_keys()
-
-    @pytest.mark.integration
-    def test_similarity_search_on_single_document_with_scores_return_documents_and_scores(
+    def test_load_base_knowledge_pack_creates_one_entry_in_stores(
         self,
     ):
-        score_threshold = 0.3
+        assert len(self.service._embeddings_stores) == 0
+
+        self.service.load_base_knowledge_pack(
+            self.knowledge_pack_path + "/base-embeddings"
+        )
+
+        assert len(self.service._embeddings_stores) == 1
+        assert "base" in self.service._embeddings_stores.keys()
+
+    def test_load_base_and_domain_knowledge_pack_creates_two_entry_in_stores(
+        self,
+    ):
+        assert len(self.service._embeddings_stores) == 0
+
+        self.service.load_base_knowledge_pack(
+            self.knowledge_pack_path + "/base-embeddings"
+        )
+
+        assert len(self.service._embeddings_stores) == 1
+        assert "base" in self.service._embeddings_stores.keys()
+
+        self.service.load_domain_knowledge_pack(
+            domain_name="Domain A",
+            domain_path=self.knowledge_pack_path + "/domain_a/embeddings",
+        )
+
+        assert len(self.service._embeddings_stores) == 2
+        assert "base" in self.service._embeddings_stores.keys()
+        assert "Domain A" in self.service._embeddings_stores.keys()
+
+    def test_re_load_base_or_domain_knowledge_pack_should_not_create_extra_entries(
+        self,
+    ):
+        assert len(self.service._embeddings_stores) == 0
+
+        self.service.load_base_knowledge_pack(
+            self.knowledge_pack_path + "/base-embeddings"
+        )
+
+        assert len(self.service._embeddings_stores) == 1
+        assert "base" in self.service._embeddings_stores.keys()
+
+        self.service.load_base_knowledge_pack(
+            self.knowledge_pack_path + "/base-embeddings"
+        )
+
+        assert len(self.service._embeddings_stores) == 1
+        assert "base" in self.service._embeddings_stores.keys()
+
+        self.service.load_domain_knowledge_pack(
+            domain_name="Domain A",
+            domain_path=self.knowledge_pack_path + "/domain_a/embeddings",
+        )
+
+        assert len(self.service._embeddings_stores) == 2
+        assert "base" in self.service._embeddings_stores.keys()
+        assert "Domain A" in self.service._embeddings_stores.keys()
+
+        self.service.load_domain_knowledge_pack(
+            domain_name="Domain A",
+            domain_path=self.knowledge_pack_path + "/domain_a/embeddings",
+        )
+
+        assert len(self.service._embeddings_stores) == 2
+        assert "base" in self.service._embeddings_stores.keys()
+        assert "Domain A" in self.service._embeddings_stores.keys()
+
+    def test_generate_load_knowledge_pack_should_load_two_embedding(self):
+        self.service.load_base_knowledge_pack(
+            self.knowledge_pack_path + "/base-embeddings"
+        )
+
+        assert len(self.service._embeddings_stores) == 1
+        assert len(self.service._embeddings_stores.keys()) == 1
+        assert "base" in self.service._embeddings_stores.keys()
+
+        assert (
+            "ingenuity-wikipedia" in self.service._embeddings_stores["base"].get_keys()
+        )
+        assert "tw-guide-agile-sd" in self.service._embeddings_stores["base"].get_keys()
+
+    def test_similarity_search_on_single_document_with_scores_for_base_return_documents_and_scores(
+        self,
+    ):
+        self.service.load_base_knowledge_pack(
+            self.knowledge_pack_path + "/base-embeddings"
+        )
+
         similarity_results = (
             self.service.similarity_search_on_single_document_with_scores(
                 query="When Ingenuity was launched?",
                 document_key="ingenuity-wikipedia",
-                k=3,
-                score_threshold=score_threshold,
+                kind="base",
             )
         )
 
-        assert len(similarity_results) > 0
-        assert len(similarity_results) <= 3
+        assert len(similarity_results) == 5
         assert len(similarity_results[0][0].page_content) > 1
-        assert similarity_results[0][1] < score_threshold
+        assert similarity_results[0][1] < 1
 
-    @pytest.mark.integration
-    def test_similarity_search_on_single_document_with_scores_without_score_threshold_return_documents_and_scores(
+    def test_similarity_search_on_single_document_with_scores_for_domain_does_not_return_documents_and_scores_if_domain_is_not_loaded(
         self,
     ):
+        self.service.load_base_knowledge_pack(
+            self.knowledge_pack_path + "/base-embeddings"
+        )
+
         similarity_results = (
             self.service.similarity_search_on_single_document_with_scores(
-                query="When Team AIDE was released?",
+                query="When Ingenuity was launched?",
                 document_key="ingenuity-wikipedia",
-                k=3,
+                kind="Domain A",
             )
         )
 
-        assert len(similarity_results) > 0
-        assert len(similarity_results) <= 3
-        assert len(similarity_results[0][0].page_content) > 1
+        assert len(similarity_results) == 0
 
-    @pytest.mark.integration
-    def test_similarity_search_on_single_document_with_scores_default_score_threshold(
+    def test_similarity_search_for_domain_should_return_documents_from_base_and_domain_stores_sorted_by_scores(
         self,
     ):
-        similarity_results = (
-            self.service.similarity_search_on_single_document_with_scores(
-                query="what is Ingenuity?", document_key="ingenuity-wikipedia", k=5
-            )
+        assert len(self.service._embeddings_stores) == 0
+
+        self.service.load_base_knowledge_pack(
+            self.knowledge_pack_path + "/base-embeddings"
         )
 
-        assert len(similarity_results) <= 5
-        assert len(similarity_results[0][0].page_content) > 1
-        for _, score in similarity_results:
-            assert score <= 0.4
+        self.service.load_domain_knowledge_pack(
+            domain_name="Domain A",
+            domain_path=self.knowledge_pack_path + "/domain_a/embeddings",
+        )
 
-    @pytest.mark.integration
-    def test_similarity_search_with_scores_return_results_from_different_documents(
-        self,
-    ):
         similarity_results = self.service.similarity_search_with_scores(
-            query="what does Ingenuity and Automotive Spice have in common?", k=5
+            query="When Ingenuity was launched?", kind="Domain A"
         )
 
-        extracted_files = [result[0].metadata["file"] for result in similarity_results]
+        assert len(similarity_results) == 5
+        # Since both stores retrievers will return the same results, the first 4 results will be the same as there are 4 documents in total
+        assert (
+            similarity_results[0][0].page_content
+            == similarity_results[1][0].page_content
+        )
+        assert (
+            similarity_results[0][0].page_content
+            == similarity_results[2][0].page_content
+        )
+        assert (
+            similarity_results[0][0].page_content
+            == similarity_results[3][0].page_content
+        )
 
-        assert len(similarity_results) <= 5
-        assert len(set(extracted_files)) == 2
+        assert similarity_results[0][1] == 0.2
+        assert similarity_results[1][1] == 0.2
+        assert similarity_results[2][1] == 0.2
+        assert similarity_results[3][1] == 0.2

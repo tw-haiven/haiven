@@ -35,29 +35,31 @@ class UIFactory:
         self.chat_session_memory: ServerChatSessionMemory = chat_session_memory
         self.__llm_config = None
 
-    def __model_chaged(self, model_select, request: gr.Request):
+    def _model_changed(self, model_select, request: gr.Request):
         self.__llm_config.change_model(model_select)
         user_context.set_value(request, "llm_model", model_select, app_level=True)
 
-    def __tone_changed(self, tone_select, request: gr.Request):
+    def _tone_changed(self, tone_select, request: gr.Request):
         self.__llm_config.change_temperature(tone_select)
         user_context.set_value(request, "llm_tone", tone_select, app_level=True)
 
-    def __get_children(self, tab):
-        def recurse_children(children):
-            children_dict = {}
-            for child in children:
-                if hasattr(child, "children"):
-                    children_dict.update(recurse_children(child.children))
-                if (
-                    (isinstance(child, gr.Markdown) or isinstance(child, gr.Dropdown))
-                    and hasattr(child, "elem_id")
-                    and child.elem_id
-                ):
-                    children_dict[child.elem_id] = child
-            return children_dict
+    def is_empty(self, value) -> bool:
+        return value is None or value == "" or len(value) == 0
 
-        return recurse_children(tab.children)
+    def __knowledge_pack_domain_select_changed(
+        self, knowledge_pack_domain_select, request: gr.Request
+    ):
+        if not self.is_empty(knowledge_pack_domain_select):
+            knowledge_pack_domain = self.content_manager.on_domain_selected(
+                knowledge_pack_domain_select
+            )
+            if knowledge_pack_domain is not None:
+                user_context.set_value(
+                    request,
+                    "knowledge_pack_domain",
+                    knowledge_pack_domain,
+                    app_level=True,
+                )
 
     def create_ui(self, ui_type):
         match ui_type:
@@ -84,12 +86,21 @@ class UIFactory:
             self.ui.ui_header(navigation=navigation)
             user_identifier_state = gr.State()
             with gr.Group(elem_classes="teamai-group"):
-                with gr.Row():
-                    model_select, tone_select, self.__llm_config = (
-                        self.ui.create_llm_settings_ui()
-                    )
-                    model_select.change(fn=self.__model_chaged, inputs=model_select)
-                    tone_select.change(fn=self.__tone_changed, inputs=tone_select)
+                with gr.Accordion("Settings"):
+                    with gr.Row():
+                        model_select, tone_select, self.__llm_config = (
+                            self.ui.create_llm_settings_ui()
+                        )
+                        model_select.change(fn=self._model_changed, inputs=model_select)
+                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
+
+                        knowledge_pack_domain_select = (
+                            self.ui.create_knowledge_pack_selector_ui()
+                        )
+                        knowledge_pack_domain_select.change(
+                            fn=self.__knowledge_pack_domain_select_changed,
+                            inputs=knowledge_pack_domain_select,
+                        )
             with gr.Row():
                 with gr.Tabs() as all_tabs:
                     category_filter = ["coding", "architecture"]
@@ -106,8 +117,10 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
+                        self.content_manager.knowledge_pack_domain_active,
                         user_identifier_state,
                         category_filter,
+                        knowledge_pack_domain_select,
                     )
                     enable_brainstorming(
                         self.content_manager.knowledge_base_markdown,
@@ -122,47 +135,33 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
+                        self.content_manager.knowledge_pack_domain_active,
                         user_identifier_state,
                         category_filter,
+                        knowledge_pack_domain_select,
                     )
                     enable_knowledge_chat(
                         self.chat_session_memory,
                         self.__llm_config,
+                        self.content_manager.knowledge_pack_domain_active,
                         user_identifier_state,
                         category_filter,
+                        knowledge_pack_domain_select,
                     )
                     enable_db_exploration(category_filter)
-
-            components_to_persist = self.__get_children(all_tabs)
-            chat_prompt_choice = components_to_persist.get("chat_prompt_choice")
-            brainstorming_prompt_choice = components_to_persist.get(
-                "brainstorming_prompt_choice"
-            )
-            diagram_chat_prompt_choice = components_to_persist.get(
-                "diagram_chat_prompt_choice"
-            )
-            knowledge_chat_prompt_choice = components_to_persist.get(
-                "knowledge_chat_prompt_choice"
-            )
 
             blocks.load(
                 self.event_handler.on_load_ui,
                 [
-                    chat_prompt_choice,
-                    brainstorming_prompt_choice,
-                    diagram_chat_prompt_choice,
-                    knowledge_chat_prompt_choice,
                     model_select,
                     tone_select,
+                    knowledge_pack_domain_select,
                 ],
                 [
                     all_tabs,
-                    chat_prompt_choice,
-                    brainstorming_prompt_choice,
-                    diagram_chat_prompt_choice,
-                    knowledge_chat_prompt_choice,
                     model_select,
                     tone_select,
+                    knowledge_pack_domain_select,
                     user_identifier_state,
                 ],
             )
@@ -178,14 +177,22 @@ class UIFactory:
                 self.navigation_manager.get_testing_navigation()
             )
             self.ui.ui_header(navigation=navigation)
-
             with gr.Group(elem_classes="teamai-group"):
-                with gr.Row():
-                    model_select, tone_select, self.__llm_config = (
-                        self.ui.create_llm_settings_ui()
-                    )
-                    model_select.change(fn=self.__model_chaged, inputs=model_select)
-                    tone_select.change(fn=self.__tone_changed, inputs=tone_select)
+                with gr.Accordion("Settings"):
+                    with gr.Row():
+                        model_select, tone_select, self.__llm_config = (
+                            self.ui.create_llm_settings_ui()
+                        )
+                        model_select.change(fn=self._model_changed, inputs=model_select)
+                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
+
+                        knowledge_pack_domain_select = (
+                            self.ui.create_knowledge_pack_selector_ui()
+                        )
+                        knowledge_pack_domain_select.change(
+                            fn=self.__knowledge_pack_domain_select_changed,
+                            inputs=knowledge_pack_domain_select,
+                        )
             with gr.Row():
                 category_filter = ["testing"]
 
@@ -204,8 +211,10 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
+                        self.content_manager.knowledge_pack_domain_active,
                         user_identifier_state,
                         category_filter,
+                        knowledge_pack_domain_select,
                     )
                     enable_brainstorming(
                         self.content_manager.knowledge_base_markdown,
@@ -220,47 +229,29 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
+                        self.content_manager.knowledge_pack_domain_active,
                         user_identifier_state,
                         category_filter,
+                        knowledge_pack_domain_select,
                     )
                     enable_knowledge_chat(
                         self.chat_session_memory,
                         self.__llm_config,
+                        self.content_manager.knowledge_pack_domain_active,
                         user_identifier_state,
                         category_filter,
+                        knowledge_pack_domain_select,
                     )
                     enable_db_exploration(category_filter)
 
-            components_to_persist = self.__get_children(all_tabs)
-            chat_prompt_choice = components_to_persist.get("chat_prompt_choice")
-            brainstorming_prompt_choice = components_to_persist.get(
-                "brainstorming_prompt_choice"
-            )
-            diagram_chat_prompt_choice = components_to_persist.get(
-                "diagram_chat_prompt_choice"
-            )
-            knowledge_chat_prompt_choice = components_to_persist.get(
-                "knowledge_chat_prompt_choice"
-            )
-
             blocks.load(
                 self.event_handler.on_load_ui,
-                [
-                    chat_prompt_choice,
-                    brainstorming_prompt_choice,
-                    diagram_chat_prompt_choice,
-                    knowledge_chat_prompt_choice,
-                    model_select,
-                    tone_select,
-                ],
+                [model_select, tone_select, knowledge_pack_domain_select],
                 [
                     all_tabs,
-                    chat_prompt_choice,
-                    brainstorming_prompt_choice,
-                    diagram_chat_prompt_choice,
-                    knowledge_chat_prompt_choice,
                     model_select,
                     tone_select,
+                    knowledge_pack_domain_select,
                     user_identifier_state,
                 ],
             )
@@ -278,15 +269,22 @@ class UIFactory:
                 self.navigation_manager.get_analysis_navigation()
             )
             self.ui.ui_header(navigation=navigation)
-
             with gr.Group(elem_classes="teamai-group"):
-                with gr.Row():
-                    model_select, tone_select, self.__llm_config = (
-                        self.ui.create_llm_settings_ui()
-                    )
+                with gr.Accordion("Settings"):
+                    with gr.Row():
+                        model_select, tone_select, self.__llm_config = (
+                            self.ui.create_llm_settings_ui()
+                        )
+                        model_select.change(fn=self._model_changed, inputs=model_select)
+                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
 
-                    model_select.change(fn=self.__model_chaged, inputs=model_select)
-                    tone_select.change(fn=self.__tone_changed, inputs=tone_select)
+                        knowledge_pack_domain_select = (
+                            self.ui.create_knowledge_pack_selector_ui()
+                        )
+                        knowledge_pack_domain_select.change(
+                            fn=self.__knowledge_pack_domain_select_changed,
+                            inputs=knowledge_pack_domain_select,
+                        )
             with gr.Row():
                 category_filter = ["analysis"]
                 with gr.Tabs() as all_tabs:
@@ -303,8 +301,10 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
+                        self.content_manager.knowledge_pack_domain_active,
                         user_identifier_state,
                         category_filter,
+                        knowledge_pack_domain_select,
                     )
                     enable_brainstorming(
                         self.content_manager.knowledge_base_markdown,
@@ -319,46 +319,28 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
+                        self.content_manager.knowledge_pack_domain_active,
                         user_identifier_state,
                         category_filter,
+                        knowledge_pack_domain_select,
                     )
                     enable_knowledge_chat(
                         self.chat_session_memory,
                         self.__llm_config,
+                        self.content_manager.knowledge_pack_domain_active,
                         user_identifier_state,
                         category_filter,
+                        knowledge_pack_domain_select,
                     )
-
-            components_to_persist = self.__get_children(all_tabs)
-            chat_prompt_choice = components_to_persist.get("chat_prompt_choice")
-            brainstorming_prompt_choice = components_to_persist.get(
-                "brainstorming_prompt_choice"
-            )
-            diagram_chat_prompt_choice = components_to_persist.get(
-                "diagram_chat_prompt_choice"
-            )
-            knowledge_chat_prompt_choice = components_to_persist.get(
-                "knowledge_chat_prompt_choice"
-            )
 
             blocks.load(
                 self.event_handler.on_load_ui,
-                [
-                    chat_prompt_choice,
-                    brainstorming_prompt_choice,
-                    diagram_chat_prompt_choice,
-                    knowledge_chat_prompt_choice,
-                    model_select,
-                    tone_select,
-                ],
+                [model_select, tone_select, knowledge_pack_domain_select],
                 [
                     all_tabs,
-                    chat_prompt_choice,
-                    brainstorming_prompt_choice,
-                    diagram_chat_prompt_choice,
-                    knowledge_chat_prompt_choice,
                     model_select,
                     tone_select,
+                    knowledge_pack_domain_select,
                     user_identifier_state,
                 ],
             )
@@ -375,9 +357,26 @@ class UIFactory:
             )
             self.ui.ui_header(navigation=navigation)
 
+            with gr.Group(elem_classes="teamai-group"):
+                with gr.Accordion("Settings"):
+                    with gr.Row():
+                        model_select, tone_select, self.__llm_config = (
+                            self.ui.create_llm_settings_ui()
+                        )
+                        model_select.change(fn=self._model_changed, inputs=model_select)
+                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
+
+                        knowledge_pack_domain_select = (
+                            self.ui.create_knowledge_pack_selector_ui()
+                        )
+                        knowledge_pack_domain_select.change(
+                            fn=self.__knowledge_pack_domain_select_changed,
+                            inputs=knowledge_pack_domain_select,
+                        )
+
             with gr.Row():
                 category_filter = ["prompting"]
-                with gr.Tabs():
+                with gr.Tabs() as all_tabs:
                     user_identifier_state = gr.State()
                     with gr.Tab("Knowledge"):
                         self.ui.ui_show_knowledge(
@@ -385,17 +384,6 @@ class UIFactory:
                         )
                     # TODO: Change tab title to "Prompt development"? And move the LLM choice in there??!
                     with gr.Tab("Prompt Development"):
-                        with gr.Group(elem_classes="teamai-group"):
-                            with gr.Row():
-                                model_select, tone_select, llm_config = (
-                                    self.ui.create_llm_settings_ui()
-                                )
-                                model_select.change(
-                                    fn=llm_config.change_model, inputs=model_select
-                                )
-                                tone_select.change(
-                                    fn=llm_config.change_temperature, inputs=tone_select
-                                )
                         gr.Markdown(
                             "Experimental feature to support prompt development - still in development",
                             elem_classes="disclaimer",
@@ -404,10 +392,25 @@ class UIFactory:
                             self.content_manager.knowledge_base_markdown,
                             self.chat_session_memory,
                             self.prompts_factory,
-                            llm_config,
+                            self.__llm_config,
+                            self.content_manager.knowledge_pack_domain_active,
                             user_identifier_state,
                             category_filter,
+                            knowledge_pack_domain_select,
                         )
+
+            blocks.load(
+                self.event_handler.on_load_ui,
+                [model_select, tone_select, knowledge_pack_domain_select],
+                [
+                    all_tabs,
+                    model_select,
+                    tone_select,
+                    knowledge_pack_domain_select,
+                    user_identifier_state,
+                ],
+            )
+            blocks.queue()
 
         return blocks
 

@@ -12,9 +12,6 @@ class DocumentRetrieval:
         unique_sources = []
         metadata = []
         for doc, score in documents:
-            print(
-                f"@debug DocumentRetrieval.get_unique_sources: doc={doc}, score={score}"
-            )
             source = doc.metadata.get("source", "unkown source")
             if source not in unique_sources:
                 unique_sources.append(source)

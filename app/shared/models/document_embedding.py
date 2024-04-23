@@ -15,6 +15,7 @@ class DocumentEmbedding:
         source: str,
         sample_question: str,
         description: str,
+        kind: str,
         provider: str,
     ):
         self.key = key
@@ -24,6 +25,7 @@ class DocumentEmbedding:
         self.sample_question = sample_question
         self.description = description
         self.provider = provider
+        self.kind = kind
 
     def similarity_search(self, query) -> List[Document]:
         docs = self.retriever.get_relevant_documents(

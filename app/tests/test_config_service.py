@@ -5,11 +5,95 @@ from typing import List
 import pytest
 from shared.models.default_models import DefaultModels
 from shared.models.embedding_model import EmbeddingModel
-from shared.models.knowledge_pack import Domain, KnowledgePack
+from shared.models.knowledge_pack import KnowledgePack
 from shared.models.model import Model
 from shared.services.config_service import ConfigService
 
 
+@pytest.fixture(scope="class")
+def setup_class(request):
+    # given I have a valid config file
+    request.cls.knowledge_pack_path = "teams"
+    request.cls.knowledge_pack_domain_1_name = "Team AI"
+    request.cls.knowledge_pack_domain_1_path = "teamai"
+    request.cls.knowledge_pack_domain_2_name = "Team Demo"
+    request.cls.knowledge_pack_domain_2_path = "team_demo"
+    request.cls.active_model_providers = "Azure,GCP,some_provider"
+    request.cls.model_id = "azure-gpt35"
+    request.cls.name = "GPT-3.5 on Azure"
+    request.cls.provider = "some_provider"
+    request.cls.feature = "text-generation"
+    request.cls.base_url = "https://tw-genai-pod-openai.openai.azure.com"
+    request.cls.api_version = "2023-05-15"
+    request.cls.deployment_name = "genai-pod-experiments-gpt35-16k"
+    request.cls.api_key = "api-key"
+    request.cls.secret_api_key = r"${AZURE_API_KEY}"
+    os.environ["AZURE_API_KEY"] = request.cls.api_key
+    request.cls.embedding_id = "text-embedding-ada-002"
+    request.cls.embedding_name = "Ada"
+    request.cls.embedding_provider = "Azure"
+    request.cls.embedding_base_url = "https://tw-genai-pod-openai.openai.azure.com"
+    request.cls.embedding_api_version = "2023-05-15"
+    request.cls.embedding_deployment_name = "genai-pod-experiments-gpt35-16k"
+
+    config_content = f""" 
+    knowledge_pack:
+      path: {request.cls.knowledge_pack_path}
+      domains:
+        - name: {request.cls.knowledge_pack_domain_1_name}
+          path: {request.cls.knowledge_pack_domain_1_path}
+        - name: {request.cls.knowledge_pack_domain_2_name}
+          path: {request.cls.knowledge_pack_domain_2_path}
+    enabled_providers: {request.cls.active_model_providers}
+    default_models:
+      chat: {request.cls.model_id}
+      vision: {request.cls.model_id}_2
+      embeddings: {request.cls.embedding_id}
+    models:
+      - id: {request.cls.model_id}
+        name: {request.cls.name}
+        provider: {request.cls.provider}
+        features:
+          - {request.cls.feature}
+        config:
+          api_key: {request.cls.secret_api_key}
+          base_url: {request.cls.base_url}
+          api_version: {request.cls.api_version}
+          azure_deployment: {request.cls.deployment_name}
+      - id: {request.cls.model_id}_2
+        name: {request.cls.name}_2
+        provider: {request.cls.provider}
+        features:
+          - {request.cls.feature}
+        config:
+          api_key: {request.cls.secret_api_key}
+          base_url: {request.cls.base_url}
+          api_version: {request.cls.api_version}
+          azure_deployment: {request.cls.deployment_name}_2
+    embeddings:
+      - id: {request.cls.embedding_id}
+        name: {request.cls.embedding_name}
+        provider: {request.cls.embedding_provider}
+        config:
+          api_key: {request.cls.secret_api_key}
+          base_url: {request.cls.embedding_base_url}
+          api_version: {request.cls.embedding_api_version}
+          azure_deployment: {request.cls.embedding_deployment_name}
+    """
+
+    config_path = "test-config.yaml"
+    with open(config_path, "w") as f:
+        f.write(config_content)
+
+    request.cls.config_path = config_path
+
+    def teardown_class():
+        os.remove(request.cls.config_path)
+
+    request.addfinalizer(teardown_class)
+
+
+@pytest.mark.usefixtures("setup_class")
 class TestConfigService:
     def test_config_initialization_fails_if_path_is_not_valid(self):
         # given I have an invalid path
@@ -20,139 +104,67 @@ class TestConfigService:
         assert str(e.value) == f"Path {path} is not valid"
 
     def test_config_initialization(self):
-        # given I have a valid config file
-        domain_name = "teamai"
-        active_model_providers = "Azure,GCP,some_provider"
-        model_id = "azure-gpt35"
-        name = "GPT-3.5 on Azure"
-        provider = "some_provider"
-        feature = "text-generation"
-        base_url = "https://tw-genai-pod-openai.openai.azure.com"
-        api_version = "2023-05-15"
-        deployment_name = "genai-pod-experiments-gpt35-16k"
-        api_key = "api-key"
-        secret_api_key = r"${AZURE_API_KEY}"
-        os.environ["AZURE_API_KEY"] = api_key
-        embedding_id = "text-embedding-ada-002"
-        embedding_name = "Ada"
-        embedding_provider = "Azure"
-        embedding_base_url = "https://tw-genai-pod-openai.openai.azure.com"
-        embedding_api_version = "2023-05-15"
-        embedding_deployment_name = "genai-pod-experiments-gpt35-16k"
-        knowledge_pack_path = "teams"
-
-        config_content = f""" 
-        knowledge_pack:
-          path: {knowledge_pack_path}
-          domain:
-            name: {domain_name}
-        enabled_providers: {active_model_providers}
-        default_models:
-          chat: {model_id}
-          vision: {model_id}_2
-          embeddings: {embedding_id}
-        models:
-          - id: {model_id}
-            name: {name}
-            provider: {provider}
-            features:
-              - {feature}
-            config:
-              api_key: {secret_api_key}
-              base_url: {base_url}
-              api_version: {api_version}
-              azure_deployment: {deployment_name}
-          - id: {model_id}_2
-            name: {name}_2
-            provider: {provider}
-            features:
-              - {feature}
-            config:
-              api_key: {secret_api_key}
-              base_url: {base_url}
-              api_version: {api_version}
-              azure_deployment: {deployment_name}_2
-        embeddings:
-          - id: {embedding_id}
-            name: {embedding_name}
-            provider: {embedding_provider}
-            config:
-              api_key: {secret_api_key}
-              base_url: {embedding_base_url}
-              api_version: {embedding_api_version}
-              azure_deployment: {embedding_deployment_name}
-        """
-
-        config_path = "test-config.yaml"
-        with open(config_path, "w") as f:
-            f.write(config_content)
-
-        models: List[Model] = ConfigService.load_models(config_path)
+        models: List[Model] = ConfigService.load_models(self.config_path)
         assert isinstance(models, list)
         assert all(isinstance(model, Model) for model in models)
 
         assert len(models) == 2
 
         model: Model = models[0]
-        assert model.id == model_id
-        assert model.name == name
-        assert model.provider == provider
+        assert model.id == self.model_id
+        assert model.name == self.name
+        assert model.provider == self.provider
 
         feature = model.features[0]
         assert feature == feature
 
-        assert model.config["base_url"] == base_url
-        assert model.config["api_version"] == api_version
-        assert model.config["azure_deployment"] == deployment_name
-        assert model.config["api_key"] == api_key
+        assert model.config["base_url"] == self.base_url
+        assert model.config["api_version"] == self.api_version
+        assert model.config["azure_deployment"] == self.deployment_name
+        assert model.config["api_key"] == self.api_key
 
-        embedding: EmbeddingModel = ConfigService.load_embedding_model(config_path)
+        embedding: EmbeddingModel = ConfigService.load_embedding_model(self.config_path)
 
         assert isinstance(embedding, EmbeddingModel)
 
-        assert embedding.id == embedding_id
-        assert embedding.name == embedding_name
-        assert embedding.provider == embedding_provider
+        assert embedding.id == self.embedding_id
+        assert embedding.name == self.embedding_name
+        assert embedding.provider == self.embedding_provider
 
-        assert embedding.config["base_url"] == embedding_base_url
-        assert embedding.config["api_version"] == embedding_api_version
-        assert embedding.config["azure_deployment"] == embedding_deployment_name
-        assert embedding.config["api_key"] == api_key
+        assert embedding.config["base_url"] == self.embedding_base_url
+        assert embedding.config["api_version"] == self.embedding_api_version
+        assert embedding.config["azure_deployment"] == self.embedding_deployment_name
+        assert embedding.config["api_key"] == self.api_key
 
-        knowledge_pack = ConfigService.load_knowledge_pack(config_path)
+        knowledge_pack = ConfigService.load_knowledge_pack(self.config_path)
         assert isinstance(knowledge_pack, KnowledgePack)
-        assert knowledge_pack.path == knowledge_pack_path
+        assert knowledge_pack.path == self.knowledge_pack_path
 
-        domain = knowledge_pack.domain
-        assert isinstance(domain, Domain)
-        assert domain.name == domain_name
-
-        default_models = ConfigService.load_default_models(config_path)
+        default_models = ConfigService.load_default_models(self.config_path)
         assert isinstance(default_models, DefaultModels)
-        assert default_models.chat == model_id
-        assert default_models.vision == model_id + "_2"
-        assert default_models.embeddings == embedding_id
+        assert default_models.chat == self.model_id
+        assert default_models.vision == self.model_id + "_2"
+        assert default_models.embeddings == self.embedding_id
 
-        enabled_providers = ConfigService.load_enabled_providers(config_path)
+        enabled_providers = ConfigService.load_enabled_providers(self.config_path)
         assert isinstance(enabled_providers, list)
         assert all(
             provider in enabled_providers
-            for provider in active_model_providers.split(",")
+            for provider in self.active_model_providers.split(",")
         )
-
-        # clean up
-        os.remove(config_path)
 
     def test_config_loads_team_from_env_var_values(self):
         # given I have a valid config file
-        domain_name = "teamai"
+        domain_name = "Team AI"
+        domain_path = "teamai"
         knowledge_pack_path = "folder/path"
 
         config_content = """
         knowledge_pack:
           path: ${KNOWLEDGE_PACK_PATH}
-          domain:
-            name: ${DOMAIN_NAME}
+          domains:
+            - name: ${DOMAIN_NAME}
+              path: ${DOMAIN_PATH}
         """
         config_path = "test config.yaml"
         with open(config_path, "w") as f:
@@ -160,15 +172,11 @@ class TestConfigService:
 
         os.environ["KNOWLEDGE_PACK_PATH"] = knowledge_pack_path
         os.environ["DOMAIN_NAME"] = domain_name
+        os.environ["DOMAIN_PATH"] = domain_path
 
         knowledge_pack: KnowledgePack = ConfigService.load_knowledge_pack(config_path)
         assert isinstance(knowledge_pack, KnowledgePack)
-
-        assert knowledge_pack.path == knowledge_pack_path
-
-        domain = knowledge_pack.domain
-        assert isinstance(domain, Domain)
-        assert domain.name == domain_name
-
-        # clean up
-        os.remove(config_path)
+        assert all(
+            domain.name == domain_name and domain.path == domain_path
+            for domain in knowledge_pack.domains
+        )

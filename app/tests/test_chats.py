@@ -43,6 +43,7 @@ def test_documents_chat(mocker):
             default_tone,
         ),
         knowledge=knowledge_base_mock,
+        kind="test_domain",
     )
 
     question = "What is the capital of France?"

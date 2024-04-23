@@ -35,6 +35,14 @@ def enable_brainstorming(
     def on_change_prompt_choice(
         prompt_choice: str, user_input: str, request: gr.Request
     ) -> dict:
+        domain_selected = user_context.get_value(
+            request, "knowledge_pack_domain", app_level=True
+        )
+
+        if domain_selected is None:
+            gr.Warning("Please select a knowledge context first")
+            return ["", "", "", ""]
+
         if prompt_choice:
             user_context.set_value(
                 request, "brainstorming_prompt_choice", prompt_choice
@@ -43,17 +51,14 @@ def enable_brainstorming(
                 "title", "Unnamed use case"
             )
             help, knowledge = prompt_list.render_help_markdown(prompt_choice)
-            return {
-                ui_prompt: prompt_list.render_prompt(prompt_choice, user_input),
-                ui_help: help,
-                ui_help_knowledge: knowledge,
-            }
+            return [
+                prompt_choice,
+                prompt_list.render_prompt(prompt_choice, user_input),
+                help,
+                knowledge,
+            ]
         else:
-            return {
-                ui_prompt: "",
-                ui_help: "",
-                ui_help_knowledge: "",
-            }
+            return [prompt_choice, "", "", ""]
 
     with gr.Tab(interaction_pattern_name, id=tab_id) as tab_brainstorming:
         with gr.Row():
@@ -109,7 +114,7 @@ def enable_brainstorming(
         ui_prompt_dropdown.change(
             fn=on_change_prompt_choice,
             inputs=[ui_prompt_dropdown, ui_user_input],
-            outputs=[ui_prompt, ui_help, ui_help_knowledge],
+            outputs=[ui_prompt_dropdown, ui_prompt, ui_help, ui_help_knowledge],
         )
         ui_user_input.change(
             fn=prompt_list.render_prompt,

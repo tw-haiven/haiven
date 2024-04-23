@@ -11,10 +11,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from shared.document_retriever import DocumentRetrieval
 from shared.llm_config import LLMChatFactory, LLMConfig
 from shared.logger import TeamAILogger
-from shared.models.document_embedding import DocumentEmbedding
 from shared.services.embeddings_service import EmbeddingsService
-
-CONFIG_FILE_PATH = "config.yaml"
 
 
 class TeamAIBaseChat:
@@ -83,7 +80,6 @@ class StreamingChat(TeamAIBaseChat):
         )
 
     def run(self, message: str):
-        print(f"@debug StreamingChat.run: message={message}")
         self.memory.append(HumanMessage(content=message))
         self.log_run()
 
@@ -132,22 +128,27 @@ class StreamingChat(TeamAIBaseChat):
         summary = self.chat_model(copy_of_history)
         return summary.content
 
-    def next_advice_from_knowledge(self, chat_history, knowledge_document_key: str):
+    def next_advice_from_knowledge(
+        self, chat_history, knowledge_document_key: str, knowledge_domain: str
+    ):
         # 1 summarise the conversation so far
         summary = self.summarise_conversation()
 
         if knowledge_document_key == "all":
-            context_documents = EmbeddingsService.similarity_search_with_scores(summary)
+            context_documents = EmbeddingsService.similarity_search_with_scores(
+                summary, knowledge_domain
+            )
         else:
+            knwoeldge_document = EmbeddingsService.get_embedded_document(
+                knowledge_document_key
+            )
             context_documents = (
                 EmbeddingsService.similarity_search_on_single_document_with_scores(
-                    query=summary, document_key=knowledge_document_key
+                    query=summary,
+                    document_key=knwoeldge_document.key,
+                    kind=knwoeldge_document.kind,
                 )
             )
-
-        print(
-            f"@debug next_advice_from_knowledge using {len(context_documents)} documents to generate advice"
-        )
 
         context_for_prompt = "\n---".join(
             [f"{document.page_content}" for document, score in context_documents]
@@ -243,13 +244,14 @@ class DocumentsChat(TeamAIBaseChat):
     def __init__(
         self,
         llm_config: LLMConfig,
-        knowledge: DocumentEmbedding,
+        knowledge: str,
+        kind: str,
         system_message: str = "You are a helpful assistant",
     ):
         super().__init__(
             llm_config, LLMChatFactory.new_llm_chat(llm_config), system_message
         )
-        self.document_retriever = knowledge.retriever
+        self.kind = kind
         self.knowledge = knowledge
         self.chain = DocumentsChat.create_chain(self.chat_model)
 
@@ -272,13 +274,20 @@ class DocumentsChat(TeamAIBaseChat):
             return "NA"
 
     def run(self, message: str):
-        self.log_run({"knowledge": self.knowledge.key})
+        self.log_run({"knowledge": self.knowledge})
         self.memory.append(HumanMessage(content=message))
 
-        search_results = EmbeddingsService.similarity_search_on_single_document_with_scores(
-            query=f"What context could be relevant to the following query: ```{message}```",
-            document_key=self.knowledge.key,
-        )
+        if self.knowledge == "all":
+            search_results = EmbeddingsService.similarity_search_with_scores(
+                query=message, kind=self.kind
+            )
+        else:
+            search_results = (
+                EmbeddingsService.similarity_search_on_single_document_with_scores(
+                    query=message, document_key=self.knowledge, kind=self.kind
+                )
+            )
+
         documents = [document for document, _ in search_results]
 
         ai_message = self.chain({"input_documents": documents, "question": message})
@@ -346,10 +355,6 @@ class ServerChatSessionMemory:
 
     def get_chat(self, session_key: str):
         if session_key not in self.USER_CHATS:
-            print(
-                "@debug ServerChatSessionMemory.get_chat: session_key not in USER_CHATS"
-            )
-
             raise ValueError(
                 f"Invalid identifier {session_key}, your chat session might have expired"
             )
@@ -368,16 +373,10 @@ class ServerChatSessionMemory:
         chat_category: str = "unknown",
         user_identifier: str = "unknown",
     ):
-        print(
-            f"@debug ServerChatSessionMemory.get_or_create_chat: chat_session_key_value={chat_session_key_value}, chat_category={chat_category}, user_identifier={user_identifier}",
-        )
-
         if chat_session_key_value is None or chat_session_key_value == "":
             chat_session_key_value = self.add_new_entry(chat_category, user_identifier)
             chat_session = fn_create_chat()
-            print(
-                f"@debug ServerChatSessionMemory.get_or_create_chat: chat_key={chat_session_key_value}, chat_session={chat_session}",
-            )
+
             self.store_chat(chat_session_key_value, chat_session)
         else:
             chat_session = self.get_chat(chat_session_key_value)
