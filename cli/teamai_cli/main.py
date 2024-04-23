@@ -18,7 +18,7 @@ ENCODING = "cl100k_base"
 cli = typer.Typer(no_args_is_help=True)
 
 
-@cli.command()
+@cli.command(no_args_is_help=True)
 def index_file(
     source_path: str,
     embedding_model="openai",
@@ -42,7 +42,7 @@ def index_file(
     )
 
 
-@cli.command()
+@cli.command(no_args_is_help=True)
 def index_all_files(
     source_dir: str,
     output_dir="new_knowledge_base",
@@ -65,10 +65,10 @@ def index_all_files(
     )
 
 
-@cli.command()
+@cli.command(no_args_is_help=True)
 def create_domain_package(
-    domain_name: str,
-    knowledge_root_dir: str,
+    domain_name: str = "",
+    knowledge_root_dir: str = "",
 ):
     """Create a domain package base structure."""
     file_service = FileService()
@@ -97,7 +97,7 @@ def pickle_web_page(
     )
 
 
-@cli.command()
+@cli.command(no_args_is_help=True)
 def init(
     config_path: str = "",
     env_path: str = "",
@@ -108,9 +108,9 @@ def init(
     print(f"Config file initialized at {config_service.cli_config_path}")
 
 
-@cli.command()
+@cli.command(no_args_is_help=True)
 def set_config_path(
-    config_path: str,
+    config_path: str = "",
 ):
     """Set the config path in the config file."""
     config_service = CliConfigService()
@@ -118,9 +118,9 @@ def set_config_path(
     print(f"Config path set to {config_path}")
 
 
-@cli.command()
+@cli.command(no_args_is_help=True)
 def set_env_path(
-    env_path: str,
+    env_path: str = "",
 ):
     """Set the env path in the config file."""
     config_service = CliConfigService()
