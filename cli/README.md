@@ -25,11 +25,21 @@ $ teamai-cli init --config-path <CONFIG_PATH> --env-path <ENV_PATH>
 ### Create knowledge package structure
 This will create a knowledge package structure for a given domain name which will allow you to tailor the applicatioin to your specific needs.
 
+
 ```console
 $ teamai-cli create-domain-package --domain-name <DOMAIN_NAME> --knowledge-root-dir <KNOWLEDGE_ROOT_DIR>
 ```
 - DOMAIN_NAME being the name of the domain you want to create a knowledge package for.
 - KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory.
+
+this should result in the following directory structure being built:
+```
+<DOMAIN_NAME>
+├── architecture.md
+├── business_context.md
+├── embeddings
+└── prompts
+```
 
 ### Index all files in the source directory
 This will convert the files you want to rely on into embeddings and store them in the knowledge package directory.
@@ -41,7 +51,13 @@ $ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embeddi
 - EMBEDDING_MODEL being the embedding model you want to use for indexing.
 - KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory where the domain package is located.
 
+For each file in the source directory a markdown file and a .kb folder should be created in the embeddings directory. Following the structure below:
 
+```
+embeddings
+├── file1.md
+└── file1.kb
+```
 ___
 # `teamai-cli`
 
