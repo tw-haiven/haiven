@@ -2,15 +2,12 @@
 import typer
 
 from teamai_cli.app.app import App
-from teamai_cli.services.client import Client
 from teamai_cli.services.config_service import ConfigService
 from teamai_cli.services.cli_config_service import CliConfigService
 from teamai_cli.services.embedding_service import EmbeddingService
 from teamai_cli.services.file_service import FileService
 from teamai_cli.services.knowledge_service import KnowledgeService
-from teamai_cli.services.page_helper import PageHelper
 from teamai_cli.services.token_service import TokenService
-from teamai_cli.services.web_page_service import WebPageService
 from teamai_cli.services.metadata_service import MetadataService
 
 ENCODING = "cl100k_base"
@@ -26,7 +23,7 @@ def index_file(
     description: str = "",
     output_dir: str = "new_knowledge_base",
 ):
-    """Index single pdf or text file to a given destination directory."""
+    """Index single file to a given destination directory."""
 
     cli_config_service = CliConfigService()
     if cli_config_service.get_config_path() and config_path == "":
@@ -50,7 +47,7 @@ def index_all_files(
     description: str = "",
     config_path: str = "",
 ):
-    """Index all pdf or text files in a directory to a given destination directory."""
+    """Index all files in a directory to a given destination directory."""
     cli_config_service = CliConfigService()
     if cli_config_service.get_config_path() and config_path == "":
         config_path = cli_config_service.get_config_path()
@@ -78,22 +75,6 @@ def create_domain_package(
     )
     file_service.write_business_context_file(
         f"{knowledge_root_dir}/{domain_name}/business_context.md"
-    )
-
-
-def pickle_web_page(
-    url: str,
-    destination_path="web_page.pickle",
-    html_filter="p",
-):
-    """Index a web page to a given destination path."""
-    cli_config_service = CliConfigService()
-    env_path_file = cli_config_service.get_env_path()
-
-    config_service = ConfigService(env_file_path=env_path_file)
-    app = create_app(config_service)
-    app.index_web_page(
-        url=url, html_filter=html_filter, destination_path=destination_path
     )
 
 
@@ -131,12 +112,10 @@ def set_env_path(
 def create_app(config_service: ConfigService):
     token_service = TokenService(ENCODING)
     knowledge_service = KnowledgeService(token_service, EmbeddingService)
-    web_page_service = WebPageService(Client(), PageHelper())
     app = App(
         config_service,
         FileService(),
         knowledge_service,
-        web_page_service,
         MetadataService,
     )
     return app

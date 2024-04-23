@@ -17,14 +17,12 @@ class TestApp:
         config_service = MagicMock()
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        web_page_service = MagicMock()
         metadata_service = MagicMock()
 
         app = App(
             config_service,
             file_service,
             knowledge_service,
-            web_page_service,
             metadata_service,
         )
 
@@ -45,14 +43,12 @@ class TestApp:
         config_service = MagicMock()
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        web_page_service = MagicMock()
         metadata_service = MagicMock()
 
         app = App(
             config_service,
             file_service,
             knowledge_service,
-            web_page_service,
             metadata_service,
         )
 
@@ -77,14 +73,12 @@ class TestApp:
         config_service.load_embeddings.return_value = config_embeddings
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        web_page_service = MagicMock()
         metadata_service = MagicMock()
 
         app = App(
             config_service,
             file_service,
             knowledge_service,
-            web_page_service,
             metadata_service,
         )
 
@@ -124,8 +118,6 @@ class TestApp:
             metadatas,
         )
 
-        web_page_service = MagicMock()
-
         metadata = MagicMock()
         metadata_service = MagicMock()
         metadata_service.create_metadata.return_value = metadata
@@ -134,7 +126,6 @@ class TestApp:
             config_service,
             file_service,
             knowledge_service,
-            web_page_service,
             metadata_service,
         )
 
@@ -184,8 +175,6 @@ class TestApp:
             metadatas,
         )
 
-        web_page_service = MagicMock()
-
         metadata = MagicMock()
         metadata_service = MagicMock()
         metadata_service.create_metadata.return_value = metadata
@@ -194,7 +183,6 @@ class TestApp:
             config_service,
             file_service,
             knowledge_service,
-            web_page_service,
             metadata_service,
         )
 
@@ -226,7 +214,6 @@ class TestApp:
         config_service = MagicMock()
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        web_page_service = MagicMock()
 
         metadata_service = MagicMock()
 
@@ -234,7 +221,6 @@ class TestApp:
             config_service,
             file_service,
             knowledge_service,
-            web_page_service,
             metadata_service,
         )
 
@@ -256,7 +242,6 @@ class TestApp:
         config_service.load_embeddings.return_value = []
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        web_page_service = MagicMock()
 
         metadata_service = MagicMock()
 
@@ -264,7 +249,6 @@ class TestApp:
             config_service,
             file_service,
             knowledge_service,
-            web_page_service,
             metadata_service,
         )
 
@@ -294,7 +278,6 @@ class TestApp:
         file_service = MagicMock()
         file_service.get_files_from_directory.return_value = [file_path]
         knowledge_service = MagicMock()
-        web_page_service = MagicMock()
 
         metadata_service = MagicMock()
 
@@ -302,7 +285,6 @@ class TestApp:
             config_service,
             file_service,
             knowledge_service,
-            web_page_service,
             metadata_service,
         )
 
@@ -356,8 +338,6 @@ class TestApp:
             second_file_metadata,
         )
 
-        web_page_service = MagicMock()
-
         metadata_service = MagicMock()
 
         metadata = MagicMock()
@@ -367,7 +347,6 @@ class TestApp:
             config_service,
             file_service,
             knowledge_service,
-            web_page_service,
             metadata_service,
         )
 
@@ -413,62 +392,6 @@ class TestApp:
             ]
         )
 
-    def test_index_web_page_fails_if_url_is_not_set(self):
-        url = ""
-        destination_path = "destination_path"
-        html_filter = "html_filter"
-
-        config_service = MagicMock()
-        file_service = MagicMock()
-        knowledge_service = MagicMock()
-        web_page_service = MagicMock()
-        metadata_service = MagicMock()
-
-        app = App(
-            config_service,
-            file_service,
-            knowledge_service,
-            web_page_service,
-            metadata_service,
-        )
-
-        with pytest.raises(ValueError) as e:
-            app.index_web_page(url, html_filter, destination_path)
-
-        assert str(e.value) == "please provide url for url option"
-
-    def test_index_web_page(self):
-        url = "url"
-        embedding_model = "embedding_model"
-        destination_path = "destination_path"
-        html_filter = "html_filter"
-
-        embedding = MagicMock()
-        type(embedding).id = PropertyMock(return_value=embedding_model)
-        config_embeddings = [embedding]
-        config_service = MagicMock()
-        config_service.load_embeddings.return_value = config_embeddings
-        file_service = MagicMock()
-        knowledge_service = MagicMock()
-        web_page_article = MagicMock()
-        web_page_service = MagicMock()
-        web_page_service.get_single_page.return_value = web_page_article
-        metadata_service = MagicMock()
-
-        app = App(
-            config_service,
-            file_service,
-            knowledge_service,
-            web_page_service,
-            metadata_service,
-        )
-
-        app.index_web_page(url, html_filter, destination_path)
-
-        knowledge_service.pickle_documents.assert_called_once_with(
-            web_page_article, destination_path
-        )
-
     def test_create_domain_structure_fails_if_domain_name_is_not_set(self):
         domain_name = ""
         parent_dir = "parent_dir"
@@ -476,14 +399,12 @@ class TestApp:
         config_service = MagicMock()
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        web_page_service = MagicMock()
         metadata_service = MagicMock()
 
         app = App(
             config_service,
             file_service,
             knowledge_service,
-            web_page_service,
             metadata_service,
         )
 
@@ -499,14 +420,12 @@ class TestApp:
         config_service = MagicMock()
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        web_page_service = MagicMock()
         metadata_service = MagicMock()
 
         app = App(
             config_service,
             file_service,
             knowledge_service,
-            web_page_service,
             metadata_service,
         )
 
@@ -523,14 +442,12 @@ class TestApp:
         config_service = MagicMock()
         file_service = MagicMock()
         knowledge_service = MagicMock()
-        web_page_service = MagicMock()
         metadata_service = MagicMock()
 
         app = App(
             config_service,
             file_service,
             knowledge_service,
-            web_page_service,
             metadata_service,
         )
 

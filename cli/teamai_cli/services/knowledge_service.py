@@ -1,11 +1,8 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-import pickle
-from langchain_core.documents import Document
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from teamai_cli.services.embedding_service import EmbeddingService
 from teamai_cli.services.token_service import TokenService
-from typing import List
 
 
 class KnowledgeService:
@@ -40,7 +37,3 @@ class KnowledgeService:
             local_db = db
 
         local_db.save_local(output_dir)
-
-    def pickle_documents(self, documents: List[Document], path: str):
-        with open(path, "wb") as file:
-            pickle.dump(documents, file)

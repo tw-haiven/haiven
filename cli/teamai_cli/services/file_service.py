@@ -1,10 +1,8 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 
 import os
-import pickle
 import csv
 
-from langchain_core.documents import Document
 from pypdf import PdfReader
 from typing import List
 
@@ -48,15 +46,6 @@ class FileService:
                     }
                 )
         return text, metadatas
-
-    def write_pickles(
-        self, documents: List[Document], output_dir: str, pickle_file_path: str
-    ):
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        with open(f"{output_dir}/{pickle_file_path}", "wb") as f:
-            pickle.dump(documents, f)
 
     def get_files_path_from_directory(self, source_dir: str):
         files = []
