@@ -5,8 +5,7 @@ The `teamai-cli` is a command line interface that provides a set of commands for
 Run the [install_dev_dependencies](../install_dev_dependencies.sh) script to install the necessary dependencies for the cli.
 
 ```console
-$ poetry run cli-init
-$ poetry run cli-install
+$ ./install_dev_dependencies.sh
 ```
 
 ### Setup the CLI configuration
@@ -27,7 +26,7 @@ $ teamai-cli init --config-path <CONFIG_PATH> --env-path <ENV_PATH>
 This will create a knowledge package structure for a given domain name which will allow you to tailor the applicatioin to your specific needs.
 
 ```console
-$ teamai-cli create-domain-package domain_name <DOMAIN_NAME> parent_dir<KNOWLEDGE_ROOT_DIR>
+$ teamai-cli create-domain-package --domain-name <DOMAIN_NAME> --knowledge-root-dir <KNOWLEDGE_ROOT_DIR>
 ```
 - DOMAIN_NAME being the name of the domain you want to create a knowledge package for.
 - KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory.

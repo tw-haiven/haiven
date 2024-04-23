@@ -55,12 +55,11 @@ class FileService:
         self, arch_file_path: str, architecture_description: str = ""
     ):
         file_content = f"""---
-        key: architecture
-        title: Architecture
-
-        {architecture_description}
-        ---
-        """
+key: architecture
+title: Architecture
+{architecture_description}
+---
+"""
         with open(arch_file_path, "w") as f:
             f.write(file_content)
 
@@ -68,12 +67,11 @@ class FileService:
         self, business_context_file_path: str, business_context_description: str = ""
     ):
         file_content = f"""---
-        key: business
-        title: Domain
-
-        {business_context_description}
-        ---
-        """
+key: business
+title: Domain
+{business_context_description}
+---
+"""
         with open(business_context_file_path, "w") as f:
             f.write(file_content)
 

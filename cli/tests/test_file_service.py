@@ -132,12 +132,11 @@ sample_question: {sample_question}
         file_service.write_architecture_file(arch_file_path, arch_description)
 
         expected_arch_file_content = """---
-        key: architecture
-        title: Architecture
-
-        a description of the architecture
-        ---
-        """
+key: architecture
+title: Architecture
+a description of the architecture
+---
+"""
 
         with open(arch_file_path, "r") as f:
             arch_file_content = f.read()
@@ -154,12 +153,11 @@ sample_question: {sample_question}
         )
 
         expected_business_context_file_content = """---
-        key: business
-        title: Domain
-
-        a description of the business context
-        ---
-        """
+key: business
+title: Domain
+a description of the business context
+---
+"""
 
         with open(business_context_file_path, "r") as f:
             business_context_file_content = f.read()
