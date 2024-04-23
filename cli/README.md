@@ -89,16 +89,13 @@ Create a domain package base structure.
 **Usage**:
 
 ```console
-$ teamai-cli create-domain-package [OPTIONS] DOMAIN_NAME KNOWLEDGE_ROOT_DIR
+$ teamai-cli create-domain-package [OPTIONS]
 ```
-
-**Arguments**:
-
-* `DOMAIN_NAME`: [required]
-* `KNOWLEDGE_ROOT_DIR`: [required]
 
 **Options**:
 
+* `--domain-name TEXT`
+* `--knowledge-root-dir TEXT`
 * `--help`: Show this message and exit.
 
 ## `teamai-cli index-all-files`
@@ -168,15 +165,12 @@ Set the config path in the config file.
 **Usage**:
 
 ```console
-$ teamai-cli set-config-path [OPTIONS] CONFIG_PATH
+$ teamai-cli set-config-path [OPTIONS]
 ```
-
-**Arguments**:
-
-* `CONFIG_PATH`: [required]
 
 **Options**:
 
+* `--config-path TEXT`
 * `--help`: Show this message and exit.
 
 ## `teamai-cli set-env-path`
@@ -186,13 +180,10 @@ Set the env path in the config file.
 **Usage**:
 
 ```console
-$ teamai-cli set-env-path [OPTIONS] ENV_PATH
+$ teamai-cli set-env-path [OPTIONS]
 ```
-
-**Arguments**:
-
-* `ENV_PATH`: [required]
 
 **Options**:
 
+* `--env-path TEXT`
 * `--help`: Show this message and exit.
