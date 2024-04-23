@@ -16,6 +16,7 @@ WHL_PATH=$(cat teamai_wheel_path.txt)
 pip install $WHL_PATH --force-reinstall
 CLI_EXEC_PATH=$(which "teamai-cli")
 rm teamai_wheel_path.txt
+teamai-cli --install-completion --show-completion
 printf "\nTeamai-cli is installed at ${CLI_EXEC_PATH}"
 
 
