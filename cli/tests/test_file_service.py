@@ -43,6 +43,11 @@ class TestFileService:
 
     @patch("teamai_cli.services.file_service.PdfReader")
     def test_get_text_and_metadata_from_pdf(self, mock_pdf_reader):
+        pdf_title = "pdf title"
+        pdf_author = "pdf author"
+        pdf_metadata = MagicMock()
+        type(pdf_metadata).title = PropertyMock(return_value=pdf_title)
+        type(pdf_metadata).author = PropertyMock(return_value=pdf_author)
         pdf_file_name = "pdf_file_path.pdf"
         pdf_file = MagicMock()
         type(pdf_file).name = PropertyMock(return_value=pdf_file_name)
@@ -55,6 +60,7 @@ class TestFileService:
         pages = [first_page, second_page]
         pdf_reader = MagicMock()
         type(pdf_reader).pages = PropertyMock(return_value=pages)
+        type(pdf_reader).metadata = PropertyMock(return_value=pdf_metadata)
         mock_pdf_reader.return_value = pdf_reader
         file_service = FileService()
 
@@ -64,10 +70,93 @@ class TestFileService:
         first_metadata = metadas[0]
         assert first_metadata["page"] == 1
         assert first_metadata["source"] == pdf_file_name
+        assert first_metadata["title"] == pdf_title
+        assert first_metadata["authors"] == [pdf_author]
 
         second_metadata = metadas[1]
         assert second_metadata["page"] == 2
         assert second_metadata["source"] == pdf_file_name
+        assert second_metadata["title"] == pdf_title
+        assert second_metadata["authors"] == [pdf_author]
+
+        assert first_text in text
+        assert second_text in text
+
+    @patch("teamai_cli.services.file_service.PdfReader")
+    def test_get_text_and_metadata_from_pdf_use_default_title_and_authors_if_pdf_has_no_metadata(
+        self, mock_pdf_reader
+    ):
+        pdf_file_name = "pdf_file_path.pdf"
+        pdf_file = MagicMock()
+        type(pdf_file).name = PropertyMock(return_value=pdf_file_name)
+        first_text = "first text"
+        first_page = MagicMock()
+        first_page.extract_text.return_value = first_text
+        second_text = "second text"
+        second_page = MagicMock()
+        second_page.extract_text.return_value = second_text
+        pages = [first_page, second_page]
+        pdf_reader = MagicMock()
+        type(pdf_reader).pages = PropertyMock(return_value=pages)
+        type(pdf_reader).metadata = PropertyMock(return_value=None)
+        mock_pdf_reader.return_value = pdf_reader
+        file_service = FileService()
+
+        text, metadata = file_service.get_text_and_metadata_from_pdf(pdf_file)
+
+        mock_pdf_reader.assert_called_once_with(pdf_file)
+        first_metadata = metadata[0]
+        assert first_metadata["page"] == 1
+        assert first_metadata["source"] == pdf_file_name
+        assert first_metadata["title"] == "pdf file path"
+        assert first_metadata["authors"] == ["Unknown"]
+
+        second_metadata = metadata[1]
+        assert second_metadata["page"] == 2
+        assert second_metadata["source"] == pdf_file_name
+        assert second_metadata["title"] == "pdf file path"
+        assert second_metadata["authors"] == ["Unknown"]
+
+        assert first_text in text
+        assert second_text in text
+
+    @patch("teamai_cli.services.file_service.PdfReader")
+    def test_get_text_and_metadata_from_pdf_use_default_title_and_authors_if_pdf_has_no_tile_nor_authors(
+        self, mock_pdf_reader
+    ):
+        pdf_file_name = "pdf_file_path.pdf"
+        pdf_file = MagicMock()
+        type(pdf_file).name = PropertyMock(return_value=pdf_file_name)
+        first_text = "first text"
+        first_page = MagicMock()
+        first_page.extract_text.return_value = first_text
+        second_text = "second text"
+        second_page = MagicMock()
+        second_page.extract_text.return_value = second_text
+        pages = [first_page, second_page]
+        pdf_reader = MagicMock()
+        type(pdf_reader).pages = PropertyMock(return_value=pages)
+        pdf_metadata = MagicMock()
+        type(pdf_metadata).title = PropertyMock(return_value=None)
+        type(pdf_metadata).author = PropertyMock(return_value=None)
+        type(pdf_reader).metadata = PropertyMock(return_value=pdf_metadata)
+        mock_pdf_reader.return_value = pdf_reader
+        file_service = FileService()
+
+        text, metadata = file_service.get_text_and_metadata_from_pdf(pdf_file)
+
+        mock_pdf_reader.assert_called_once_with(pdf_file)
+        first_metadata = metadata[0]
+        assert first_metadata["page"] == 1
+        assert first_metadata["source"] == pdf_file_name
+        assert first_metadata["title"] == "pdf file path"
+        assert first_metadata["authors"] == ["Unknown"]
+
+        second_metadata = metadata[1]
+        assert second_metadata["page"] == 2
+        assert second_metadata["source"] == pdf_file_name
+        assert second_metadata["title"] == "pdf file path"
+        assert second_metadata["authors"] == ["Unknown"]
 
         assert first_text in text
         assert second_text in text

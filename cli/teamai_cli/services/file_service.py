@@ -14,14 +14,17 @@ class FileService:
         metadatas = []
         pdf_reader = PdfReader(pdf_file)
         page_number = 1
+        pdf_title = _get_pdf_title(pdf_reader, pdf_file.name)
+        pdf_authors = _get_pdf_authors(pdf_reader)
+
         for page in pdf_reader.pages:
             text.append(page.extract_text())
             metadatas.append(
                 {
                     "page": page_number,
                     "source": pdf_file.name,
-                    "title": pdf_reader.metadata.title,
-                    "authors": [pdf_reader.metadata.author],
+                    "title": pdf_title,
+                    "authors": pdf_authors,
                 }
             )
             page_number += 1
@@ -78,3 +81,17 @@ title: Domain
     def create_domain_structure(self, domain_name: str, parent_dir: str):
         os.makedirs(f"{parent_dir}/{domain_name}/embeddings", exist_ok=True)
         os.makedirs(f"{parent_dir}/{domain_name}/prompts", exist_ok=True)
+
+
+def _get_pdf_title(pdf_reader, source):
+    if not pdf_reader.metadata or not pdf_reader.metadata.title:
+        return source.replace(".pdf", "").replace("_", " ")
+    else:
+        return pdf_reader.metadata.title
+
+
+def _get_pdf_authors(pdf_reader):
+    if not pdf_reader.metadata or not pdf_reader.metadata.author:
+        return ["Unknown"]
+    else:
+        return [pdf_reader.metadata.author]
