@@ -7,15 +7,31 @@
         
         
         {
-            "name": "Python: Current File",
+            "name": "App: Current File",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": false,
             "cwd": "${workspaceFolder}/app",
-            "python": "${command:python.interpreterPath}"
-            // "${workspaceFolder}/app/venv/bin/python"
+            "python": "${workspaceFolder}/app/.venv/bin/python"
+        },
+
+        {
+            "name": "CLI",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}/cli/teamai_cli",
+            "python": "${workspaceFolder}/cli/.venv/bin/python",
+            "args": [
+                // Add args for local debug run here
+                "index-all-files", "${workspaceFolder}/../tmp/", 
+                "--embedding-model", "ollama", 
+                "--output-dir", "${workspaceFolder}/../team-ai-tw-knowledge-pack/team_demo"
+            ]
         }
     ]
 }
