@@ -2,6 +2,7 @@
 
 import os
 import pickle
+import csv
 
 from langchain_core.documents import Document
 from pypdf import PdfReader
@@ -28,6 +29,24 @@ class FileService:
                 }
             )
             page_number += 1
+        return text, metadatas
+
+    def get_text_and_metadata_from_csv(self, csv_file):
+        text = []
+        metadatas = []
+
+        with open(csv_file, "r") as file:
+            csv_reader = csv.DictReader(file)
+
+            for row in csv_reader:
+                text.append(row["content"])
+                metadatas.append(
+                    {
+                        "source": row["metadata.source"],
+                        "title": row["metadata.title"],
+                        "authors": row["metadata.authors"],
+                    }
+                )
         return text, metadatas
 
     def write_pickles(

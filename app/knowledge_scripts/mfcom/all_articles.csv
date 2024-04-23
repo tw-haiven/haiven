@@ -1,0 +1,488 @@
+content,metadata.title,metadata.source,metadata.authors,metadata.tags
+"
+This is a very common pattern and also very simple, it's really
+	just the decorator pattern applied to commands. I've seen it used a
+	lot with CommandOrientedInterfaces. You also hear this
+	referred to as interceptors and as a form of Aspect Oriented Programming.
+You start with some command, usually of some form of basic
+	functionality that may need some additional function added to it
+	later. So this might be a domain oriented command such as
+	PayInvoice. These commands will have some kind of execute
+	method.
+// psuedo C#
+class PayInvoiceCommand : Command ...
+void Execute() {
+  // do interesting domain logic
+}
+Let's say we want to do this inside a transaction. We can
+	decorate the command with a suitable transactional decorator.
+// pseudo C#
+class TransactionalDecorator : CommandDecorator ...
+  void Execute() {
+    Transaction t = TransactionManager.beginTransaction();
+    try {
+      Component.Execute();
+      t.commit();
+    } catch (Exception) {
+      t.rollback();
+    }
+  }
+    
+We can also do a security check this way
+// pseduo C#
+class SecurityDecorator : CommandDecorator ...
+  void Execute() {
+    if (passesSecurityCheck())
+      Component.Execute();
+  }
+With these classes in place we can then easily combine them to
+	get the right kinds of behavior. 
+//psuedo C#
+  // Transaction Invoice Payment
+  Command c = new TransactionalDecorator(new PayInvoiceCommand(invoice));
+  c.Execute();
+  //Transactional and secure payment
+  Command c = new SecurityDecorator(
+                  new TransactionalDecorator(
+                      new PayInvoiceCommand(invoice)));
+  c.Execute();
+Indeed this ability to add behavior dynamically is one of the big
+	benefits of a CommandOrientedInterface.
+A lot of things are doing this kind of thing under the aspect
+	oriented banner these days. At some point I'm going to dig into this
+	more, to see if there's more than this pattern in play.
+This is aspectish, but there's more to aspect oriented
+	programming than this. In aspect terms, the decorators provide
+	advice to the domain command's Execute method. However in order to
+	do this, you have to organize everything around the commands, since
+	only the Execute method can be advised. More flexible AOP tools,
+	such as aspectJ allow you to advise any method, and indeed some
+	other things such as field access.
+",Decorated Command,https://martinfowler.com/bliki/DecoratedCommand.html,['Martin Fowler'],['API design']
+"
+A common question in IT departments is whether to provide a
+  capability by building custom software or by buying a package. For longer
+  than I've been programming the debate has raged about how to make
+  that choice. My base position on this is founded on the
+  UtilityVsStrategicDichotomy. Boiled down this means that
+  if the business process you are supporting is part of your
+  competitive advantage you should build custom software, if not you
+  should buy a package and adjust your business process to fit the way
+  the package works.
+Despite the clear excellence of my opinion, not a lot of
+  companies seem to do this. Often they neglect the dichotomy, which
+  is one problem. But the problem I want to focus on here is the
+  common trap when they buy a package.
+You'll notice above I said ""buy a package and adjust your
+  business process to fit"". I have two reasons to say this. Firstly if
+  you are buying a package to support a utility business process, then
+  there's no differentiation in the business process - therefore you
+  might as well do that business process in a way that fits the
+  package. Of course this is a very software-person-centric view of
+  the world. Despite the fact that a team isn't doing differentiable
+  work, they'd still rather do it their way, rather than the way some
+  silly software package wants to do it. As someone who believes in
+  people over process, I naturally have a lot of sympathy with that
+  point of view.
+But the result of this natural action is that companies start
+  doing significant customization of the package… and this is where
+  the trouble begins. The fact is that most packages aren't designed
+  in such a way as to make customization really viable, at least not on
+  a significant scale. Typically they lack what my colleague Scott Shaw
+  calls ""deliverability"" - such things as support for version control,
+  testing, and a deployment pipeline. This makes changes brittle and
+  hard to control.
+You can bear this if your customization is small, but in many
+  situations it isn't. Recently a colleague came across a package
+  customization that ran to 300KLOC of customization code. That's more
+  code than the entire codebase of our Studios product suite, twice as
+  much as the codebase for one of our larger client projects that's
+  been running a strategic business for a decade. Once you're at those
+  sizes you cannot expect to manage without the tools and processes
+  that you'd use for custom software.
+This problem tends to come most to a head when the vendor
+  releases an upgrade of your package, and you find that there is a
+  prohibitive amount of work involved in doing the upgrade because the
+  customizations will break with the upgrade. Gartner recently
+  estimated that it would take $500
+  billion to bring corporate systems up to latest versions (rising
+  to $1 trillion by 2015). That's a big number, but the real cost is
+  how much money has been wasted in customizations that weren't
+  worthwhile or could have been cheaper with a purely custom route.
+So what can you do about it? First off, I think it's important to
+  be somewhat hard-nosed about package customization for utility
+  business functions. Is the cost on the software side really worth
+  it? Although agile approaches matter less for utility functions, the
+  notion of taking small steps is valuable. Can you use the package
+  without customizations initially and try to see how well it works in
+  practice? People will naturally be uncomfortable with the change,
+  because people naturally are. But given some time they may find that
+  things they thought would matter now matter much less.
+We can look more seriously about how customization is done. Some
+  approaches are more difficult to deliver than others. Look for
+  someone else that's done a similar level of customization on an
+  older version of the package, and find out what it took for them to
+  upgrade. That may help get a truer picture of the costs. In general
+  for packages we should treat upgradeability as first-class
+  cross-functional requirement.
+When you get a vendor to customize a package, it's very hard to
+  get them to follow the customer's delivery practices. The risk that
+  they won't follow those practices is high and should be taken into
+  account as part of your risk planning.
+A lot of organizations try to limit the number of languages or
+  frameworks they use. We must remember that many of these
+  customizable packages are, in effect, another language or
+  platform. As a result any arguments made against adopting another
+  language should apply equally well to a package customization
+  effort. 
+Indeed a common argument against introducing new languages is
+  that it makes it hard to find developers in that language. This
+  issue is usually particularly true for packages, since these often
+  offer a narrow range of employment opportunities. Furthermore the
+  nature of much package customization work deters able people, which
+  makes it even harder to find good people who are more comfortable
+  with polyglot programming. It may be that the costs involved with
+  the difficulty of hiring people could be greater than any cost
+  saving in using the package over a custom development in a
+  mainstream programming platform.
+Rather than customize the package, look to see if the package can
+  expose data and functionality through an effective API, and write
+  custom applications for custom capabilities. Often people don't like this
+  because it means they have to use separate applications for
+  different parts of the same work-flow. That may be a smaller burden
+  to bear, and can be made smaller with web interfaces. Vendors may
+  make this hard as it can reduce lock-in, but ease of collaboration
+  should be an important part of choosing which vendor to go with.
+But herein lies a trap. One of the big sources of customization
+  is integrating between different vendor packages. This is a big
+  reason to prefer a single vendor for multiple packages rather than
+  picking best-of-breed. Picking a single vendor makes it easier to do
+  the integration as it's in their interest to get it right. If it's a
+  utility business function, then the value of best-of-breed packages is
+  limited anyway.
+What it all boils down to is that package environments usually
+  provide a very poor platform for software development. Such packages
+  cost a lot more to customize and keep current than many people tend
+  to think.
+",Package Customization,https://martinfowler.com/bliki/PackageCustomization.html,['Martin Fowler'],"['bad things', 'programming environments']"
+"
+As I write this towards the conclusion of the US presidential
+  election [1],
+  there's a side debate that's appeared about the forecasts produced
+  by Nate
+  Silver. Many Republicans claim he's a
+  shill for the democrats and his forecast of an 85% chance of an
+  Obama win is bogus [2]. Part of me wishes I knew
+  more innumerate Republicans that I could make side-bets
+  with. Perhaps a better wish would be that the polls were the other
+  way around as I have more Democratic-leaning friends. In reality
+  either way I wouldn't gain too much as most people I know are
+  numerate. Sadly this isn't true in general - this side-show is an
+  illustration of the deep illiteracy most people have for
+  probability, which has some important ramifications for society in
+  general and software development in particular.
+As I've been reading around this, it's not hard to find evidence
+  of probabilistic illiteracy:
+
+Many people claim that Silver is predicting an Obama victory.
+    This isn't true, Silver is saying his model forecasts an 85%
+    chance of an Obama victory, which is not at all the same thing.
+    (It's roughly equivalent to saying that Romney will win if he
+    takes a die and rolls a 6, which is really not that
+    unlikely. [3])
+It's said that you shouldn't listen to Silver because polls
+    are often wrong, but Silver states his model does attempt to take this into
+    account. Silver says the polls confidently state an Obama victory,
+    but his model gives Romney a 15% chance of a win because that's
+    the chance that the polls are wrong.
+People claim that Silver will be proven right or wrong on
+    Tuesday when the election is held. But one event cannot say much
+    about an underlying distribution. You'd have to hold many tens of
+    elections to really test the model. [4]
+
+This side-debate has caught my interest because it taps many of what I
+  see as fundamental problems people have with understanding
+  probabilities and how to use them properly. To begin with there's
+  the matter of certainty - people want to hear a binary answer rather
+  than a probabilistic one. We see this, of course, in project
+  planning where people want firm numbers rather than ranges and
+  probability estimates for various outcomes. That difference between
+  85% and 100% can lead to some serious errors. I've developed a
+  strong distrust of certainty, to the point that the more certain
+  someone seems to be, the less I'm inclined to believe them. [5]
+One aspect of this dispute is how you should use the poll
+  information to make forecasts. If I head over to RealClearPolitics today, I
+  see the election as a ""toss-up"", because a critical 11 states are
+  marked as ""toss-ups"" in their analysis. Silver says that this
+  conclusion is profoundly wrong. RCP's current poll average shows a
+  3.9% average poll lead for Obama in Ohio. Silver argues that when you
+  average these multiple polls, the margin of error due to statistical
+  sampling is
+  about 1.5% - so if the polls are accurate Obama will win in Ohio
+  (and you certainly can't call Ohio a toss-up, which implies 50%
+  odds).
+There are many reasons why people are implying this race has
+  tighter probabilities than Silver does. Some are reasonable, such as
+  disagreements about the model Silver uses for his forecast. Some are
+  less reasonable: people are afraid of being seen to be wrong, they
+  are indulging in partisan cheerleading [6], or they
+  want make the race seem more exciting in order to gain eyeballs.
+One argument is that this inappropriate use of ""toss-up"" is a
+  consequence of probabilistic illiteracy. Since people don't
+  understand what 85% means, then we'll call it a toss-up. As there's
+  plenty of empirical evidence for this confusion, I have some
+  sympathy for this argument. 
+But the real issue here is the underlying probabilistic
+  illiteracy. Increasingly we are faced with a world where
+  understanding probabilities matters. Understanding how probability
+  works is a vital underpinning to making sense of statistics - and
+  statistics is a key tool to understanding how to make sense of much
+  of the data that is now available to us. This can make global sense
+  (much of the debate about climate change is based on statistics) and
+  but also matters in more local circumstances.
+I'm of the opinion that we are seeing an important shift in the
+  role that data can play in our lives. For software developers, this
+  means that more of our work is going to be about making sense of
+  this deluge of data. An important part of this is helping people to see
+  the difference between signal and noise - which is going to require
+  a better understanding of the probability and statistics required to
+  separate the two. As software professionals, we need to take a lead
+  in this so we can fulfill our duty to avoid distorting information,
+  we also need to educate consumers of our data so that they can better
+  interpret it. [7]
+
+Further Reading
+
+Well not actually reading, but one of my favorite
+      introductions to probabilistic illiteracy is Stochasticity - a
+      wonderful episode of Radiolab.
+And this gives me another opportunity to recommend Thinking Fast and
+  Slow
+The thing I've most appreciated from the 538 blog is how
+      he discusses how his forecasting is done, including the various
+      areas of uncertainty. Silver has written a recent book on predication models - I
+      haven't had chance to read it yet, but it's on my list.
+Although it's 538 that been getting a lot of the attention
+      lately, a couple of similar approaches are Princeton Election
+      Consortium (led by Sam Wang), DeSart and
+      Holbrook, Gott and
+      Colley, and Drew Linzer
+      (Votamatic). Sam Wang has an excellent comparison
+      of these models. [8]
+
+
+
+Notes
+
+1: 
+      I made a deliberate point of writing this before the election.
+      My point being that the result doesn't affect the issues I'm
+      talking about here.
+    
+
+
+2: 
+      This is from the 538 blog on
+      Sunday November 4th. The forecast changes regularly as he
+      re-runs his model with recent data. Other references to published
+      forecasts also refer to that same day, when I first drafted this article.
+    
+
+
+3: 
+      That is, of course, a 6-sided die. I have to say this as I'm
+      sure this article is read by many people who, like myself, are
+      familiar with more esoteric dice. Silver also had another
+      probabilist analogy, saying it was like an NFL
+      team being ahead by a field goal with three minutes left to
+      play. (I'll leave that one in for the jocks in the
+      audience.)
+    
+
+
+4: 
+      I can't be bothered to figure out how many elections you'd need,
+      but know enough to know that you can do this with the right
+      statistical techniques - and that the answer only provides a
+      probabilistic indication of confidence.
+    
+
+
+5: 
+      And yes, that includes myself.
+    
+
+
+6: 
+      Many Republicans claim that Silver is only publishing the
+      figures he gets because he is personally biased in favor of the
+      Democrats. Personal bias always affects peoples' thinking, but
+      there is an important difference between those who embrace their
+      biases and those who strive to be objective. Silver has talked a
+      lot about his model and how it works (although sadly it isn't
+      open-source). There's no indication in his discussion of a
+      conscious bias, indeed his odds give a higher
+      chance to Romney than similar analyses While absolute
+      objectivity is impossible, if you make the effort it is possible 
+      to get closer to objectivity than just wallowing in your
+      prejudices.
+    
+
+
+7: 
+      This may be one benefit of this controversy - more attention
+      paid to these techniques, so that more people learn how they
+      work and how to interpret them.
+    
+
+
+8: 
+      One counter that I've seen to all these poll-based models is
+      that of Bickers and Berry, which predicted a Romney
+      victory. They don't use polls, but base their model on economic
+      fundamentals. Their prediction jives well with my instinct - I
+      confidently predicted that Obama would be a one-term president
+      from the day he was elected. This prediction wasn't due to
+      anything he might do, but just because he was elected too soon
+      in the economic cycle for the economy to improve enough before
+      2012 for him to have a chance of being re-elected. If he does
+      get re-elected, contrary to Bickers and Berry, I would
+      argue that this suggests the Republicans have badly misplayed a
+      winning hand.
+    
+
+
+",Probabilistic Illiteracy,https://martinfowler.com/bliki/ProbabilisticIlliteracy.html,['Martin Fowler'],['data analytics']
+"
+A key property of agile development is figuring out how to make a
+	system go live with a small subset of features. We build software
+	for the business value it offers, the quicker we go live, the faster
+	we get at least some of that business value. 
+
+My colleague Dave Leigh-Fellows told me one of my favorite
+	examples of this kind of thinking. It came when we has working for a
+	brokerage firm. They had a new kind of product that they wanted to
+	get into the market. The full software support for this was a web
+	page that the customer filled in that generated the necessary
+	transactions against the back-end system. But Dave came up with a
+	way to get the product into the market faster than that.
+
+Version 1 was a static web page that described the product and
+provided a telephone number to call. Some temporary staff then spoke
+to the customer and entered the information into the back end
+system.
+Version 2 was a web form that captured the data the customer
+filled in. However this version didn't load that data into to the back
+end system. Instead the web form generated a fax. They hired some more
+temps to get the orders from the fax machine to the people that keyed
+the information into the back end system. Since the fax machines were
+a bit of a distance away, this is where the roller-skates came
+in.
+Version 3 hooked the web form into the back-end system directly.
+
+The first two versions may not have been the most elegant
+	solutions ever conceived, but they did get the product into the
+	market much more quickly. I've not come across any other examples of
+	iterative development that use roller-skates, but that may be
+	more due to lack of imagination rather than lack of need.
+",Roller Skate Implementation,https://martinfowler.com/bliki/RollerSkateImplementation.html,['Martin Fowler'],"['experience reports', 'requirements analysis', 'project planning']"
+"
+A common question is whether large projects can be done with agile
+techniques. After all many agile approaches are designed for smaller
+projects and the heavyweight ideas that they resist are more needed on
+bigger projects.
+One of the main reasons that this is a question is because we don't
+know yet. New techniques tend to be tried on smaller projects
+first. Only when they work on a smaller scale do people try them on a
+larger scale, and even then it takes time to ramp up. With any
+technique or technology I wouldn't recommend using it on anything
+larger than twice the size of something you've used it successfully
+already.
+
+Despite this much of what goes with agility has a background in larger
+systems, depending on what you call large. For software projects I
+think the primary measure of large is number of people. The people
+there are, the more the communication issues rise. XP's sweet spot is
+up to twenty team members. FDD looks to be more, more in the mid
+tens. Talking to Phillipe Kruchten, the lead designer of RUP, RUP at
+its essence is very much an agile approach and Phillipe has primarily
+worked with projects of over 200 people.
+Scaling Agile methods is the last thing you should do
+I used this phrase recently at the Canadian Agile Network. I meant it
+literally. I'm not saying that you shouldn't do large projects, I'm
+saying that trying to scale agile techniques up to big projects, while
+often necessary, shouldn't be your first choice. 
+A better approach is to try to scale down your project. At that
+workshop an unscientific straw poll revealed that most projects could
+lose about half the people of the project without making things go
+slower. Time and time again I hear of success occurring when a team is
+cut significantly in size. Large teams carry a big overhead in
+communication and management. Using smaller teams staffed with more
+able people is usually faster and cheaper, even if the everyone is
+more individually expensive.
+",Large Agile Projects,https://martinfowler.com/bliki/LargeAgileProjects.html,['Martin Fowler'],"['agile', 'agile adoption', 'team organization', 'project planning']"
+"
+A bunch of common misconceptions about Pair Programming.
+You have to do pair programming if you're doing an agile
+	process.
+This is utterly false. 'Agile' is a very broad term defined
+	 only in terms of values and principles, most notably in the
+	Manifesto for Agile Software Development. The manifesto doesn't
+	mention pair programming and most agile methods don't make it part
+	of their approach.
+Since pair programming is a practice of XP it's had a lot of
+	influence in the agile community. As a result it's often mentioned
+	as an agile practice - meaning a practice that's commonly used by
+	people on agile projects. But that's an observation not a prescription.
+Extreme Programming forces you to do Pair-Programming
+This is much more nuanced issue. Pair-Programming is one of the
+	practices of XP and has been since its inception. The nuance here is
+	whether XP practices are mandatory for a team that claims to be
+	doing XP. This is actually a much more tricky question than it may
+	seem at first sight. XP, like any agile method, expects a team to
+	choose its own process. In Extreme Programming Explained Kent says
+	that practices are ""the kind of things you'll see XP teams doing day
+-to-day"". I would say that pair-programming is usual for XP teams. I
+wouldn't say that a team that doesn't do pair-programming thus cannot
+call itself an XP team. I should also point out that to most XPers I
+know the question of whether a team is XP or not is uninteresting; the
+real issue is whether a team is effective.
+The closest I'd get to forcing pair programming would be to say
+	that if you want to learn how to do XP you should try
+	pair-programming and see if it works for you.
+I don't need to try pairing because I know I won't like
+	it.
+The problem with this statement is that many people have been
+	surprised by pair programming. They gave it a try, expecting to hate
+	it, and found they really liked it. 
+This is further complicated by many people trying out pairing
+	badly - which can give a false impression. Hours passively staring over
+	someone's shoulder in a corner cube isn't pair programming. Make
+	sure you have someone who really knows how coach you, so you
+can be sure you're evaluating the real thing.
+Pair-Programming halves the productivity of 
+	developers.
+My flippant answer to this one is: ""that would be true if the
+	hardest part of programming was typing"".
+Advocates of pair-programming are advocates because they believe
+	that a pair is actually more productive that two separate
+	developers. This is due to the continuous discussion and review that
+	pairing introduces. You come up with better designs, make less
+	mistakes, and make more people familiar with the code. All of these
+	things offset having less people typing.
+Of course, since we CannotMeasureProductivity we can't
+know for sure. My view is that you should try it and the team should
+reflect on whether they feel they are more effective with pairing that
+without. As with any new practice make sure you allow enough time so
+you have a good chance of crossing the
+ImprovementRavine.
+It's only worth pairing on complex code, rote code yields no
+	advantage.
+I think there is a point to this - pairing is about improving
+	design and minimizing mistakes. Rote code that's simple to write
+	yields little opportunities for pairing to make a difference.
+Except this: writing boring rote code is a smell. If I'm writing
+	boring repetitive code it's usually a sign that I've missed an
+	important abstraction, one that will drastically reduce the amount
+	of rote code to write. Pairing will help you find that abstraction.
+",Pair Programming Misconceptions,https://martinfowler.com/bliki/PairProgrammingMisconceptions.html,['Martin Fowler'],"['agile', 'productivity', 'team organization', 'extreme programming', 'collaboration']"

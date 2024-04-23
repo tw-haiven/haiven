@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import yaml
 import requests
 
-from langchain_core.documents import Document
+import csv
 
 BLIKI_TAGS_BLACKLIST = [
     "agile",
@@ -133,47 +133,53 @@ def load_urls(urls, blacklist_tags=None):
 
     for i in range(len(urls)):
         url = urls[i]
-        # if i <= 5:
-        if url.endswith("html"):
-            print(f"{i} - Retrieving content from {url}")
-            try:
-                response = requests.get(url)
-                if response.status_code == 200:
-                    content = response.text
+        if i <= 2:
+            if url.endswith("html"):
+                print(f"{i} - Retrieving content from {url}")
+                try:
+                    response = requests.get(url)
+                    if response.status_code == 200:
+                        content = response.text
 
-                    soup = BeautifulSoup(content, "html.parser")
+                        soup = BeautifulSoup(content, "html.parser")
 
-                    article_content = mf_page_parser(soup)
-                    article_tags = find_tags_in_article(soup)
-                    article_authors = find_authors_in_article(soup)
+                        article_content = mf_page_parser(soup)
+                        article_tags = find_tags_in_article(soup)
+                        article_authors = find_authors_in_article(soup)
 
-                    print(f"\tauthors: {article_authors} | tags: {article_tags}")
+                        print(f"\tauthors: {article_authors} | tags: {article_tags}")
 
-                    if blacklist_tags and all(
-                        filter_tag in blacklist_tags for filter_tag in article_tags
-                    ):
-                        print(
-                            f"\tNot loading, all tags {article_tags} are on the blacklist"
-                        )
+                        if blacklist_tags and all(
+                            filter_tag in blacklist_tags for filter_tag in article_tags
+                        ):
+                            print(
+                                f"\tNot loading, all tags {article_tags} are on the blacklist"
+                            )
+                        else:
+                            # metadata = {
+                            #     "metadata.title": find_title(soup),
+                            #     "metadata.source": url,
+                            #     "metadata.authors": article_authors,
+                            #     "metadata.tags": article_tags,
+                            # }
+                            articles.append(
+                                {
+                                    "content": article_content,
+                                    "metadata.title": find_title(soup),
+                                    "metadata.source": url,
+                                    "metadata.authors": article_authors,
+                                    "metadata.tags": article_tags,
+                                }
+                            )
                     else:
-                        metadata = {
-                            "title": find_title(soup),
-                            "source": url,
-                            "authors": article_authors,
-                            "tags": article_tags,
-                        }
-                        articles.append(
-                            Document(page_content=article_content, metadata=metadata)
+                        print(
+                            f"\tFailed to retrieve content from {url}, {response.status_code}"
                         )
-                else:
-                    print(
-                        f"\tFailed to retrieve content from {url}, {response.status_code}"
-                    )
-            except Exception as error:
-                print(f"\tFailed to parse content from {url}: {error}")
+                except Exception as error:
+                    print(f"\tFailed to parse content from {url}: {error}")
 
-        else:
-            print(f"\tSkipping {url}, not an HTML page")
+            else:
+                print(f"\tSkipping {url}, not an HTML page")
 
     return articles
 
@@ -233,15 +239,20 @@ def extract_bliki():
     return all_articles
 
 
-def extract_articles():
-    return load_entries_from_articles_page(BLIKI_TAGS_BLACKLIST)
-
-
 def extract():
-    all_articles = load_entries_from_articles_page(BLIKI_TAGS_BLACKLIST)
+    all_articles = []  # load_entries_from_articles_page(BLIKI_TAGS_BLACKLIST)
     all_articles.extend(extract_bliki())
-    with open("knowledge_scripts/mfcom/mfcom-all.pickle", "wb") as f:
-        pickle.dump(all_articles, f)
+
+    def write_to_csv(data, filename):
+        keys = data[0].keys()
+        with open(filename, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=keys)
+            writer.writeheader()
+            writer.writerows(data)
+
+    write_to_csv(all_articles, "knowledge_scripts/mfcom/all_articles.csv")
+    # with open("knowledge_scripts/mfcom/mfcom-all.pickle", "wb") as f:
+    #     pickle.dump(all_articles, f)
 
 
 if __name__ == "__main__":
