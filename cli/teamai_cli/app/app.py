@@ -7,6 +7,7 @@ from teamai_cli.models.html_filter import HtmlFilter
 from teamai_cli.services.knowledge_service import KnowledgeService
 from teamai_cli.services.web_page_service import WebPageService
 from teamai_cli.services.metadata_service import MetadataService
+import typer
 from typing import List
 
 
@@ -88,29 +89,31 @@ class App:
             )
 
         files = self.file_service.get_files_path_from_directory(source_dir)
-        for file in files:
-            print(f"creating knowledge for {file} in {output_dir}")
-            file_content = None
-            first_metadata = None
-            if file.endswith(".txt"):
-                file_content, first_metadata = self._get_txt_file_text_and_metadata(
-                    file
-                )
-            else:
-                file_content, first_metadata = self._get_pdf_file_text_and_metadata(
-                    file
-                )
+        with typer.progressbar(range(100)) as progress:
+            for file in files:
+                print(f" creating knowledge for {file} in {output_dir}")
+                file_content = None
+                first_metadata = None
+                if file.endswith(".txt"):
+                    file_content, first_metadata = self._get_txt_file_text_and_metadata(
+                        file
+                    )
+                else:
+                    file_content, first_metadata = self._get_pdf_file_text_and_metadata(
+                        file
+                    )
 
-            output_kb_dir = f"{output_dir}/{_format_file_name(file)}.kb"
-            self.knowledge_service.index(
-                file_content, first_metadata, model, output_kb_dir
-            )
-            metadata = self.metadata_service.create_metadata(
-                file, description, model.provider, output_dir
-            )
-            self.file_service.write_metadata_file(
-                metadata, f"{output_dir}/{_format_file_name(file)}.md"
-            )
+                output_kb_dir = f"{output_dir}/{_format_file_name(file)}.kb"
+                self.knowledge_service.index(
+                    file_content, first_metadata, model, output_kb_dir
+                )
+                metadata = self.metadata_service.create_metadata(
+                    file, description, model.provider, output_dir
+                )
+                self.file_service.write_metadata_file(
+                    metadata, f"{output_dir}/{_format_file_name(file)}.md"
+                )
+                progress.update((100 / len(files)))
 
     def index_web_page(self, url: str, html_filter: str, destination_path: str):
         if not url:
