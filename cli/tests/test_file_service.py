@@ -210,7 +210,7 @@ a description of the architecture
 
         expected_business_context_file_content = """---
 key: business
-title: Domain
+title: Context
 a description of the business context
 ---
 """
@@ -223,13 +223,13 @@ a description of the business context
 
         os.remove(business_context_file_path)
 
-    def test_create_domain_structure(self):
-        domain_name = "domain_name"
+    def test_create_Context_structure(self):
+        context_name = "context_name"
         parent_dir = "test_parent_dir"
         file_service = FileService()
-        file_service.create_domain_structure(domain_name, parent_dir)
+        file_service.create_context_structure(context_name, parent_dir)
 
-        assert os.path.exists(f"{parent_dir}/{domain_name}/prompts")
-        assert os.path.exists(f"{parent_dir}/{domain_name}/embeddings")
+        assert os.path.exists(f"{parent_dir}/{context_name}/prompts")
+        assert os.path.exists(f"{parent_dir}/{context_name}/embeddings")
 
         shutil.rmtree(f"{parent_dir}")
