@@ -277,7 +277,22 @@ class DocumentsChat(TeamAIBaseChat):
 
     def get_source_authors(self, source: Document) -> str:
         if "authors" in source.metadata:
-            return source.metadata["authors"]
+            # Depending on how something was indexed, this value can have a few different shapes
+            # Trying to be tolerant of different formats here and display them nicely
+            if isinstance(source.metadata["authors"], list):
+                return ", ".join(source.metadata["authors"])
+            elif (
+                isinstance(source.metadata["authors"], str)
+                and source.metadata["authors"].startswith("[")
+                and source.metadata["authors"].endswith("]")
+            ):
+                authors_string = source.metadata["authors"]
+                if "'" in authors_string:
+                    authors_string = authors_string.replace("'", "")
+
+                return ", ".join(authors_string[1:-1].split(","))
+            else:
+                return source.metadata["authors"]
         else:
             return None
 
@@ -288,7 +303,7 @@ class DocumentsChat(TeamAIBaseChat):
             else ""
         )
         authors_metadata = (
-            f"Authors: {', '.join(self.get_source_authors(source))}"
+            f"Authors: {self.get_source_authors(source)}"
             if self.get_source_authors(source)
             else ""
         )
