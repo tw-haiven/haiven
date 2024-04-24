@@ -107,7 +107,7 @@ def test_REAL_CALLS_chat_with_document():
 
     print(answer)
     assert "Continuous Delivery" in answer
-    assert "These articles were searched as input" in sources_markdown
+    assert "These sources were searched as input" in sources_markdown
 
 
 def smoke_test_model(service_name):

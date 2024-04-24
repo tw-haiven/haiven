@@ -258,9 +258,14 @@ class DocumentsChat(TeamAIBaseChat):
     def create_chain(chat_model):
         return load_qa_chain(llm=chat_model, chain_type="stuff")
 
-    def get_source_title(self, source: Document) -> str:
+    def get_source_title_link(self, source: Document) -> str:
+        page_anchor = (
+            f"#page={self.get_source_page(source)}"
+            if self.get_source_page(source)
+            else ""
+        )
         if "title" in source.metadata:
-            return f"[{source.metadata['title']}]({source.metadata['source']})"
+            return f"[{source.metadata['title']}]({source.metadata['source']}{page_anchor})"
         else:
             return "unknown"
 
@@ -312,10 +317,10 @@ class DocumentsChat(TeamAIBaseChat):
         self.memory.append(AIMessage(content=ai_message["output_text"]))
 
         sources_markdown = (
-            "**These articles were searched as input to try and answer the question:**\n"
+            "**These sources were searched as input to try and answer the question:**\n"
             + "\n".join(
                 [
-                    f"- {self.get_source_title(document)} {f'({self.get_extra_metadata(document)})' if self.get_extra_metadata(document) else ''}"
+                    f"- {self.get_source_title_link(document)} {f'({self.get_extra_metadata(document).strip()})' if self.get_extra_metadata(document) else ''}"
                     for document in documents
                 ]
             )

@@ -54,7 +54,7 @@ def test_documents_chat(mocker):
         {"input_documents": documents, "question": expected_prompt}
     )
     assert answer == "Paris"
-    assert "These articles were searched" in sources
+    assert "These sources were searched" in sources
     assert "Some Website" in sources
 
 
