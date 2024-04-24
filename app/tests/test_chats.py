@@ -47,10 +47,11 @@ def test_documents_chat(mocker):
     )
 
     question = "What is the capital of France?"
+    expected_prompt = documents_chat.build_prompt(question)
     answer, sources = documents_chat.next(question)
 
     chain_mock.assert_called_once_with(
-        {"input_documents": documents, "question": "What is the capital of France?"}
+        {"input_documents": documents, "question": expected_prompt}
     )
     assert answer == "Paris"
     assert "These articles were searched" in sources

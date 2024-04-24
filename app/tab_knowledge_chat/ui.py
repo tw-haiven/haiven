@@ -108,44 +108,46 @@ def enable_knowledge_chat(
             user_identifier_state: str,
             request: gr.Request,
         ):
+            info_text = "No documents selected"
+
             if knowledge_document_selected:
                 user_context.set_value(
                     request, "knowledge_chat_prompt_choice", knowledge_document_selected
                 )
+
                 chat_context.prompt = "Knowledge chat - Existing"
                 knowledge = EmbeddingsService.get_embedded_document(
                     knowledge_document_selected
                 )
 
-            domain_selected = user_context.get_value(
-                request, "knowledge_pack_domain", True
-            )
-            chat_session_key_value, chat_session = (
-                CHAT_SESSION_MEMORY.get_or_create_chat(
-                    lambda: DocumentsChat(
-                        llm_config=llm_config,
-                        knowledge=knowledge_document_selected,
-                        kind=domain_selected,
-                    ),
-                    None,
-                    "knowledge-chat",
-                    user_identifier_state,
+                chat_session_key_value, chat_session = (
+                    CHAT_SESSION_MEMORY.get_or_create_chat(
+                        lambda: DocumentsChat(
+                            llm_config=llm_config,
+                            knowledge=knowledge.key,
+                            kind=knowledge.kind,
+                        ),
+                        None,
+                        "knowledge-chat",
+                        user_identifier_state,
+                    )
                 )
-            )
 
-            info_text = "No documents selected"
+                if knowledge_document_selected == "all":
+                    info_text = "All documents are loaded."
+                elif knowledge_document_selected:
+                    info_text = f'"{knowledge.title}" is loaded.\n\n**Source:** {knowledge.source}\n\n**Sample question:** {knowledge.sample_question}'
+                return {
+                    ui_loaded_file_label: info_text,
+                    state_chat_session_key: chat_session_key_value,
+                    # clear the chat
+                    ui_question: "",
+                    ui_chatbot: [],
+                }
 
-            if knowledge_document_selected == "all":
-                info_text = "All documents are loaded."
-            elif knowledge_document_selected:
-                knowledge = EmbeddingsService.get_embedded_document(
-                    knowledge_document_selected
-                )
-                info_text = f'"{knowledge.title}" is loaded.\n\n**Source:** {knowledge.source}\n\n**Sample question:** {knowledge.sample_question}'
             return {
                 ui_loaded_file_label: info_text,
-                state_chat_session_key: chat_session_key_value,
-                # clear the chat
+                state_chat_session_key: None,
                 ui_question: "",
                 ui_chatbot: [],
             }
