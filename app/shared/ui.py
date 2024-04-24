@@ -80,9 +80,10 @@ class UI:
             with gr.Column(scale=2):
                 gr.Markdown("## Domain knowledge")
                 for key in knowledge_base_markdown.get_all_keys():
+                    knowledge_entry = knowledge_base_markdown.get_entry(key)
                     gr.Textbox(
-                        knowledge_base_markdown.get_content(key),
-                        label=knowledge_base_markdown._base_knowledge.get(key)["title"],
+                        knowledge_entry.content,
+                        label=knowledge_entry.metadata["title"],
                         lines=10,
                         show_copy_button=True,
                     )
