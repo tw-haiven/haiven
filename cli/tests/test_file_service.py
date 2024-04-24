@@ -3,44 +3,11 @@
 import os
 import shutil
 
-from langchain_core.documents import Document
 from teamai_cli.services.file_service import FileService
-from unittest.mock import patch, MagicMock, mock_open, PropertyMock
+from unittest.mock import patch, MagicMock, PropertyMock
 
 
 class TestFileService:
-    @patch("teamai_cli.services.file_service.pickle")
-    @patch("builtins.open", new_callable=mock_open)
-    def test_write_pickles(self, mock_file, mock_pickle):
-        document = Document(page_content="content", metadata={"metadata": "metadata"})
-        documents = [document]
-        output_dir = "output_dir"
-        pickle_file_path = "pickle_file_path"
-        os.makedirs(output_dir, exist_ok=True)
-        file_service = FileService()
-
-        file_service.write_pickles(documents, output_dir, pickle_file_path)
-
-        mock_file.assert_called_once_with(f"{output_dir}/{pickle_file_path}", "wb")
-        mock_pickle.dump.assert_called_once_with(documents, mock_file())
-        os.rmdir(output_dir)
-
-    @patch("teamai_cli.services.file_service.pickle")
-    @patch("builtins.open", new_callable=mock_open)
-    def test_write_pickles_creates_output_dir_if_it_does_not_exist(
-        self, mock_file, mock_pickle
-    ):
-        document = Document(page_content="content", metadata={"metadata": "metadata"})
-        documents = [document]
-        output_dir = "output_dir"
-        pickle_file_path = "pickle_file_path"
-        file_service = FileService()
-
-        file_service.write_pickles(documents, output_dir, pickle_file_path)
-
-        assert os.path.exists(output_dir)
-        os.rmdir(output_dir)
-
     @patch("teamai_cli.services.file_service.PdfReader")
     def test_get_text_and_metadata_from_pdf(self, mock_pdf_reader):
         pdf_title = "pdf title"
@@ -243,7 +210,7 @@ a description of the architecture
 
         expected_business_context_file_content = """---
 key: business
-title: Domain
+title: Context
 a description of the business context
 ---
 """
@@ -256,13 +223,13 @@ a description of the business context
 
         os.remove(business_context_file_path)
 
-    def test_create_domain_structure(self):
-        domain_name = "domain_name"
+    def test_create_Context_structure(self):
+        context_name = "context_name"
         parent_dir = "test_parent_dir"
         file_service = FileService()
-        file_service.create_domain_structure(domain_name, parent_dir)
+        file_service.create_context_structure(context_name, parent_dir)
 
-        assert os.path.exists(f"{parent_dir}/{domain_name}/prompts")
-        assert os.path.exists(f"{parent_dir}/{domain_name}/embeddings")
+        assert os.path.exists(f"{parent_dir}/{context_name}/prompts")
+        assert os.path.exists(f"{parent_dir}/{context_name}/embeddings")
 
         shutil.rmtree(f"{parent_dir}")

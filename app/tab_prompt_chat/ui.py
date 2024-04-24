@@ -37,6 +37,21 @@ def enable_chat(
         message="",
     )
 
+    def update_llm_config(request: gr.Request):
+        llm_config_from_session = user_context.get_value(
+            request, "llm_model", app_level=True
+        )
+
+        temperature_from_session = user_context.get_value(
+            request, "llm_tone", app_level=True
+        )
+
+        if llm_config_from_session:
+            llm_config.change_model(llm_config_from_session)
+
+        if temperature_from_session:
+            llm_config.change_temperature(temperature_from_session)
+
     def on_change_prompt_choice(
         prompt_choice: str, user_input: str, request: gr.Request
     ):
@@ -55,6 +70,9 @@ def enable_chat(
             )
             help, knowledge = prompt_list.render_help_markdown(prompt_choice)
             rendered_prompt = prompt_list.render_prompt(prompt_choice, user_input)
+
+            print(f"@debug on_change_prompt_choice: help={help}, knowledge={knowledge}")
+
             return [
                 prompt_choice,
                 rendered_prompt,
@@ -154,22 +172,28 @@ def enable_chat(
 
             return {ui_message: "", ui_chatbot: []}
 
-        def start(prompt_text: str, user_identifier_state: str):
-            chat_session_key_value, chat_session = (
-                CHAT_SESSION_MEMORY.get_or_create_chat(
-                    lambda: StreamingChat(llm_config=llm_config),
-                    None,
-                    "chat",
-                    user_identifier_state,
-                )
-            )
+        def start(prompt_text: str, user_identifier_state: str, request: gr.Request):
+            if prompt_text:
+                update_llm_config(request)
 
-            for chat_history_chunk in chat_session.start_with_prompt(prompt_text):
-                yield {
-                    ui_message: "",
-                    ui_chatbot: chat_history_chunk,
-                    state_chat_session_key: chat_session_key_value,
-                }
+                chat_session_key_value, chat_session = (
+                    CHAT_SESSION_MEMORY.get_or_create_chat(
+                        lambda: StreamingChat(llm_config=llm_config),
+                        None,
+                        "chat",
+                        user_identifier_state,
+                    )
+                )
+
+                for chat_history_chunk in chat_session.start_with_prompt(prompt_text):
+                    yield {
+                        ui_message: "",
+                        ui_chatbot: chat_history_chunk,
+                        state_chat_session_key: chat_session_key_value,
+                    }
+            else:
+                gr.Warning("Please choose a task first")
+                gr.update(ui_message="", ui_chatbot=[], state_chat_session_key=None)
 
         def chat(
             message_value: str,
@@ -196,6 +220,8 @@ def enable_chat(
             request: gr.Request,
         ):
             chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)
+            update_llm_config(request)
+            chat_session.llm_config = llm_config
 
             if knowledge_choice == []:
                 raise ValueError("No knowledge base selected")

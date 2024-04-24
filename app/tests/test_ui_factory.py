@@ -13,10 +13,8 @@ class TestUIFactory(unittest.TestCase):
     @patch("shared.ui_factory.enable_brainstorming")
     @patch("shared.ui_factory.enable_image_chat")
     @patch("shared.ui_factory.enable_knowledge_chat")
-    @patch("shared.ui_factory.enable_db_exploration")
     def test_create_ui_coding(
         self,
-        mock_enable_db_exploration,
         mock_enable_knowledge_chat,
         mock_enable_image_chat,
         mock_enable_brainstorming,
@@ -95,10 +93,7 @@ class TestUIFactory(unittest.TestCase):
         ui.ui_header.assert_called_with(navigation=navigation)
         prompts_factory.create_all_prompts.assert_called_with(knowledge_base_markdown)
         ui.create_about_tab_for_task_area.assert_called_with(
-            category_filter,
-            category_metadata,
-            all_prompts,
-            "\n#### Test DB Exploration\n\nUse natural language queries to explore the test database",
+            category_filter, category_metadata, all_prompts
         )
         mock_enable_chat.assert_called_with(
             knowledge_base_markdown,
@@ -136,7 +131,7 @@ class TestUIFactory(unittest.TestCase):
             category_filter,
             domain_select,
         )
-        mock_enable_db_exploration.assert_called_with(category_filter)
+
         blocks.load.assert_called_with(
             event_handler.on_load_ui,
             [model_select, tone_select, domain_select],
@@ -159,10 +154,8 @@ class TestUIFactory(unittest.TestCase):
     @patch("shared.ui_factory.enable_brainstorming")
     @patch("shared.ui_factory.enable_image_chat")
     @patch("shared.ui_factory.enable_knowledge_chat")
-    @patch("shared.ui_factory.enable_db_exploration")
     def test_create_ui_testing(
         self,
-        mock_enable_db_exploration,
         mock_enable_knowledge_chat,
         mock_enable_image_chat,
         mock_enable_brainstorming,
@@ -242,10 +235,7 @@ class TestUIFactory(unittest.TestCase):
         ui.ui_header.assert_called_with(navigation=navigation)
         prompts_factory.create_all_prompts.assert_called_with(knowledge_base_markdown)
         ui.create_about_tab_for_task_area.assert_called_with(
-            category_filter,
-            category_metadata,
-            all_prompts,
-            "\n#### Test DB Exploration\n\nUse natural language queries to explore the test database",
+            category_filter, category_metadata, all_prompts
         )
         mock_enable_chat.assert_called_with(
             knowledge_base_markdown,
@@ -283,7 +273,6 @@ class TestUIFactory(unittest.TestCase):
             category_filter,
             domain_select,
         )
-        mock_enable_db_exploration.assert_called_with(category_filter)
         blocks.load.assert_called_with(
             event_handler.on_load_ui,
             [model_select, tone_select, domain_select],
@@ -387,9 +376,7 @@ class TestUIFactory(unittest.TestCase):
         ui.ui_header.assert_called_with(navigation=navigation)
         prompts_factory.create_all_prompts.assert_called_with(knowledge_base_markdown)
         ui.create_about_tab_for_task_area.assert_called_with(
-            category_filter,
-            category_metadata,
-            all_prompts,
+            category_filter, category_metadata, all_prompts
         )
         mock_enable_chat.assert_called_with(
             knowledge_base_markdown,

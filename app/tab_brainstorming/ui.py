@@ -122,28 +122,48 @@ def enable_brainstorming(
             outputs=ui_prompt,
         )
 
-        def start(prompt_choice: str, prompt_text: str, user_identifier_state: str):
-            system_message = prompt_list.get(prompt_choice).metadata["system"]
+        def start(
+            prompt_choice: str,
+            prompt_text: str,
+            user_identifier_state: str,
+            request: gr.Request,
+        ):
+            if prompt_choice:
+                system_message = prompt_list.get(prompt_choice).metadata["system"]
 
-            chat_session_key_value, chat_session = (
-                CHAT_SESSION_MEMORY.get_or_create_chat(
-                    lambda: Q_A_Chat(
-                        llm_config=llm_config, system_message=system_message
-                    ),
-                    None,
-                    "brainstorming",
-                    user_identifier_state,
+                llm_model_from_session = user_context.get_value(
+                    request, "llm_model", app_level=True
                 )
-            )
+                temperature_from_session = user_context.get_value(
+                    request, "llm_tone", app_level=True
+                )
+                if llm_model_from_session:
+                    llm_config.change_model(llm_model_from_session)
+                if temperature_from_session:
+                    llm_config.change_temperature(temperature_from_session)
 
-            response = chat_session.start_with_prompt(prompt_text)
-            chat_history = [[system_message + "\n" + prompt_text, response]]
+                chat_session_key_value, chat_session = (
+                    CHAT_SESSION_MEMORY.get_or_create_chat(
+                        lambda: Q_A_Chat(
+                            llm_config=llm_config, system_message=system_message
+                        ),
+                        None,
+                        "brainstorming",
+                        user_identifier_state,
+                    )
+                )
 
-            return {
-                ui_message: "",
-                ui_chatbot: chat_history,
-                state_chat_session_key: chat_session_key_value,
-            }
+                response = chat_session.start_with_prompt(prompt_text)
+                chat_history = [[system_message + "\n" + prompt_text, response]]
+
+                return {
+                    ui_message: "",
+                    ui_chatbot: chat_history,
+                    state_chat_session_key: chat_session_key_value,
+                }
+            else:
+                gr.Warning("Please choose a task first")
+                return {ui_message: "", ui_chatbot: [], state_chat_session_key: None}
 
         def chat(message_value: str, chat_history, chat_session_key_value: str):
             chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)
