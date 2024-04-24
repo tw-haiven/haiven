@@ -42,6 +42,19 @@ def enable_image_chat(
         message="",
     )
 
+    def update_llm_config(request: gr.Request):
+        llm_config_from_session = user_context.get_value(
+            request, "llm_model", app_level=True
+        )
+        temperature_from_session = user_context.get_value(
+            request, "llm_tone", app_level=True
+        )
+        if llm_config_from_session:
+            llm_config.change_model(llm_config_from_session)
+
+        if temperature_from_session:
+            llm_config.change_temperature(temperature_from_session)
+
     def on_change_prompt_choice(
         prompt_choice: str, user_input: str, image_description: str, request: gr.Request
     ):
@@ -223,7 +236,8 @@ def enable_image_chat(
                                 elem_classes="knowledge-button",
                             )
 
-        def start(prompt_text: str, user_identifier_state: str):
+        def start(prompt_text: str, user_identifier_state: str, request: gr.Request):
+            update_llm_config(request)
             chat_session_key_value, chat_session = (
                 CHAT_SESSION_MEMORY.get_or_create_chat(
                     fn_create_chat=lambda: StreamingChat(llm_config=llm_config),
@@ -253,7 +267,10 @@ def enable_image_chat(
             request: gr.Request,
         ):
             chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)
-
+            update_llm_config(request)
+            chat_session.llm_config = llm_config
+            update_llm_config(request)
+            chat_session.llm_config = llm_config
             if knowledge_choice == []:
                 raise ValueError("No knowledge base selected")
 

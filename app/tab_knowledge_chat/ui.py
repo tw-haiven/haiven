@@ -152,9 +152,22 @@ def enable_knowledge_chat(
                 ui_chatbot: [],
             }
 
-        def ask_question(question: str, chat_session_key_value: str):
+        def ask_question(
+            question: str, chat_session_key_value: str, request: gr.Request
+        ):
             try:
                 chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)
+
+                llm_config_from_session = user_context.get_value(
+                    request, "llm_model", app_level=True
+                )
+                temperature_from_session = user_context.get_value(
+                    request, "llm_tone", app_level=True
+                )
+                if llm_config_from_session:
+                    chat_session.llm_config.change_model(llm_config_from_session)
+                if temperature_from_session:
+                    chat_session.llm_config.change_temperature(temperature_from_session)
 
                 response, sources_markdown = chat_session.next(question)
                 history = [(question, response + "\n\n" + sources_markdown)]

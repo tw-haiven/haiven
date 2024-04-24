@@ -122,8 +122,24 @@ def enable_brainstorming(
             outputs=ui_prompt,
         )
 
-        def start(prompt_choice: str, prompt_text: str, user_identifier_state: str):
+        def start(
+            prompt_choice: str,
+            prompt_text: str,
+            user_identifier_state: str,
+            request: gr.Request,
+        ):
             system_message = prompt_list.get(prompt_choice).metadata["system"]
+
+            llm_config_from_session = user_context.get_value(
+                request, "llm_model", app_level=True
+            )
+            temperature_from_session = user_context.get_value(
+                request, "llm_tone", app_level=True
+            )
+            if llm_config_from_session:
+                llm_config.change_model(llm_config_from_session)
+            if temperature_from_session:
+                llm_config.change_temperature(temperature_from_session)
 
             chat_session_key_value, chat_session = (
                 CHAT_SESSION_MEMORY.get_or_create_chat(
