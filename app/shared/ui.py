@@ -232,11 +232,7 @@ class UI:
         return dropdown, tone_radio, llmConfig
 
     def create_about_tab_for_task_area(
-        self,
-        category_names: str,
-        category_metadata,
-        all_prompt_lists: List[PromptList],
-        addendum_markdown: str = "",
+        self, category_names: str, category_metadata, all_prompt_lists: List[PromptList]
     ):
         prompt_lists_copy = all_prompt_lists.copy()
         prompt_list_markdown = ""
@@ -257,7 +253,7 @@ class UI:
 
         with gr.Tab("ABOUT", elem_id="about"):
             section_title = category_metadata["title"]
-            markdown = f"# {section_title}\n## Available prompts\n{prompt_list_markdown}\n{addendum_markdown}\n{videos_markdown}"
+            markdown = f"# {section_title}\n## Available prompts\n{prompt_list_markdown}\n{videos_markdown}"
             gr.Markdown(markdown, line_breaks=True)
 
 

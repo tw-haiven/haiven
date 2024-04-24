@@ -99,22 +99,9 @@ def test_get_general_navigation():
                         "title": "[Diagrams] Discussing an architecture diagram",
                         "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
                     },
-                    {
-                        "title": "[Mini agent] Query test database with natural language",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                    },
                 ],
             },
-            {
-                "title": "Testing",
-                "path": "testing",
-                "videos": [
-                    {
-                        "title": "[Mini agent] Query test database with natural language",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                    }
-                ],
-            },
+            {"title": "Testing", "path": "testing", "videos": []},
             {"title": "Team Knowledge", "path": "knowledge"},
             {"title": "About Team AI", "path": "about"},
         ],
@@ -161,21 +148,12 @@ def test_get_analysis_navigation():
                         "title": "[Diagrams] Discussing an architecture diagram",
                         "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
                     },
-                    {
-                        "title": "[Mini agent] Query test database with natural language",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                    },
                 ],
             },
             {
                 "title": "Testing",
                 "path": "testing",
-                "videos": [
-                    {
-                        "title": "[Mini agent] Query test database with natural language",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                    }
-                ],
+                "videos": [],
             },
             {"title": "Team Knowledge", "path": "knowledge"},
             {"title": "About Team AI", "path": "about"},
@@ -237,21 +215,12 @@ def test_get_testing_navigation():
                         "title": "[Diagrams] Discussing an architecture diagram",
                         "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
                     },
-                    {
-                        "title": "[Mini agent] Query test database with natural language",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                    },
                 ],
             },
             {
                 "title": "Testing",
                 "path": "testing",
-                "videos": [
-                    {
-                        "title": "[Mini agent] Query test database with natural language",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                    }
-                ],
+                "videos": [],
             },
             {"title": "Team Knowledge", "path": "knowledge"},
             {"title": "About Team AI", "path": "about"},
@@ -261,12 +230,7 @@ def test_get_testing_navigation():
     expected_category_item = {
         "title": "Testing",
         "path": "testing",
-        "videos": [
-            {
-                "title": "[Mini agent] Query test database with natural language",
-                "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-            }
-        ],
+        "videos": [],
     }
 
     actual_navigation, actual_category_item = nav_manager.get_testing_navigation()
@@ -309,21 +273,12 @@ def test_get_coding_navigation():
                         "title": "[Diagrams] Discussing an architecture diagram",
                         "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
                     },
-                    {
-                        "title": "[Mini agent] Query test database with natural language",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                    },
                 ],
             },
             {
                 "title": "Testing",
                 "path": "testing",
-                "videos": [
-                    {
-                        "title": "[Mini agent] Query test database with natural language",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                    }
-                ],
+                "videos": [],
             },
             {"title": "Team Knowledge", "path": "knowledge"},
             {"title": "About Team AI", "path": "about"},
@@ -345,10 +300,6 @@ def test_get_coding_navigation():
             {
                 "title": "[Diagrams] Discussing an architecture diagram",
                 "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
-            },
-            {
-                "title": "[Mini agent] Query test database with natural language",
-                "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
             },
         ],
     }
@@ -393,21 +344,12 @@ def test_get_knowledge_navigation():
                         "title": "[Diagrams] Discussing an architecture diagram",
                         "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
                     },
-                    {
-                        "title": "[Mini agent] Query test database with natural language",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                    },
                 ],
             },
             {
                 "title": "Testing",
                 "path": "testing",
-                "videos": [
-                    {
-                        "title": "[Mini agent] Query test database with natural language",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                    }
-                ],
+                "videos": [],
             },
             {"title": "Team Knowledge", "path": "knowledge"},
             {"title": "About Team AI", "path": "about"},
@@ -456,21 +398,12 @@ def test_get_about_navigation():
                         "title": "[Diagrams] Discussing an architecture diagram",
                         "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
                     },
-                    {
-                        "title": "[Mini agent] Query test database with natural language",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                    },
                 ],
             },
             {
                 "title": "Testing",
                 "path": "testing",
-                "videos": [
-                    {
-                        "title": "[Mini agent] Query test database with natural language",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                    }
-                ],
+                "videos": [],
             },
             {"title": "Team Knowledge", "path": "knowledge"},
             {"title": "About Team AI", "path": "about"},
