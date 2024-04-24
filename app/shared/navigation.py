@@ -37,21 +37,12 @@ class NavigationManager:
                             "title": "[Diagrams] Discussing an architecture diagram",
                             "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
                         },
-                        {
-                            "title": "[Mini agent] Query test database with natural language",
-                            "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                        },
                     ],
                 },
                 {
                     "title": "Testing",
                     "path": self.path.PATH_TESTING,
-                    "videos": [
-                        {
-                            "title": "[Mini agent] Query test database with natural language",
-                            "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-db-exploration.mp4",
-                        }
-                    ],
+                    "videos": [],
                 },
                 {"title": "Team Knowledge", "path": self.path.PATH_KNOWLEDGE},
                 {"title": "About Team AI", "path": self.path.PATH_ABOUT},

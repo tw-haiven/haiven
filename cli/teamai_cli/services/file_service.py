@@ -1,9 +1,8 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 
 import os
-import pickle
+import csv
 
-from langchain_core.documents import Document
 from pypdf import PdfReader
 from typing import List
 
@@ -30,14 +29,23 @@ class FileService:
             page_number += 1
         return text, metadatas
 
-    def write_pickles(
-        self, documents: List[Document], output_dir: str, pickle_file_path: str
-    ):
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+    def get_text_and_metadata_from_csv(self, csv_file):
+        text = []
+        metadatas = []
 
-        with open(f"{output_dir}/{pickle_file_path}", "wb") as f:
-            pickle.dump(documents, f)
+        with open(csv_file, "r") as file:
+            csv_reader = csv.DictReader(file)
+
+            for row in csv_reader:
+                text.append(row["content"])
+                metadatas.append(
+                    {
+                        "source": row["metadata.source"],
+                        "title": row["metadata.title"],
+                        "authors": row["metadata.authors"],
+                    }
+                )
+        return text, metadatas
 
     def get_files_path_from_directory(self, source_dir: str):
         files = []
@@ -71,16 +79,16 @@ title: Architecture
     ):
         file_content = f"""---
 key: business
-title: Domain
+title: Context
 {business_context_description}
 ---
 """
         with open(business_context_file_path, "w") as f:
             f.write(file_content)
 
-    def create_domain_structure(self, domain_name: str, parent_dir: str):
-        os.makedirs(f"{parent_dir}/{domain_name}/embeddings", exist_ok=True)
-        os.makedirs(f"{parent_dir}/{domain_name}/prompts", exist_ok=True)
+    def create_context_structure(self, context_name: str, parent_dir: str):
+        os.makedirs(f"{parent_dir}/{context_name}/embeddings", exist_ok=True)
+        os.makedirs(f"{parent_dir}/{context_name}/prompts", exist_ok=True)
 
 
 def _get_pdf_title(pdf_reader, source):

@@ -2,7 +2,7 @@
 import pytest
 
 from teamai_cli.services.knowledge_service import KnowledgeService
-from unittest.mock import MagicMock, patch, mock_open
+from unittest.mock import MagicMock, patch
 
 
 class TestKnowledgeService:
@@ -126,16 +126,3 @@ class TestKnowledgeService:
         mock_faiss.load_local.assert_called_once_with(ouput_dir, embeddings)
         db.merge_from.assert_called_once_with(local_db)
         db.save_local.assert_called_once_with(ouput_dir)
-
-    @patch("builtins.open", new_callable=mock_open)
-    @patch("teamai_cli.services.knowledge_service.pickle")
-    def test_pickle_documents(self, mock_pickle, mock_file):
-        file = MagicMock()
-        mock_file.return_value.__enter__.return_value = file
-        documents = [MagicMock()]
-        path = "test path"
-        knowledge_service = KnowledgeService(MagicMock(), MagicMock())
-        knowledge_service.pickle_documents(documents, path)
-
-        mock_file.assert_called_once_with(path, "wb")
-        mock_pickle.dump.assert_called_once_with(documents, file)
