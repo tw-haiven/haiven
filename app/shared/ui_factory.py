@@ -87,12 +87,6 @@ class UIFactory:
             with gr.Group(elem_classes="teamai-group"):
                 with gr.Accordion("Settings"):
                     with gr.Row():
-                        model_select, tone_select, self.__llm_config = (
-                            self.ui.create_llm_settings_ui()
-                        )
-                        model_select.change(fn=self._model_changed, inputs=model_select)
-                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
-
                         knowledge_pack_domain_select = (
                             self.ui.create_knowledge_pack_selector_ui()
                         )
@@ -100,6 +94,12 @@ class UIFactory:
                             fn=self.__knowledge_pack_domain_select_changed,
                             inputs=knowledge_pack_domain_select,
                         )
+
+                        model_select, tone_select, self.__llm_config = (
+                            self.ui.create_llm_settings_ui()
+                        )
+                        model_select.change(fn=self._model_changed, inputs=model_select)
+                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
             with gr.Row():
                 with gr.Tabs() as all_tabs:
                     category_filter = ["coding", "architecture"]
@@ -177,12 +177,6 @@ class UIFactory:
             with gr.Group(elem_classes="teamai-group"):
                 with gr.Accordion("Settings"):
                     with gr.Row():
-                        model_select, tone_select, self.__llm_config = (
-                            self.ui.create_llm_settings_ui()
-                        )
-                        model_select.change(fn=self._model_changed, inputs=model_select)
-                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
-
                         knowledge_pack_domain_select = (
                             self.ui.create_knowledge_pack_selector_ui()
                         )
@@ -190,6 +184,12 @@ class UIFactory:
                             fn=self.__knowledge_pack_domain_select_changed,
                             inputs=knowledge_pack_domain_select,
                         )
+
+                        model_select, tone_select, self.__llm_config = (
+                            self.ui.create_llm_settings_ui()
+                        )
+                        model_select.change(fn=self._model_changed, inputs=model_select)
+                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
             with gr.Row():
                 category_filter = ["testing"]
 
@@ -267,12 +267,6 @@ class UIFactory:
             with gr.Group(elem_classes="teamai-group"):
                 with gr.Accordion("Settings"):
                     with gr.Row():
-                        model_select, tone_select, self.__llm_config = (
-                            self.ui.create_llm_settings_ui()
-                        )
-                        model_select.change(fn=self._model_changed, inputs=model_select)
-                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
-
                         knowledge_pack_domain_select = (
                             self.ui.create_knowledge_pack_selector_ui()
                         )
@@ -280,6 +274,12 @@ class UIFactory:
                             fn=self.__knowledge_pack_domain_select_changed,
                             inputs=knowledge_pack_domain_select,
                         )
+
+                        model_select, tone_select, self.__llm_config = (
+                            self.ui.create_llm_settings_ui()
+                        )
+                        model_select.change(fn=self._model_changed, inputs=model_select)
+                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
             with gr.Row():
                 category_filter = ["analysis"]
                 with gr.Tabs() as all_tabs:
@@ -355,12 +355,6 @@ class UIFactory:
             with gr.Group(elem_classes="teamai-group"):
                 with gr.Accordion("Settings"):
                     with gr.Row():
-                        model_select, tone_select, self.__llm_config = (
-                            self.ui.create_llm_settings_ui()
-                        )
-                        model_select.change(fn=self._model_changed, inputs=model_select)
-                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
-
                         knowledge_pack_domain_select = (
                             self.ui.create_knowledge_pack_selector_ui()
                         )
@@ -368,6 +362,12 @@ class UIFactory:
                             fn=self.__knowledge_pack_domain_select_changed,
                             inputs=knowledge_pack_domain_select,
                         )
+
+                        model_select, tone_select, self.__llm_config = (
+                            self.ui.create_llm_settings_ui()
+                        )
+                        model_select.change(fn=self._model_changed, inputs=model_select)
+                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
 
             with gr.Row():
                 category_filter = ["prompting"]

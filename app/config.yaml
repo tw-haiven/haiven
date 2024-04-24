@@ -44,8 +44,6 @@ models:
     name: GPT-4 with Vision on Azure
     provider: Azure
     features:
-      - text-generation
-      - stop-sequence
       - image-to-text
     config:
       azure_endpoint: https://genai-pod-teamai-ai-aiservices197713008.openai.azure.com

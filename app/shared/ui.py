@@ -195,6 +195,7 @@ class UI:
     def create_llm_settings_ui(
         self, features_filter: List[str] = []
     ) -> tuple[gr.Dropdown, gr.Radio, LLMConfig]:
+        features_filter.append("text-generation")
         available_options: List[tuple[str, str]] = _get_services(features_filter)
         default_temperature: float = _get_default_temperature()
 
@@ -211,7 +212,7 @@ class UI:
         )
         dropdown.value = available_options[0][1]
 
-        tone_radio = gr.Slider(
+        temperature_slider = gr.Slider(
             minimum=0.2,
             maximum=0.8,
             step=0.3,
@@ -220,16 +221,16 @@ class UI:
             interactive=True,
             elem_classes="model-settings",
         )
-        tone_radio.value = default_temperature
+        temperature_slider.value = default_temperature
 
         if ConfigService.load_default_models().chat is not None:
             dropdown.value = ConfigService.load_default_models().chat
             dropdown.interactive = False
             dropdown.label = "Default model set in configuration"
 
-        llmConfig = LLMConfig(dropdown.value, tone_radio.value)
+        llmConfig = LLMConfig(dropdown.value, temperature_slider.value)
 
-        return dropdown, tone_radio, llmConfig
+        return dropdown, temperature_slider, llmConfig
 
     def create_about_tab_for_task_area(
         self, category_names: str, category_metadata, all_prompt_lists: List[PromptList]
