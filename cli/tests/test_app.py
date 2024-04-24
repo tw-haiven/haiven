@@ -392,8 +392,8 @@ class TestApp:
             ]
         )
 
-    def test_create_domain_structure_fails_if_domain_name_is_not_set(self):
-        domain_name = ""
+    def test_create_context_structure_fails_if_context_name_is_not_set(self):
+        context_name = ""
         parent_dir = "parent_dir"
 
         config_service = MagicMock()
@@ -409,12 +409,12 @@ class TestApp:
         )
 
         with pytest.raises(ValueError) as e:
-            app.create_domain_structure(domain_name, parent_dir)
+            app.create_context_structure(context_name, parent_dir)
 
-        assert str(e.value) == "please provide domain name for domain_name option"
+        assert str(e.value) == "please provide context name for context_name option"
 
-    def test_create_domain_structure_fails_if_parent_dir_does_not_exist(self):
-        domain_name = "domain_name"
+    def test_create_context_structure_fails_if_parent_dir_does_not_exist(self):
+        context_name = "context_name"
         parent_dir = "parent_dir"
 
         config_service = MagicMock()
@@ -430,12 +430,12 @@ class TestApp:
         )
 
         with pytest.raises(ValueError) as e:
-            app.create_domain_structure(domain_name, parent_dir)
+            app.create_context_structure(context_name, parent_dir)
 
         assert str(e.value) == "parent directory parent_dir does not exist"
 
-    def test_create_domain_structure(self):
-        domain_name = "domain_name"
+    def test_create_context_structure(self):
+        context_name = "context_name"
         parent_dir = "test_parent_dir"
         os.makedirs(parent_dir, exist_ok=True)
 
@@ -451,16 +451,16 @@ class TestApp:
             metadata_service,
         )
 
-        app.create_domain_structure(domain_name, parent_dir)
+        app.create_context_structure(context_name, parent_dir)
 
-        file_service.create_domain_structure.assert_called_once_with(
-            domain_name, parent_dir
+        file_service.create_context_structure.assert_called_once_with(
+            context_name, parent_dir
         )
 
         file_service.write_architecture_file.assert_called_once_with(
-            f"{parent_dir}/{domain_name}/architecture.md"
+            f"{parent_dir}/{context_name}/architecture.md"
         )
 
         file_service.write_business_context_file.assert_called_once_with(
-            f"{parent_dir}/{domain_name}/business-context.md"
+            f"{parent_dir}/{context_name}/business-context.md"
         )

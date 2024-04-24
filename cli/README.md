@@ -23,18 +23,18 @@ $ teamai-cli init --config-path <CONFIG_PATH> --env-path <ENV_PATH>
 
 
 ### Create knowledge package structure
-This will create a knowledge package structure for a given domain name which will allow you to tailor the applicatioin to your specific needs.
+This will create a knowledge package structure for a given context name which will allow you to tailor the applicatioin to your specific needs.
 
 
 ```console
-$ teamai-cli create-domain-package --domain-name <DOMAIN_NAME> --knowledge-root-dir <KNOWLEDGE_ROOT_DIR>
+$ teamai-cli create-context-package --context-name <CONTEXT_NAME> --knowledge-root-dir <KNOWLEDGE_ROOT_DIR>
 ```
-- DOMAIN_NAME being the name of the domain you want to create a knowledge package for.
+- CONTEXT_NAME being the name of the context you want to create a knowledge package for.
 - KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory.
 
 this should result in the following directory structure being built:
 ```
-<DOMAIN_NAME>
+<CONTEXT_NAME>
 ├── architecture.md
 ├── business_context.md
 ├── embeddings
@@ -45,12 +45,12 @@ this should result in the following directory structure being built:
 This will convert the files you want to rely on into embeddings and store them in the knowledge package directory.
 
 ```console
-$ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embedding-model <EMBEDDING_MODEL> --output-dir <KNOWLEDGE_ROOT_DIR>/<DOMAIN_NAME>/embeddings
+$ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embedding-model <EMBEDDING_MODEL> --output-dir <KNOWLEDGE_ROOT_DIR>/<CONTEXT_NAME>/embeddings
 ```
 - SOURCE_DIR being the path to the source directory containing the files you want to index.
 - DESCRIPTION being a description of the ensemble files you want to index.
 - EMBEDDING_MODEL being the embedding model you want to use for indexing.
-- KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory where the domain package is located.
+- KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory where the context package is located.
 
 #### Input
 
@@ -87,32 +87,32 @@ $ teamai-cli [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `create-domain-package`: Create a domain package base structure.
-* `index-all-files`: Index all files in a directory...
-* `index-file`: Index single file to a given...
+* `create-context-package`: Create a context package base structure.
+* `index-all-files`: Index all files in a directory to a given...
+* `index-file`: Index single file to a given destination...
 * `init`: Initialize the config file with the given...
 * `set-config-path`: Set the config path in the config file.
 * `set-env-path`: Set the env path in the config file.
 
-## `teamai-cli create-domain-package`
+## `teamai-cli create-context-package`
 
-Create a domain package base structure.
+Create a context package base structure.
 
 **Usage**:
 
 ```console
-$ teamai-cli create-domain-package [OPTIONS]
+$ teamai-cli create-context-package [OPTIONS]
 ```
 
 **Options**:
 
-* `--domain-name TEXT`
+* `--context-name TEXT`
 * `--knowledge-root-dir TEXT`
 * `--help`: Show this message and exit.
 
 ## `teamai-cli index-all-files`
 
-Index all pdf or text files in a directory to a given destination directory.
+Index all files in a directory to a given destination directory.
 
 **Usage**:
 
@@ -134,7 +134,7 @@ $ teamai-cli index-all-files [OPTIONS] SOURCE_DIR
 
 ## `teamai-cli index-file`
 
-Index single pdf or text file to a given destination directory.
+Index single file to a given destination directory.
 
 **Usage**:
 

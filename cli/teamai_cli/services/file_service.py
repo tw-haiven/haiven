@@ -79,16 +79,16 @@ title: Architecture
     ):
         file_content = f"""---
 key: business
-title: Domain
+title: Context
 {business_context_description}
 ---
 """
         with open(business_context_file_path, "w") as f:
             f.write(file_content)
 
-    def create_domain_structure(self, domain_name: str, parent_dir: str):
-        os.makedirs(f"{parent_dir}/{domain_name}/embeddings", exist_ok=True)
-        os.makedirs(f"{parent_dir}/{domain_name}/prompts", exist_ok=True)
+    def create_context_structure(self, context_name: str, parent_dir: str):
+        os.makedirs(f"{parent_dir}/{context_name}/embeddings", exist_ok=True)
+        os.makedirs(f"{parent_dir}/{context_name}/prompts", exist_ok=True)
 
 
 def _get_pdf_title(pdf_reader, source):

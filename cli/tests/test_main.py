@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from unittest.mock import patch, MagicMock, PropertyMock
 from teamai_cli.main import (
-    create_domain_package,
+    create_context_package,
     index_file,
     index_all_files,
     init,
@@ -176,21 +176,21 @@ class TestMain:
         cli_config_service.set_env_path.assert_called_once_with(env_path)
 
     @patch("teamai_cli.main.FileService")
-    def test_create_domain_package(self, mock_file_service):
-        domain_name = "domain_name"
+    def test_create_context_package(self, mock_file_service):
+        context_name = "context_name"
         parent_dir = "parent_dir"
 
         file_service = MagicMock()
         mock_file_service.return_value = file_service
 
-        create_domain_package(domain_name, parent_dir)
+        create_context_package(context_name, parent_dir)
 
-        file_service.create_domain_structure.assert_called_once_with(
-            domain_name, parent_dir
+        file_service.create_context_structure.assert_called_once_with(
+            context_name, parent_dir
         )
         file_service.write_architecture_file.assert_called_once_with(
-            f"{parent_dir}/{domain_name}/architecture.md"
+            f"{parent_dir}/{context_name}/architecture.md"
         )
         file_service.write_business_context_file.assert_called_once_with(
-            f"{parent_dir}/{domain_name}/business_context.md"
+            f"{parent_dir}/{context_name}/business_context.md"
         )

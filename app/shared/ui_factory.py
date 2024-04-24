@@ -7,7 +7,6 @@ from shared.navigation import NavigationManager
 from shared.prompts_factory import PromptsFactory
 from shared.ui import UI
 from tab_brainstorming.ui import enable_brainstorming
-from tab_db_exploration.ui import enable_db_exploration
 from tab_diagram_chat.ui import enable_image_chat
 from tab_knowledge_chat.ui import enable_knowledge_chat
 from tab_plain_chat.ui import enable_plain_chat
@@ -110,7 +109,6 @@ class UIFactory:
                         self.prompts_factory.create_all_prompts(
                             self.content_manager.knowledge_base_markdown
                         ),
-                        _db_exploration_addendum(),
                     )
                     enable_chat(
                         self.content_manager.knowledge_base_markdown,
@@ -148,7 +146,6 @@ class UIFactory:
                         category_filter,
                         knowledge_pack_domain_select,
                     )
-                    enable_db_exploration(category_filter)
 
             blocks.load(
                 self.event_handler.on_load_ui,
@@ -204,7 +201,6 @@ class UIFactory:
                         self.prompts_factory.create_all_prompts(
                             self.content_manager.knowledge_base_markdown,
                         ),
-                        _db_exploration_addendum(),
                     )
                     enable_chat(
                         self.content_manager.knowledge_base_markdown,
@@ -242,7 +238,6 @@ class UIFactory:
                         category_filter,
                         knowledge_pack_domain_select,
                     )
-                    enable_db_exploration(category_filter)
 
             blocks.load(
                 self.event_handler.on_load_ui,
@@ -448,7 +443,3 @@ class UIFactory:
 
         blocks.queue()
         return blocks
-
-
-def _db_exploration_addendum():
-    return "\n#### Test DB Exploration\n\nUse natural language queries to explore the test database"

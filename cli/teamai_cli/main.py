@@ -63,18 +63,18 @@ def index_all_files(
 
 
 @cli.command(no_args_is_help=True)
-def create_domain_package(
-    domain_name: str = "",
+def create_context_package(
+    context_name: str = "",
     knowledge_root_dir: str = "",
 ):
-    """Create a domain package base structure."""
+    """Create a context package base structure."""
     file_service = FileService()
-    file_service.create_domain_structure(domain_name, knowledge_root_dir)
+    file_service.create_context_structure(context_name, knowledge_root_dir)
     file_service.write_architecture_file(
-        f"{knowledge_root_dir}/{domain_name}/architecture.md"
+        f"{knowledge_root_dir}/{context_name}/architecture.md"
     )
     file_service.write_business_context_file(
-        f"{knowledge_root_dir}/{domain_name}/business_context.md"
+        f"{knowledge_root_dir}/{context_name}/business_context.md"
     )
 
 

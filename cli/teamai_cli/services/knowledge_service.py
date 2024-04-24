@@ -25,9 +25,13 @@ class KnowledgeService:
             length_function=self.token_service.get_tokens_length,
             separators=["\n\n", "\n", " ", ""],
         )
+
+        print("Creating documents out of", len(texts), "texts...")
         documents = text_splitter.create_documents(texts, metadatas)
+        print("Loading embeddings model", embedding_model.name, "...")
         embeddings = self.embedding_service.load_embeddings(embedding_model)
 
+        print("Creating DB...")
         db = FAISS.from_documents(documents, embeddings)
         try:
             local_db = FAISS.load_local(output_dir, embeddings)
@@ -36,4 +40,5 @@ class KnowledgeService:
             print("Indexing to new path")
             local_db = db
 
+        print("Saving DB to", output_dir)
         local_db.save_local(output_dir)

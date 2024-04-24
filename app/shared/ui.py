@@ -80,9 +80,10 @@ class UI:
             with gr.Column(scale=2):
                 gr.Markdown("## Domain knowledge")
                 for key in knowledge_base_markdown.get_all_keys():
+                    knowledge_entry = knowledge_base_markdown.get_entry(key)
                     gr.Textbox(
-                        knowledge_base_markdown.get_content(key),
-                        label=knowledge_base_markdown._base_knowledge.get(key)["title"],
+                        knowledge_entry.content,
+                        label=knowledge_entry.metadata["title"],
                         lines=10,
                         show_copy_button=True,
                     )
@@ -231,11 +232,7 @@ class UI:
         return dropdown, tone_radio, llmConfig
 
     def create_about_tab_for_task_area(
-        self,
-        category_names: str,
-        category_metadata,
-        all_prompt_lists: List[PromptList],
-        addendum_markdown: str = "",
+        self, category_names: str, category_metadata, all_prompt_lists: List[PromptList]
     ):
         prompt_lists_copy = all_prompt_lists.copy()
         prompt_list_markdown = ""
@@ -256,7 +253,7 @@ class UI:
 
         with gr.Tab("ABOUT", elem_id="about"):
             section_title = category_metadata["title"]
-            markdown = f"# {section_title}\n## Available prompts\n{prompt_list_markdown}\n{addendum_markdown}\n{videos_markdown}"
+            markdown = f"# {section_title}\n## Available prompts\n{prompt_list_markdown}\n{videos_markdown}"
             gr.Markdown(markdown, line_breaks=True)
 
 
