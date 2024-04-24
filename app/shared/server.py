@@ -128,9 +128,9 @@ class Server:
         teams_static_dir = Path(knowledge_pack_path + "/static")
         teams_static_dir.mkdir(parents=True, exist_ok=True)
         app.mount(
-            "/team-docs",
+            "/kp-static",
             StaticFiles(directory=teams_static_dir, html=True),
-            name="team-docs",
+            name="kp-static",
         )
 
     # FastAPI APP => for authentication and static file serving
