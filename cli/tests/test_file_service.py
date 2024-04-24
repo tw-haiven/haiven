@@ -3,44 +3,11 @@
 import os
 import shutil
 
-from langchain_core.documents import Document
 from teamai_cli.services.file_service import FileService
-from unittest.mock import patch, MagicMock, mock_open, PropertyMock
+from unittest.mock import patch, MagicMock, PropertyMock
 
 
 class TestFileService:
-    @patch("teamai_cli.services.file_service.pickle")
-    @patch("builtins.open", new_callable=mock_open)
-    def test_write_pickles(self, mock_file, mock_pickle):
-        document = Document(page_content="content", metadata={"metadata": "metadata"})
-        documents = [document]
-        output_dir = "output_dir"
-        pickle_file_path = "pickle_file_path"
-        os.makedirs(output_dir, exist_ok=True)
-        file_service = FileService()
-
-        file_service.write_pickles(documents, output_dir, pickle_file_path)
-
-        mock_file.assert_called_once_with(f"{output_dir}/{pickle_file_path}", "wb")
-        mock_pickle.dump.assert_called_once_with(documents, mock_file())
-        os.rmdir(output_dir)
-
-    @patch("teamai_cli.services.file_service.pickle")
-    @patch("builtins.open", new_callable=mock_open)
-    def test_write_pickles_creates_output_dir_if_it_does_not_exist(
-        self, mock_file, mock_pickle
-    ):
-        document = Document(page_content="content", metadata={"metadata": "metadata"})
-        documents = [document]
-        output_dir = "output_dir"
-        pickle_file_path = "pickle_file_path"
-        file_service = FileService()
-
-        file_service.write_pickles(documents, output_dir, pickle_file_path)
-
-        assert os.path.exists(output_dir)
-        os.rmdir(output_dir)
-
     @patch("teamai_cli.services.file_service.PdfReader")
     def test_get_text_and_metadata_from_pdf(self, mock_pdf_reader):
         pdf_title = "pdf title"

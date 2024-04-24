@@ -290,7 +290,9 @@ class DocumentsChat(TeamAIBaseChat):
 
         documents = [document for document, _ in search_results]
 
-        ai_message = self.chain({"input_documents": documents, "question": message})
+        template = self.build_prompt(message)
+
+        ai_message = self.chain({"input_documents": documents, "question": template})
         self.memory.append(AIMessage(content=ai_message["output_text"]))
 
         sources_markdown = (
@@ -305,6 +307,28 @@ class DocumentsChat(TeamAIBaseChat):
         self.memory.append(AIMessage(content=sources_markdown))
 
         return ai_message["output_text"], sources_markdown
+
+    def build_prompt(self, question) -> str:
+        return (
+            """Provide information over the following pieces of CONTEXT to answer the QUESTION at the end.
+        
+        CONTEXT:
+        ```
+        {context}
+        ```
+        QUESTION:
+        ```
+        In that CONTEXT, consider the following question: """
+            + question
+            + """
+        ```
+        
+        You can only answer based on the provided context. If an answer cannot be formed strictly using the context, 
+        say you cannot find information about that topic in the given context.
+        
+        Please provide an answer to the question based on the context in Markdown format.
+        """
+        )
 
     def next(self, human_message):
         return self.run(human_message)

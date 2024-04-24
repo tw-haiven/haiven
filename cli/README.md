@@ -43,6 +43,7 @@ this should result in the following directory structure being built:
 
 ### Index all files in the source directory
 This will convert the files you want to rely on into embeddings and store them in the knowledge package directory.
+
 ```console
 $ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embedding-model <EMBEDDING_MODEL> --output-dir <KNOWLEDGE_ROOT_DIR>/<DOMAIN_NAME>/embeddings
 ```
@@ -51,6 +52,15 @@ $ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embeddi
 - EMBEDDING_MODEL being the embedding model you want to use for indexing.
 - KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory where the domain package is located.
 
+#### Input
+
+- PDF files: Will be indexed page by page, as they are
+- CSV files: Will index contents based on column titles in the first row of the file. Expected mandatory columns are
+  - content: The text content
+  - metadata.title: The title to be displayed to the user (e.g. the title of the article or document)
+  - metadata.source: The source of the document (e.g. a URL)
+
+#### Output
 For each file in the source directory a markdown file and a .kb folder should be created in the embeddings directory. Following the structure below:
 
 ```
@@ -58,6 +68,8 @@ embeddings
 ├── file1.md
 └── file1.kb
 ```
+
+
 ___
 # `teamai-cli`
 
@@ -76,8 +88,8 @@ $ teamai-cli [OPTIONS] COMMAND [ARGS]...
 **Commands**:
 
 * `create-domain-package`: Create a domain package base structure.
-* `index-all-files`: Index all pdf or text files in a directory...
-* `index-file`: Index single pdf or text file to a given...
+* `index-all-files`: Index all files in a directory...
+* `index-file`: Index single file to a given...
 * `init`: Initialize the config file with the given...
 * `set-config-path`: Set the config path in the config file.
 * `set-env-path`: Set the env path in the config file.
