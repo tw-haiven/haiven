@@ -3,11 +3,8 @@ import os
 from teamai_cli.models.embedding_model import EmbeddingModel
 from teamai_cli.services.config_service import ConfigService
 from teamai_cli.services.file_service import FileService
-from teamai_cli.models.html_filter import HtmlFilter
 from teamai_cli.services.knowledge_service import KnowledgeService
-from teamai_cli.services.web_page_service import WebPageService
 from teamai_cli.services.metadata_service import MetadataService
-import typer
 from typing import List
 
 
@@ -17,13 +14,11 @@ class App:
         config_service: ConfigService,
         file_service: FileService,
         knowledge_service: KnowledgeService,
-        web_page_service: WebPageService,
         metadata_service: MetadataService,
     ):
         self.config_service = config_service
         self.file_service = file_service
         self.knowledge_service = knowledge_service
-        self.web_page_service = web_page_service
         self.metadata_service = metadata_service
 
     def index_individual_file(
@@ -37,8 +32,8 @@ class App:
         if not source_path:
             raise ValueError("please provide file path for source_path option")
 
-        if not (source_path.endswith(".txt") or source_path.endswith(".pdf")):
-            raise ValueError("source file needs to be .txt or .pdf file")
+        if not (source_path.endswith(".pdf") or source_path.endswith(".csv")):
+            raise ValueError("source file needs to be .pdf or .csv file")
 
         embedding_models = self.config_service.load_embeddings(config_path)
         model = _get_embedding(embedding_model, embedding_models)
@@ -50,14 +45,16 @@ class App:
 
         file_content = None
         file_metadata = None
-        if source_path.endswith(".txt"):
-            file_content, file_metadata = self._get_txt_file_text_and_metadata(
+        if source_path.endswith(".csv"):
+            file_content, file_metadata = self._get_csv_file_text_and_metadata(
                 source_path
             )
-        else:
+        elif source_path.endswith(".pdf"):
             file_content, file_metadata = self._get_pdf_file_text_and_metadata(
                 source_path
             )
+        else:
+            raise ValueError("source file needs to be .pdf or .csv file")
 
         file_path_prefix = _format_file_name(source_path)
         output_kb_dir = f"{output_dir}/{file_path_prefix}.kb"
@@ -89,40 +86,32 @@ class App:
             )
 
         files = self.file_service.get_files_path_from_directory(source_dir)
-        with typer.progressbar(range(100)) as progress:
-            for file in files:
-                print(f" creating knowledge for {file} in {output_dir}")
-                file_content = None
-                first_metadata = None
-                if file.endswith(".txt"):
-                    file_content, first_metadata = self._get_txt_file_text_and_metadata(
-                        file
-                    )
-                else:
-                    file_content, first_metadata = self._get_pdf_file_text_and_metadata(
-                        file
-                    )
 
-                output_kb_dir = f"{output_dir}/{_format_file_name(file)}.kb"
-                self.knowledge_service.index(
-                    file_content, first_metadata, model, output_kb_dir
+        for file in files:
+            print(f"creating knowledge for {file} in {output_dir}")
+            file_content = None
+            first_metadata = None
+            if file.endswith(".csv"):
+                file_content, first_metadata = self._get_csv_file_text_and_metadata(
+                    file
                 )
-                metadata = self.metadata_service.create_metadata(
-                    file, description, model.provider, output_dir
+            elif file.endswith(".pdf"):
+                file_content, first_metadata = self._get_pdf_file_text_and_metadata(
+                    file
                 )
-                self.file_service.write_metadata_file(
-                    metadata, f"{output_dir}/{_format_file_name(file)}.md"
-                )
-                progress.update((100 / len(files)))
+            else:
+                raise ValueError("source file needs to be .pdf or .csv file")
 
-    def index_web_page(self, url: str, html_filter: str, destination_path: str):
-        if not url:
-            raise ValueError("please provide url for url option")
-
-        web_page_article = self.web_page_service.get_single_page(
-            url, HtmlFilter(html_filter)
-        )
-        self.knowledge_service.pickle_documents(web_page_article, destination_path)
+            output_kb_dir = f"{output_dir}/{_format_file_name(file)}.kb"
+            self.knowledge_service.index(
+                file_content, first_metadata, model, output_kb_dir
+            )
+            metadata = self.metadata_service.create_metadata(
+                file, description, model.provider, output_dir
+            )
+            self.file_service.write_metadata_file(
+                metadata, f"{output_dir}/{_format_file_name(file)}.md"
+            )
 
     def create_domain_structure(self, domain_name: str, parent_dir: str = "./"):
         if not domain_name:
@@ -139,9 +128,8 @@ class App:
             f"{parent_dir}/{domain_name}/business-context.md"
         )
 
-    def _get_txt_file_text_and_metadata(self, source_path: str):
-        with open(source_path, "r") as file:
-            return [file.read()], [{"file": source_path}]
+    def _get_csv_file_text_and_metadata(self, source_path: str):
+        return self.file_service.get_text_and_metadata_from_csv(source_path)
 
     def _get_pdf_file_text_and_metadata(self, source_path: str):
         with open(source_path, "rb") as pdf_file:
