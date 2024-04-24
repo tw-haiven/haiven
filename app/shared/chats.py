@@ -1,5 +1,4 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-import os
 import time
 import uuid
 
@@ -262,8 +261,6 @@ class DocumentsChat(TeamAIBaseChat):
     def get_source_title(self, source: Document) -> str:
         if "title" in source.metadata:
             return f"[{source.metadata['title']}]({source.metadata['source']})"
-        elif "file" in source.metadata:
-            return f"{os.path.basename(source.metadata['file'])}"
         else:
             return "unknown"
 
@@ -271,7 +268,26 @@ class DocumentsChat(TeamAIBaseChat):
         if "page" in source.metadata:
             return source.metadata["page"]
         else:
-            return "NA"
+            return None
+
+    def get_source_authors(self, source: Document) -> str:
+        if "authors" in source.metadata:
+            return source.metadata["authors"]
+        else:
+            return None
+
+    def get_extra_metadata(self, source: Document) -> str:
+        page_metadata = (
+            f"Page {self.get_source_page(source)}"
+            if self.get_source_page(source)
+            else ""
+        )
+        authors_metadata = (
+            f"Authors: {', '.join(self.get_source_authors(source))}"
+            if self.get_source_authors(source)
+            else ""
+        )
+        return f"{page_metadata} {authors_metadata}"
 
     def run(self, message: str):
         self.log_run({"knowledge": self.knowledge})
@@ -299,7 +315,7 @@ class DocumentsChat(TeamAIBaseChat):
             "**These articles were searched as input to try and answer the question:**\n"
             + "\n".join(
                 [
-                    f"- {self.get_source_title(document)} (page {self.get_source_page(document)})"
+                    f"- {self.get_source_title(document)} {f'({self.get_extra_metadata(document)})' if self.get_extra_metadata(document) else ''}"
                     for document in documents
                 ]
             )
