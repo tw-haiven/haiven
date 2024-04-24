@@ -12,20 +12,21 @@ class FileService:
         text = []
         metadatas = []
         pdf_reader = PdfReader(pdf_file)
+        pdf_file_base_name = os.path.basename(pdf_file.name)
+
         page_number = 1
         pdf_title = _get_pdf_title(pdf_reader, pdf_file.name)
         pdf_authors = _get_pdf_authors(pdf_reader)
 
         for page in pdf_reader.pages:
             text.append(page.extract_text())
-            metadatas.append(
-                {
-                    "page": page_number,
-                    "source": pdf_file.name,
-                    "title": pdf_title,
-                    "authors": pdf_authors,
-                }
-            )
+            metadata_for_page = {
+                "page": page_number,
+                "source": "/kp-static/" + pdf_file_base_name,
+                "title": pdf_title,
+                "authors": pdf_authors,
+            }
+            metadatas.append(metadata_for_page)
             page_number += 1
         return text, metadatas
 
@@ -99,6 +100,6 @@ def _get_pdf_title(pdf_reader, source):
 
 def _get_pdf_authors(pdf_reader):
     if not pdf_reader.metadata or not pdf_reader.metadata.author:
-        return ["Unknown"]
+        return []
     else:
         return [pdf_reader.metadata.author]
