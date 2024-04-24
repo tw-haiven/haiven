@@ -82,11 +82,14 @@ def enable_image_chat(
                 knowledge,
             ]
         else:
-            return [prompt_choice, "", "", ""]
+            return [None, "", "", ""]
 
     def on_change_user_inputs(
         prompt_choice: str, user_input: str, image_description: str
     ):
+        if not prompt_choice:
+            prompt_choice = None
+
         return prompt_list.render_prompt(
             prompt_choice, user_input, {"image_description": image_description}
         )
@@ -238,21 +241,26 @@ def enable_image_chat(
 
         def start(prompt_text: str, user_identifier_state: str, request: gr.Request):
             update_llm_config(request)
-            chat_session_key_value, chat_session = (
-                CHAT_SESSION_MEMORY.get_or_create_chat(
-                    fn_create_chat=lambda: StreamingChat(llm_config=llm_config),
-                    chat_session_key_value=None,
-                    chat_category="diagrams",
-                    user_identifier=user_identifier_state,
-                )
-            )
 
-            for chat_history_chunk in chat_session.start_with_prompt(prompt_text):
-                yield {
-                    ui_message: "",
-                    ui_chatbot: chat_history_chunk,
-                    state_chat_session_key: chat_session_key_value,
-                }
+            if prompt_text:
+                chat_session_key_value, chat_session = (
+                    CHAT_SESSION_MEMORY.get_or_create_chat(
+                        fn_create_chat=lambda: StreamingChat(llm_config=llm_config),
+                        chat_session_key_value=None,
+                        chat_category="diagrams",
+                        user_identifier=user_identifier_state,
+                    )
+                )
+
+                for chat_history_chunk in chat_session.start_with_prompt(prompt_text):
+                    yield {
+                        ui_message: "",
+                        ui_chatbot: chat_history_chunk,
+                        state_chat_session_key: chat_session_key_value,
+                    }
+            else:
+                gr.Warning("Please choose a task first")
+                gr.update(ui_message="", ui_chatbot=[], state_chat_session_key=None)
 
         def chat(message_value: str, chat_history, chat_session_key_value: str):
             chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)

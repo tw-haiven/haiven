@@ -173,23 +173,27 @@ def enable_chat(
             return {ui_message: "", ui_chatbot: []}
 
         def start(prompt_text: str, user_identifier_state: str, request: gr.Request):
-            update_llm_config(request)
+            if prompt_text:
+                update_llm_config(request)
 
-            chat_session_key_value, chat_session = (
-                CHAT_SESSION_MEMORY.get_or_create_chat(
-                    lambda: StreamingChat(llm_config=llm_config),
-                    None,
-                    "chat",
-                    user_identifier_state,
+                chat_session_key_value, chat_session = (
+                    CHAT_SESSION_MEMORY.get_or_create_chat(
+                        lambda: StreamingChat(llm_config=llm_config),
+                        None,
+                        "chat",
+                        user_identifier_state,
+                    )
                 )
-            )
 
-            for chat_history_chunk in chat_session.start_with_prompt(prompt_text):
-                yield {
-                    ui_message: "",
-                    ui_chatbot: chat_history_chunk,
-                    state_chat_session_key: chat_session_key_value,
-                }
+                for chat_history_chunk in chat_session.start_with_prompt(prompt_text):
+                    yield {
+                        ui_message: "",
+                        ui_chatbot: chat_history_chunk,
+                        state_chat_session_key: chat_session_key_value,
+                    }
+            else:
+                gr.Warning("Please choose a task first")
+                gr.update(ui_message="", ui_chatbot=[], state_chat_session_key=None)
 
         def chat(
             message_value: str,
