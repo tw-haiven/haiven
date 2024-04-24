@@ -61,7 +61,7 @@ def enable_chat(
 
         if domain_selected is None:
             gr.Warning("Please select a knowledge context first")
-            return ["", "", "", ""]
+            return [None, "", "", ""]
 
         if prompt_choice:
             user_context.set_value(request, "chat_prompt_choice", prompt_choice)
@@ -71,8 +71,6 @@ def enable_chat(
             help, knowledge = prompt_list.render_help_markdown(prompt_choice)
             rendered_prompt = prompt_list.render_prompt(prompt_choice, user_input)
 
-            print(f"@debug on_change_prompt_choice: help={help}, knowledge={knowledge}")
-
             return [
                 prompt_choice,
                 rendered_prompt,
@@ -80,7 +78,7 @@ def enable_chat(
                 knowledge,
             ]
         else:
-            return [prompt_choice, "", "", ""]
+            return [None, "", "", ""]
 
     def on_change_user_input(prompt_choice: str, user_input: str):
         return {ui_prompt: prompt_list.render_prompt(prompt_choice, user_input)}

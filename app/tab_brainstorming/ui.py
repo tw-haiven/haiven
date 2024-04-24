@@ -41,7 +41,7 @@ def enable_brainstorming(
 
         if domain_selected is None:
             gr.Warning("Please select a knowledge context first")
-            return ["", "", "", ""]
+            return [None, "", "", ""]
 
         if prompt_choice:
             user_context.set_value(
@@ -58,7 +58,7 @@ def enable_brainstorming(
                 knowledge,
             ]
         else:
-            return [prompt_choice, "", "", ""]
+            return [None, "", "", ""]
 
     with gr.Tab(interaction_pattern_name, id=tab_id) as tab_brainstorming:
         with gr.Row():

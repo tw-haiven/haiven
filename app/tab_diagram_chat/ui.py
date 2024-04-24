@@ -2,6 +2,7 @@
 from typing import List
 import gradio as gr
 from dotenv import load_dotenv
+
 from shared.services.embeddings_service import EmbeddingsService
 from shared.llm_config import LLMConfig
 from shared.prompts_factory import PromptsFactory
@@ -64,7 +65,7 @@ def enable_image_chat(
 
         if domain_selected is None:
             gr.Warning("Please select a knowledge context first")
-            return ["", "", "", ""]
+            return [None, "", "", ""]
 
         if prompt_choice:
             user_context.set_value(request, "diagram_chat_prompt_choice", prompt_choice)
@@ -155,9 +156,10 @@ def enable_image_chat(
 
                     ui_describe_image_button = gr.Button("Describe image")
 
-                    ui_image_description = gr.Markdown(
+                    ui_image_description = gr.Textbox(
                         "_Will be filled with AI description once you upload an image_",
                         label="Image description",
+                        lines=4,
                     )
 
                     ui_user_input = gr.Textbox(
@@ -182,11 +184,6 @@ def enable_image_chat(
                     fn=on_change_prompt_choice,
                     inputs=[ui_prompt_dropdown, ui_user_input, ui_image_description],
                     outputs=[ui_prompt_dropdown, ui_prompt, ui_help, ui_help_knowledge],
-                )
-                ui_image_upload.change(
-                    fn=ImageDescriptionService.prompt_with_image,
-                    inputs=[ui_image_upload, ui_user_image_input],
-                    outputs=[ui_image_description],
                 )
                 ui_describe_image_button.click(
                     fn=ImageDescriptionService.prompt_with_image,
