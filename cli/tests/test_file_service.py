@@ -229,7 +229,6 @@ a description of the business context
         file_service = FileService()
         file_service.create_context_structure(context_name, parent_dir)
 
-        assert os.path.exists(f"{parent_dir}/{context_name}/prompts")
         assert os.path.exists(f"{parent_dir}/{context_name}/embeddings")
 
         shutil.rmtree(f"{parent_dir}")

@@ -88,7 +88,6 @@ title: Context
 
     def create_context_structure(self, context_name: str, parent_dir: str):
         os.makedirs(f"{parent_dir}/{context_name}/embeddings", exist_ok=True)
-        os.makedirs(f"{parent_dir}/{context_name}/prompts", exist_ok=True)
 
 
 def _get_pdf_title(pdf_reader, source):

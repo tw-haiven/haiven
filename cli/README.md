@@ -37,8 +37,7 @@ this should result in the following directory structure being built:
 <CONTEXT_NAME>
 ├── architecture.md
 ├── business_context.md
-├── embeddings
-└── prompts
+└── embeddings
 ```
 
 ### Index all files in the source directory
