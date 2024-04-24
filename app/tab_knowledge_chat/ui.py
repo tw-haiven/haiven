@@ -110,22 +110,29 @@ def enable_knowledge_chat(
         ):
             info_text = "No documents selected"
 
-            if knowledge_document_selected:
-                user_context.set_value(
-                    request, "knowledge_chat_prompt_choice", knowledge_document_selected
-                )
+            knowledge_key = None
+            knowledge_kind = None
 
+            if knowledge_document_selected:
                 chat_context.prompt = "Knowledge chat - Existing"
-                knowledge = EmbeddingsService.get_embedded_document(
-                    knowledge_document_selected
-                )
+                if knowledge_document_selected == "all":
+                    knowledge_key = knowledge_document_selected
+                    knowledge_kind = user_context.get_value(
+                        request, "knowledge_pack_domain", app_level=True
+                    )
+                else:
+                    knowledge = EmbeddingsService.get_embedded_document(
+                        knowledge_document_selected
+                    )
+                    knowledge_key = knowledge.key
+                    knowledge_kind = knowledge.kind
 
                 chat_session_key_value, chat_session = (
                     CHAT_SESSION_MEMORY.get_or_create_chat(
                         lambda: DocumentsChat(
                             llm_config=llm_config,
-                            knowledge=knowledge.key,
-                            kind=knowledge.kind,
+                            knowledge=knowledge_key,
+                            kind=knowledge_kind,
                         ),
                         None,
                         "knowledge-chat",
@@ -229,7 +236,7 @@ def enable_knowledge_chat(
             )
         )
 
-        udated_dd = gr.update(choices=choices)
+        udated_dd = gr.update(choices=choices, value=None)
 
         return udated_dd
 
