@@ -43,6 +43,8 @@ docker run \
         ghcr.io/tw-team-ai/team-ai:main
 ```
 
+Please note that while this local mode is great for getting a taste of the application, the prompts in our knowledge pack are currently only tested with the AWS, Azure and Google models listed [here](https://github.com/tw-team-ai/team-ai/blob/main/app/config.yaml), and might not work as well with the open models loaded with Ollama.
+
 ## Why?
 
 The product and tooling space around coding assistance is relatively mature, in the sense that it is possible to see value already today, and some of the products are already adopted in large enterprises.
@@ -99,33 +101,16 @@ You can clone the [Community Knowledge Pack](https://github.com/tw-team-ai/team-
 ### 3. Run locally
 #### Option 1: Run the base image locally
 
-Example for running with Ollama:
+See "quickest way to try it out" above, which describes how to run the base Docker image with Ollama as the model provider.
 
-```
-ollama pull llama2
-docker pull ghcr.io/tw-team-ai/team-ai:main
-docker run \
-        -v ../local/path/to/a/knowledge-pack/team-ai-community-knowledge-pack:/app/teams \
-        -e AUTH_SWITCHED_OFF=true \
-        -e TEAM_CONTENT_PATH=/app/teams \
-        -e DOMAIN_NAME=team_local \
-        -e ENABLED_PROVIDERS=ollama \
-        -e ENABLED_EMBEDDINGS_MODEL=ollama \
-        -e ENABLED_VISION_MODEL=ollama \
-        -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
-        -p 8080:8080 \
-        ghcr.io/tw-team-ai/team-ai:main
-```
-
-If you want to use Azure, GCP or AWS, you need to set the corresponding environment variables as documented in the `.env.***.template` files.
+If you want to use Azure, GCP or AWS, you need to set the corresponding environment variables as documented in the `.env.***.template` files, and feed those to the container.
 
 #### Option 2: Run the code locally
 
 Prerequisites:
 - Python3
-- [Pre-commit](https://pre-commit.com/)
 - [Poetry](https://python-poetry.org/)
-- If you don't have OAuth credentials set up, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
+- If you don't have OAuth integration and credentials set up, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
 
 Run:
 
@@ -172,6 +157,12 @@ default_models:
 ```
 
 Only embeddings is mandatory. When chat or vision are not set, the app will show a dropdown allowing the user to select the model to use.
+
+#### Deploy
+
+How you deploy the container image is all up to your environment - you could use Google Cloud Run, or an existing Kubernetes cluster on AWS, or an equivalent service on Azure, or your own data center container infrastructure.
+
+This makes you responsible for the usual application security practices like secrets management etc.
 
 ### 5. Add custom interaction modes
 
