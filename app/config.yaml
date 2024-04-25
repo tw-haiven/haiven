@@ -148,3 +148,4 @@ embeddings:
     provider: ollama
     config:
       base_url: ${OLLAMA_BASE_URL}
+      model: llama2

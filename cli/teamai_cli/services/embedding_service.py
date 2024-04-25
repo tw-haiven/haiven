@@ -88,7 +88,9 @@ def _load_ollama_embeddings(model: EmbeddingModel):
     ):
         raise ValueError(f"base_url is not defined in config for {model.id}")
 
-    return OllamaEmbeddings(base_url=model.config["base_url"])
+    return OllamaEmbeddings(
+        base_url=model.config["base_url"], model=model.config["model"]
+    )
 
 
 def _value_empty_in_model_config(value: str, config):

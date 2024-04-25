@@ -241,14 +241,19 @@ class TestEmbeddingService:
         model = MagicMock()
         type(model).provider = PropertyMock(return_value="ollama")
         type(model).id = PropertyMock(return_value="id")
-        base_url = "base_url"
-        type(model).config = PropertyMock(return_value={"base_url": base_url})
+        base_url_value = "some_base_url"
+        model_value = "some_model"
+        type(model).config = PropertyMock(
+            return_value={"base_url": base_url_value, "model": model_value}
+        )
 
         ollama_embeddings = MagicMock
         mock_ollama_embeddings.return_value = ollama_embeddings
 
         embeddings = EmbeddingService.load_embeddings(model)
 
-        mock_ollama_embeddings.assert_called_once_with(base_url=base_url)
+        mock_ollama_embeddings.assert_called_once_with(
+            base_url=base_url_value, model=model_value
+        )
 
         assert ollama_embeddings == embeddings
