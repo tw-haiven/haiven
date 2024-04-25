@@ -25,7 +25,7 @@ class TestContentManager:
 
         mock_config_service.load_embedding_model.assert_called_once_with("config.yaml")
         mock_embeddings_service.initialize.assert_called_once()
-        mock_embeddings_service.load_base_knowledge_pack.assert_called_once_with(
+        mock_embeddings_service.load_knowledge_base.assert_called_once_with(
             knowledge_pack_path + "/embeddings"
         )
 

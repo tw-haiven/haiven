@@ -18,7 +18,7 @@ class EmbeddingsService:
 
     Attributes:
         _instance (EmbeddingsService): The singleton instance of the EmbeddingsService.
-        _embeddings_store (InMemoryEmbeddingsDB): The in-memory database for storing embeddings.
+        _embeddings_stores (dict[str, InMemoryEmbeddingsDB]): The in-memory database for storing embeddings.
         _embeddings_provider (Embeddings): The provider used for generating embeddings.
     """
 
@@ -89,7 +89,7 @@ class EmbeddingsService:
             document_path (str): The file system path to the document to be loaded.
         """
         instance = EmbeddingsService.get_instance()
-        instance._load_document(document_path, kind="base")
+        instance._load_document(document_path, context="base")
 
     @staticmethod
     def generate_base_document_from_text(
@@ -110,11 +110,11 @@ class EmbeddingsService:
             document_key=document_key,
             document_metadata=document_metadata,
             content=content,
-            kind="base",
+            context="base",
         )
 
     @staticmethod
-    def load_base_knowledge_pack(knowledge_pack_path: str) -> None:
+    def load_knowledge_base(knowledge_pack_path: str) -> None:
         """
         Loads multiple documents from a specified directory, often referred to as a knowledge pack. Each document in the directory is loaded, processed, and its embedding is stored.
 
@@ -122,18 +122,19 @@ class EmbeddingsService:
             knowledge_pack_path (str): The file system path to the directory containing the knowledge pack documents.
         """
         instance = EmbeddingsService.get_instance()
-        instance._load_knowledge_pack(path=knowledge_pack_path, kind="base")
+        instance._load_knowledge_pack(path=knowledge_pack_path, name="base")
 
     @staticmethod
-    def load_domain_knowledge_pack(domain_name: str, domain_path: str) -> None:
+    def load_knowledge_context(context_name: str, context_path: str) -> None:
         """
         Loads multiple documents from a specified directory, often referred to as a knowledge pack. Each document in the directory is loaded, processed, and its embedding is stored.
 
         Parameters:
-            knowledge_pack_path (str): The file system path to the directory containing the knowledge pack documents.
+            context_name (str): The name of the context.
+            context_path (str): The file system path to the directory containing the context documents.
         """
         instance = EmbeddingsService.get_instance()
-        instance._load_knowledge_pack(path=domain_path, kind=domain_name)
+        instance._load_knowledge_pack(path=context_path, name=context_name)
 
     @staticmethod
     def get_embedded_document(document_key: str) -> DocumentEmbedding:
@@ -147,7 +148,7 @@ class EmbeddingsService:
             DocumentEmbedding: The embedding of the specified document.
         """
         instance = EmbeddingsService.get_instance()
-        for kind, store in instance._embeddings_stores.items():
+        for context, store in instance._embeddings_stores.items():
             embedding = store.get_embedding(document_key)
             if embedding is not None:
                 return embedding
@@ -155,9 +156,12 @@ class EmbeddingsService:
         return None
 
     @staticmethod
-    def get_embedded_documents(kind: str = None) -> List[DocumentEmbedding]:
+    def get_embedded_documents(context: str = None) -> List[DocumentEmbedding]:
         """
         Retrieves all stored document embeddings. This method provides access to the complete set of embeddings currently managed by the service.
+
+        Parameters:
+            context (str, optional): The context to retrieve embeddings from. If None, retrieves embeddings only from base context. Defaults to None.
 
         Returns:
             List[DocumentEmbedding]: A list of all document embeddings stored in the service.
@@ -167,21 +171,22 @@ class EmbeddingsService:
         store = instance._embeddings_stores["base"]
         all_embeddings.extend(store.get_embeddings())
 
-        if kind is not None and kind != "":
-            store = instance._embeddings_stores[kind]
+        if context is not None and context != "":
+            store = instance._embeddings_stores[context]
             all_embeddings.extend(store.get_embeddings())
 
         return all_embeddings
 
     @staticmethod
     def similarity_search_with_scores(
-        query: str, kind: str, k: int = 5, score_threshold: float = None
+        query: str, context: str, k: int = 5, score_threshold: float = None
     ) -> List[Tuple[Document, float]]:
         """
         Performs a similarity search across all stored document embeddings, returning a list of documents and their similarity scores relative to the query. This method supports specifying the number of results (k) and an optional score threshold.
 
         Parameters:
             query (str): The search query.
+            context (str): The context to search within.
             k (int, optional): The number of results to return. Defaults to 5.
             score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
 
@@ -189,13 +194,15 @@ class EmbeddingsService:
             List[Tuple[Document, float]]: A list of tuples, each containing a Document and its similarity score.
         """
         instance = EmbeddingsService.get_instance()
-        return instance._similarity_search_with_scores(query, kind, k, score_threshold)
+        return instance._similarity_search_with_scores(
+            query, context, k, score_threshold
+        )
 
     @staticmethod
     def similarity_search_on_single_document_with_scores(
         query: str,
         document_key: str,
-        kind: str,
+        context: str,
         k: int = 5,
         score_threshold: float = None,
     ) -> List[Tuple[Document, float]]:
@@ -205,6 +212,7 @@ class EmbeddingsService:
         Parameters:
             query (str): The search query.
             document_key (str): The key of the document to search within.
+            context (str): The context to search within.
             k (int, optional): The number of results to return. Defaults to 5.
             score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
 
@@ -213,14 +221,14 @@ class EmbeddingsService:
         """
         instance = EmbeddingsService.get_instance()
         return instance._similarity_search_on_single_document_with_scores(
-            query, document_key, kind, k, score_threshold
+            query, document_key, context, k, score_threshold
         )
 
     @staticmethod
     def similarity_search_on_single_document(
         query: str,
         document_key: str,
-        kind: str,
+        context: str,
         k: int = 5,
         score_threshold: float = None,
     ) -> List[Document]:
@@ -230,6 +238,7 @@ class EmbeddingsService:
         Parameters:
             query (str): The search query.
             document_key (str): The key of the document to search within.
+            context (str): The context to search within.
             k (int, optional): The number of results to return. Defaults to 5.
             score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
 
@@ -238,7 +247,7 @@ class EmbeddingsService:
         """
         instance = EmbeddingsService.get_instance()
         return instance._similarity_search_on_single_document(
-            query, document_key, kind, k, score_threshold
+            query, document_key, context, k, score_threshold
         )
 
     @staticmethod
@@ -259,11 +268,13 @@ class EmbeddingsService:
         instance = EmbeddingsService.get_instance()
         return instance._similarity_search(query, k, score_threshold)
 
-    def _get_or_create_embeddings_db_for_kind(self, kind: str) -> InMemoryEmbeddingsDB:
-        if kind not in self._embeddings_stores:
-            self._embeddings_stores[kind] = InMemoryEmbeddingsDB()
+    def _get_or_create_embeddings_db_for_context(
+        self, context: str
+    ) -> InMemoryEmbeddingsDB:
+        if context not in self._embeddings_stores:
+            self._embeddings_stores[context] = InMemoryEmbeddingsDB()
 
-        return self._embeddings_stores[kind]
+        return self._embeddings_stores[context]
 
     def _get_retriever_from_file(self, kb_path: str) -> FAISS:
         path = Path(kb_path)
@@ -278,20 +289,20 @@ class EmbeddingsService:
         faiss = self._embeddings_provider.generate_from_documents(text, metadata)
         return faiss
 
-    def _load_knowledge_pack(self, path: str, kind: str) -> None:
+    def _load_knowledge_pack(self, path: str, name: str) -> None:
         knowledge_files = sorted(
             [f for f in os.listdir(path) if f.endswith(".md") and f != "README.md"]
         )
 
         if knowledge_files is not None:
-            self._embeddings_stores[kind] = InMemoryEmbeddingsDB()
+            self._embeddings_stores[name] = InMemoryEmbeddingsDB()
 
         for knowledge_file in knowledge_files:
             self._load_document(
-                document_path=os.path.join(path, knowledge_file), kind=kind
+                document_path=os.path.join(path, knowledge_file), context=name
             )
 
-    def _load_document(self, document_path: str, kind: str) -> None:
+    def _load_document(self, document_path: str, context: str) -> None:
         document = frontmatter.load(document_path)
         if (
             document.metadata.get("provider")
@@ -301,7 +312,7 @@ class EmbeddingsService:
             kb_path = document.metadata["path"]
             kb_full_path = os.path.join(folder_path, kb_path)
             embedding = DocumentEmbedding(
-                kind=kind,
+                context=context,
                 key=document.metadata["key"],
                 title=document.metadata.get("title", ""),
                 source=document.metadata.get("source", ""),
@@ -311,19 +322,19 @@ class EmbeddingsService:
                 retriever=self._get_retriever_from_file(kb_full_path),
             )
 
-            store_for_kind = self._get_or_create_embeddings_db_for_kind(kind)
+            store_for_context = self._get_or_create_embeddings_db_for_context(context)
 
-            store_for_kind.add_embedding(embedding.key, embedding)
+            store_for_context.add_embedding(embedding.key, embedding)
 
     def _generate_document_from_text(
         self,
         document_key: str,
         document_metadata: dict,
         content: Tuple[List[str], List[dict]],
-        kind: str,
+        context: str,
     ) -> None:
         embedding = DocumentEmbedding(
-            kind=kind,
+            context=context,
             key=document_key,
             title=document_metadata.get("title", document_key),
             source=document_metadata.get("source", "source not provided"),
@@ -333,25 +344,25 @@ class EmbeddingsService:
             retriever=self._get_retriever_from_text(content),
         )
 
-        store_for_kind = self._get_or_create_embeddings_db_for_kind(kind)
-        store_for_kind.add_embedding(embedding.key, embedding)
+        store_for_context = self._get_or_create_embeddings_db_for_context(context)
+        store_for_context.add_embedding(embedding.key, embedding)
 
     def _similarity_search_with_scores(
-        self, query: str, kind: str, k: int = 5, score_threshold: float = None
+        self, query: str, context: str, k: int = 5, score_threshold: float = None
     ) -> List[Tuple[Document, float]]:
         similar_documents = []
 
         stores_to_search_in = {}
         stores_to_search_in["base"] = self._embeddings_stores["base"]
 
-        if kind is not None and kind != "":
-            stores_to_search_in[kind] = self._embeddings_stores[kind]
+        if context is not None and context != "":
+            stores_to_search_in[context] = self._embeddings_stores[context]
 
-        for kind, store in stores_to_search_in.items():
+        for context, store in stores_to_search_in.items():
             for embedding_key in store.get_keys():
                 partial_results = (
                     self._similarity_search_on_single_document_with_scores(
-                        query, embedding_key, kind, k, score_threshold
+                        query, embedding_key, context, k, score_threshold
                     )
                 )
                 similar_documents.extend(partial_results)
@@ -365,11 +376,11 @@ class EmbeddingsService:
         self,
         query: str,
         document_key: str,
-        kind: str,
+        context: str,
         k: int = 5,
         score_threshold: float = None,
     ) -> List[Tuple[Document, float]]:
-        store = self._embeddings_stores.get(kind, None)
+        store = self._embeddings_stores.get(context, None)
         if store is None:
             return []
 
@@ -387,12 +398,12 @@ class EmbeddingsService:
         self,
         query: str,
         document_key: str,
-        kind: str,
+        context: str,
         k: int = 5,
         score_threshold: float = None,
     ) -> List[Document]:
         documents_with_scores = self._similarity_search_on_single_document_with_scores(
-            query, document_key, kind, k, score_threshold
+            query, document_key, context, k, score_threshold
         )
         documents = [doc for doc, _ in documents_with_scores]
         return documents

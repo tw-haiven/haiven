@@ -17,10 +17,10 @@ def enable_chat(
     CHAT_SESSION_MEMORY: ServerChatSessionMemory,
     prompts_factory: PromptsFactory,
     llm_config: LLMConfig,
-    knowledge_pack_domain: str,
+    active_knowledge_context: str,
     user_identifier_state: gr.State,
     prompt_categories: List[str],
-    knowledge_pack_domain_select: gr.Dropdown = None,
+    knowledge_context_select: gr.Dropdown = None,
 ):
     load_dotenv()
     tab_id = "chat"
@@ -55,11 +55,11 @@ def enable_chat(
     def on_change_prompt_choice(
         prompt_choice: str, user_input: str, request: gr.Request
     ):
-        domain_selected = user_context.get_value(
-            request, "knowledge_pack_domain", app_level=True
+        context_selected = user_context.get_value(
+            request, "active_knowledge_context", app_level=True
         )
 
-        if domain_selected is None:
+        if context_selected is None:
             gr.Warning("Please select a knowledge context first")
             return [None, "", "", ""]
 
@@ -133,13 +133,13 @@ def enable_chat(
 
                     with gr.Group():
                         with gr.Row(elem_classes="knowledge-advice"):
-                            domain_selected = knowledge_pack_domain
+                            context_selected = active_knowledge_context
                             knowledge_documents = [("All documents", "all")]
                             knowledge_documents.extend(
                                 [
                                     (embedding.title, embedding.key)
                                     for embedding in EmbeddingsService.get_embedded_documents(
-                                        kind=domain_selected
+                                        context=context_selected
                                     )
                                 ]
                             )
@@ -224,12 +224,12 @@ def enable_chat(
             if knowledge_choice == []:
                 raise ValueError("No knowledge base selected")
 
-            domain_selected = user_context.get_value(
-                request, "knowledge_pack_domain", True
+            context_selected = user_context.get_value(
+                request, "active_knowledge_context", True
             )
 
             for chat_history_chunk in chat_session.next_advice_from_knowledge(
-                chat_history, knowledge_choice, domain_selected
+                chat_history, knowledge_choice, context_selected
             ):
                 yield {ui_chatbot: chat_history_chunk}
 
@@ -284,17 +284,15 @@ def enable_chat(
     def is_empty(value) -> bool:
         return value is None or value == "" or len(value) == 0
 
-    def on_knowledge_pack_domain_selected(
-        knowledge_pack_domain_select, request: gr.Request
-    ):
-        if is_empty(knowledge_pack_domain_select):
+    def on_knowledge_context_selected(knowledge_context_select, request: gr.Request):
+        if is_empty(knowledge_context_select):
             return
 
         choices = [("All Documents", "all")]
         choices.extend(
             (embedding.title, embedding.key)
             for embedding in EmbeddingsService.get_embedded_documents(
-                kind=knowledge_pack_domain_select
+                context=knowledge_context_select
             )
         )
 
@@ -302,10 +300,10 @@ def enable_chat(
 
         return udated_dd
 
-    if knowledge_pack_domain_select:
+    if knowledge_context_select:
         gr.on(
-            triggers=[knowledge_pack_domain_select.change],
-            fn=on_knowledge_pack_domain_selected,
-            inputs=knowledge_pack_domain_select,
+            triggers=[knowledge_context_select.change],
+            fn=on_knowledge_context_selected,
+            inputs=knowledge_context_select,
             outputs=ui_knowledge_choice,
         )

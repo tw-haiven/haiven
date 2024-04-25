@@ -35,11 +35,11 @@ def enable_brainstorming(
     def on_change_prompt_choice(
         prompt_choice: str, user_input: str, request: gr.Request
     ) -> dict:
-        domain_selected = user_context.get_value(
-            request, "knowledge_pack_domain", app_level=True
+        context_selected = user_context.get_value(
+            request, "active_knowledge_context", app_level=True
         )
 
-        if domain_selected is None:
+        if context_selected is None:
             gr.Warning("Please select a knowledge context first")
             return [None, "", "", ""]
 

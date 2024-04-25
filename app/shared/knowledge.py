@@ -17,7 +17,7 @@ class KnowledgeBaseMarkdown:
         ]
 
         self._base_knowledge = {}
-        self._domain_knowledge = {}
+        self._context_knowledge = {}
 
         for content in file_contents:
             if content.metadata["key"]:
@@ -25,7 +25,7 @@ class KnowledgeBaseMarkdown:
                     content.content, content.metadata
                 )
 
-    def set_domain_content(self, path: str):
+    def set_context_content(self, path: str):
         knowledge_files = sorted(
             [f for f in os.listdir(path) if f.endswith(".md") and f != "README.md"]
         )
@@ -36,17 +36,17 @@ class KnowledgeBaseMarkdown:
 
         for content in file_contents:
             if content.metadata["key"]:
-                self._domain_knowledge[content.metadata.get("key")] = KnowledgeEntry(
+                self._context_knowledge[content.metadata.get("key")] = KnowledgeEntry(
                     content.content, content.metadata
                 )
-                self._domain_knowledge[content.metadata.get("key")] = content
+                self._context_knowledge[content.metadata.get("key")] = content
 
     def get_entry(self, key) -> KnowledgeEntry:
         entry = self._base_knowledge.get(key, None)
         if entry:
             return entry
 
-        entry = self._domain_knowledge.get(key, None)
+        entry = self._context_knowledge.get(key, None)
         if entry:
             return entry
 
@@ -54,14 +54,14 @@ class KnowledgeBaseMarkdown:
 
     def get_all_keys(self):
         all_keys = list(self._base_knowledge.keys()) + list(
-            self._domain_knowledge.keys()
+            self._context_knowledge.keys()
         )
         return all_keys
 
     def get_knowledge_content_dict(self) -> dict[str, str]:
         merged_content_dict = {
             key: entry.content
-            for dict_item in [self._base_knowledge, self._domain_knowledge]
+            for dict_item in [self._base_knowledge, self._context_knowledge]
             for key, entry in dict_item.items()
         }
         return merged_content_dict

@@ -31,7 +31,7 @@ class EventHandler:
         self,
         model_selected,
         tone_selected,
-        knowledge_pack_domain_select,
+        knowledge_context_select,
         request: gr.Request,
     ):
         if user_context.get_value(request, "llm_model", app_level=True) is not None:
@@ -43,11 +43,11 @@ class EventHandler:
             tone_selected = user_context.get_value(request, "llm_tone", app_level=True)
 
         if (
-            user_context.get_value(request, "knowledge_pack_domain", app_level=True)
+            user_context.get_value(request, "active_knowledge_context", app_level=True)
             is not None
         ):
-            knowledge_pack_domain_select = user_context.get_value(
-                request, "knowledge_pack_domain", app_level=True
+            knowledge_context_select = user_context.get_value(
+                request, "active_knowledge_context", app_level=True
             )
 
         if user_context.get_active_path(request) != "unknown":
@@ -61,14 +61,14 @@ class EventHandler:
                     gr.Tabs(selected=request.query_params["tab"]),
                     model_selected,
                     tone_selected,
-                    knowledge_pack_domain_select,
+                    knowledge_context_select,
                     self.get_user(request),
                 )
             return (
                 gr.Tabs(selected=selected_tab),
                 model_selected,
                 tone_selected,
-                knowledge_pack_domain_select,
+                knowledge_context_select,
                 self.get_user(request),
             )
         else:
@@ -76,6 +76,6 @@ class EventHandler:
                 gr.Tabs(),
                 model_selected,
                 tone_selected,
-                knowledge_pack_domain_select,
+                knowledge_context_select,
                 self.get_user(request),
             )

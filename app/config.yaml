@@ -1,6 +1,6 @@
 knowledge_pack:
   path: ${TEAM_CONTENT_PATH}
-  domains:
+  contexts:
   - name: ${DOMAIN_NAME}
     path: ${DOMAIN_NAME}
   - name: Team AI

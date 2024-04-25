@@ -45,18 +45,18 @@ class UIFactory:
     def is_empty(self, value) -> bool:
         return value is None or value == "" or len(value) == 0
 
-    def __knowledge_pack_domain_select_changed(
-        self, knowledge_pack_domain_select, request: gr.Request
+    def __knowledge_context_select_changed(
+        self, knowledge_context_select, request: gr.Request
     ):
-        if not self.is_empty(knowledge_pack_domain_select):
-            knowledge_pack_domain = self.content_manager.on_domain_selected(
-                knowledge_pack_domain_select
+        if not self.is_empty(knowledge_context_select):
+            knowledge_context = self.content_manager.on_context_selected(
+                knowledge_context_select
             )
-            if knowledge_pack_domain is not None:
+            if knowledge_context is not None:
                 user_context.set_value(
                     request,
-                    "knowledge_pack_domain",
-                    knowledge_pack_domain,
+                    "active_knowledge_context",
+                    knowledge_context,
                     app_level=True,
                 )
 
@@ -87,12 +87,12 @@ class UIFactory:
             with gr.Group(elem_classes="teamai-group"):
                 with gr.Accordion("Settings"):
                     with gr.Row():
-                        knowledge_pack_domain_select = (
-                            self.ui.create_knowledge_pack_selector_ui()
+                        knowledge_context_select = (
+                            self.ui.create_knowledge_context_selector_ui()
                         )
-                        knowledge_pack_domain_select.change(
-                            fn=self.__knowledge_pack_domain_select_changed,
-                            inputs=knowledge_pack_domain_select,
+                        knowledge_context_select.change(
+                            fn=self.__knowledge_context_select_changed,
+                            inputs=knowledge_context_select,
                         )
 
                         model_select, tone_select, self.__llm_config = (
@@ -115,10 +115,10 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_pack_domain_active,
+                        self.content_manager.knowledge_context_active,
                         user_identifier_state,
                         category_filter,
-                        knowledge_pack_domain_select,
+                        knowledge_context_select,
                     )
                     enable_brainstorming(
                         self.content_manager.knowledge_base_markdown,
@@ -133,18 +133,18 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_pack_domain_active,
+                        self.content_manager.knowledge_context_active,
                         user_identifier_state,
                         category_filter,
-                        knowledge_pack_domain_select,
+                        knowledge_context_select,
                     )
                     enable_knowledge_chat(
                         self.chat_session_memory,
                         self.__llm_config,
-                        self.content_manager.knowledge_pack_domain_active,
+                        self.content_manager.knowledge_context_active,
                         user_identifier_state,
                         category_filter,
-                        knowledge_pack_domain_select,
+                        knowledge_context_select,
                     )
 
             blocks.load(
@@ -152,13 +152,13 @@ class UIFactory:
                 [
                     model_select,
                     tone_select,
-                    knowledge_pack_domain_select,
+                    knowledge_context_select,
                 ],
                 [
                     all_tabs,
                     model_select,
                     tone_select,
-                    knowledge_pack_domain_select,
+                    knowledge_context_select,
                     user_identifier_state,
                 ],
             )
@@ -177,12 +177,12 @@ class UIFactory:
             with gr.Group(elem_classes="teamai-group"):
                 with gr.Accordion("Settings"):
                     with gr.Row():
-                        knowledge_pack_domain_select = (
-                            self.ui.create_knowledge_pack_selector_ui()
+                        knowledge_context_select = (
+                            self.ui.create_knowledge_context_selector_ui()
                         )
-                        knowledge_pack_domain_select.change(
-                            fn=self.__knowledge_pack_domain_select_changed,
-                            inputs=knowledge_pack_domain_select,
+                        knowledge_context_select.change(
+                            fn=self.__knowledge_context_select_changed,
+                            inputs=knowledge_context_select,
                         )
 
                         model_select, tone_select, self.__llm_config = (
@@ -207,10 +207,10 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_pack_domain_active,
+                        self.content_manager.knowledge_context_active,
                         user_identifier_state,
                         category_filter,
-                        knowledge_pack_domain_select,
+                        knowledge_context_select,
                     )
                     enable_brainstorming(
                         self.content_manager.knowledge_base_markdown,
@@ -225,28 +225,28 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_pack_domain_active,
+                        self.content_manager.knowledge_context_active,
                         user_identifier_state,
                         category_filter,
-                        knowledge_pack_domain_select,
+                        knowledge_context_select,
                     )
                     enable_knowledge_chat(
                         self.chat_session_memory,
                         self.__llm_config,
-                        self.content_manager.knowledge_pack_domain_active,
+                        self.content_manager.knowledge_context_active,
                         user_identifier_state,
                         category_filter,
-                        knowledge_pack_domain_select,
+                        knowledge_context_select,
                     )
 
             blocks.load(
                 self.event_handler.on_load_ui,
-                [model_select, tone_select, knowledge_pack_domain_select],
+                [model_select, tone_select, knowledge_context_select],
                 [
                     all_tabs,
                     model_select,
                     tone_select,
-                    knowledge_pack_domain_select,
+                    knowledge_context_select,
                     user_identifier_state,
                 ],
             )
@@ -267,12 +267,12 @@ class UIFactory:
             with gr.Group(elem_classes="teamai-group"):
                 with gr.Accordion("Settings"):
                     with gr.Row():
-                        knowledge_pack_domain_select = (
-                            self.ui.create_knowledge_pack_selector_ui()
+                        knowledge_context_select = (
+                            self.ui.create_knowledge_context_selector_ui()
                         )
-                        knowledge_pack_domain_select.change(
-                            fn=self.__knowledge_pack_domain_select_changed,
-                            inputs=knowledge_pack_domain_select,
+                        knowledge_context_select.change(
+                            fn=self.__knowledge_context_select_changed,
+                            inputs=knowledge_context_select,
                         )
 
                         model_select, tone_select, self.__llm_config = (
@@ -296,10 +296,10 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_pack_domain_active,
+                        self.content_manager.knowledge_context_active,
                         user_identifier_state,
                         category_filter,
-                        knowledge_pack_domain_select,
+                        knowledge_context_select,
                     )
                     enable_brainstorming(
                         self.content_manager.knowledge_base_markdown,
@@ -314,28 +314,28 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_pack_domain_active,
+                        self.content_manager.knowledge_context_active,
                         user_identifier_state,
                         category_filter,
-                        knowledge_pack_domain_select,
+                        knowledge_context_select,
                     )
                     enable_knowledge_chat(
                         self.chat_session_memory,
                         self.__llm_config,
-                        self.content_manager.knowledge_pack_domain_active,
+                        self.content_manager.knowledge_context_active,
                         user_identifier_state,
                         category_filter,
-                        knowledge_pack_domain_select,
+                        knowledge_context_select,
                     )
 
             blocks.load(
                 self.event_handler.on_load_ui,
-                [model_select, tone_select, knowledge_pack_domain_select],
+                [model_select, tone_select, knowledge_context_select],
                 [
                     all_tabs,
                     model_select,
                     tone_select,
-                    knowledge_pack_domain_select,
+                    knowledge_context_select,
                     user_identifier_state,
                 ],
             )
@@ -355,12 +355,12 @@ class UIFactory:
             with gr.Group(elem_classes="teamai-group"):
                 with gr.Accordion("Settings"):
                     with gr.Row():
-                        knowledge_pack_domain_select = (
-                            self.ui.create_knowledge_pack_selector_ui()
+                        knowledge_context_select = (
+                            self.ui.create_knowledge_context_selector_ui()
                         )
-                        knowledge_pack_domain_select.change(
-                            fn=self.__knowledge_pack_domain_select_changed,
-                            inputs=knowledge_pack_domain_select,
+                        knowledge_context_select.change(
+                            fn=self.__knowledge_context_select_changed,
+                            inputs=knowledge_context_select,
                         )
 
                         model_select, tone_select, self.__llm_config = (
@@ -388,20 +388,20 @@ class UIFactory:
                             self.chat_session_memory,
                             self.prompts_factory,
                             self.__llm_config,
-                            self.content_manager.knowledge_pack_domain_active,
+                            self.content_manager.knowledge_context_active,
                             user_identifier_state,
                             category_filter,
-                            knowledge_pack_domain_select,
+                            knowledge_context_select,
                         )
 
             blocks.load(
                 self.event_handler.on_load_ui,
-                [model_select, tone_select, knowledge_pack_domain_select],
+                [model_select, tone_select, knowledge_context_select],
                 [
                     all_tabs,
                     model_select,
                     tone_select,
-                    knowledge_pack_domain_select,
+                    knowledge_context_select,
                     user_identifier_state,
                 ],
             )

@@ -3,7 +3,7 @@ from shared.logger import TeamAILogger
 
 from shared.embeddings import Embeddings
 from shared.knowledge import KnowledgeBaseMarkdown
-from shared.models.knowledge_pack import Domain, KnowledgePack
+from shared.models.knowledge_pack import KnowledgeContext, KnowledgePack
 from shared.services.config_service import ConfigService
 from shared.services.embeddings_service import EmbeddingsService
 from shared.user_context import UserContext
@@ -21,11 +21,11 @@ class ContentManager:
         self._config_path = config_path
 
         self.knowledge_base_markdown = None
-        self.knowledge_pack_domain_active = None
+        self.knowledge_context_active = None
 
         self._load_base_knowledge()
         self._load_base_embeddings()
-        self._pre_load_domain_embeddings()
+        self._pre_load_context_embeddings()
 
     def _load_base_knowledge(self):
         self.knowledge_base_markdown = KnowledgeBaseMarkdown(
@@ -36,54 +36,59 @@ class ContentManager:
         embedding_model = ConfigService.load_embedding_model(DEFAULT_CONFIG_PATH)
         base_embeddings_path = self._knowledge_pack_definition.path + "/embeddings"
         EmbeddingsService.initialize(Embeddings(embedding_model))
-        EmbeddingsService.load_base_knowledge_pack(base_embeddings_path)
+        EmbeddingsService.load_knowledge_base(base_embeddings_path)
 
-    def _get_domain(self, domain_name: str) -> str:
-        domain = next(
+    def _get_context(self, context_name: str) -> str:
+        context = next(
             (
-                domain
-                for domain in self._knowledge_pack_definition.domains
-                if domain.name == domain_name
+                context
+                for context in self._knowledge_pack_definition.contexts
+                if context.name == context_name
             ),
             None,
         )
 
-        if domain is None:
+        if context is None:
             TeamAILogger.get().analytics(
-                "KnowledgePackDomainNotFound", {"domain_name": domain_name}
+                "KnowledgePackContextNotFound", {"context_name": context_name}
             )
-            raise KeyError(f"KnowledgePackDomainNotFound: {domain_name}")
+            raise KeyError(f"KnowledgePackContextNotFound: {context_name}")
 
-        return domain
+        return context
 
-    def load_domain_knowledge(self, domain_name: str):
-        if domain_name is None:
+    def load_context_knowledge(self, context_name: str):
+        if context_name is None:
             return
 
-        knowledge_domain = self._get_domain(domain_name)
+        knowledge_context = self._get_context(context_name)
 
-        domain_path = self._knowledge_pack_definition.path + "/" + knowledge_domain.path
-        self.knowledge_base_markdown.set_domain_content(path=domain_path)
+        context_path = (
+            self._knowledge_pack_definition.path + "/contexts/" + knowledge_context.path
+        )
+        self.knowledge_base_markdown.set_context_content(path=context_path)
 
-    def _pre_load_domain_embeddings(self):
-        for domain in self._knowledge_pack_definition.domains:
-            self._load_domain_embeddings(domain)
+    def _pre_load_context_embeddings(self):
+        for context in self._knowledge_pack_definition.contexts:
+            self._load_context_embeddings(context)
 
-    def _load_domain_embeddings(self, domain: Domain):
-        if domain is None:
+    def _load_context_embeddings(self, knowledge_context: KnowledgeContext):
+        if knowledge_context is None:
             return
 
-        domain_embeddings_path = (
-            self._knowledge_pack_definition.path + "/" + domain.path + "/embeddings"
+        context_embeddings_path = (
+            self._knowledge_pack_definition.path
+            + "/contexts/"
+            + knowledge_context.path
+            + "/embeddings"
         )
-        EmbeddingsService.load_domain_knowledge_pack(
-            domain.name, domain_embeddings_path
+        EmbeddingsService.load_knowledge_context(
+            knowledge_context.name, context_embeddings_path
         )
 
-    def on_domain_selected(self, domain_name: str) -> str:
-        self.knowledge_pack_domain_active = domain_name
+    def on_context_selected(self, context_name: str) -> str:
+        self.knowledge_context_active = context_name
         try:
-            self.load_domain_knowledge(self.knowledge_pack_domain_active)
-            return self.knowledge_pack_domain_active
+            self.load_context_knowledge(self.knowledge_context_active)
+            return self.knowledge_context_active
         except KeyError as _:
             return None

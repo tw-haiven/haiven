@@ -78,7 +78,7 @@ class UI:
     def ui_show_knowledge(self, knowledge_base_markdown: KnowledgeBaseMarkdown):
         with gr.Row():
             with gr.Column(scale=2):
-                gr.Markdown("## Domain knowledge")
+                gr.Markdown("## Context knowledge")
                 for key in knowledge_base_markdown.get_all_keys():
                     knowledge_entry = knowledge_base_markdown.get_entry(key)
                     gr.Textbox(
@@ -179,13 +179,13 @@ class UI:
             The application does NOT persist the contents of the chat sessions.
             """)
 
-    def create_knowledge_pack_selector_ui(self):
+    def create_knowledge_context_selector_ui(self):
         knowledge_pack = ConfigService.load_knowledge_pack()
-        knowledge_packs_choices: List[tuple[str, str]] = [
-            (domain.name, domain.name) for domain in knowledge_pack.domains
+        knowledge_context_choices: List[tuple[str, str]] = [
+            (context.name, context.name) for context in knowledge_pack.contexts
         ]
         knowledge_packs_selector = gr.Dropdown(
-            knowledge_packs_choices,
+            knowledge_context_choices,
             label="Choose knowledge context",
             interactive=True,
             elem_classes=["knowledge-pack-selector"],

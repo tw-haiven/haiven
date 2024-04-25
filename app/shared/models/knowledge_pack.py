@@ -2,7 +2,7 @@
 from typing import List
 
 
-class Domain:
+class KnowledgeContext:
     def __init__(self, name: str, path: str):
         self.name = name
         self.path = path
@@ -16,13 +16,16 @@ class Domain:
 
 
 class KnowledgePack:
-    def __init__(self, path: str, domains: List[Domain]):
+    def __init__(self, path: str, contexts: List[KnowledgeContext]):
         self.path = path
-        self.domains = domains
+        self.contexts = contexts
 
     @classmethod
     def from_dict(cls, data):
         return cls(
             path=data.get("path"),
-            domains=[Domain.from_dict(domain) for domain in data.get("domains")],
+            contexts=[
+                KnowledgeContext.from_dict(knowledge_context)
+                for knowledge_context in data.get("contexts")
+            ],
         )

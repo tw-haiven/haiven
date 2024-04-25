@@ -31,9 +31,7 @@ def setup_before_tests():
     teams_dir = os.path.join(root_dir, "teams")
     EmbeddingsService.reset_instance()
     EmbeddingsService.initialize()
-    EmbeddingsService.load_base_knowledge_pack(
-        teams_dir + "/team_demo/knowledge/documents"
-    )
+    EmbeddingsService.load_knowledge_base(teams_dir + "/team_demo/knowledge/documents")
 
 
 @pytest.mark.integration

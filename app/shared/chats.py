@@ -128,14 +128,14 @@ class StreamingChat(TeamAIBaseChat):
         return summary.content
 
     def next_advice_from_knowledge(
-        self, chat_history, knowledge_document_key: str, knowledge_domain: str
+        self, chat_history, knowledge_document_key: str, knowledge_context: str
     ):
         # 1 summarise the conversation so far
         summary = self.summarise_conversation()
 
         if knowledge_document_key == "all":
             context_documents = EmbeddingsService.similarity_search_with_scores(
-                summary, knowledge_domain
+                summary, knowledge_context
             )
         else:
             knwoeldge_document = EmbeddingsService.get_embedded_document(
@@ -145,7 +145,7 @@ class StreamingChat(TeamAIBaseChat):
                 EmbeddingsService.similarity_search_on_single_document_with_scores(
                     query=summary,
                     document_key=knwoeldge_document.key,
-                    kind=knwoeldge_document.kind,
+                    context=knwoeldge_document.context,
                 )
             )
 
@@ -244,13 +244,13 @@ class DocumentsChat(TeamAIBaseChat):
         self,
         llm_config: LLMConfig,
         knowledge: str,
-        kind: str,
+        context: str,
         system_message: str = "You are a helpful assistant",
     ):
         super().__init__(
             llm_config, LLMChatFactory.new_llm_chat(llm_config), system_message
         )
-        self.kind = kind
+        self.context = context
         self.knowledge = knowledge
         self.chain = DocumentsChat.create_chain(self.chat_model)
 
@@ -315,12 +315,12 @@ class DocumentsChat(TeamAIBaseChat):
 
         if self.knowledge == "all":
             search_results = EmbeddingsService.similarity_search_with_scores(
-                query=message, kind=self.kind
+                query=message, context=self.context
             )
         else:
             search_results = (
                 EmbeddingsService.similarity_search_on_single_document_with_scores(
-                    query=message, document_key=self.knowledge, kind=self.kind
+                    query=message, document_key=self.knowledge, context=self.context
                 )
             )
 

@@ -7,14 +7,6 @@ class TestApp:
     @patch("shared.app.Server")
     def test_init(self, mock_server):
         # Mock the dependencies
-        knowledge_pack = MagicMock()
-        name = "TestDomain"
-        domain = MagicMock()
-        domain.name = name
-        knowledge_pack.domain = domain
-        path = "test/path"
-        knowledge_pack.path = path
-
         server = MagicMock()
         mock_server().create.return_value = server
         content_manager = MagicMock()
@@ -33,14 +25,6 @@ class TestApp:
     @patch("shared.app.Server")
     def test_launch_via_fastapi_wrapper(self, mock_server, mock_mount_gradio_app):
         # Mock the dependencies
-        knowledge_pack = MagicMock()
-        name = "TestDomain"
-        domain = MagicMock()
-        domain.name = name
-        knowledge_pack.domain = domain
-        path = "test/path"
-        knowledge_pack.path = path
-
         server = MagicMock()
         mock_server().create.return_value = server
         content_manager = MagicMock()
