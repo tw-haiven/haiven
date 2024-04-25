@@ -6,7 +6,7 @@ import tempfile
 
 
 def create_base_prompts_directory(tmpdir):
-    prompts_dir = os.path.join(tmpdir, "base-prompts")
+    prompts_dir = os.path.join(tmpdir, "prompts")
     os.makedirs(prompts_dir)
     chat_prompts_dir = os.path.join(prompts_dir, "chat")
     os.makedirs(chat_prompts_dir)

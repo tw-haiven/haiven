@@ -17,15 +17,15 @@ class PromptList:
     ):
         data_sources = {
             "diagrams": {
-                "dir": root_dir + "/base-prompts/diagrams",
+                "dir": root_dir + "/prompts/diagrams",
                 "title": "Diagrams",
             },
             "brainstorming": {
-                "dir": root_dir + "/base-prompts/brainstorming",
+                "dir": root_dir + "/prompts/brainstorming",
                 "title": "Brainstorming",
             },
             "chat": {
-                "dir": root_dir + "/base-prompts/chat",
+                "dir": root_dir + "/prompts/chat",
                 "title": "Chat",
             },
         }

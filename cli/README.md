@@ -35,8 +35,8 @@ $ teamai-cli create-context --context-name <CONTEXT_NAME> --kp-root <KNOWLEDGE_R
 this should result in a context structure being created within your knowledge package root directory  withthe following structure:
 ```
 <KNOWLEDGE_ROOT_DIR>
-├── base-embeddings
-├── base-prompts
+├── embeddings
+├── prompts
 └──contexts
   └──<CONTEXT_NAME>
     ├── architecture.md
@@ -68,8 +68,8 @@ For each file in the source directory a markdown file and a .kb folder should be
 
 ```
 <KNOWLEDGE_ROOT_DIR>
-├── base-embeddings
-├── base-prompts
+├── embeddings
+├── prompts
 └──contexts
   └──<CONTEXT_NAME>
     ├── architecture.md

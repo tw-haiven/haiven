@@ -51,9 +51,7 @@ class TestsEmbeddingsService:
     ):
         assert len(self.service._embeddings_stores) == 0
 
-        self.service.load_base_knowledge_pack(
-            self.knowledge_pack_path + "/base-embeddings"
-        )
+        self.service.load_base_knowledge_pack(self.knowledge_pack_path + "/embeddings")
 
         assert len(self.service._embeddings_stores) == 1
         assert "base" in self.service._embeddings_stores.keys()
@@ -63,9 +61,7 @@ class TestsEmbeddingsService:
     ):
         assert len(self.service._embeddings_stores) == 0
 
-        self.service.load_base_knowledge_pack(
-            self.knowledge_pack_path + "/base-embeddings"
-        )
+        self.service.load_base_knowledge_pack(self.knowledge_pack_path + "/embeddings")
 
         assert len(self.service._embeddings_stores) == 1
         assert "base" in self.service._embeddings_stores.keys()
@@ -84,16 +80,12 @@ class TestsEmbeddingsService:
     ):
         assert len(self.service._embeddings_stores) == 0
 
-        self.service.load_base_knowledge_pack(
-            self.knowledge_pack_path + "/base-embeddings"
-        )
+        self.service.load_base_knowledge_pack(self.knowledge_pack_path + "/embeddings")
 
         assert len(self.service._embeddings_stores) == 1
         assert "base" in self.service._embeddings_stores.keys()
 
-        self.service.load_base_knowledge_pack(
-            self.knowledge_pack_path + "/base-embeddings"
-        )
+        self.service.load_base_knowledge_pack(self.knowledge_pack_path + "/embeddings")
 
         assert len(self.service._embeddings_stores) == 1
         assert "base" in self.service._embeddings_stores.keys()
@@ -117,9 +109,7 @@ class TestsEmbeddingsService:
         assert "Domain A" in self.service._embeddings_stores.keys()
 
     def test_generate_load_knowledge_pack_should_load_two_embedding(self):
-        self.service.load_base_knowledge_pack(
-            self.knowledge_pack_path + "/base-embeddings"
-        )
+        self.service.load_base_knowledge_pack(self.knowledge_pack_path + "/embeddings")
 
         assert len(self.service._embeddings_stores) == 1
         assert len(self.service._embeddings_stores.keys()) == 1
@@ -133,9 +123,7 @@ class TestsEmbeddingsService:
     def test_similarity_search_on_single_document_with_scores_for_base_return_documents_and_scores(
         self,
     ):
-        self.service.load_base_knowledge_pack(
-            self.knowledge_pack_path + "/base-embeddings"
-        )
+        self.service.load_base_knowledge_pack(self.knowledge_pack_path + "/embeddings")
 
         similarity_results = (
             self.service.similarity_search_on_single_document_with_scores(
@@ -152,9 +140,7 @@ class TestsEmbeddingsService:
     def test_similarity_search_on_single_document_with_scores_for_domain_does_not_return_documents_and_scores_if_domain_is_not_loaded(
         self,
     ):
-        self.service.load_base_knowledge_pack(
-            self.knowledge_pack_path + "/base-embeddings"
-        )
+        self.service.load_base_knowledge_pack(self.knowledge_pack_path + "/embeddings")
 
         similarity_results = (
             self.service.similarity_search_on_single_document_with_scores(
@@ -171,9 +157,7 @@ class TestsEmbeddingsService:
     ):
         assert len(self.service._embeddings_stores) == 0
 
-        self.service.load_base_knowledge_pack(
-            self.knowledge_pack_path + "/base-embeddings"
-        )
+        self.service.load_base_knowledge_pack(self.knowledge_pack_path + "/embeddings")
 
         self.service.load_domain_knowledge_pack(
             domain_name="Domain A",

@@ -34,7 +34,7 @@ class ContentManager:
 
     def _load_base_embeddings(self):
         embedding_model = ConfigService.load_embedding_model(DEFAULT_CONFIG_PATH)
-        base_embeddings_path = self._knowledge_pack_definition.path + "/base-embeddings"
+        base_embeddings_path = self._knowledge_pack_definition.path + "/embeddings"
         EmbeddingsService.initialize(Embeddings(embedding_model))
         EmbeddingsService.load_base_knowledge_pack(base_embeddings_path)
 
