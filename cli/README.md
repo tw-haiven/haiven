@@ -48,7 +48,7 @@ this should result in a context structure being created within your knowledge pa
 This will convert the files you want to rely on into embeddings and store them in the knowledge package directory.
 
 ```console
-$ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embedding-model <EMBEDDING_MODEL> --output-dir <KNOWLEDGE_ROOT_DIR>/<CONTEXT_NAME>/embeddings
+$ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embedding-model <EMBEDDING_MODEL> --output-dir <KNOWLEDGE_ROOT_DIR>/contexts/<CONTEXT_NAME>/embeddings
 ```
 - SOURCE_DIR being the path to the source directory containing the files you want to index.
 - DESCRIPTION being a description of the ensemble files you want to index.
@@ -67,9 +67,16 @@ $ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embeddi
 For each file in the source directory a markdown file and a .kb folder should be created in the embeddings directory. Following the structure below:
 
 ```
-embeddings
-├── file1.md
-└── file1.kb
+<KNOWLEDGE_ROOT_DIR>
+├── base-embeddings
+├── base-prompts
+└──contexts
+  └──<CONTEXT_NAME>
+    ├── architecture.md
+    ├── business_context.md
+    └── embeddings
+      ├── file1.md
+      └── file1.kb
 ```
 
 
