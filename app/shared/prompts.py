@@ -131,9 +131,9 @@ class PromptList:
             knowledge_keys = self.get_knowledge_used_keys(prompt_choice)
             knowledge = []
             for key in knowledge_keys:
-                _, found_metadata = self.knowledge_base.get_entry(key)
-                if found_metadata:
-                    knowledge.append(found_metadata)
+                knowledge_entry = self.knowledge_base.get_entry(key)
+                if knowledge_entry:
+                    knowledge.append(knowledge_entry.metadata)
 
             return knowledge
 

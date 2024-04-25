@@ -26,9 +26,6 @@ class KnowledgeBaseMarkdown:
                 )
 
     def set_domain_content(self, path: str):
-        self._domain_knowledge = {}
-        self._domain_knowledge_content_dict = {}
-
         knowledge_files = sorted(
             [f for f in os.listdir(path) if f.endswith(".md") and f != "README.md"]
         )
@@ -47,13 +44,13 @@ class KnowledgeBaseMarkdown:
     def get_entry(self, key) -> KnowledgeEntry:
         entry = self._base_knowledge.get(key, None)
         if entry:
-            return (entry.content, entry.metadata)
+            return entry
 
         entry = self._domain_knowledge.get(key, None)
         if entry:
-            return (entry.content, entry.metadata)
+            return entry
 
-        return None, None
+        return None
 
     def get_all_keys(self):
         all_keys = list(self._base_knowledge.keys()) + list(
