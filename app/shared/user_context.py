@@ -24,7 +24,7 @@ class UserContext:
 
     @staticmethod
     def __get_session_id(request: Request):
-        return request.request.session.get("user", None).get("sub", "guest")
+        return request.request.session.get("user", {}).get("sub", "guest")
 
     @classmethod
     def get_instance(cls):

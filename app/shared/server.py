@@ -77,6 +77,7 @@ class Server:
         @app.middleware("http")
         async def check_oauth2_authentication(request: Request, call_next):
             if os.environ.get("AUTH_SWITCHED_OFF") == "true":
+                # TODO: Only allow this if localhost?
                 return await call_next(request)
             else:
                 whitelist = [
