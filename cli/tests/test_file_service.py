@@ -1,6 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 
 import os
+import pytest
 import shutil
 
 from teamai_cli.services.file_service import FileService
@@ -223,12 +224,37 @@ a description of the business context
 
         os.remove(business_context_file_path)
 
-    def test_create_Context_structure(self):
+    def test_create_context_structure_fails_if_kp_root_does_not_exit(self):
         context_name = "context_name"
-        parent_dir = "test_parent_dir"
+        kp_root_dir = "kp_root"
         file_service = FileService()
-        file_service.create_context_structure(context_name, parent_dir)
 
-        assert os.path.exists(f"{parent_dir}/{context_name}/embeddings")
+        with pytest.raises(FileNotFoundError) as e:
+            file_service.create_context_structure(context_name, kp_root_dir)
+        assert str(e.value) == f"Knowledge package dir {kp_root_dir} was not found"
 
-        shutil.rmtree(f"{parent_dir}")
+    def test_create_context_structure(self):
+        context_name = "context_name"
+        kp_root_dir = "kp_root"
+        file_service = FileService()
+        os.makedirs(kp_root_dir, exist_ok=True)
+
+        file_service.create_context_structure(context_name, kp_root_dir)
+
+        assert os.path.exists(f"{kp_root_dir}/contexts/{context_name}/embeddings")
+
+        shutil.rmtree(kp_root_dir)
+
+    def test_create_context_structure_when_contexts_dir_exist(self):
+        context_name = "context_name"
+        kp_root_dir = "kp_root"
+        existing_context_dir = f"{kp_root_dir}/contexts/existing_context"
+        file_service = FileService()
+        os.makedirs(existing_context_dir, exist_ok=True)
+
+        file_service.create_context_structure(context_name, kp_root_dir)
+
+        assert os.path.exists(existing_context_dir)
+        assert os.path.exists(f"{kp_root_dir}/contexts/{context_name}/embeddings")
+
+        shutil.rmtree(kp_root_dir)

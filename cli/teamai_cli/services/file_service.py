@@ -87,8 +87,12 @@ title: Context
         with open(business_context_file_path, "w") as f:
             f.write(file_content)
 
-    def create_context_structure(self, context_name: str, parent_dir: str):
-        os.makedirs(f"{parent_dir}/{context_name}/embeddings", exist_ok=True)
+    def create_context_structure(self, context_name: str, kp_root_dir: str):
+        if not os.path.exists(kp_root_dir):
+            raise FileNotFoundError(
+                f"Knowledge package dir {kp_root_dir} was not found"
+            )
+        os.makedirs(f"{kp_root_dir}/contexts/{context_name}/embeddings", exist_ok=True)
 
 
 def _get_pdf_title(pdf_reader, source):

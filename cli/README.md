@@ -22,22 +22,26 @@ $ teamai-cli init --config-path <CONFIG_PATH> --env-path <ENV_PATH>
     By default you can use the one located at the following path `$(pwd)/app/.env`
 
 
-### Create knowledge package structure
+### Create context structure
 This will create a knowledge package structure for a given context name which will allow you to tailor the applicatioin to your specific needs.
 
 
 ```console
-$ teamai-cli create-context-package --context-name <CONTEXT_NAME> --knowledge-root-dir <KNOWLEDGE_ROOT_DIR>
+$ teamai-cli create-context --context-name <CONTEXT_NAME> --kp-root <KNOWLEDGE_ROOT_DIR>
 ```
 - CONTEXT_NAME being the name of the context you want to create a knowledge package for.
 - KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory.
 
-this should result in the following directory structure being built:
+this should result in a context structure being created within your knowledge package root directory  withthe following structure:
 ```
-<CONTEXT_NAME>
-├── architecture.md
-├── business_context.md
-└── embeddings
+<KNOWLEDGE_ROOT_DIR>
+├── base-embeddings
+├── base-prompts
+└──contexts
+  └──<CONTEXT_NAME>
+    ├── architecture.md
+    ├── business_context.md
+    └── embeddings
 ```
 
 ### Index all files in the source directory
@@ -49,7 +53,7 @@ $ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embeddi
 - SOURCE_DIR being the path to the source directory containing the files you want to index.
 - DESCRIPTION being a description of the ensemble files you want to index.
 - EMBEDDING_MODEL being the embedding model you want to use for indexing.
-- KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory where the context package is located.
+- KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory.
 
 #### Input
 
@@ -86,27 +90,27 @@ $ teamai-cli [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `create-context-package`: Create a context package base structure.
+* `create-context`: Create a context package base structure.
 * `index-all-files`: Index all files in a directory to a given...
 * `index-file`: Index single file to a given destination...
 * `init`: Initialize the config file with the given...
 * `set-config-path`: Set the config path in the config file.
 * `set-env-path`: Set the env path in the config file.
 
-## `teamai-cli create-context-package`
+## `teamai-cli create-context`
 
 Create a context package base structure.
 
 **Usage**:
 
 ```console
-$ teamai-cli create-context-package [OPTIONS]
+$ teamai-cli create-context [OPTIONS]
 ```
 
 **Options**:
 
 * `--context-name TEXT`
-* `--knowledge-root-dir TEXT`
+* `--kp-root TEXT`
 * `--help`: Show this message and exit.
 
 ## `teamai-cli index-all-files`
