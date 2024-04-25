@@ -18,20 +18,23 @@ It lets you codify your practices and knowledge and make it available to an AI a
 
 ### With Ollama, locally
 
+Prerequisites:
 - Install [Ollama](https://ollama.com/).
-- Log into the GitHub Container Registry: `docker login ghcr.io ...` ([documentation about how to authorize yourself here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic))
+- Log into the GitHub Container Registry: `echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin` ([documentation about how to get a token and authorize yourself here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic))
 
 ```
 ollama pull llama2
 ollama pull llava:7b
-git clone git@github.com:tw-team-ai/team-ai-community-knowledge-pack.git
-# As long as the repo is private, you'll need to log in
-docker login ghcr.io <your credentials>
+mkdir team-ai
+git clone git@github.com:tw-team-ai/team-ai.git
+git clone git@github.com:tw-team-ai/team-ai-tw-knowledge-pack.git
+# As long as the repo is private, you'll need to log in (see doc link above)
+echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 docker run \
-        -v ./tmp/team-ai-community-knowledge-pack:/app/teams \
+        -v ./team-ai-tw-knowledge-pack:/app/teams \
         -e AUTH_SWITCHED_OFF=true \
         -e TEAM_CONTENT_PATH=/app/teams \
-        -e DOMAIN_NAME=team_local \
+        -e DOMAIN_NAME=team_demo \
         -e ENABLED_PROVIDERS=ollama \
         -e ENABLED_EMBEDDINGS_MODEL=ollama \
         -e ENABLED_VISION_MODEL=llava:7b \
