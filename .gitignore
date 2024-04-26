@@ -55,3 +55,5 @@ tmp
 .coverage
 *.faiss
 *.pkl
+!app/tests/test_data/**/*.faiss
+!app/tests/test_data/**/*.pkl
