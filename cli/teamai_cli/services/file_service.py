@@ -15,7 +15,7 @@ class FileService:
         pdf_file_base_name = os.path.basename(pdf_file.name)
 
         page_number = 1
-        pdf_title = _get_pdf_title(pdf_reader, pdf_file.name)
+        pdf_title = _get_pdf_title(pdf_reader, pdf_file_base_name)
         pdf_authors = _get_pdf_authors(pdf_reader)
 
         for page in pdf_reader.pages:
