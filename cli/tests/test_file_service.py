@@ -51,6 +51,33 @@ class TestFileService:
         assert second_text in text
 
     @patch("teamai_cli.services.file_service.PdfReader")
+    def test_get_text_and_metadata_from_pdf_use_provided_pdf_source_link(
+        self, mock_pdf_reader
+    ):
+        pdf_metadata = MagicMock()
+
+        pdf_file_name = "pdf_file_path.pdf"
+        pdf_file = MagicMock()
+        type(pdf_file).name = PropertyMock(return_value=pdf_file_name)
+
+        pages = [MagicMock()]
+        pdf_reader = MagicMock()
+        type(pdf_reader).pages = PropertyMock(return_value=pages)
+        type(pdf_reader).metadata = PropertyMock(return_value=pdf_metadata)
+        mock_pdf_reader.return_value = pdf_reader
+        file_service = FileService()
+
+        pdf_source_link = "https://pdf-source-link.com/pdf.pdf"
+
+        text, metadas = file_service.get_text_and_metadata_from_pdf(
+            pdf_file, pdf_source_link
+        )
+
+        mock_pdf_reader.assert_called_once_with(pdf_file)
+        first_metadata = metadas[0]
+        assert first_metadata["source"] == pdf_source_link
+
+    @patch("teamai_cli.services.file_service.PdfReader")
     def test_get_text_and_metadata_from_pdf_use_default_title_and_authors_if_pdf_has_no_metadata(
         self, mock_pdf_reader
     ):

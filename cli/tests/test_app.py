@@ -155,6 +155,7 @@ class TestApp:
         config_path = "test_config.yaml"
         output_dir = "output_dir"
         description = "description"
+        pdf_source_link = "https://pdf-source-link.com"
 
         embedding = MagicMock()
         type(embedding).id = PropertyMock(return_value=embedding_model)
@@ -188,12 +189,19 @@ class TestApp:
 
         # Act
         app.index_individual_file(
-            source_path, embedding_model, config_path, output_dir, description
+            source_path,
+            embedding_model,
+            config_path,
+            output_dir,
+            description,
+            pdf_source_link,
         )
 
         config_service.load_embeddings.assert_called_once_with(config_path)
         mock_file.assert_called_once_with(source_path, "rb")
-        file_service.get_text_and_metadata_from_pdf.assert_called_once_with(file)
+        file_service.get_text_and_metadata_from_pdf.assert_called_once_with(
+            file, pdf_source_link
+        )
         knowledge_service.index.assert_called_once_with(
             file_content, metadatas, embedding, "output_dir/file.kb"
         )
@@ -359,7 +367,9 @@ class TestApp:
         file_service.get_text_and_metadata_from_csv.assert_called_once_with(
             first_file_path
         )
-        file_service.get_text_and_metadata_from_pdf.assert_called_once_with(second_file)
+        file_service.get_text_and_metadata_from_pdf.assert_called_once_with(
+            second_file, None
+        )
 
         knowledge_service.index.assert_has_calls(
             [

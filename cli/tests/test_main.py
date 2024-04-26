@@ -75,7 +75,7 @@ class TestMain:
             mock_metadata_service,
         )
         app.index_individual_file.assert_called_once_with(
-            source_path, embedding_model, config_path, output_dir, description
+            source_path, embedding_model, config_path, output_dir, description, None
         )
 
     @patch("teamai_cli.main.MetadataService")
