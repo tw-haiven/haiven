@@ -37,13 +37,13 @@ class TestFileService:
         mock_pdf_reader.assert_called_once_with(pdf_file)
         first_metadata = metadas[0]
         assert first_metadata["page"] == 1
-        assert first_metadata["source"] == "/kp-static/" + pdf_file_name
+        assert first_metadata["source"] == pdf_file_name
         assert first_metadata["title"] == pdf_title
         assert first_metadata["authors"] == [pdf_author]
 
         second_metadata = metadas[1]
         assert second_metadata["page"] == 2
-        assert second_metadata["source"] == "/kp-static/" + pdf_file_name
+        assert second_metadata["source"] == pdf_file_name
         assert second_metadata["title"] == pdf_title
         assert second_metadata["authors"] == [pdf_author]
 
@@ -75,14 +75,14 @@ class TestFileService:
         mock_pdf_reader.assert_called_once_with(pdf_file)
         first_metadata = metadata[0]
         assert first_metadata["page"] == 1
-        assert first_metadata["source"] == "/kp-static/" + pdf_file_name
-        assert first_metadata["title"] == "pdf file path"
+        assert first_metadata["source"] == pdf_file_name
+        assert first_metadata["title"] == "Pdf File Path"
         assert first_metadata["authors"] == []
 
         second_metadata = metadata[1]
         assert second_metadata["page"] == 2
-        assert second_metadata["source"] == "/kp-static/" + pdf_file_name
-        assert second_metadata["title"] == "pdf file path"
+        assert second_metadata["source"] == pdf_file_name
+        assert second_metadata["title"] == "Pdf File Path"
         assert second_metadata["authors"] == []
 
         assert first_text in text
@@ -116,14 +116,14 @@ class TestFileService:
         mock_pdf_reader.assert_called_once_with(pdf_file)
         first_metadata = metadata[0]
         assert first_metadata["page"] == 1
-        assert first_metadata["source"] == "/kp-static/" + pdf_file_name
-        assert first_metadata["title"] == "pdf file path"
+        assert first_metadata["source"] == pdf_file_name
+        assert first_metadata["title"] == "Pdf File Path"
         assert first_metadata["authors"] == []
 
         second_metadata = metadata[1]
         assert second_metadata["page"] == 2
-        assert second_metadata["source"] == "/kp-static/" + pdf_file_name
-        assert second_metadata["title"] == "pdf file path"
+        assert second_metadata["source"] == pdf_file_name
+        assert second_metadata["title"] == "Pdf File Path"
         assert second_metadata["authors"] == []
 
         assert first_text in text
