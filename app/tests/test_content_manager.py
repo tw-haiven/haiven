@@ -1,5 +1,4 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-import os
 from unittest.mock import patch
 
 from shared.content_manager import ContentManager
@@ -49,10 +48,7 @@ class TestContentManager:
             config={"model": "ollama-embeddings", "api_key": "api_key"},
         )
 
-        knowledge_pack_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "tests/test_data/test_knowledge_pack",
-        )
+        knowledge_pack_path = "tests/test_data/test_knowledge_pack"
 
         mock_config_service.load_embedding_model.return_value = embedding_model
 
