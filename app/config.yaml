@@ -5,8 +5,8 @@ knowledge_pack:
     path: ${DOMAIN_NAME}
   - name: Team AI
     path: team_teamai
-  - name: Chativity
-    path: team_chativity
+  - name: Bahmni Labs
+    path: bahmni_labs
 
 enabled_providers: ${ENABLED_PROVIDERS}
 
