@@ -62,6 +62,7 @@ $ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embeddi
   - content: The text content
   - metadata.title: The title to be displayed to the user (e.g. the title of the article or document)
   - metadata.source: The source of the document (e.g. a URL)
+  - metadata.authors: The authors of the document
 
 #### Output
 For each file in the source directory a markdown file and a .kb folder should be created in the embeddings directory. Following the structure below:
