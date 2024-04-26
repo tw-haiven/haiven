@@ -2,12 +2,19 @@
 
 import os
 import csv
+import re
 
 from pypdf import PdfReader
 from typing import List
 
 
 class FileService:
+    def clean_text_with_spaces_between_characters(self, text: str):
+        # Replace two spaces with one space, then remove spaces between characters and specified punctuation
+        text = re.sub(r"(?<=[\w,.’\-():]) (?=[\w,.’\-():])", "", text)
+        text = re.sub(r"  ", " ", text)
+        return text
+
     def get_text_and_metadata_from_pdf(self, pdf_file):
         text = []
         metadatas = []
@@ -22,7 +29,7 @@ class FileService:
             text.append(page.extract_text())
             metadata_for_page = {
                 "page": page_number,
-                "source": "/kp-static/" + pdf_file_base_name,
+                "source": pdf_file_base_name,
                 "title": pdf_title,
                 "authors": pdf_authors,
             }
@@ -97,7 +104,8 @@ title: Context
 
 def _get_pdf_title(pdf_reader, source):
     if not pdf_reader.metadata or not pdf_reader.metadata.title:
-        return source.replace(".pdf", "").replace("_", " ")
+        source_name = os.path.basename(source)
+        return source_name.replace(".pdf", "").replace("_", " ").title()
     else:
         return pdf_reader.metadata.title
 

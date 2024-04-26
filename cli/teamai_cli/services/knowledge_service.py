@@ -13,7 +13,7 @@ class KnowledgeService:
         self.embedding_service = embedding_service
 
     def index(self, texts, metadatas, embedding_model, output_dir):
-        if texts is None or len(texts) == 0 or texts[0] == "":
+        if texts is None or len(texts) == 0:
             raise ValueError("file content has no value")
 
         if embedding_model is None:
