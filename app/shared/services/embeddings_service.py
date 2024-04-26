@@ -148,7 +148,7 @@ class EmbeddingsService:
             DocumentEmbedding: The embedding of the specified document.
         """
         instance = EmbeddingsService.get_instance()
-        for context, store in instance._embeddings_stores.items():
+        for _, store in instance._embeddings_stores.items():
             embedding = store.get_embedding(document_key)
             if embedding is not None:
                 return embedding
@@ -252,13 +252,14 @@ class EmbeddingsService:
 
     @staticmethod
     def similarity_search(
-        query: str, k: int = 5, score_threshold: float = None
+        query: str, context: str, k: int = 5, score_threshold: float = None
     ) -> List[Document]:
         """
         Performs a similarity search across all documents, returning only the documents that match the query criteria. This method abstracts away the scores for use cases where only the matching documents are required.
 
         Parameters:
             query (str): The search query.
+            context (str): The context to search within.
             k (int, optional): The number of results to return. Defaults to 5.
             score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
 
@@ -266,7 +267,7 @@ class EmbeddingsService:
             List[Document]: A list of documents that are similar to the query.
         """
         instance = EmbeddingsService.get_instance()
-        return instance._similarity_search(query, k, score_threshold)
+        return instance._similarity_search(query, context, k, score_threshold)
 
     def _get_or_create_embeddings_db_for_context(
         self, context: str
@@ -290,6 +291,11 @@ class EmbeddingsService:
         return faiss
 
     def _load_knowledge_pack(self, path: str, name: str) -> None:
+        if not os.path.exists(path):
+            raise FileNotFoundError(
+                f"The specified path does not exist, no embeddings will be loaded: {path}"
+            )
+
         knowledge_files = sorted(
             [f for f in os.listdir(path) if f.endswith(".md") and f != "README.md"]
         )
@@ -368,6 +374,7 @@ class EmbeddingsService:
                 similar_documents.extend(partial_results)
 
         similar_documents.sort(key=lambda x: x[1], reverse=False)
+
         similar_documents = similar_documents[:k]
 
         return similar_documents
@@ -409,10 +416,10 @@ class EmbeddingsService:
         return documents
 
     def _similarity_search(
-        self, query: str, k: int = 5, score_threshold: float = None
+        self, query: str, context: str, k: int = 5, score_threshold: float = None
     ) -> List[Document]:
         documents_with_scores = self._similarity_search_with_scores(
-            query, k, score_threshold
+            query, context, k, score_threshold
         )
         documents = [doc for doc, _ in documents_with_scores]
         return documents

@@ -13,12 +13,12 @@ DEFAULT_CONFIG_PATH = "config.yaml"
 
 class ContentManager:
     def __init__(
-        self, knowledge_pack: KnowledgePack, config_path: str = DEFAULT_CONFIG_PATH
+        self, knowledge_pack_path: str, config_path: str = DEFAULT_CONFIG_PATH
     ):
         self._user_context = UserContext.get_instance()
 
-        self._knowledge_pack_definition = knowledge_pack
         self._config_path = config_path
+        self.knowledge_pack_definition = KnowledgePack(knowledge_pack_path)
 
         self.knowledge_base_markdown = None
         self.knowledge_context_active = None
@@ -29,20 +29,26 @@ class ContentManager:
 
     def _load_base_knowledge(self):
         self.knowledge_base_markdown = KnowledgeBaseMarkdown(
-            path=self._knowledge_pack_definition.path
+            path=self.knowledge_pack_definition.path
         )
 
     def _load_base_embeddings(self):
         embedding_model = ConfigService.load_embedding_model(DEFAULT_CONFIG_PATH)
-        base_embeddings_path = self._knowledge_pack_definition.path + "/embeddings"
+        base_embeddings_path = self.knowledge_pack_definition.path + "/embeddings"
         EmbeddingsService.initialize(Embeddings(embedding_model))
-        EmbeddingsService.load_knowledge_base(base_embeddings_path)
+
+        try:
+            EmbeddingsService.load_knowledge_base(base_embeddings_path)
+        except FileNotFoundError as e:
+            TeamAILogger.get().analytics(
+                "KnowledgePackEmbeddingsNotFound", {"error": str(e)}
+            )
 
     def _get_context(self, context_name: str) -> str:
         context = next(
             (
                 context
-                for context in self._knowledge_pack_definition.contexts
+                for context in self.knowledge_pack_definition.contexts
                 if context.name == context_name
             ),
             None,
@@ -63,12 +69,12 @@ class ContentManager:
         knowledge_context = self._get_context(context_name)
 
         context_path = (
-            self._knowledge_pack_definition.path + "/contexts/" + knowledge_context.path
+            self.knowledge_pack_definition.path + "/contexts/" + knowledge_context.path
         )
         self.knowledge_base_markdown.set_context_content(path=context_path)
 
     def _pre_load_context_embeddings(self):
-        for context in self._knowledge_pack_definition.contexts:
+        for context in self.knowledge_pack_definition.contexts:
             self._load_context_embeddings(context)
 
     def _load_context_embeddings(self, knowledge_context: KnowledgeContext):
@@ -76,14 +82,20 @@ class ContentManager:
             return
 
         context_embeddings_path = (
-            self._knowledge_pack_definition.path
+            self.knowledge_pack_definition.path
             + "/contexts/"
             + knowledge_context.path
             + "/embeddings"
         )
-        EmbeddingsService.load_knowledge_context(
-            knowledge_context.name, context_embeddings_path
-        )
+
+        try:
+            EmbeddingsService.load_knowledge_context(
+                knowledge_context.name, context_embeddings_path
+            )
+        except FileNotFoundError as e:
+            TeamAILogger.get().analytics(
+                "KnowledgePackEmbeddingsNotFound", {"error": str(e)}
+            )
 
     def on_context_selected(self, context_name: str) -> str:
         self.knowledge_context_active = context_name

@@ -3,12 +3,13 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
-from shared.services.embeddings_service import EmbeddingsService
-from shared.services.config_service import ConfigService
-from shared.services.models_service import ModelsService
 from shared.knowledge import KnowledgeBaseMarkdown
 from shared.llm_config import LLMConfig
+from shared.models.knowledge_pack import KnowledgePack
 from shared.prompts import PromptList
+from shared.services.config_service import ConfigService
+from shared.services.embeddings_service import EmbeddingsService
+from shared.services.models_service import ModelsService
 
 
 class UI:
@@ -179,10 +180,10 @@ class UI:
             The application does NOT persist the contents of the chat sessions.
             """)
 
-    def create_knowledge_context_selector_ui(self):
-        knowledge_pack = ConfigService.load_knowledge_pack()
+    def create_knowledge_context_selector_ui(self, knowledge_pack: KnowledgePack):
         knowledge_context_choices: List[tuple[str, str]] = [
-            (context.name, context.name) for context in knowledge_pack.contexts
+            (context.name.replace("_", " ").title(), context.path)
+            for context in knowledge_pack.contexts
         ]
         knowledge_packs_selector = gr.Dropdown(
             knowledge_context_choices,

@@ -1,6 +1,10 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-from unittest.mock import MagicMock, patch
+import os
+from unittest.mock import patch
+
 from shared.content_manager import ContentManager
+from shared.models.embedding_model import EmbeddingModel
+from shared.services.embeddings_service import EmbeddingsService
 
 
 class TestContentManager:
@@ -18,10 +22,8 @@ class TestContentManager:
         knowledge_pack_path = "/path/to/root"
 
         mock_config_service.load_embedding_model.return_value = {}
-        mock_knowledge_pack = MagicMock()
-        mock_knowledge_pack.path = knowledge_pack_path
 
-        _ = ContentManager(knowledge_pack=mock_knowledge_pack)
+        _ = ContentManager(knowledge_pack_path=knowledge_pack_path)
 
         mock_config_service.load_embedding_model.assert_called_once_with("config.yaml")
         mock_embeddings_service.initialize.assert_called_once()
@@ -30,3 +32,34 @@ class TestContentManager:
         )
 
         mock_knowledge_base_markdown.assert_called_with(path=knowledge_pack_path)
+
+    @patch("shared.content_manager.ConfigService")
+    @patch("shared.content_manager.KnowledgeBaseMarkdown")
+    def test_load_context_knowledge_with_empty_embeddings_should_not_fail(
+        self,
+        mock_knowledge_base,
+        mock_config_service,
+    ):
+        EmbeddingsService.reset_instance()
+
+        embedding_model = EmbeddingModel(
+            id="ollama-embeddings",
+            name="Ollama Embeddings",
+            provider="ollama",
+            config={"model": "ollama-embeddings", "api_key": "api_key"},
+        )
+
+        knowledge_pack_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "tests/test_data/test_knowledge_pack",
+        )
+
+        mock_config_service.load_embedding_model.return_value = embedding_model
+
+        exception_raised = False
+        try:
+            _ = ContentManager(knowledge_pack_path=knowledge_pack_path)
+        except FileNotFoundError:
+            exception_raised = True
+
+        assert not exception_raised

@@ -88,7 +88,9 @@ class UIFactory:
                 with gr.Accordion("Settings"):
                     with gr.Row():
                         knowledge_context_select = (
-                            self.ui.create_knowledge_context_selector_ui()
+                            self.ui.create_knowledge_context_selector_ui(
+                                self.content_manager.knowledge_pack_definition
+                            )
                         )
                         knowledge_context_select.change(
                             fn=self.__knowledge_context_select_changed,
@@ -178,7 +180,9 @@ class UIFactory:
                 with gr.Accordion("Settings"):
                     with gr.Row():
                         knowledge_context_select = (
-                            self.ui.create_knowledge_context_selector_ui()
+                            self.ui.create_knowledge_context_selector_ui(
+                                self.content_manager.knowledge_pack_definition
+                            )
                         )
                         knowledge_context_select.change(
                             fn=self.__knowledge_context_select_changed,
@@ -268,7 +272,9 @@ class UIFactory:
                 with gr.Accordion("Settings"):
                     with gr.Row():
                         knowledge_context_select = (
-                            self.ui.create_knowledge_context_selector_ui()
+                            self.ui.create_knowledge_context_selector_ui(
+                                self.content_manager.knowledge_pack_definition
+                            )
                         )
                         knowledge_context_select.change(
                             fn=self.__knowledge_context_select_changed,
@@ -356,7 +362,9 @@ class UIFactory:
                 with gr.Accordion("Settings"):
                     with gr.Row():
                         knowledge_context_select = (
-                            self.ui.create_knowledge_context_selector_ui()
+                            self.ui.create_knowledge_context_selector_ui(
+                                self.content_manager.knowledge_pack_definition
+                            )
                         )
                         knowledge_context_select.change(
                             fn=self.__knowledge_context_select_changed,

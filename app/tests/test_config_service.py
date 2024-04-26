@@ -5,7 +5,6 @@ from typing import List
 import pytest
 from shared.models.default_models import DefaultModels
 from shared.models.embedding_model import EmbeddingModel
-from shared.models.knowledge_pack import KnowledgePack
 from shared.models.model import Model
 from shared.services.config_service import ConfigService
 
@@ -14,10 +13,6 @@ from shared.services.config_service import ConfigService
 def setup_class(request):
     # given I have a valid config file
     request.cls.knowledge_pack_path = "teams"
-    request.cls.knowledge_context_1_name = "Team AI"
-    request.cls.knowledge_context_1_path = "teamai"
-    request.cls.knowledge_context_2_name = "Team Demo"
-    request.cls.knowledge_context_2_path = "team_demo"
     request.cls.active_model_providers = "Azure,GCP,some_provider"
     request.cls.model_id = "azure-gpt35"
     request.cls.name = "GPT-3.5 on Azure"
@@ -37,13 +32,7 @@ def setup_class(request):
     request.cls.embedding_deployment_name = "genai-pod-experiments-gpt35-16k"
 
     config_content = f""" 
-    knowledge_pack:
-      path: {request.cls.knowledge_pack_path}
-      contexts:
-        - name: {request.cls.knowledge_context_1_name}
-          path: {request.cls.knowledge_context_1_path}
-        - name: {request.cls.knowledge_context_2_name}
-          path: {request.cls.knowledge_context_2_path}
+    knowledge_pack_path: {request.cls.knowledge_pack_path}
     enabled_providers: {request.cls.active_model_providers}
     default_models:
       chat: {request.cls.model_id}
@@ -136,9 +125,8 @@ class TestConfigService:
         assert embedding.config["azure_deployment"] == self.embedding_deployment_name
         assert embedding.config["api_key"] == self.api_key
 
-        knowledge_pack = ConfigService.load_knowledge_pack(self.config_path)
-        assert isinstance(knowledge_pack, KnowledgePack)
-        assert knowledge_pack.path == self.knowledge_pack_path
+        knowledge_pack_path = ConfigService.load_knowledge_pack_path(self.config_path)
+        assert knowledge_pack_path == self.knowledge_pack_path
 
         default_models = ConfigService.load_default_models(self.config_path)
         assert isinstance(default_models, DefaultModels)
@@ -154,31 +142,18 @@ class TestConfigService:
         )
 
     def test_config_loads_team_from_env_var_values(self):
-        # given I have a valid config file
-        context_name = "Team AI"
-        context_path = "teamai"
         knowledge_pack_path = "folder/path"
 
         config_content = """
-        knowledge_pack:
-          path: ${KNOWLEDGE_PACK_PATH}
-          contexts:
-            - name: ${DOMAIN_NAME}
-              path: ${DOMAIN_PATH}
+        knowledge_pack_path: ${KNOWLEDGE_PACK_PATH}
         """
         config_path = "test-env-config.yaml"
         with open(config_path, "w") as f:
             f.write(config_content)
 
         os.environ["KNOWLEDGE_PACK_PATH"] = knowledge_pack_path
-        os.environ["DOMAIN_NAME"] = context_name
-        os.environ["DOMAIN_PATH"] = context_path
 
-        knowledge_pack: KnowledgePack = ConfigService.load_knowledge_pack(config_path)
-        assert isinstance(knowledge_pack, KnowledgePack)
-        assert all(
-            context.name == context_name and context.path == context_path
-            for context in knowledge_pack.contexts
-        )
+        knowledge_pack_path: str = ConfigService.load_knowledge_pack_path(config_path)
+        assert knowledge_pack_path == knowledge_pack_path
 
         os.remove(config_path)

@@ -3,11 +3,10 @@ import time
 import uuid
 
 from langchain.chains.question_answering import load_qa_chain
-from langchain.docstore.document import Document
 from langchain.prompts import PromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
-from shared.document_retriever import DocumentRetrieval
+from shared.documents_utils import DocumentsUtils
 from shared.llm_config import LLMChatFactory, LLMConfig
 from shared.logger import TeamAILogger
 from shared.services.embeddings_service import EmbeddingsService
@@ -134,29 +133,30 @@ class StreamingChat(TeamAIBaseChat):
         summary = self.summarise_conversation()
 
         if knowledge_document_key == "all":
-            context_documents = EmbeddingsService.similarity_search_with_scores(
+            context_documents = EmbeddingsService.similarity_search(
                 summary, knowledge_context
             )
         else:
             knwoeldge_document = EmbeddingsService.get_embedded_document(
                 knowledge_document_key
             )
-            context_documents = (
-                EmbeddingsService.similarity_search_on_single_document_with_scores(
-                    query=summary,
-                    document_key=knwoeldge_document.key,
-                    context=knwoeldge_document.context,
-                )
+            context_documents = EmbeddingsService.similarity_search_on_single_document(
+                query=summary,
+                document_key=knwoeldge_document.key,
+                context=knwoeldge_document.context,
             )
 
         context_for_prompt = "\n---".join(
-            [f"{document.page_content}" for document, score in context_documents]
+            [f"{document.page_content}" for document in context_documents]
         )
-        sources = DocumentRetrieval.get_unique_sources(context_documents)
+        de_duplicated_sources = DocumentsUtils.get_unique_sources(context_documents)
         sources_markdown = (
             "**These articles might be relevant:**\n"
             + "\n".join(
-                [f"- [{source['title']}]({source['source']})" for source in sources]
+                [
+                    f"- {DocumentsUtils.get_search_result_item(source.metadata)}"
+                    for source in de_duplicated_sources
+                ]
             )
             + "\n\n"
         )
@@ -258,85 +258,34 @@ class DocumentsChat(TeamAIBaseChat):
     def create_chain(chat_model):
         return load_qa_chain(llm=chat_model, chain_type="stuff")
 
-    def get_source_title_link(self, source: Document) -> str:
-        page_anchor = (
-            f"#page={self.get_source_page(source)}"
-            if self.get_source_page(source)
-            else ""
-        )
-        if "title" in source.metadata:
-            return f"[{source.metadata['title']}]({source.metadata['source']}{page_anchor})"
-        else:
-            return "unknown"
-
-    def get_source_page(self, source: Document) -> str:
-        if "page" in source.metadata:
-            return source.metadata["page"]
-        else:
-            return None
-
-    def get_source_authors(self, source: Document) -> str:
-        if "authors" in source.metadata:
-            # Depending on how something was indexed, this value can have a few different shapes
-            # Trying to be tolerant of different formats here and display them nicely
-            if isinstance(source.metadata["authors"], list):
-                return ", ".join(source.metadata["authors"])
-            elif (
-                isinstance(source.metadata["authors"], str)
-                and source.metadata["authors"].startswith("[")
-                and source.metadata["authors"].endswith("]")
-            ):
-                authors_string = source.metadata["authors"]
-                if "'" in authors_string:
-                    authors_string = authors_string.replace("'", "")
-
-                return ", ".join(authors_string[1:-1].split(","))
-            else:
-                return source.metadata["authors"]
-        else:
-            return None
-
-    def get_extra_metadata(self, source: Document) -> str:
-        page_metadata = (
-            f"Page {self.get_source_page(source)}"
-            if self.get_source_page(source)
-            else ""
-        )
-        authors_metadata = (
-            f"Authors: {self.get_source_authors(source)}"
-            if self.get_source_authors(source)
-            else ""
-        )
-        return f"{page_metadata} {authors_metadata}"
-
     def run(self, message: str):
         self.log_run({"knowledge": self.knowledge})
         self.memory.append(HumanMessage(content=message))
 
         if self.knowledge == "all":
-            search_results = EmbeddingsService.similarity_search_with_scores(
-                query=message, context=self.context
+            search_results = EmbeddingsService.similarity_search(
+                query=message, context=self.context, k=10
             )
         else:
-            search_results = (
-                EmbeddingsService.similarity_search_on_single_document_with_scores(
-                    query=message, document_key=self.knowledge, context=self.context
-                )
+            search_results = EmbeddingsService.similarity_search_on_single_document(
+                query=message, document_key=self.knowledge, context=self.context
             )
-
-        documents = [document for document, _ in search_results]
 
         template = self.build_prompt(message)
 
-        ai_message = self.chain({"input_documents": documents, "question": template})
+        ai_message = self.chain(
+            {"input_documents": search_results, "question": template}
+        )
         self.memory.append(AIMessage(content=ai_message["output_text"]))
+
+        de_duplicated_sources = DocumentsUtils.get_unique_sources(search_results)
 
         sources_markdown = (
             "**These sources were searched as input to try and answer the question:**\n"
             + "\n".join(
                 [
-                    f"- {self.get_source_title_link(document)} {f'({self.get_extra_metadata(document).strip()})' if self.get_extra_metadata(document) else ''}"
-                    for document in documents
+                    f"- {DocumentsUtils.get_search_result_item(document.metadata)}"
+                    for document in de_duplicated_sources
                 ]
             )
         )

@@ -1,4 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
+import os
 from typing import List
 
 
@@ -16,16 +17,26 @@ class KnowledgeContext:
 
 
 class KnowledgePack:
-    def __init__(self, path: str, contexts: List[KnowledgeContext]):
+    def __init__(self, path: str, contexts: List[KnowledgeContext] = []):
         self.path = path
         self.contexts = contexts
 
-    @classmethod
-    def from_dict(cls, data):
-        return cls(
-            path=data.get("path"),
-            contexts=[
-                KnowledgeContext.from_dict(knowledge_context)
-                for knowledge_context in data.get("contexts")
-            ],
-        )
+        if len(self.contexts) == 0:
+            self._auto_discovery_contexts()
+
+    def _auto_discovery_contexts(self):
+        context_path = os.path.join(self.path, "contexts")
+
+        if os.path.exists(context_path):
+            context_folders = [
+                folder
+                for folder in os.listdir(context_path)
+                if os.path.isdir(os.path.join(context_path, folder))
+            ]
+            self.contexts = [
+                KnowledgeContext(
+                    name=folder,
+                    path=folder,
+                )
+                for folder in context_folders
+            ]

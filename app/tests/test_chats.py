@@ -27,8 +27,8 @@ def test_documents_chat(mocker):
         )
     ]
     mocker.patch(
-        "shared.services.embeddings_service.EmbeddingsService.similarity_search_on_single_document_with_scores",
-        return_value=[(document, 0.3) for document in documents],
+        "shared.services.embeddings_service.EmbeddingsService.similarity_search_on_single_document",
+        return_value=[document for document in documents],
     )
 
     chain_mock = mocker.Mock()

@@ -56,6 +56,23 @@ class TestsEmbeddingsService:
         assert len(self.service._embeddings_stores) == 1
         assert "base" in self.service._embeddings_stores.keys()
 
+    def test_load_context_knowledge_with_empty_embeddings_raise_error(
+        self,
+    ):
+        try:
+            self.service.load_knowledge_context(
+                context_name="Context B",
+                context_path=self.knowledge_pack_path
+                + "/contexts/context_b/embeddings",
+            )
+            exception_raised = False
+        except FileNotFoundError:
+            exception_raised = True
+
+        assert exception_raised
+        assert len(self.service._embeddings_stores) == 0
+        assert "Context B" not in self.service._embeddings_stores.keys()
+
     def test_load_base_and_context_knowledge_creates_two_entry_in_stores(
         self,
     ):

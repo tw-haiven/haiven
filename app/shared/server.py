@@ -123,8 +123,9 @@ class Server:
         )
 
         DEFAULT_CONFIG_PATH = "config.yaml"
-        data = ConfigService._load_yaml(DEFAULT_CONFIG_PATH)
-        knowledge_pack_path = data["knowledge_pack"]["path"]
+        knowledge_pack_path = ConfigService.load_knowledge_pack_path(
+            DEFAULT_CONFIG_PATH
+        )
 
         teams_static_dir = Path(knowledge_pack_path + "/static")
         teams_static_dir.mkdir(parents=True, exist_ok=True)

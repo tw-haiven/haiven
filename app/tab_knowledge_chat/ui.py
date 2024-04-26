@@ -4,7 +4,7 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
-from shared.documents_utils import get_text_and_metadata_from_pdf
+from shared.documents_utils import DocumentsUtils, get_text_and_metadata_from_pdf
 from shared.services.embeddings_service import EmbeddingsService
 from shared.llm_config import LLMConfig
 from shared.chats import DocumentsChat, ServerChatSessionMemory
@@ -143,7 +143,7 @@ def enable_knowledge_chat(
                 if knowledge_document_selected == "all":
                     info_text = "All documents are loaded."
                 elif knowledge_document_selected:
-                    info_text = f'"{knowledge.title}" is loaded.\n\n**Source:** {knowledge.source}\n\n**Sample question:** {knowledge.sample_question}'
+                    info_text = f'"{knowledge.title}" is loaded.\n\n**Source:** {DocumentsUtils.get_source_title_link(vars(knowledge))}\n\n**Sample question:** {knowledge.sample_question}'
                 return {
                     ui_loaded_file_label: info_text,
                     state_chat_session_key: chat_session_key_value,

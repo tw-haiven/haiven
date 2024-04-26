@@ -21,17 +21,17 @@ def create_server():
     os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
     DEFAULT_CONFIG_PATH = "config.yaml"
 
-    knowledge_pack = ConfigService.load_knowledge_pack(DEFAULT_CONFIG_PATH)
+    knowledge_pack_path = ConfigService.load_knowledge_pack_path(DEFAULT_CONFIG_PATH)
     content_manager = ContentManager(
-        knowledge_pack=knowledge_pack, config_path=DEFAULT_CONFIG_PATH
+        knowledge_pack_path=knowledge_pack_path, config_path=DEFAULT_CONFIG_PATH
     )
 
     ui_factory = UIFactory(
         ui=UI(),
-        prompts_factory=PromptsFactory(knowledge_pack.path),
+        prompts_factory=PromptsFactory(knowledge_pack_path),
         navigation_manager=NavigationManager(),
         event_handler=EventHandler(TeamAILogger),
-        prompts_parent_dir=knowledge_pack.path,
+        prompts_parent_dir=knowledge_pack_path,
         content_manager=content_manager,
         chat_session_memory=ServerChatSessionMemory(),
     )
