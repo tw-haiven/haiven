@@ -2130,21 +2130,24 @@ images = ["pillow (>=10.1.0,<11.0.0)"]
 
 [[package]]
 name = "langchain-google-vertexai"
-version = "0.1.2"
+version = "1.0.2"
 description = "An integration package connecting Google VertexAI and LangChain"
 optional = false
 python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "langchain_google_vertexai-0.1.2-py3-none-any.whl", hash = "sha256:fa5110b7c6a71450e95e47c06d0fdd58b1fa70596728df8f5c205131cc7d40ba"},
-    {file = "langchain_google_vertexai-0.1.2.tar.gz", hash = "sha256:3489546cd6a20cdd9b57af74aba419dc0e1b9225b842939587054bf8b90a5fe3"},
+    {file = "langchain_google_vertexai-1.0.2-py3-none-any.whl", hash = "sha256:9c544226734fd74464c022bd4d2a97e3e6295bad76333c6e6402f7f24630beb6"},
+    {file = "langchain_google_vertexai-1.0.2.tar.gz", hash = "sha256:cb6b7eb98bc026c6939fa6736a3a507ae87ff973671eaa64d408ad7928cd126c"},
 ]
 
 [package.dependencies]
-google-cloud-aiplatform = ">=1.44.0,<2.0.0"
+google-cloud-aiplatform = ">=1.47.0,<2.0.0"
 google-cloud-storage = ">=2.14.0,<3.0.0"
-langchain-core = ">=0.1.27,<0.2"
+langchain-core = ">=0.1.42,<0.2.0"
 types-protobuf = ">=4.24.0.4,<5.0.0.0"
 types-requests = ">=2.31.0,<3.0.0"
+
+[package.extras]
+anthropic = ["anthropic[vertexai] (>=0.23.0,<1)"]
 
 [[package]]
 name = "langchain-openai"
@@ -4835,4 +4838,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "4660434caeefa729334f01e796a6dad883711ceae130894a8ea79644a06e086b"
+content-hash = "93873d987b772888a891635562db51141783ce4faab055bbfd8a6e6c05976ad1"
