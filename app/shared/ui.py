@@ -182,8 +182,7 @@ class UI:
 
     def create_knowledge_context_selector_ui(self, knowledge_pack: KnowledgePack):
         knowledge_context_choices: List[tuple[str, str]] = [
-            (context.name.replace("_", " ").title(), context.path)
-            for context in knowledge_pack.contexts
+            (context.name, context.path) for context in knowledge_pack.contexts
         ]
         knowledge_packs_selector = gr.Dropdown(
             knowledge_context_choices,
