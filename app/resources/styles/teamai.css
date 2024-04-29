@@ -177,3 +177,7 @@ img {
 .show-api + div {
     display: none !important;
 }
+
+.copyright_text{
+    text-align: center;
+}
