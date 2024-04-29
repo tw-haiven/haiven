@@ -32,6 +32,31 @@ def enable_brainstorming(
 
     prompt_list.filter(prompt_categories)
 
+    def __render_prompt_with_warnings(
+        prompt_list: PromptsFactory,
+        prompt_choice: str,
+        user_input: str,
+        additional_vars: dict = {},
+    ):
+        if not prompt_choice:
+            return ""
+        
+        warnings = []
+        rendered_prompt = prompt_list.render_prompt(
+            prompt_choice,
+            user_input,
+            additional_vars=additional_vars,
+            warnings=warnings,
+        )
+        if len(warnings) > 0:
+            warnings = "\n".join(warnings)
+            gr.Warning(f"{warnings}")
+        return rendered_prompt
+    
+    def on_change_user_input(ui_prompt_dropdown, ui_user_input):
+        ui_prompt = __render_prompt_with_warnings(prompt_list, ui_prompt_dropdown, ui_user_input)
+        return ui_prompt
+
     def on_change_prompt_choice(
         prompt_choice: str, user_input: str, request: gr.Request
     ) -> dict:
@@ -51,9 +76,14 @@ def enable_brainstorming(
                 "title", "Unnamed use case"
             )
             help, knowledge = prompt_list.render_help_markdown(prompt_choice)
+
+            rendered_prompt = __render_prompt_with_warnings(
+                prompt_list, prompt_choice, user_input
+            )
+
             return [
                 prompt_choice,
-                prompt_list.render_prompt(prompt_choice, user_input),
+                rendered_prompt,
                 help,
                 knowledge,
             ]
@@ -117,7 +147,7 @@ def enable_brainstorming(
             outputs=[ui_prompt_dropdown, ui_prompt, ui_help, ui_help_knowledge],
         )
         ui_user_input.change(
-            fn=prompt_list.render_prompt,
+            fn=on_change_user_input,
             inputs=[ui_prompt_dropdown, ui_user_input],
             outputs=ui_prompt,
         )

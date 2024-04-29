@@ -76,8 +76,11 @@ def enable_image_chat(
             help, knowledge = prompt_list.render_help_markdown(prompt_choice)
             return [
                 prompt_choice,
-                prompt_list.render_prompt(
-                    prompt_choice, user_input, {"image_description": image_description}
+                __render_prompt_with_warnings(
+                    prompt_list,
+                    prompt_choice,
+                    user_input,
+                    {"image_description": image_description},
                 ),
                 help,
                 knowledge,
@@ -85,14 +88,38 @@ def enable_image_chat(
         else:
             return [None, "", "", ""]
 
+    def __render_prompt_with_warnings(
+        prompt_list: PromptsFactory,
+        prompt_choice: str,
+        user_input: str,
+        additional_vars: dict = {},
+    ):
+        if not prompt_choice:
+            return ""
+        
+        warnings = []
+        rendered_prompt = prompt_list.render_prompt(
+            prompt_choice,
+            user_input,
+            additional_vars=additional_vars,
+            warnings=warnings,
+        )
+        if len(warnings) > 0:
+            warnings = "\n".join(warnings)
+            gr.Warning(f"{warnings}")
+        return rendered_prompt
+
     def on_change_user_inputs(
         prompt_choice: str, user_input: str, image_description: str
     ):
         if not prompt_choice:
             prompt_choice = None
 
-        return prompt_list.render_prompt(
-            prompt_choice, user_input, {"image_description": image_description}
+        return __render_prompt_with_warnings(
+            prompt_list,
+            prompt_choice,
+            user_input,
+            {"image_description": image_description},
         )
 
     main_tab = gr.Tab(interaction_pattern_name, id=tab_id)

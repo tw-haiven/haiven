@@ -37,6 +37,27 @@ def enable_chat(
         message="",
     )
 
+    def __render_prompt_with_warnings(
+        prompt_list: PromptsFactory,
+        prompt_choice: str,
+        user_input: str,
+        additional_vars: dict = {},
+    ):
+        if not prompt_choice:
+            return ""
+        
+        warnings = []
+        rendered_prompt = prompt_list.render_prompt(
+            prompt_choice,
+            user_input,
+            additional_vars=additional_vars,
+            warnings=warnings,
+        )
+        if len(warnings) > 0:
+            warnings = "\n".join(warnings)
+            gr.Warning(f"{warnings}")
+        return rendered_prompt
+
     def update_llm_config(request: gr.Request):
         llm_config_from_session = user_context.get_value(
             request, "llm_model", app_level=True
@@ -69,7 +90,10 @@ def enable_chat(
                 "title", "Unnamed use case"
             )
             help, knowledge = prompt_list.render_help_markdown(prompt_choice)
-            rendered_prompt = prompt_list.render_prompt(prompt_choice, user_input)
+
+            rendered_prompt = __render_prompt_with_warnings(
+                prompt_list, prompt_choice, user_input
+            )
 
             return [
                 prompt_choice,
@@ -81,7 +105,8 @@ def enable_chat(
             return [None, "", "", ""]
 
     def on_change_user_input(prompt_choice: str, user_input: str):
-        return {ui_prompt: prompt_list.render_prompt(prompt_choice, user_input)}
+        ui_prompt = __render_prompt_with_warnings(prompt_list, prompt_choice, user_input)
+        return ui_prompt
 
     main_tab = gr.Tab(interaction_pattern_name, id=tab_id)
 

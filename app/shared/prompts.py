@@ -4,6 +4,7 @@ from typing import List
 import frontmatter
 from langchain.prompts import PromptTemplate
 
+from shared.logger import TeamAILogger
 from shared.knowledge import KnowledgeBaseMarkdown
 
 
@@ -79,7 +80,7 @@ class PromptList:
         prompt_text = prompt_data.content
         return PromptTemplate(input_variables=self.variables, template=prompt_text)
 
-    def create_and_render_template(self, identifier, variables):
+    def create_and_render_template(self, identifier, variables, warnings=None):
         knowledge_with_overwrites = {
             **self.knowledge_base.get_knowledge_content_dict(),
             **variables,
@@ -88,6 +89,18 @@ class PromptList:
         template = self.create_template(identifier)
         template.get_input_schema()
         template.dict()
+
+        # check if input variables in template are present in the knowledge_with_overwrites
+        for key in template.input_variables:
+            if key not in knowledge_with_overwrites:
+                message = f"A requested context '{key} was not present. Quality of the output for the selected prompt might be affected."
+                TeamAILogger.get().logger.warning(message)
+                if warnings is not None:
+                    warnings.append(message)
+                print(message)
+                knowledge_with_overwrites[key] = (
+                    f"No information was present for '{key}'."
+                )
 
         rendered = template.format(**knowledge_with_overwrites)
         return template, rendered
@@ -108,12 +121,18 @@ class PromptList:
             )
 
     def render_prompt(
-        self, prompt_choice: str, user_input: str, additional_vars: dict = {}
+        self,
+        prompt_choice: str,
+        user_input: str,
+        additional_vars: dict = {},
+        warnings=None,
     ) -> str:
         if prompt_choice is not None:
             vars = additional_vars
             vars["user_input"] = user_input
-            _, rendered = self.create_and_render_template(prompt_choice, vars)
+            _, rendered = self.create_and_render_template(
+                prompt_choice, vars, warnings=warnings
+            )
             return rendered
         return ""
 
