@@ -184,6 +184,7 @@ class UI:
         knowledge_context_choices: List[tuple[str, str]] = [
             (context.name, context.path) for context in knowledge_pack.contexts
         ]
+        knowledge_context_choices.sort(key=lambda x: x[0])
         knowledge_packs_selector = gr.Dropdown(
             knowledge_context_choices,
             label="Choose knowledge context",
