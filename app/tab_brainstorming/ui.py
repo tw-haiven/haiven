@@ -37,6 +37,7 @@ def enable_brainstorming(
         prompt_choice: str,
         user_input: str,
         additional_vars: dict = {},
+        show_warning: bool = True,
     ):
         if not prompt_choice:
             return ""
@@ -48,14 +49,14 @@ def enable_brainstorming(
             additional_vars=additional_vars,
             warnings=warnings,
         )
-        if len(warnings) > 0:
+        if show_warning and len(warnings) > 0:
             warnings = "\n".join(warnings)
             gr.Warning(f"{warnings}")
         return rendered_prompt
 
     def on_change_user_input(ui_prompt_dropdown, ui_user_input):
         ui_prompt = __render_prompt_with_warnings(
-            prompt_list, ui_prompt_dropdown, ui_user_input
+            prompt_list, ui_prompt_dropdown, ui_user_input, show_warning=False
         )
         return ui_prompt
 

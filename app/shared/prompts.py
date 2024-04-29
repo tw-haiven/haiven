@@ -93,12 +93,11 @@ class PromptList:
         # check if input variables in template are present in the knowledge_with_overwrites
         for key in template.input_variables:
             if key not in knowledge_with_overwrites:
-                message = f"A requested context '{key} was not present. Quality of the output for the selected prompt might be affected."
+                message = f"A requested context '{key}' was not found. Quality of the output for the selected prompt might be affected."
                 TeamAILogger.get().logger.warning(message)
                 if warnings is not None:
                     warnings.append(message)
-                print(message)
-                knowledge_with_overwrites[key] = (
+                knowledge_with_overwrites[str(key)] = (
                     f"No information was present for '{key}'."
                 )
 

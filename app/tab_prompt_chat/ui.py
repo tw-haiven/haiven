@@ -42,6 +42,7 @@ def enable_chat(
         prompt_choice: str,
         user_input: str,
         additional_vars: dict = {},
+        show_warning: bool = True,
     ):
         if not prompt_choice:
             return ""
@@ -53,7 +54,7 @@ def enable_chat(
             additional_vars=additional_vars,
             warnings=warnings,
         )
-        if len(warnings) > 0:
+        if show_warning and len(warnings) > 0:
             warnings = "\n".join(warnings)
             gr.Warning(f"{warnings}")
         return rendered_prompt
@@ -106,7 +107,7 @@ def enable_chat(
 
     def on_change_user_input(prompt_choice: str, user_input: str):
         ui_prompt = __render_prompt_with_warnings(
-            prompt_list, prompt_choice, user_input
+            prompt_list, prompt_choice, user_input, show_warning=False
         )
         return ui_prompt
 

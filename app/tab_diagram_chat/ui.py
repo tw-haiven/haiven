@@ -93,6 +93,7 @@ def enable_image_chat(
         prompt_choice: str,
         user_input: str,
         additional_vars: dict = {},
+        show_warning: bool = True,
     ):
         if not prompt_choice:
             return ""
@@ -104,7 +105,7 @@ def enable_image_chat(
             additional_vars=additional_vars,
             warnings=warnings,
         )
-        if len(warnings) > 0:
+        if show_warning and len(warnings) > 0:
             warnings = "\n".join(warnings)
             gr.Warning(f"{warnings}")
         return rendered_prompt
@@ -120,6 +121,7 @@ def enable_image_chat(
             prompt_choice,
             user_input,
             {"image_description": image_description},
+            show_warning=False,
         )
 
     main_tab = gr.Tab(interaction_pattern_name, id=tab_id)
