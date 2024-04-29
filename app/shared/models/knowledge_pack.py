@@ -35,7 +35,7 @@ class KnowledgePack:
             ]
             self.contexts = [
                 KnowledgeContext(
-                    name=folder.replace("_", " ").title(),
+                    name=folder,
                     path=folder,
                 )
                 for folder in context_folders
