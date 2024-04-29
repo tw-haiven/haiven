@@ -45,7 +45,7 @@ def enable_chat(
     ):
         if not prompt_choice:
             return ""
-        
+
         warnings = []
         rendered_prompt = prompt_list.render_prompt(
             prompt_choice,
@@ -105,7 +105,9 @@ def enable_chat(
             return [None, "", "", ""]
 
     def on_change_user_input(prompt_choice: str, user_input: str):
-        ui_prompt = __render_prompt_with_warnings(prompt_list, prompt_choice, user_input)
+        ui_prompt = __render_prompt_with_warnings(
+            prompt_list, prompt_choice, user_input
+        )
         return ui_prompt
 
     main_tab = gr.Tab(interaction_pattern_name, id=tab_id)

@@ -96,7 +96,7 @@ def enable_image_chat(
     ):
         if not prompt_choice:
             return ""
-        
+
         warnings = []
         rendered_prompt = prompt_list.render_prompt(
             prompt_choice,

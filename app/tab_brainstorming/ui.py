@@ -40,7 +40,7 @@ def enable_brainstorming(
     ):
         if not prompt_choice:
             return ""
-        
+
         warnings = []
         rendered_prompt = prompt_list.render_prompt(
             prompt_choice,
@@ -52,9 +52,11 @@ def enable_brainstorming(
             warnings = "\n".join(warnings)
             gr.Warning(f"{warnings}")
         return rendered_prompt
-    
+
     def on_change_user_input(ui_prompt_dropdown, ui_user_input):
-        ui_prompt = __render_prompt_with_warnings(prompt_list, ui_prompt_dropdown, ui_user_input)
+        ui_prompt = __render_prompt_with_warnings(
+            prompt_list, ui_prompt_dropdown, ui_user_input
+        )
         return ui_prompt
 
     def on_change_prompt_choice(
