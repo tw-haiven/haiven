@@ -50,7 +50,6 @@ models:
     provider: GCP
     features:
       - text-generation
-      - stop-sequence
       - image-to-text
     config:
       model: gemini-pro
