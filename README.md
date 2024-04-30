@@ -96,9 +96,9 @@ But of course, it comes with limitations:
 
 There are 4 options:
 - Ollama (locally)
-- Azure OpenAI Services
+- Azure AI Studio
 - AWS Bedrock
-- Google AI
+- Google AI Studio
 
 #### Option 1: Use Ollama locally on your machine
 
@@ -109,6 +109,7 @@ There are 4 options:
 #### Option 2: Setup credentials for Azure, GCP or AWS
 
 - Prepare the model setup and credentials in your respective Cloud environment. Check `[app/config.yaml](app/config.yaml)` for the models that are currently configured out of the box, or read below about how to configure additional models.
+- Consider setting quota and billing alerts to avoid unexpected costs and detect unexpected usage.
 - Create .env file from the respective template: Pick the template file that represents the provider you want to use, e.g. `cp ./app/.env.azure.template ./app/.env`.
 - Look at the defined environment variables in your new `.env` file and set the corresponding credentials.
 
@@ -183,7 +184,7 @@ Only embeddings is mandatory. When chat or vision are not set, the app will show
 
 How you deploy the container image is all up to your environment - you could use Google Cloud Run, or an existing Kubernetes cluster on AWS, or an equivalent service on Azure, or your own data center container infrastructure.
 
-This makes you responsible for the usual application security practices like secrets management etc.
+This makes you responsible for the usual application security practices like secrets management, TLS, security monitoring and alerting, etc.
 
 ### 5. Add custom interaction modes
 
