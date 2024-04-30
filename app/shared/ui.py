@@ -48,11 +48,8 @@ class UI:
     def ui_header(self, navigation=None):
         with gr.Row(elem_classes="header"):
             with gr.Column(elem_classes="header-title"):
-                gr.Markdown(
-                    """
-                    # Team AI Demo
-                    """
-                )
+                application_name = ConfigService.load_application_name()
+                gr.Markdown(f"# {application_name}")
 
             with gr.Column(elem_classes="header-logo"):
                 gr.Markdown(

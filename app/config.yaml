@@ -1,3 +1,5 @@
+application_name: ${TEAMAI_APPLICATION_NAME}
+
 knowledge_pack_path: ${TEAM_CONTENT_PATH}
 
 enabled_providers: ${ENABLED_PROVIDERS}

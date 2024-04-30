@@ -111,6 +111,23 @@ class ConfigService:
 
         return default_models
 
+    @staticmethod
+    def load_application_name(path: str = "config.yaml") -> str:
+        """
+        Load the application name from a YAML file.
+
+        Args:
+            path (str): The path to the YAML file.
+
+        Returns:
+            str: The application name. Defaults to "Team AI" if not present in config file.
+        """
+        data = ConfigService._load_yaml(path)
+        application_name = data["application_name"]
+        if not application_name:
+            return "Team AI"
+        return application_name
+
     def _load_yaml(path: str) -> dict:
         """
         Load YAML data from a config file.
