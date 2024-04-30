@@ -80,7 +80,7 @@ class Server:
                 # TODO: Only allow this if localhost?
                 return await call_next(request)
             else:
-                whitelist = [
+                allowlist = [
                     "/",
                     "/auth",
                     "/login",
@@ -92,7 +92,7 @@ class Server:
 
                 if (
                     "/api/" not in request.url.path
-                    and request.url.path not in whitelist
+                    and request.url.path not in allowlist
                 ):
                     try:
                         user = request.session.get("user")
