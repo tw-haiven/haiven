@@ -2130,21 +2130,24 @@ images = ["pillow (>=10.1.0,<11.0.0)"]
 
 [[package]]
 name = "langchain-google-vertexai"
-version = "0.1.2"
+version = "1.0.3"
 description = "An integration package connecting Google VertexAI and LangChain"
 optional = false
 python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "langchain_google_vertexai-0.1.2-py3-none-any.whl", hash = "sha256:fa5110b7c6a71450e95e47c06d0fdd58b1fa70596728df8f5c205131cc7d40ba"},
-    {file = "langchain_google_vertexai-0.1.2.tar.gz", hash = "sha256:3489546cd6a20cdd9b57af74aba419dc0e1b9225b842939587054bf8b90a5fe3"},
+    {file = "langchain_google_vertexai-1.0.3-py3-none-any.whl", hash = "sha256:407caa2b10cd20d4748cebfc6e405d28d8ef4a0e4f21b01739eca4e24c4f04d2"},
+    {file = "langchain_google_vertexai-1.0.3.tar.gz", hash = "sha256:a3929bc07b971072e7cd21ffe28d843640faaf93763f473077d6786745cce247"},
 ]
 
 [package.dependencies]
-google-cloud-aiplatform = ">=1.44.0,<2.0.0"
+google-cloud-aiplatform = ">=1.47.0,<2.0.0"
 google-cloud-storage = ">=2.14.0,<3.0.0"
-langchain-core = ">=0.1.27,<0.2"
+langchain-core = ">=0.1.42,<0.2.0"
 types-protobuf = ">=4.24.0.4,<5.0.0.0"
 types-requests = ">=2.31.0,<3.0.0"
+
+[package.extras]
+anthropic = ["anthropic[vertexai] (>=0.23.0,<1)"]
 
 [[package]]
 name = "langchain-openai"
@@ -2326,7 +2329,6 @@ files = [
     {file = "lxml-5.2.1-cp37-cp37m-musllinux_1_2_x86_64.whl", hash = "sha256:9e2addd2d1866fe112bc6f80117bcc6bc25191c5ed1bfbcf9f1386a884252ae8"},
     {file = "lxml-5.2.1-cp37-cp37m-win32.whl", hash = "sha256:f51969bac61441fd31f028d7b3b45962f3ecebf691a510495e5d2cd8c8092dbd"},
     {file = "lxml-5.2.1-cp37-cp37m-win_amd64.whl", hash = "sha256:b0b58fbfa1bf7367dde8a557994e3b1637294be6cf2169810375caf8571a085c"},
-    {file = "lxml-5.2.1-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:3e183c6e3298a2ed5af9d7a356ea823bccaab4ec2349dc9ed83999fd289d14d5"},
     {file = "lxml-5.2.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:804f74efe22b6a227306dd890eecc4f8c59ff25ca35f1f14e7482bbce96ef10b"},
     {file = "lxml-5.2.1-cp38-cp38-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:08802f0c56ed150cc6885ae0788a321b73505d2263ee56dad84d200cab11c07a"},
     {file = "lxml-5.2.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0f8c09ed18ecb4ebf23e02b8e7a22a05d6411911e6fabef3a36e4f371f4f2585"},
@@ -4835,4 +4837,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "4660434caeefa729334f01e796a6dad883711ceae130894a8ea79644a06e086b"
+content-hash = "cb4b0b76e1f75f60c0af8a13f674d613df878cbcd2d5cc5c05da366b6f010eac"
