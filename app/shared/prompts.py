@@ -1,11 +1,11 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import os
 from typing import List
+
 import frontmatter
 from langchain.prompts import PromptTemplate
-
-from shared.logger import TeamAILogger
 from shared.knowledge import KnowledgeBaseMarkdown
+from shared.logger import TeamAILogger
 
 
 class PromptList:
@@ -43,7 +43,7 @@ class PromptList:
         ]
 
         self.knowledge_base = knowledge_base
-        self.variables = ["user_input"] + self.knowledge_base.get_all_keys() + variables
+        self.extra_variables = variables
 
         for prompt in self.prompts:
             if "title" not in prompt.metadata:
@@ -72,21 +72,30 @@ class PromptList:
                 return prompt
         return None
 
-    def create_template(self, identifier) -> PromptTemplate:
+    def create_template(
+        self, active_knowledge_context: str, identifier: str
+    ) -> PromptTemplate:
         prompt_data = self.get(identifier)
         if not prompt_data:
             raise ValueError(f"Prompt {identifier} not found")
 
         prompt_text = prompt_data.content
-        return PromptTemplate(input_variables=self.variables, template=prompt_text)
+        variables = (
+            ["user_input"]
+            + self.knowledge_base.get_context_keys(active_knowledge_context)
+            + self.extra_variables
+        )
+        return PromptTemplate(input_variables=variables, template=prompt_text)
 
-    def create_and_render_template(self, identifier, variables, warnings=None):
+    def create_and_render_template(
+        self, active_knowledge_context, identifier, variables, warnings=None
+    ):
         knowledge_with_overwrites = {
-            **self.knowledge_base.get_knowledge_content_dict(),
+            **self.knowledge_base.get_knowledge_content_dict(active_knowledge_context),
             **variables,
         }
 
-        template = self.create_template(identifier)
+        template = self.create_template(active_knowledge_context, identifier)
         template.get_input_schema()
         template.dict()
 
@@ -121,6 +130,7 @@ class PromptList:
 
     def render_prompt(
         self,
+        active_knowledge_context: str,
         prompt_choice: str,
         user_input: str,
         additional_vars: dict = {},
@@ -130,32 +140,36 @@ class PromptList:
             vars = additional_vars
             vars["user_input"] = user_input
             _, rendered = self.create_and_render_template(
-                prompt_choice, vars, warnings=warnings
+                active_knowledge_context, prompt_choice, vars, warnings=warnings
             )
             return rendered
         return ""
 
-    def get_knowledge_used_keys(self, identifier: str):
+    def get_knowledge_used_keys(self, active_knowledge_context: str, identifier: str):
         if identifier is not None:
-            template = self.create_template(identifier).dict()
+            template = self.create_template(active_knowledge_context, identifier).dict()
             return template["input_variables"]
 
     def get_default_context(self, prompt_choice: str):
         return self.get(prompt_choice).metadata.get("context", "None")
 
-    def get_knowledge_used(self, prompt_choice: str):
+    def get_knowledge_used(self, prompt_choice: str, active_knowledge_context: str):
         prompt = self.get(prompt_choice)
         if prompt is not None:
-            knowledge_keys = self.get_knowledge_used_keys(prompt_choice)
+            knowledge_keys = self.get_knowledge_used_keys(
+                active_knowledge_context, prompt_choice
+            )
             knowledge = []
             for key in knowledge_keys:
-                knowledge_entry = self.knowledge_base.get_entry(key)
+                knowledge_entry = self.knowledge_base.get_knowledge_document(
+                    active_knowledge_context, key
+                )
                 if knowledge_entry:
                     knowledge.append(knowledge_entry.metadata)
 
             return knowledge
 
-    def render_help_markdown(self, prompt_choice: str):
+    def render_help_markdown(self, prompt_choice: str, context_selected: str):
         prompt = self.get(prompt_choice)
         if prompt is not None:
             title = f"## {prompt.metadata.get('title')}"
@@ -170,7 +184,7 @@ class PromptList:
                 if user_input_description
                 else ""
             )
-            knowledge_used = self.get_knowledge_used(prompt_choice)
+            knowledge_used = self.get_knowledge_used(prompt_choice, context_selected)
             knowledge_used_markdown = (
                 f"**Knowledge used:** {', '.join(knowledge['title'] for knowledge in knowledge_used)}"
                 if knowledge_used

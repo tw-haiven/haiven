@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 from shared.services.embeddings_service import EmbeddingsService
 from shared.llm_config import LLMConfig
+from shared.prompts import PromptList
 from shared.prompts_factory import PromptsFactory
 from shared.chats import ServerChatSessionMemory, StreamingChat
 from shared.knowledge import KnowledgeBaseMarkdown
@@ -78,6 +79,7 @@ def enable_image_chat(
                 prompt_choice,
                 __render_prompt_with_warnings(
                     prompt_list,
+                    context_selected,
                     prompt_choice,
                     user_input,
                     {"image_description": image_description},
@@ -89,7 +91,8 @@ def enable_image_chat(
             return [None, "", "", ""]
 
     def __render_prompt_with_warnings(
-        prompt_list: PromptsFactory,
+        prompt_list: PromptList,
+        active_knowledge_context: str,
         prompt_choice: str,
         user_input: str,
         additional_vars: dict = {},
@@ -100,6 +103,7 @@ def enable_image_chat(
 
         warnings = []
         rendered_prompt = prompt_list.render_prompt(
+            active_knowledge_context,
             prompt_choice,
             user_input,
             additional_vars=additional_vars,
@@ -111,12 +115,22 @@ def enable_image_chat(
         return rendered_prompt
 
     def on_change_user_inputs(
-        prompt_choice: str, user_input: str, image_description: str
+        prompt_choice: str, user_input: str, image_description: str, request: gr.Request
     ):
+        context_selected = user_context.get_value(
+            request, "active_knowledge_context", app_level=True
+        )
+
+        if context_selected is None:
+            gr.Warning("Please select a knowledge context first")
+            return ""
+
         if not prompt_choice:
             prompt_choice = None
 
         return __render_prompt_with_warnings(
+            active_knowledge_context,
+            context_selected,
             prompt_list,
             prompt_choice,
             user_input,

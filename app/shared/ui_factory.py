@@ -119,7 +119,7 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -137,7 +137,7 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -145,7 +145,7 @@ class UIFactory:
                     enable_knowledge_chat(
                         self.chat_session_memory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -218,7 +218,7 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -236,7 +236,7 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -244,7 +244,7 @@ class UIFactory:
                     enable_knowledge_chat(
                         self.chat_session_memory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -312,7 +312,7 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -330,7 +330,7 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -338,7 +338,7 @@ class UIFactory:
                     enable_knowledge_chat(
                         self.chat_session_memory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -396,7 +396,8 @@ class UIFactory:
                     user_identifier_state = gr.State()
                     with gr.Tab("Knowledge"):
                         self.ui.ui_show_knowledge(
-                            self.content_manager.knowledge_base_markdown
+                            self.content_manager.knowledge_base_markdown,
+                            self.content_manager.knowledge_pack_definition,
                         )
                     # TODO: Change tab title to "Prompt development"? And move the LLM choice in there??!
                     with gr.Tab("Prompt Development"):
@@ -409,7 +410,7 @@ class UIFactory:
                             self.chat_session_memory,
                             self.prompts_factory,
                             self.__llm_config,
-                            self.content_manager.knowledge_context_active,
+                            self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
                             knowledge_context_select,
