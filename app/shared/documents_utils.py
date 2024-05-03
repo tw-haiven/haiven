@@ -52,9 +52,17 @@ class DocumentsUtils:
                 source_link = "/kp-static/" + source_link
 
             if "title" in document_metadata:
-                return f"[{document_metadata['title']}]({source_link}{page_anchor})" if source_link else document_metadata['title']
+                return (
+                    f"[{document_metadata['title']}]({source_link}{page_anchor})"
+                    if source_link
+                    else document_metadata["title"]
+                )
             else:
-                return f"[{document_metadata['source']}]({source_link}{page_anchor})" if source_link else "unkown"
+                return (
+                    f"[{document_metadata['source']}]({source_link}{page_anchor})"
+                    if source_link
+                    else "unkown"
+                )
         else:
             return "unknown"
 
