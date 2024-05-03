@@ -74,7 +74,7 @@ def enable_image_chat(
                 "title", "Unnamed use case"
             )
 
-            help, knowledge = prompt_list.render_help_markdown(prompt_choice)
+            help, knowledge = prompt_list.render_help_markdown(prompt_choice, context_selected)
             return [
                 prompt_choice,
                 __render_prompt_with_warnings(
@@ -129,9 +129,8 @@ def enable_image_chat(
             prompt_choice = None
 
         return __render_prompt_with_warnings(
-            active_knowledge_context,
-            context_selected,
             prompt_list,
+            context_selected,
             prompt_choice,
             user_input,
             {"image_description": image_description},
