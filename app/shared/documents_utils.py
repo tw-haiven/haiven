@@ -48,13 +48,13 @@ class DocumentsUtils:
         )
         if "source" in document_metadata:
             source_link = document_metadata["source"]
-            if not document_metadata["source"].startswith("http"):
+            if source_link and not source_link.startswith("http"):
                 source_link = "/kp-static/" + source_link
 
             if "title" in document_metadata:
-                return f"[{document_metadata['title']}]({source_link}{page_anchor})"
+                return f"[{document_metadata['title']}]({source_link}{page_anchor})" if source_link else document_metadata['title']
             else:
-                return f"[{document_metadata['source']}]({source_link}{page_anchor})"
+                return f"[{document_metadata['source']}]({source_link}{page_anchor})" if source_link else "unkown"
         else:
             return "unknown"
 

@@ -28,17 +28,10 @@ class ContentManager:
     def _load_base_knowledge(self):
         self.knowledge_base_markdown = KnowledgeBaseMarkdown()
         try:
-            print(
-                f"@debug _load_base_knowledge: knowledge_base_markdown={self.knowledge_base_markdown}, path={self.knowledge_pack_definition.path}"
-            )
             self.knowledge_base_markdown.load_base_knowledge(
                 self.knowledge_pack_definition.path
             )
-            print(
-                "@debug _load_base_knowledge: knowledge_base_markdown.load_base_knowledge -> DONE"
-            )
         except FileNotFoundError as e:
-            print(f"@debug _load_base_knowledge: FileNotFoundError={e}")
             TeamAILogger.get().analytics(
                 "KnowledgePackKnowledgeNotFound", {"error": str(e)}
             )
