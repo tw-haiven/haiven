@@ -1,5 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import json
+
+from shared.boba_api import BobaApi
 from shared.services.config_service import ConfigService
 from shared.chats import ServerChatSessionMemory
 from fastapi import FastAPI
@@ -16,9 +18,12 @@ import os
 
 
 class Server:
-    def __init__(self, chat_session_memory: ServerChatSessionMemory):
+    def __init__(
+        self, chat_session_memory: ServerChatSessionMemory, boba_api: BobaApi = None
+    ):
         self.url = Url()
         self.chat_session_memory = chat_session_memory
+        self.boba_api = boba_api
 
     def user_endpoints(self, app):
         jinja_env = Environment(loader=FileSystemLoader("./resources/html_templates"))
@@ -74,35 +79,39 @@ class Server:
             request.session.pop("user", None)
             return RedirectResponse(url="/")
 
+        async def check_authentication(request: Request, call_next):
+            allowlist = [
+                "/",
+                "/auth",
+                "/login",
+                "/logout",
+                "/index.html",
+                "/static/main.css",
+                "/static/thoughtworks_logo_grey.png",
+            ]
+
+            if request.url.path not in allowlist:
+                try:
+                    user = request.session.get("user")
+                    if not user:
+                        return auth_error_response({})
+                    return await call_next(request)
+                except AssertionError as error:
+                    print(f"AssertionError {error}")
+                    return auth_error_response(error)
+            return await call_next(request)
+
         @app.middleware("http")
         async def check_oauth2_authentication(request: Request, call_next):
             if os.environ.get("AUTH_SWITCHED_OFF") == "true":
                 # TODO: Only allow this if localhost?
                 return await call_next(request)
             else:
-                allowlist = [
-                    "/",
-                    "/auth",
-                    "/login",
-                    "/logout",
-                    "/index.html",
-                    "/static/main.css",
-                    "/static/thoughtworks_logo_grey.png",
-                ]
-
-                if (
-                    "/api/" not in request.url.path
-                    and request.url.path not in allowlist
-                ):
-                    try:
-                        user = request.session.get("user")
-                        if not user:
-                            return auth_error_response({})
-                        return await call_next(request)
-                    except AssertionError as error:
-                        print(f"AssertionError {error}")
-                        return auth_error_response(error)
-                return await call_next(request)
+                bearer = request.headers.get("Authorization")
+                if bearer:
+                    return await self.boba_api.check_bearer(request, call_next)
+                else:
+                    return await check_authentication(request, call_next)
 
         app.add_middleware(SessionMiddleware, secret_key="!secret")
         oauth = OAuth()
@@ -141,5 +150,6 @@ class Server:
 
         self.user_endpoints(app)
         self.serve_static(app)
+        self.boba_api.add_endpoints(app)
 
         return app
