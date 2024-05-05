@@ -2,7 +2,6 @@
 from typing import List
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
-import requests
 import json
 from shared.content_manager import ContentManager
 from shared.models.model import Model
@@ -107,9 +106,6 @@ def get_scenarios_prompt(
         return default_prompt
 
 
-userinfo_url = "https://openidconnect.googleapis.com/v1/userinfo"
-
-
 class PromptRequestBody(BaseModel):
     promptid: str
     userinput: str
@@ -155,44 +151,6 @@ class BobaApi:
             else:
                 message = '{ "data": ' + json.dumps(chunk) + " }"
                 yield f"data: {message}\n\n"
-
-    def auth_error_response_for_content(accept_header, error):
-        if "text/event-stream" in accept_header:
-            return StreamingResponse(
-                error, media_type="text/event-stream", status_code=403
-            )
-        else:
-            return JSONResponse({"error": error}, status_code=403)
-
-    def validate_token_via_userinfo(self, access_token, userinfo_url):
-        # TODO: Right now this happens on every request - cache this for a bit?
-        headers = {"Authorization": f"Bearer {access_token}"}
-        response = requests.get(userinfo_url, headers=headers)
-        if response.status_code == 200:
-            return response.json()  # Token is valid
-        else:
-            return None  # Token is invalid or expired
-
-    async def check_bearer(self, request: Request, call_next):
-        try:
-            content_type = request.headers.get("Accept")
-            bearer = request.headers.get("Authorization")
-            if not bearer:
-                return self.auth_error_response_for_content(
-                    content_type, "Authentication error"
-                )
-
-            token = bearer.split(" ")[1]
-            user_info = self.validate_token_via_userinfo(token, userinfo_url)
-            if not user_info:
-                return self.auth_error_response_for_content(
-                    content_type, "Authentication error"
-                )
-
-            return await call_next(request)
-        except Exception as error:
-            print(f"Error validating token: {error}")
-            return self.auth_error_response_for_content(content_type, error)
 
     def add_endpoints(self, app: FastAPI):
         @app.get("/api/models")

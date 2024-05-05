@@ -6,6 +6,7 @@ from shared.services.config_service import ConfigService
 from shared.chats import ServerChatSessionMemory
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse
@@ -107,11 +108,7 @@ class Server:
                 # TODO: Only allow this if localhost?
                 return await call_next(request)
             else:
-                bearer = request.headers.get("Authorization")
-                if bearer:
-                    return await self.boba_api.check_bearer(request, call_next)
-                else:
-                    return await check_authentication(request, call_next)
+                return await check_authentication(request, call_next)
 
         app.add_middleware(SessionMiddleware, secret_key="!secret")
         oauth = OAuth()
@@ -124,12 +121,27 @@ class Server:
             client_kwargs={"scope": "openid email profile"},
         )
 
+        origins = [
+            "http://localhost:3000",  # Allow CORS from localhost:3000
+        ]
+
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=origins,
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+
     def serve_static(self, app):
         static_dir = Path("./resources/static")
         static_dir.mkdir(parents=True, exist_ok=True)
         app.mount(
             "/static", StaticFiles(directory=static_dir, html=True), name="static"
         )
+
+        out_dir = Path("./resources/static/out")
+        app.mount("/boba", StaticFiles(directory=out_dir, html=True), name="out")
 
         DEFAULT_CONFIG_PATH = "config.yaml"
         knowledge_pack_path = ConfigService.load_knowledge_pack_path(
