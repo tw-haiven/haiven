@@ -119,14 +119,14 @@ class BobaApi:
     def __init__(
         self, prompts_factory: PromptsFactory, content_manager: ContentManager
     ):
-        self.prompts_factory = prompts_factory
         self.content_manager = content_manager
-
-    def prompt(self, prompt_id, user_input):
-        prompt_list = self.prompts_factory.create_chat_prompt(
+        self.prompts_factory = prompts_factory
+        self.prompt_list = self.prompts_factory.create_chat_prompt(
             self.content_manager.knowledge_base_markdown
         )
-        rendered_prompt = prompt_list.render_prompt(
+
+    def prompt(self, prompt_id, user_input):
+        rendered_prompt = self.prompt_list.render_prompt(
             active_knowledge_context="demo_crm",
             prompt_choice=prompt_id,
             user_input=user_input,
@@ -201,6 +201,14 @@ class BobaApi:
             return JSONResponse(
                 [{"id": model.id, "name": model.name} for model in models]
             )
+
+        @app.get("/api/prompts")
+        def get_prompts(request: Request):
+            prompt_ids_titles = self.prompt_list.get_title_id_tuples()
+            response_data = [
+                {"id": entry[1], "title": entry[0]} for entry in prompt_ids_titles
+            ]
+            return JSONResponse(response_data)
 
         @app.get("/api/make-scenario")
         def make_scenario(request: Request):
