@@ -8,7 +8,10 @@ from shared.ui_factory import UIFactory
 
 class App:
     def __init__(self, content_manager: ContentManager, ui_factory: UIFactory):
-        self.server = Server(ui_factory.chat_session_memory, BobaApi()).create()
+        self.server = Server(
+            ui_factory.chat_session_memory,
+            BobaApi(ui_factory.prompts_factory, ui_factory.content_manager),
+        ).create()
         self.content_manager = content_manager
         self.ui_factory = ui_factory
 
