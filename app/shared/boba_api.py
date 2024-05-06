@@ -3,6 +3,7 @@ from typing import List
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 import json
+from shared.chats import ServerChatSessionMemory, StreamingChat
 from shared.content_manager import ContentManager
 from shared.models.model import Model
 from shared.prompts_factory import PromptsFactory
@@ -109,19 +110,24 @@ def get_scenarios_prompt(
 class PromptRequestBody(BaseModel):
     promptid: str
     userinput: str
+    chatSessionId: str = None
 
 
 class BobaApi:
     def __init__(
-        self, prompts_factory: PromptsFactory, content_manager: ContentManager
+        self,
+        prompts_factory: PromptsFactory,
+        content_manager: ContentManager,
+        chat_session_memory: ServerChatSessionMemory,
     ):
         self.content_manager = content_manager
         self.prompts_factory = prompts_factory
+        self.chat_session_memory = chat_session_memory
         self.prompt_list = self.prompts_factory.create_chat_prompt(
             self.content_manager.knowledge_base_markdown
         )
 
-    def prompt(self, prompt_id, user_input):
+    def prompt(self, prompt_id, user_input, chat_session):
         rendered_prompt = self.prompt_list.render_prompt(
             active_knowledge_context="demo_crm",
             prompt_choice=prompt_id,
@@ -129,8 +135,8 @@ class BobaApi:
             additional_vars={},
             warnings=[],
         )
-        data = self.stream_from_model(rendered_prompt)
-        for chunk in data:
+
+        for chunk in chat_session.start_with_prompt(rendered_prompt):
             yield chunk
 
     def stream_from_model(self, prompt, model="azure-gpt35"):
@@ -207,12 +213,25 @@ class BobaApi:
             )
 
         @app.post("/api/prompt")
-        def prompt(prompt_data: PromptRequestBody):
+        def chat(prompt_data: PromptRequestBody):
+            chat_session_key_value, chat_session = (
+                self.chat_session_memory.get_or_create_chat(
+                    lambda: StreamingChat(
+                        llm_config=LLMConfig("azure-gpt35", 0.5), stream_in_chunks=True
+                    ),
+                    prompt_data.chatSessionId,
+                    "chat",
+                    "birgitta",
+                )
+            )
+
             return StreamingResponse(
-                self.prompt(prompt_data.promptid, prompt_data.userinput),
+                self.prompt(prompt_data.promptid, prompt_data.userinput, chat_session),
                 media_type="text/event-stream",
                 headers={
                     "Connection": "keep-alive",
                     "Content-Encoding": "none",
+                    "Access-Control-Expose-Headers": "X-Chat-ID",
+                    "X-Chat-ID": chat_session_key_value,
                 },
             )

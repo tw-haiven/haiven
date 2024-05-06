@@ -71,11 +71,15 @@ class NonStreamingChat(TeamAIBaseChat):
 
 class StreamingChat(TeamAIBaseChat):
     def __init__(
-        self, llm_config: LLMConfig, system_message: str = "You are a helpful assistant"
+        self,
+        llm_config: LLMConfig,
+        system_message: str = "You are a helpful assistant",
+        stream_in_chunks: bool = False,
     ):
         super().__init__(
             llm_config, LLMChatFactory.new_llm_chat(llm_config), system_message
         )
+        self.stream_in_chunks = stream_in_chunks
 
     def run(self, message: str):
         self.memory.append(HumanMessage(content=message))
@@ -96,19 +100,28 @@ class StreamingChat(TeamAIBaseChat):
 
         for chunk in self.run(initial_message):
             chat_history[-1][1] += chunk
-            yield chat_history
+            if self.stream_in_chunks:
+                yield chunk
+            else:
+                yield chat_history
 
     def start_with_prompt(self, prompt: str):
         chat_history = [[prompt, ""]]
         for chunk in self.run(prompt):
             chat_history[-1][1] += chunk
-            yield chat_history
+            if self.stream_in_chunks:
+                yield chunk
+            else:
+                yield chat_history
 
     def next(self, human_message, chat_history):
         chat_history += [[human_message, ""]]
         for chunk in self.run(human_message):
             chat_history[-1][1] += chunk
-            yield chat_history
+            if self.stream_in_chunks:
+                yield chunk
+            else:
+                yield chat_history
 
     def summarise_conversation(self):
         copy_of_history = []
