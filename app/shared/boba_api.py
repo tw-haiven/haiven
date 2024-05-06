@@ -168,10 +168,7 @@ class BobaApi:
 
         @app.get("/api/prompts")
         def get_prompts(request: Request):
-            prompt_ids_titles = self.prompt_list.get_title_id_tuples()
-            response_data = [
-                {"id": entry[1], "title": entry[0]} for entry in prompt_ids_titles
-            ]
+            response_data = [entry.metadata for entry in self.prompt_list.prompts]
             return JSONResponse(response_data)
 
         @app.get("/api/make-scenario")
