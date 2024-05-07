@@ -1,24 +1,17 @@
 # Stage 0: Frontend build
-FROM node:22-alpine AS node-deps
+FROM node:22-alpine AS node-builder
 RUN apk add --no-cache libc6-compat
 RUN apk add --update python3 make g++ && rm -rf /var/cache/apk/*
 WORKDIR /ui
 
-# COPY package.json yarn.lock ./
-# RUN  yarn --frozen-lockfile
-COPY ./ui/package.json ./
-RUN yarn install --production
-
-##################
-FROM node:22-alpine AS node-builder
-WORKDIR /ui
-COPY --from=node-deps /ui/node_modules ./node_modules
 COPY ./ui .
+
+# RUN  yarn --frozen-lockfile
+RUN yarn install --production
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN yarn build
-RUN rm -rf ./.next/cache
 
 # Stage 1: Backend build environment
 FROM python:3.11-slim as builder
