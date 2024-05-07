@@ -1277,13 +1277,13 @@ extended-testing = ["aiosqlite (>=0.19.0,<0.20.0)", "aleph-alpha-client (>=2.15.
 
 [[package]]
 name = "langchain-core"
-version = "0.1.45"
+version = "0.1.52"
 description = "Building applications with LLMs through composability"
 optional = false
 python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "langchain_core-0.1.45-py3-none-any.whl", hash = "sha256:91eff20de0bcf5f025e1d8c4582cb597a9c17527965eb03b314486e7c834e7df"},
-    {file = "langchain_core-0.1.45.tar.gz", hash = "sha256:526532c1af279a9e2debe7a4e143ba6e980cf90b5ab2e0991c2230ee04c693e2"},
+    {file = "langchain_core-0.1.52-py3-none-any.whl", hash = "sha256:62566749c92e8a1181c255c788548dc16dbc319d896cd6b9c95dc17af9b2a6db"},
+    {file = "langchain_core-0.1.52.tar.gz", hash = "sha256:084c3fc452f5a6966c28ab3ec5dbc8b8d26fc3f63378073928f4e29d90b6393f"},
 ]
 
 [package.dependencies]
@@ -1338,18 +1338,18 @@ anthropic = ["anthropic[vertexai] (>=0.23.0,<1)"]
 
 [[package]]
 name = "langchain-openai"
-version = "0.1.3"
+version = "0.1.6"
 description = "An integration package connecting OpenAI and LangChain"
 optional = false
 python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "langchain_openai-0.1.3-py3-none-any.whl", hash = "sha256:fa1f27815649291447e5370cb08e2f5a84e5c7c6121d0c055a6e296bd16d1e47"},
-    {file = "langchain_openai-0.1.3.tar.gz", hash = "sha256:7f6e377d6bf88d6c2b1969fe5eecc1326271757512739e2f17c855cd7af53345"},
+    {file = "langchain_openai-0.1.6-py3-none-any.whl", hash = "sha256:7f62ecb12d3cdd0d96679abea00e4e3ceb1f829f6d1f127a5f7b97c1315d157f"},
+    {file = "langchain_openai-0.1.6.tar.gz", hash = "sha256:7d2e838e57ef231cb7689fd58ac5fa8a6e9e504174f8c5698c837739786e2030"},
 ]
 
 [package.dependencies]
-langchain-core = ">=0.1.42,<0.2.0"
-openai = ">=1.10.0,<2.0.0"
+langchain-core = ">=0.1.46,<0.2.0"
+openai = ">=1.24.0,<2.0.0"
 tiktoken = ">=0.5.2,<1"
 
 [[package]]
@@ -1596,13 +1596,13 @@ files = [
 
 [[package]]
 name = "openai"
-version = "1.17.0"
+version = "1.26.0"
 description = "The official Python library for the openai API"
 optional = false
 python-versions = ">=3.7.1"
 files = [
-    {file = "openai-1.17.0-py3-none-any.whl", hash = "sha256:72464cdb0602a57af87acb4888b1a48a1c02182cc9f09d2f2f3200b185223d5f"},
-    {file = "openai-1.17.0.tar.gz", hash = "sha256:72e6758cec080a3e5a9daf843178c975fed656fe0831919f4dd89bb62431724f"},
+    {file = "openai-1.26.0-py3-none-any.whl", hash = "sha256:884ced523fb0225780f8b0e0ed6f7e014049c32d049a41ad0ac962869f1055d1"},
+    {file = "openai-1.26.0.tar.gz", hash = "sha256:642e857b60855702ee6ff665e8fa80946164f77b92e58fd24e01b545685b8405"},
 ]
 
 [package.dependencies]
@@ -2728,4 +2728,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "6b425b7f74df48bccf79c4f4928ce2c50b71b871de2a2bf61862c8ea4722aab7"
+content-hash = "8dd985a397f95cba6691c65c45904351805940b2d76e463910eb40d072898e56"
