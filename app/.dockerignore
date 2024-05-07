@@ -1,0 +1,15 @@
+Dockerfile
+
+.git
+.github
+.gitignore
+
+.vscode
+
+__pycache__
+.pytest_cache
+.env
+dev.py
+tests
+knowledge_scripts
+venv
