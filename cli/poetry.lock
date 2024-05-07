@@ -1299,18 +1299,18 @@ extended-testing = ["jinja2 (>=3,<4)"]
 
 [[package]]
 name = "langchain-google-genai"
-version = "1.0.2"
+version = "1.0.3"
 description = "An integration package connecting Google's genai package and LangChain"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "langchain_google_genai-1.0.2-py3-none-any.whl", hash = "sha256:98c29e17a1e291ad4c5ac1b77248e3e18440916fcf1e35932a0ef398639f996f"},
-    {file = "langchain_google_genai-1.0.2.tar.gz", hash = "sha256:358acb930920b32d567d7bf0492526c92bcacd1c6c130da160de15f7364f1e81"},
+    {file = "langchain_google_genai-1.0.3-py3-none-any.whl", hash = "sha256:423fde5888ca9800fe6944a2f4ea5ed34cb9b37908092d9228f700ceefa365d8"},
+    {file = "langchain_google_genai-1.0.3.tar.gz", hash = "sha256:c575782e7f5e48b93c061a20e8dc5c9549aeb526180a6bef4e057e80f07b821c"},
 ]
 
 [package.dependencies]
-google-generativeai = ">=0.5.0,<0.6.0"
-langchain-core = ">=0.1.27,<0.2"
+google-generativeai = ">=0.5.2,<0.6.0"
+langchain-core = ">=0.1.45,<0.2"
 
 [package.extras]
 images = ["pillow (>=10.1.0,<11.0.0)"]
@@ -2725,4 +2725,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "2a164036c181c3cc5e264e11e76e5b3f3a3b590f687d1f75aa4573a57c39bea9"
+content-hash = "31507013e0bdfee882c3f2cbcf872e0f800f5106eb0d2803d90ed5cf02e1457a"
