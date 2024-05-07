@@ -140,8 +140,15 @@ class Server:
             "/static", StaticFiles(directory=static_dir, html=True), name="static"
         )
 
-        out_dir = Path("./resources/static/out")
-        app.mount("/boba", StaticFiles(directory=out_dir, html=True), name="out")
+        try:
+            boba_build_dir_path = "./resources/static/out"
+            app.mount(
+                "/boba",
+                StaticFiles(directory=Path(boba_build_dir_path), html=True),
+                name="out",
+            )
+        except Exception as e:
+            print(f"WARNING: Boba UI cannot be mounted {e}")
 
         DEFAULT_CONFIG_PATH = "config.yaml"
         knowledge_pack_path = ConfigService.load_knowledge_pack_path(
