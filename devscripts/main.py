@@ -16,6 +16,7 @@ def app_init():
     """
     subprocess.run(command, shell=True)
 
+
 def app_build():
     command = """
     cd ui && \
@@ -23,6 +24,7 @@ def app_build():
     cp -r out ../app/resources/static/out
     """
     subprocess.run(command, shell=True)
+
 
 # runs the application
 def app_run():
