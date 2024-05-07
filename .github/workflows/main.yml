@@ -6,11 +6,16 @@ env:
 
 on:
   push:
+    branches:
+      - main
     paths-ignore:
       - '.vscode/**'
       - 'docs/**'
       - 'README.md'
       - '.gitignore'
+  pull_request:
+    branches:
+      - main
   workflow_dispatch: # allows for manual invocation
 
 jobs:
