@@ -28,6 +28,7 @@ class App:
         config_path: str,
         output_dir: str,
         description: str,
+        pdf_source_link: str = None,
     ):
         if not source_path:
             raise ValueError("please provide file path for source_path option")
@@ -51,7 +52,7 @@ class App:
             )
         elif source_path.endswith(".pdf"):
             file_content, file_metadata = self._get_pdf_file_text_and_metadata(
-                source_path
+                source_path, pdf_source_link
             )
         else:
             raise ValueError("source file needs to be .pdf or .csv file")
@@ -131,9 +132,13 @@ class App:
     def _get_csv_file_text_and_metadata(self, source_path: str):
         return self.file_service.get_text_and_metadata_from_csv(source_path)
 
-    def _get_pdf_file_text_and_metadata(self, source_path: str):
+    def _get_pdf_file_text_and_metadata(
+        self, source_path: str, pdf_source_link: str = None
+    ):
         with open(source_path, "rb") as pdf_file:
-            return self.file_service.get_text_and_metadata_from_pdf(pdf_file)
+            return self.file_service.get_text_and_metadata_from_pdf(
+                pdf_file, pdf_source_link
+            )
 
 
 def _get_embedding(

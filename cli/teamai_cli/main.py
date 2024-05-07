@@ -15,13 +15,26 @@ ENCODING = "cl100k_base"
 cli = typer.Typer(no_args_is_help=True)
 
 
+"""
+Parameters:
+    source_path: The path to the source file to index (PDF or CSV file)
+    embedding_model (optional): The name of the embedding model to use ("text-embedding-ada-002" by default). Model must be present under that name in the config
+    config_path (optional): The path to the configuration file for custom settings.
+    description (optional): A brief description of the knowledge base being generated, for the markdown file
+    output_dir (optional): The directory where the generated knowledge base files will be saved ("new_knowledge_base" by default).
+    pdf_source_link (optional): An optional link to the source PDF file, that you want used when a page is shown to the user as source in the application. 
+        Default is "/kp-static/name-of-pdf-file.pdf", served from the "/static" folder of the knowledge pack.
+"""
+
+
 @cli.command(no_args_is_help=True)
 def index_file(
     source_path: str,
-    embedding_model="openai",
+    embedding_model="text-embedding-ada-002",
     config_path: str = "",
     description: str = "",
     output_dir: str = "new_knowledge_base",
+    pdf_source_link: str = None,
 ):
     """Index single file to a given destination directory."""
 
@@ -35,7 +48,12 @@ def index_file(
 
     app = create_app(config_service)
     app.index_individual_file(
-        source_path, embedding_model, config_path, output_dir, description
+        source_path,
+        embedding_model,
+        config_path,
+        output_dir,
+        description,
+        pdf_source_link,
     )
 
 

@@ -1,15 +1,17 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from typing import List
+
 import gradio as gr
 from dotenv import load_dotenv
-from shared.services.embeddings_service import EmbeddingsService
-from shared.llm_config import LLMConfig
-from shared.prompts_factory import PromptsFactory
 from shared.chats import ServerChatSessionMemory, StreamingChat
 from shared.knowledge import KnowledgeBaseMarkdown
+from shared.llm_config import LLMConfig
 from shared.models.chat_context import ChatContext
-from shared.user_feedback import UserFeedback
+from shared.prompts import PromptList
+from shared.prompts_factory import PromptsFactory
+from shared.services.embeddings_service import EmbeddingsService
 from shared.user_context import user_context
+from shared.user_feedback import UserFeedback
 
 
 def enable_chat(
@@ -38,22 +40,25 @@ def enable_chat(
     )
 
     def __render_prompt_with_warnings(
-        prompt_list: PromptsFactory,
+        prompt_list: PromptList,
+        active_knowledge_context: str,
         prompt_choice: str,
         user_input: str,
         additional_vars: dict = {},
+        show_warning: bool = True,
     ):
         if not prompt_choice:
             return ""
 
         warnings = []
         rendered_prompt = prompt_list.render_prompt(
-            prompt_choice,
-            user_input,
+            active_knowledge_context=active_knowledge_context,
+            prompt_choice=prompt_choice,
+            user_input=user_input,
             additional_vars=additional_vars,
             warnings=warnings,
         )
-        if len(warnings) > 0:
+        if show_warning and len(warnings) > 0:
             warnings = "\n".join(warnings)
             gr.Warning(f"{warnings}")
         return rendered_prompt
@@ -89,10 +94,12 @@ def enable_chat(
             chat_context.prompt = prompt_list.get(prompt_choice).metadata.get(
                 "title", "Unnamed use case"
             )
-            help, knowledge = prompt_list.render_help_markdown(prompt_choice)
+            help, knowledge = prompt_list.render_help_markdown(
+                prompt_choice, context_selected
+            )
 
             rendered_prompt = __render_prompt_with_warnings(
-                prompt_list, prompt_choice, user_input
+                prompt_list, context_selected, prompt_choice, user_input
             )
 
             return [
@@ -104,9 +111,17 @@ def enable_chat(
         else:
             return [None, "", "", ""]
 
-    def on_change_user_input(prompt_choice: str, user_input: str):
+    def on_change_user_input(prompt_choice: str, user_input: str, request: gr.Request):
+        context_selected = user_context.get_value(
+            request, "active_knowledge_context", app_level=True
+        )
+
+        if context_selected is None:
+            gr.Warning("Please select a knowledge context first")
+            return ""
+
         ui_prompt = __render_prompt_with_warnings(
-            prompt_list, prompt_choice, user_input
+            prompt_list, context_selected, prompt_choice, user_input, show_warning=False
         )
         return ui_prompt
 

@@ -16,17 +16,38 @@ It lets you codify your practices and knowledge and make it available to an AI a
 
 ## Quickest way to try it out
 
+Prerequisite:
+- Log into the GitHub Container Registry: `echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin` ([documentation about how to get a token and authorize yourself here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic))
+
+### With Azure OpenAI
+
+- Create a `.env` file with the content of (app/.env.azure.template)[app/.env.azure.template]
+- Change the `AZURE_OPENAI_API_KEY` in that file to the API Key - ask the Team AI team for access to the "trial" Azure OpenAI API Key, if you haven't received it yet.
+
+```
+mkdir team-ai
+cd team-ai
+# Put the .env file into this new folder
+git clone git@github.com:tw-team-ai/team-ai-tw-knowledge-pack.git
+docker run \
+        -v ./team-ai-tw-knowledge-pack:/app/teams \
+        --env-file .env \
+        -e AUTH_SWITCHED_OFF=true \
+        -e TEAM_CONTENT_PATH=/app/teams \
+        -p 8080:8080 \
+        ghcr.io/tw-team-ai/team-ai:main
+```
+
 ### With Ollama, locally
 
 Prerequisites:
 - Install [Ollama](https://ollama.com/).
-- Log into the GitHub Container Registry: `echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin` ([documentation about how to get a token and authorize yourself here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic))
 
 ```
 ollama pull llama2
 ollama pull llava:7b
 mkdir team-ai
-git clone git@github.com:tw-team-ai/team-ai.git
+cd team-ai
 git clone git@github.com:tw-team-ai/team-ai-tw-knowledge-pack.git
 # As long as the repo is private, you'll need to log in (see doc link above)
 echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
@@ -75,9 +96,9 @@ But of course, it comes with limitations:
 
 There are 4 options:
 - Ollama (locally)
-- Azure OpenAI Services
+- Azure AI Studio
 - AWS Bedrock
-- Google AI
+- Google AI Studio
 
 #### Option 1: Use Ollama locally on your machine
 
@@ -88,6 +109,7 @@ There are 4 options:
 #### Option 2: Setup credentials for Azure, GCP or AWS
 
 - Prepare the model setup and credentials in your respective Cloud environment. Check `[app/config.yaml](app/config.yaml)` for the models that are currently configured out of the box, or read below about how to configure additional models.
+- Consider setting quota and billing alerts to avoid unexpected costs and detect unexpected usage.
 - Create .env file from the respective template: Pick the template file that represents the provider you want to use, e.g. `cp ./app/.env.azure.template ./app/.env`.
 - Look at the defined environment variables in your new `.env` file and set the corresponding credentials.
 
@@ -162,7 +184,7 @@ Only embeddings is mandatory. When chat or vision are not set, the app will show
 
 How you deploy the container image is all up to your environment - you could use Google Cloud Run, or an existing Kubernetes cluster on AWS, or an equivalent service on Azure, or your own data center container infrastructure.
 
-This makes you responsible for the usual application security practices like secrets management etc.
+This makes you responsible for the usual application security practices like secrets management, TLS, security monitoring and alerting, etc.
 
 ### 5. Add custom interaction modes
 

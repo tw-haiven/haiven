@@ -16,7 +16,6 @@ on:
 jobs:
 
   Test:
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
@@ -85,7 +84,7 @@ jobs:
           cache: true
           cache-repository: ${{ env.REGISTRY }}/${{ github.repository }}/cache
           push: true
-          context: ./app
+          context: .
 
       # The fine-grained access tokens used by these requests need to have read & write access to "Contents"
       # (Explored GH Webhooks instead of these steps instead, but couldn't get the auth to work)

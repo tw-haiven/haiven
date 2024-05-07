@@ -1,5 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import gradio as gr
+from shared.prompts import PromptList
 from shared.llm_config import LLMConfig
 from shared.prompts_factory import PromptsFactory
 from shared.chats import Q_A_Chat, ServerChatSessionMemory
@@ -33,29 +34,46 @@ def enable_brainstorming(
     prompt_list.filter(prompt_categories)
 
     def __render_prompt_with_warnings(
-        prompt_list: PromptsFactory,
+        prompt_list: PromptList,
+        active_knowledge_context: str,
         prompt_choice: str,
         user_input: str,
         additional_vars: dict = {},
+        show_warning: bool = True,
     ):
         if not prompt_choice:
             return ""
 
         warnings = []
         rendered_prompt = prompt_list.render_prompt(
+            active_knowledge_context,
             prompt_choice,
             user_input,
             additional_vars=additional_vars,
             warnings=warnings,
         )
-        if len(warnings) > 0:
+
+        if show_warning and len(warnings) > 0:
             warnings = "\n".join(warnings)
             gr.Warning(f"{warnings}")
+
         return rendered_prompt
 
-    def on_change_user_input(ui_prompt_dropdown, ui_user_input):
+    def on_change_user_input(ui_prompt_dropdown, ui_user_input, request: gr.Request):
+        active_knowledge_context = user_context.get_value(
+            request, "active_knowledge_context", app_level=True
+        )
+
+        if active_knowledge_context is None:
+            gr.Warning("Please select a knowledge context first")
+            return ""
+
         ui_prompt = __render_prompt_with_warnings(
-            prompt_list, ui_prompt_dropdown, ui_user_input
+            prompt_list,
+            active_knowledge_context,
+            ui_prompt_dropdown,
+            ui_user_input,
+            show_warning=False,
         )
         return ui_prompt
 
@@ -77,10 +95,12 @@ def enable_brainstorming(
             chat_context.prompt = prompt_list.get(prompt_choice).metadata.get(
                 "title", "Unnamed use case"
             )
-            help, knowledge = prompt_list.render_help_markdown(prompt_choice)
+            help, knowledge = prompt_list.render_help_markdown(
+                prompt_choice, context_selected
+            )
 
             rendered_prompt = __render_prompt_with_warnings(
-                prompt_list, prompt_choice, user_input
+                prompt_list, context_selected, prompt_choice, user_input
             )
 
             return [

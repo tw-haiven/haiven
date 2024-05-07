@@ -12,6 +12,7 @@ from tab_knowledge_chat.ui import enable_knowledge_chat
 from tab_plain_chat.ui import enable_plain_chat
 from tab_prompt_chat.ui import enable_chat
 from shared.user_context import user_context
+from datetime import datetime
 
 
 class UIFactory:
@@ -33,6 +34,7 @@ class UIFactory:
         self.content_manager: ContentManager = content_manager
         self.chat_session_memory: ServerChatSessionMemory = chat_session_memory
         self.__llm_config = None
+        self.__copyright_text = f"© {str(datetime.now().year)} Thoughtworks, Inc."
 
     def _model_changed(self, model_select, request: gr.Request):
         self.__llm_config.change_model(model_select)
@@ -117,7 +119,7 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -135,7 +137,7 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -143,11 +145,14 @@ class UIFactory:
                     enable_knowledge_chat(
                         self.chat_session_memory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
                     )
+
+            with gr.Row():
+                gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
             blocks.load(
                 self.event_handler.on_load_ui,
@@ -164,6 +169,8 @@ class UIFactory:
                     user_identifier_state,
                 ],
             )
+            ##add a label
+
             blocks.queue()
 
         return blocks
@@ -211,7 +218,7 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -229,7 +236,7 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -237,11 +244,14 @@ class UIFactory:
                     enable_knowledge_chat(
                         self.chat_session_memory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
                     )
+
+            with gr.Row():
+                gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
             blocks.load(
                 self.event_handler.on_load_ui,
@@ -302,7 +312,7 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -320,7 +330,7 @@ class UIFactory:
                         self.chat_session_memory,
                         self.prompts_factory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
@@ -328,11 +338,14 @@ class UIFactory:
                     enable_knowledge_chat(
                         self.chat_session_memory,
                         self.__llm_config,
-                        self.content_manager.knowledge_context_active,
+                        self.content_manager.active_knowledge_context,
                         user_identifier_state,
                         category_filter,
                         knowledge_context_select,
                     )
+
+            with gr.Row():
+                gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
             blocks.load(
                 self.event_handler.on_load_ui,
@@ -383,7 +396,8 @@ class UIFactory:
                     user_identifier_state = gr.State()
                     with gr.Tab("Knowledge"):
                         self.ui.ui_show_knowledge(
-                            self.content_manager.knowledge_base_markdown
+                            self.content_manager.knowledge_base_markdown,
+                            self.content_manager.knowledge_pack_definition,
                         )
                     # TODO: Change tab title to "Prompt development"? And move the LLM choice in there??!
                     with gr.Tab("Prompt Development"):
@@ -396,11 +410,14 @@ class UIFactory:
                             self.chat_session_memory,
                             self.prompts_factory,
                             self.__llm_config,
-                            self.content_manager.knowledge_context_active,
+                            self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
                             knowledge_context_select,
                         )
+
+            with gr.Row():
+                gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
             blocks.load(
                 self.event_handler.on_load_ui,
@@ -431,6 +448,9 @@ class UIFactory:
             with gr.Tab("Data processing"):
                 self.ui.ui_show_data_processing()
 
+            with gr.Row():
+                gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
+
         return blocks
 
     def create_plain_chat(self):
@@ -444,6 +464,9 @@ class UIFactory:
             with gr.Row():
                 with gr.Tabs():
                     enable_plain_chat(self.chat_session_memory, user_identifier_state)
+
+            with gr.Row():
+                gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
             blocks.load(
                 self.event_handler.on_ui_load, None, outputs=[user_identifier_state]

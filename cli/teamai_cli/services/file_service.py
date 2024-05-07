@@ -15,7 +15,7 @@ class FileService:
         text = re.sub(r"  ", " ", text)
         return text
 
-    def get_text_and_metadata_from_pdf(self, pdf_file):
+    def get_text_and_metadata_from_pdf(self, pdf_file, pdf_source_link=None):
         text = []
         metadatas = []
         pdf_reader = PdfReader(pdf_file)
@@ -24,12 +24,13 @@ class FileService:
         page_number = 1
         pdf_title = _get_pdf_title(pdf_reader, pdf_file_base_name)
         pdf_authors = _get_pdf_authors(pdf_reader)
+        pdf_source = pdf_source_link or pdf_file_base_name
 
         for page in pdf_reader.pages:
             text.append(page.extract_text())
             metadata_for_page = {
                 "page": page_number,
-                "source": pdf_file_base_name,
+                "source": pdf_source,
                 "title": pdf_title,
                 "authors": pdf_authors,
             }

@@ -1,3 +1,5 @@
+application_name: ${TEAMAI_APPLICATION_NAME}
+
 knowledge_pack_path: ${TEAM_CONTENT_PATH}
 
 enabled_providers: ${ENABLED_PROVIDERS}
@@ -15,9 +17,9 @@ models:
       - text-generation
       - stop-sequence
     config:
-      azure_endpoint: https://tw-genai-pod-openai.openai.azure.com
-      api_version: 2023-05-15
-      azure_deployment: genai-pod-experiments-gpt35-16k
+      azure_endpoint: ${AZURE_OPENAI_API_BASE}
+      api_version: ${AZURE_OPENAI_API_VERSION}
+      azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT35}
       api_key: ${AZURE_OPENAI_API_KEY}
 
   - id: azure-gpt4
@@ -27,9 +29,9 @@ models:
       - text-generation
       - stop-sequence
     config:
-      azure_endpoint: https://tw-genai-pod-openai.openai.azure.com
-      api_version: 2023-05-15
-      azure_deployment: genai-pod-experiments-gpt4-_8XPm-7dcj
+      azure_endpoint: ${AZURE_OPENAI_API_BASE}
+      api_version: ${AZURE_OPENAI_API_VERSION}
+      azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4}
       api_key: ${AZURE_OPENAI_API_KEY}
 
   - id: azure-gpt4-with-vision
@@ -38,17 +40,16 @@ models:
     features:
       - image-to-text
     config:
-      azure_endpoint: https://genai-pod-teamai-ai-aiservices197713008.openai.azure.com
-      api_version: 2023-12-01-preview
-      azure_deployment: gpt-4-with-vision
-      api_key: ${AZURE_AI_VISION_API_KEY}
+      azure_endpoint: ${AZURE_OPENAI_API_BASE}
+      api_version: ${AZURE_OPENAI_API_VERSION}
+      azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4_VISION}
+      api_key: ${AZURE_OPENAI_API_KEY}
 
   - id: google-gemini
     name: Gemini on Google
     provider: GCP
     features:
       - text-generation
-      - stop-sequence
       - image-to-text
     config:
       model: gemini-pro
@@ -117,9 +118,9 @@ embeddings:
     name: Text Embedding Ada 002 on Azure
     provider: azure
     config:
-      azure_endpoint: https://tw-genai-pod-openai.openai.azure.com
-      api_version: 2023-05-15
-      azure_deployment: genai-pod-experiments-embeddings
+      azure_endpoint: ${AZURE_OPENAI_API_BASE}
+      api_version: ${AZURE_OPENAI_API_VERSION_EMBEDDINGS}
+      azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_EMBEDDINGS}
       api_key: ${AZURE_OPENAI_API_KEY}
 
   - id: open-ai-text-embedding-ada-002

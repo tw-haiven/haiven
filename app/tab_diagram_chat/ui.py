@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 from shared.services.embeddings_service import EmbeddingsService
 from shared.llm_config import LLMConfig
+from shared.prompts import PromptList
 from shared.prompts_factory import PromptsFactory
 from shared.chats import ServerChatSessionMemory, StreamingChat
 from shared.knowledge import KnowledgeBaseMarkdown
@@ -57,7 +58,7 @@ def enable_image_chat(
             llm_config.change_temperature(temperature_from_session)
 
     def on_change_prompt_choice(
-        prompt_choice: str, user_input: str, image_description: str, request: gr.Request
+        prompt_choice: str, image_description: str, request: gr.Request
     ):
         context_selected = user_context.get_value(
             request, "active_knowledge_context", app_level=True
@@ -73,13 +74,15 @@ def enable_image_chat(
                 "title", "Unnamed use case"
             )
 
-            help, knowledge = prompt_list.render_help_markdown(prompt_choice)
+            help, knowledge = prompt_list.render_help_markdown(
+                prompt_choice, context_selected
+            )
             return [
                 prompt_choice,
                 __render_prompt_with_warnings(
                     prompt_list,
+                    context_selected,
                     prompt_choice,
-                    user_input,
                     {"image_description": image_description},
                 ),
                 help,
@@ -89,37 +92,48 @@ def enable_image_chat(
             return [None, "", "", ""]
 
     def __render_prompt_with_warnings(
-        prompt_list: PromptsFactory,
+        prompt_list: PromptList,
+        active_knowledge_context: str,
         prompt_choice: str,
-        user_input: str,
         additional_vars: dict = {},
+        show_warning: bool = True,
     ):
         if not prompt_choice:
             return ""
 
         warnings = []
         rendered_prompt = prompt_list.render_prompt(
+            active_knowledge_context,
             prompt_choice,
-            user_input,
+            "",
             additional_vars=additional_vars,
             warnings=warnings,
         )
-        if len(warnings) > 0:
+        if show_warning and len(warnings) > 0:
             warnings = "\n".join(warnings)
             gr.Warning(f"{warnings}")
         return rendered_prompt
 
     def on_change_user_inputs(
-        prompt_choice: str, user_input: str, image_description: str
+        prompt_choice: str, image_description: str, request: gr.Request
     ):
+        context_selected = user_context.get_value(
+            request, "active_knowledge_context", app_level=True
+        )
+
+        if context_selected is None:
+            gr.Warning("Please select a knowledge context first")
+            return ""
+
         if not prompt_choice:
             prompt_choice = None
 
         return __render_prompt_with_warnings(
             prompt_list,
+            context_selected,
             prompt_choice,
-            user_input,
             {"image_description": image_description},
+            show_warning=False,
         )
 
     main_tab = gr.Tab(interaction_pattern_name, id=tab_id)
@@ -189,12 +203,6 @@ def enable_image_chat(
                         lines=4,
                     )
 
-                    ui_user_input = gr.Textbox(
-                        "",
-                        label="Provide some extra information about what is depicted in the diagram.",
-                        lines=2,
-                    )
-
                 with gr.Group(elem_classes="teamai-group"):
                     gr.Markdown(
                         "## 2. Start the chat", elem_classes="teamai-group-title"
@@ -209,7 +217,7 @@ def enable_image_chat(
 
                 ui_prompt_dropdown.change(
                     fn=on_change_prompt_choice,
-                    inputs=[ui_prompt_dropdown, ui_user_input, ui_image_description],
+                    inputs=[ui_prompt_dropdown, ui_image_description],
                     outputs=[ui_prompt_dropdown, ui_prompt, ui_help, ui_help_knowledge],
                 )
                 ui_describe_image_button.click(
@@ -219,12 +227,7 @@ def enable_image_chat(
                 )
                 ui_image_description.change(
                     fn=on_change_user_inputs,
-                    inputs=[ui_prompt_dropdown, ui_user_input, ui_image_description],
-                    outputs=ui_prompt,
-                )
-                ui_user_input.change(
-                    fn=on_change_user_inputs,
-                    inputs=[ui_prompt_dropdown, ui_user_input, ui_image_description],
+                    inputs=[ui_prompt_dropdown, ui_image_description],
                     outputs=ui_prompt,
                 )
 
