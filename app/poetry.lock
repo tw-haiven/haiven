@@ -4390,13 +4390,13 @@ files = [
 
 [[package]]
 name = "unstructured"
-version = "0.13.3"
+version = "0.13.6"
 description = "A library that prepares raw documents for downstream ML tasks."
 optional = false
 python-versions = "<3.12,>=3.9.0"
 files = [
-    {file = "unstructured-0.13.3-py3-none-any.whl", hash = "sha256:852f8db24d82568fbd26c0a90ab85803d2dcb507f8b64a56932455a46b543422"},
-    {file = "unstructured-0.13.3.tar.gz", hash = "sha256:190b51fbd282602e68b44708798dedd85479a718e4e50a300f12abaa5643df32"},
+    {file = "unstructured-0.13.6-py3-none-any.whl", hash = "sha256:2bbe413ac0c950b94d3ae80c7d0a7a78b10f3b705826725e63d41ad24925592b"},
+    {file = "unstructured-0.13.6.tar.gz", hash = "sha256:0b65b08bcedee203a609551cde6b073d3d3b35fba5b2d55d1d3ef1673fee37d5"},
 ]
 
 [package.dependencies]
@@ -4421,7 +4421,7 @@ wrapt = "*"
 
 [package.extras]
 airtable = ["pyairtable"]
-all-docs = ["markdown", "msg-parser", "networkx", "onnx", "openpyxl", "pandas", "pdf2image", "pdfminer.six", "pikepdf", "pillow-heif", "pypandoc", "pypdf", "python-docx", "python-pptx (<=0.6.23)", "unstructured-inference (==0.7.27)", "unstructured.pytesseract (>=0.3.12)", "xlrd"]
+all-docs = ["google-cloud-vision", "markdown", "msg-parser", "networkx", "onnx", "openpyxl", "pandas", "pdf2image", "pdfminer.six", "pikepdf", "pillow-heif", "pypandoc", "pypdf", "python-docx", "python-pptx (<=0.6.23)", "unstructured-inference (==0.7.29)", "unstructured.pytesseract (>=0.3.12)", "xlrd"]
 astra = ["astrapy"]
 azure = ["adlfs", "fsspec"]
 azure-cognitive-search = ["azure-search-documents"]
@@ -4449,9 +4449,9 @@ gitlab = ["python-gitlab"]
 google-drive = ["google-api-python-client"]
 hubspot = ["hubspot-api-client", "urllib3"]
 huggingface = ["langdetect", "sacremoses", "sentencepiece", "torch", "transformers"]
-image = ["onnx", "pdf2image", "pdfminer.six", "pikepdf", "pillow-heif", "pypdf", "unstructured-inference (==0.7.27)", "unstructured.pytesseract (>=0.3.12)"]
+image = ["google-cloud-vision", "onnx", "pdf2image", "pdfminer.six", "pikepdf", "pillow-heif", "pypdf", "unstructured-inference (==0.7.29)", "unstructured.pytesseract (>=0.3.12)"]
 jira = ["atlassian-python-api"]
-local-inference = ["markdown", "msg-parser", "networkx", "onnx", "openpyxl", "pandas", "pdf2image", "pdfminer.six", "pikepdf", "pillow-heif", "pypandoc", "pypdf", "python-docx", "python-pptx (<=0.6.23)", "unstructured-inference (==0.7.27)", "unstructured.pytesseract (>=0.3.12)", "xlrd"]
+local-inference = ["google-cloud-vision", "markdown", "msg-parser", "networkx", "onnx", "openpyxl", "pandas", "pdf2image", "pdfminer.six", "pikepdf", "pillow-heif", "pypandoc", "pypdf", "python-docx", "python-pptx (<=0.6.23)", "unstructured-inference (==0.7.29)", "unstructured.pytesseract (>=0.3.12)", "xlrd"]
 md = ["markdown"]
 mongodb = ["pymongo"]
 msg = ["msg-parser"]
@@ -4463,7 +4463,7 @@ opensearch = ["opensearch-py"]
 org = ["pypandoc"]
 outlook = ["Office365-REST-Python-Client", "msal"]
 paddleocr = ["unstructured.paddleocr (==2.6.1.3)"]
-pdf = ["onnx", "pdf2image", "pdfminer.six", "pikepdf", "pillow-heif", "pypdf", "unstructured-inference (==0.7.27)", "unstructured.pytesseract (>=0.3.12)"]
+pdf = ["google-cloud-vision", "onnx", "pdf2image", "pdfminer.six", "pikepdf", "pillow-heif", "pypdf", "unstructured-inference (==0.7.29)", "unstructured.pytesseract (>=0.3.12)"]
 pinecone = ["pinecone-client (==2.2.4)"]
 postgres = ["psycopg2-binary"]
 ppt = ["python-pptx (<=0.6.23)"]
@@ -4838,4 +4838,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "4b8f8a74aa6f0638db94a0f19190417aa66fbe34fea2be5f84880719e5fb09d7"
+content-hash = "1e2f919e6e7b8e24bf685c42bf802ac10a8bdc94eb97f8a0527cbbc928efe137"
