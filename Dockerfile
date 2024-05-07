@@ -49,7 +49,7 @@ WORKDIR /app
 # Copy the installed application dependencies from the builder stage
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY ./app /app
-COPY --from=node-builder /ui/out /app/resources/static
+COPY --from=node-builder /ui/out /app/resources/static/out
 
 EXPOSE 8080
 

@@ -6,19 +6,19 @@ Dockerfile
 
 .vscode
 
-__pycache__
-.pytest_cache
-node_modules
-.next
-.ruff_cache
-.precommit*
+**__pycache__
+**.pytest_cache
+**node_modules
+**.next
+**.ruff_cache
+**.precommit*
+**.env
+**out
+**tests
+**venv
+**.venv
 
-.env
-dev.py
-tests
-venv
-.venv
-cli
-devscripts
+app/cli
+app/devscripts
+app/dev.py
 docs
-
