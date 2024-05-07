@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "NODE_ENV=development next dev",
     "build": "next build",
     "copy": "next build; rm -rf ../app/resources/static/out; cp -r ./out ../app/resources/static/",
     "start": "next start -p $PORT",
