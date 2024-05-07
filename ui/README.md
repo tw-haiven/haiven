@@ -13,7 +13,9 @@ yarn install
 yarn dev
 ```
 
---> localhost:3000/boba/
+--> localhost:3000/
+
+API calls in "dev" mode will be rewritten to localhost:8080, the Python backend
 
 ## Publish to Team AI
 
