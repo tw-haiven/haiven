@@ -14,3 +14,11 @@ yarn dev
 ```
 
 --> localhost:3000/boba/
+
+## Publish to Team AI
+
+Builds and then copies the static site to the folder from where it will be mounted into Team AI.
+
+```
+yarn copy
+```
