@@ -3,6 +3,7 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
+from shared.documents_utils import DocumentsUtils
 from shared.knowledge import KnowledgeBaseMarkdown
 from shared.llm_config import LLMConfig
 from shared.models.knowledge_pack import KnowledgePack
@@ -73,30 +74,76 @@ class UI:
                     navigation_html += f"<div class='item'><a href='/{item['path']}' class='item-link {classes} {'selected' if navigation['selected'] == item['path'] else ''}'>{icon_html}{item['title']}</a></div>"
                 gr.HTML(f"<div class='navigation'>{navigation_html}</div>")
 
-    def ui_show_knowledge(self, knowledge_base_markdown: KnowledgeBaseMarkdown):
+    def ui_show_knowledge(
+        self,
+        knowledge_base_markdown: KnowledgeBaseMarkdown,
+        knwoledge_pack_definition: KnowledgePack,
+    ):
         with gr.Row():
             with gr.Column(scale=2):
                 gr.Markdown("## Context knowledge")
-                for key in knowledge_base_markdown.get_all_keys():
-                    knowledge_entry = knowledge_base_markdown.get_entry(key)
-                    gr.Textbox(
-                        knowledge_entry.content,
-                        label=knowledge_entry.metadata["title"],
-                        lines=10,
-                        show_copy_button=True,
+                for context_key in [
+                    context.name for context in knwoledge_pack_definition.contexts
+                ]:
+                    context_content = (
+                        knowledge_base_markdown.get_all_knowledge_documents(context_key)
                     )
+                    with gr.Accordion(
+                        label=context_key.replace("_", " ").title(), open=False
+                    ):
+                        if context_content and len(context_content) > 0:
+                            for knowledge_entry in context_content:
+                                gr.Textbox(
+                                    knowledge_entry.content,
+                                    label=knowledge_entry.metadata["title"],
+                                    lines=10,
+                                    show_copy_button=True,
+                                )
+                        else:
+                            gr.Textbox(
+                                "No knowledge found for this context", show_label=False
+                            )
             with gr.Column(scale=2):
                 gr.Markdown("## Documents")
-                pdf_knowledge = EmbeddingsService.get_embedded_documents()
-                for knowledge in pdf_knowledge:
-                    gr.Markdown(f"""
-    ### {knowledge.title}
+                context_content = EmbeddingsService.get_embedded_documents()
+                with gr.Accordion(label="Common documents", open=False):
+                    if context_content and len(context_content) > 0:
+                        for embbedding_document in context_content:
+                            gr.Markdown(f"""
+    ### {embbedding_document.title}
 
-    **File:** {knowledge.source}
+    **File:** {DocumentsUtils.get_source_title_link(vars(embbedding_document))}
 
-    **Description:** {knowledge.description}
+    **Description:** {embbedding_document.description}
 
                     """)
+                    else:
+                        gr.Textbox(
+                            "No knowledge found for this context", show_label=False
+                        )
+
+                for context_key in [
+                    context.name for context in knwoledge_pack_definition.contexts
+                ]:
+                    context_content = EmbeddingsService.get_embedded_documents(
+                        context_key, False
+                    )
+                    with gr.Accordion(
+                        label=context_key.replace("_", " ").title(), open=False
+                    ):
+                        if context_content and len(context_content) > 0:
+                            for embbedding_document in context_content:
+                                gr.Markdown(f"""
+    ### {embbedding_document.title}
+
+    **File:** {DocumentsUtils.get_source_title_link(vars(embbedding_document))}
+
+    **Description:** {embbedding_document.description}
+                                """)
+                        else:
+                            gr.Textbox(
+                                "No knowledge found for this context", show_label=False
+                            )
 
             with gr.Column(scale=1, elem_classes="user-help-col"):
                 gr.Markdown("""

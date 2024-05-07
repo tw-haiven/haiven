@@ -1,5 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import gradio as gr
+from shared.boba_api import BobaApi
 from shared.content_manager import ContentManager
 from shared.server import Server
 from shared.ui_factory import UIFactory
@@ -7,7 +8,14 @@ from shared.ui_factory import UIFactory
 
 class App:
     def __init__(self, content_manager: ContentManager, ui_factory: UIFactory):
-        self.server = Server(ui_factory.chat_session_memory).create()
+        self.server = Server(
+            ui_factory.chat_session_memory,
+            BobaApi(
+                ui_factory.prompts_factory,
+                ui_factory.content_manager,
+                ui_factory.chat_session_memory,
+            ),
+        ).create()
         self.content_manager = content_manager
         self.ui_factory = ui_factory
 

@@ -156,7 +156,9 @@ class EmbeddingsService:
         return None
 
     @staticmethod
-    def get_embedded_documents(context: str = None) -> List[DocumentEmbedding]:
+    def get_embedded_documents(
+        context: str = None, include_base_context=True
+    ) -> List[DocumentEmbedding]:
         """
         Retrieves all stored document embeddings. This method provides access to the complete set of embeddings currently managed by the service.
 
@@ -168,8 +170,10 @@ class EmbeddingsService:
         """
         instance = EmbeddingsService.get_instance()
         all_embeddings = []
-        store = instance._embeddings_stores["base"]
-        all_embeddings.extend(store.get_embeddings())
+
+        if include_base_context:
+            store = instance._embeddings_stores["base"]
+            all_embeddings.extend(store.get_embeddings())
 
         if context is not None and context != "":
             store = instance._embeddings_stores[context]

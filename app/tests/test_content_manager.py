@@ -22,7 +22,7 @@ class TestContentManager:
 
         mock_config_service.load_embedding_model.return_value = {}
 
-        _ = ContentManager(knowledge_pack_path=knowledge_pack_path)
+        content_manager = ContentManager(knowledge_pack_path=knowledge_pack_path)
 
         mock_config_service.load_embedding_model.assert_called_once_with("config.yaml")
         mock_embeddings_service.initialize.assert_called_once()
@@ -30,7 +30,10 @@ class TestContentManager:
             knowledge_pack_path + "/embeddings"
         )
 
-        mock_knowledge_base_markdown.assert_called_with(path=knowledge_pack_path)
+        mock_knowledge_base_markdown.assert_called_once()
+        content_manager.knowledge_base_markdown.load_base_knowledge.assert_called_once_with(
+            knowledge_pack_path
+        )
 
     @patch("shared.content_manager.ConfigService")
     @patch("shared.content_manager.KnowledgeBaseMarkdown")

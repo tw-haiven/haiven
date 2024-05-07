@@ -33,7 +33,7 @@ class TestUIFactory(unittest.TestCase):
         active_context = "test_context"
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.knowledge_context_active = active_context
+        content_manager.active_knowledge_context = active_context
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
@@ -100,7 +100,7 @@ class TestUIFactory(unittest.TestCase):
             chat_session_memory,
             prompts_factory,
             llm_config,
-            active_context,
+            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
@@ -118,7 +118,7 @@ class TestUIFactory(unittest.TestCase):
             chat_session_memory,
             prompts_factory,
             llm_config,
-            active_context,
+            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
@@ -126,7 +126,7 @@ class TestUIFactory(unittest.TestCase):
         mock_enable_knowledge_chat.assert_called_with(
             chat_session_memory,
             llm_config,
-            active_context,
+            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
@@ -174,7 +174,7 @@ class TestUIFactory(unittest.TestCase):
         active_context = "test_context"
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.knowledge_context_active = active_context
+        content_manager.active_knowledge_context = active_context
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
@@ -242,7 +242,7 @@ class TestUIFactory(unittest.TestCase):
             chat_session_memory,
             prompts_factory,
             llm_config,
-            active_context,
+            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
@@ -260,7 +260,7 @@ class TestUIFactory(unittest.TestCase):
             chat_session_memory,
             prompts_factory,
             llm_config,
-            active_context,
+            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
@@ -268,7 +268,7 @@ class TestUIFactory(unittest.TestCase):
         mock_enable_knowledge_chat.assert_called_with(
             chat_session_memory,
             llm_config,
-            active_context,
+            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
@@ -315,7 +315,7 @@ class TestUIFactory(unittest.TestCase):
         active_knowldge_context = "test_context"
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.knowledge_context_active = active_knowldge_context
+        content_manager.active_knowledge_context = active_knowldge_context
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
@@ -383,7 +383,7 @@ class TestUIFactory(unittest.TestCase):
             chat_session_memory,
             prompts_factory,
             llm_config,
-            active_knowldge_context,
+            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
@@ -401,7 +401,7 @@ class TestUIFactory(unittest.TestCase):
             chat_session_memory,
             prompts_factory,
             llm_config,
-            active_knowldge_context,
+            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
@@ -409,7 +409,7 @@ class TestUIFactory(unittest.TestCase):
         mock_enable_knowledge_chat.assert_called_with(
             chat_session_memory,
             llm_config,
-            active_knowldge_context,
+            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
@@ -453,9 +453,11 @@ class TestUIFactory(unittest.TestCase):
         prompts_parent_dir = "test_parent_dir"
         knowledge_base_markdown = MagicMock()
         active_knowledge_context = "test_context"
+        knowledge_pack = MagicMock()
         content_manager = MagicMock()
+        content_manager.knowledge_pack_definition = knowledge_pack
         content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.knowledge_context_active = active_knowledge_context
+        content_manager.active_knowledge_context = active_knowledge_context
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
@@ -488,7 +490,9 @@ class TestUIFactory(unittest.TestCase):
         ui_factory.ui.styling.assert_called_once()
         ui_factory.navigation_manager.get_knowledge_navigation.assert_called_once()
         ui_factory.ui.ui_header.assert_called_once()
-        ui_factory.ui.ui_show_knowledge.assert_called_with(knowledge_base_markdown)
+        ui_factory.ui.ui_show_knowledge.assert_called_with(
+            knowledge_base_markdown, content_manager.knowledge_pack_definition
+        )
         ui.create_llm_settings_ui.assert_called_once()
         mock_enable_chat.assert_called_with(
             knowledge_base_markdown,
@@ -514,7 +518,7 @@ class TestUIFactory(unittest.TestCase):
         knowledge_base_markdown = MagicMock()
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.knowledge_context_active = None
+        content_manager.active_knowledge_context = None
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
