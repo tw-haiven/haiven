@@ -93,7 +93,7 @@ export default function Landing() {
           <div className="prompt-example"> ✨ Show me the future of payments 10 years from now</div>
           <div className="prompt-example"> ✨ China becomes the next superpower (optimistic, sci-fi future)</div>
           <br/>
-          <Button type="primary" href="/boba/scenarios.html">Start brainstorming scenarios &gt;</Button>
+          <Button type="primary" href="/boba/scenarios">Start brainstorming scenarios &gt;</Button>
         </Col>
       </Row>
 

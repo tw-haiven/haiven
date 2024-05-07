@@ -19,6 +19,8 @@ import os
 
 
 class Server:
+    boba_build_dir_path = "./resources/static/out"
+
     def __init__(
         self, chat_session_memory: ServerChatSessionMemory, boba_api: BobaApi = None
     ):
@@ -79,6 +81,20 @@ class Server:
         async def logout(request: Request):
             request.session.pop("user", None)
             return RedirectResponse(url="/")
+
+        @app.get("/boba/{path}")
+        async def boba(request: Request, path: str):
+            allowed_boba_paths = ["scenarios", "chat", "threat-modelling"]
+            if path in allowed_boba_paths:
+                return HTMLResponse(
+                    open(f"./{Server.boba_build_dir_path}/{path}.html").read()
+                )
+            else:
+                current_path = request.url.path
+                if current_path == f"/boba/{path}":
+                    print(f"WARNING: Possible loop detected for path {path}")
+                    return PlainTextResponse("Invalid path", status_code=404)
+                return RedirectResponse(url=f"/boba/{path}")
 
         async def check_authentication(request: Request, call_next):
             allowlist = [
@@ -141,10 +157,9 @@ class Server:
         )
 
         try:
-            boba_build_dir_path = "./resources/static/out"
             app.mount(
                 "/boba",
-                StaticFiles(directory=Path(boba_build_dir_path), html=True),
+                StaticFiles(directory=Path(Server.boba_build_dir_path), html=True),
                 name="out",
             )
         except Exception as e:

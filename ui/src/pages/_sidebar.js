@@ -15,11 +15,12 @@ const Sidebar = ({selectedKey = 'scenarios'}) => {
     '/storyboard': 'storyboard',
     '/test-strategies': 'tests',
     '/signals': 'company-research',
-    '/saved-ideas': 'saved-ideas'
+    '/saved-ideas': 'saved-ideas',
+    "/chat": "chat",
+    "/threat-modelling": "threat-modelling",
   }
   const router = useRouter()
   const currentSelectedKey = pathToKey[router.pathname];
-
   // TODO: Does this have to change for the "warnKey" and "errorKey" errors to go away?
   // https://ant.design/components/menu#Notes-for-developers
   return (
