@@ -125,7 +125,7 @@ class ConfigService:
         data = ConfigService._load_yaml(path)
         application_name = data["application_name"]
         if not application_name:
-            return "Team AI"
+            return "Haiven"
         return application_name
 
     def _load_yaml(path: str) -> dict:

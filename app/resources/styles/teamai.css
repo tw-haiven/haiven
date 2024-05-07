@@ -63,12 +63,31 @@ img {
   background-color: var(--color-dark-blue);
   padding: 1em;
 }
+
+/* Header styling: One row */
+/* .header-title h1 {
+  font-family: Bitter, "Noto Serif SC", serif;
+  color: white !important;
+  display: inline;
+}
+.header-title h2 {
+  display: inline;
+  color: var(--color-sapphire) !important;
+  margin-top: -0.8em;
+  margin-left: 0.5em;
+  font-size: 1em;
+  text-transform: lowercase;
+} */
+
+/* Header styling: Two rows */
 .header-title h1 {
+  font-family: Bitter, "Noto Serif SC", serif;
   color: white !important;
 }
-.header-title .subtitle h3 {
-  color: var(--color-flamingo);
-  margin-top: 0;
+.header-title h2 {
+  color: var(--color-sapphire) !important;
+  margin-top: -0.8em;
+  font-size: 1em;
 }
 
 .navigation {

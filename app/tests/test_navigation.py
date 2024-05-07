@@ -103,7 +103,7 @@ def test_get_general_navigation():
             },
             {"title": "Testing", "path": "testing", "videos": []},
             {"title": "Team Knowledge", "path": "knowledge"},
-            {"title": "About Team AI", "path": "about"},
+            {"title": "About Haiven", "path": "about"},
         ],
         "selected": "teamai",
     }
@@ -156,7 +156,7 @@ def test_get_analysis_navigation():
                 "videos": [],
             },
             {"title": "Team Knowledge", "path": "knowledge"},
-            {"title": "About Team AI", "path": "about"},
+            {"title": "About Haiven", "path": "about"},
         ],
         "selected": "analysis",
     }
@@ -223,7 +223,7 @@ def test_get_testing_navigation():
                 "videos": [],
             },
             {"title": "Team Knowledge", "path": "knowledge"},
-            {"title": "About Team AI", "path": "about"},
+            {"title": "About Haiven", "path": "about"},
         ],
         "selected": "testing",
     }
@@ -281,7 +281,7 @@ def test_get_coding_navigation():
                 "videos": [],
             },
             {"title": "Team Knowledge", "path": "knowledge"},
-            {"title": "About Team AI", "path": "about"},
+            {"title": "About Haiven", "path": "about"},
         ],
         "selected": "coding",
     }
@@ -352,7 +352,7 @@ def test_get_knowledge_navigation():
                 "videos": [],
             },
             {"title": "Team Knowledge", "path": "knowledge"},
-            {"title": "About Team AI", "path": "about"},
+            {"title": "About Haiven", "path": "about"},
         ],
         "selected": "knowledge",
     }
@@ -406,11 +406,11 @@ def test_get_about_navigation():
                 "videos": [],
             },
             {"title": "Team Knowledge", "path": "knowledge"},
-            {"title": "About Team AI", "path": "about"},
+            {"title": "About Haiven", "path": "about"},
         ],
         "selected": "about",
     }
-    expected_category_item = {"title": "About Team AI", "path": "about"}
+    expected_category_item = {"title": "About Haiven", "path": "about"}
 
     actual_navigation, actual_category_item = nav_manager.get_about_navigation()
 

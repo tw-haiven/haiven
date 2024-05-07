@@ -1,8 +1,12 @@
 ![Build status](https://github.com/tw-team-ai/team-ai/actions/workflows/main.yml/badge.svg)
 
-# Team AI
+# Team AI becomes "Haiven" team assistant!
 
-"Team AI" is an accelerator we use to pilot the use of Generative AI assistance for software delivery tasks beyond coding.
+We just need some time to rename everything... :-)
+
+# Haiven
+
+The Haiven team assistant is an accelerator we use to pilot the use of Generative AI assistance for software delivery tasks beyond coding.
 
 This codebase provides the scaffolding to build a one-container web application that can act as an assistant to a software delivery team. You can plug in your own "knowledge pack", adapted to your organisation's and teams' needs.
 

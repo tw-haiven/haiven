@@ -547,7 +547,7 @@ class TestUIFactory(unittest.TestCase):
         returned_blocks = ui_factory.create_ui(ui_type="about")
 
         # Assert
-        mock_blocks.assert_called_with(theme=theme, css=css, title="About Team AI")
+        mock_blocks.assert_called_with(theme=theme, css=css, title="About Haiven")
         ui_factory.ui.styling.assert_called_once()
         ui_factory.navigation_manager.get_about_navigation.assert_called_once()
         ui_factory.ui.ui_header.assert_called_once()

@@ -9,7 +9,8 @@ export default function Header() {
         <Menu mode="horizontal" 
           className="header">
           <div className="header-title">
-            <h1>Team AI</h1>
+            <h1>Haiven</h1>
+            <h2>Team assistant</h2>
             
           </div>
           <div className="header-logo">
@@ -17,7 +18,7 @@ export default function Header() {
             <a href="https://www.thoughtworks.com">
               {/* 400, 65 */}
               {/* 280, 45 */}
-              <Image alt="Thoughtworks" id="tw-logo" src="/boba/thoughtworks_logo.png" title="Thoughtworks" width={200} height={32}/>
+              <Image alt="Thoughtworks" id="tw-logo" src="/boba/thoughtworks_logo.png" title="Thoughtworks" width={160} height={26}/>
             </a>
           </div>
         </Menu>

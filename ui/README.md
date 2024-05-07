@@ -17,9 +17,9 @@ yarn dev
 
 API calls in "dev" mode will be rewritten to localhost:8080, the Python backend
 
-## Publish to Team AI
+## Publish to Haiven
 
-Builds and then copies the static site to the folder from where it will be mounted into Team AI.
+Builds and then copies the static site to the folder from where it will be mounted into Haiven.
 
 ```
 yarn copy

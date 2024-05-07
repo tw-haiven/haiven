@@ -50,7 +50,7 @@ class UI:
         with gr.Row(elem_classes="header"):
             with gr.Column(elem_classes="header-title"):
                 application_name = ConfigService.load_application_name()
-                gr.Markdown(f"# {application_name}")
+                gr.HTML(f"<h1>{application_name}</h1><h2>Team assistant</h2>")
 
             with gr.Column(elem_classes="header-logo"):
                 gr.Markdown(
@@ -163,7 +163,9 @@ class UI:
         )
         gr.Markdown(
             """
-                **Team AI is a tool to help software delivery teams evaluate the value of Generative AI as an *assistant and knowledge amplifier for frequently done tasks* across their software delivery lifecycle.**
+                ## !! "Team AI" is becoming "Haiven" !!
+
+                **The Haiven team assistant is a tool to help software delivery teams evaluate the value of Generative AI as an *assistant and knowledge amplifier for frequently done tasks* across their software delivery lifecycle.**
 
                 This setup allows the use of GenAI in a way that is optimized for a particular team's or organization's needs, 
                 wherever existing products are too rigid or don't exist yet. Prompts can be created and shared across the team,
@@ -175,7 +177,7 @@ class UI:
                 - Helping people with tasks they have never done before (e.g. if team members have little experience with story-writing)
                 - Using GenAI for divergent thinking, brainstorming and finding gaps earlier in the delivery process
                 
-                ![Overview of Team AI setup](/static/teamai_overview_more_details.png)
+                ![Overview of Haiven setup](/static/teamai_overview_more_details.png)
 
             """,
             elem_classes="about",

@@ -45,7 +45,7 @@ class NavigationManager:
                     "videos": [],
                 },
                 {"title": "Team Knowledge", "path": self.path.PATH_KNOWLEDGE},
-                {"title": "About Team AI", "path": self.path.PATH_ABOUT},
+                {"title": "About Haiven", "path": self.path.PATH_ABOUT},
             ]
         }
 

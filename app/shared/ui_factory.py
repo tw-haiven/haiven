@@ -436,7 +436,7 @@ class UIFactory:
 
     def create_ui_about(self):
         theme, css = self.ui.styling()
-        blocks = gr.Blocks(theme=theme, css=css, title="About Team AI")
+        blocks = gr.Blocks(theme=theme, css=css, title="About Haiven")
         with blocks:
             navigation, category_metadata = (
                 self.navigation_manager.get_about_navigation()

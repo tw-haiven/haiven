@@ -20,9 +20,10 @@ export default function Landing() {
       <Row>
         <Col span={24} style={{padding: "0 10px", height: 350}}>
           <div className="landing-main">
-            <img src="/boba/boba-icon-nunchucks.png" style={{ marginLeft: -35, height: 100 }}></img>
-            <h1 style={{ padding: 0, marginTop: 0, marginBottom: 0 }}>Boba: AI co-pilot for generative ideation</h1>
-            <div>an experiment by <a href="www.thoughtworks.com"><img style={{verticalAlign: 'top'}} alt="Thoughtworks" id="tw-logo" height="20px" src="/boba/tw-logo.svg" title="Thoughtworks"/></a></div>
+            <h1 style={{ padding: 0, marginTop: 0, marginBottom: 0 }}>
+              We're merging <br/><a href="https://www.boba-ai.com/">Boba's</a> generative ideation features <br/>into Haiven! 
+            </h1>
+            <div>This is a work in progress, stay tuned while we stitch it together.</div>
           </div>
         </Col>
       </Row>
