@@ -1,0 +1,418 @@
+:root {
+  --color-flamingo: #f2617aff;
+  --color-light-gray: #edf1f3;
+  --color-dark-blue: #003d4f;
+  --color-sapphire: #47a1ad;
+
+  --checkbox-background-color: #edf1f3;
+  --checkbox-background-color-selected: var(--color-flamingo);
+
+  --link-text-color: var(--color-flamingo);
+  --link-text-color-active: var(--color-flamingo);
+  --link-text-color-hover: var(--color-flamingo);
+  --link-text-color-visited: var(--color-flamingo);
+}
+
+html {
+  line-height: 1.5;
+  font-family: Inter, Noto Sans SC, sans-serif;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+}
+
+.ant-pro-chat p {
+  word-break: keep-all !important;
+}
+
+.prompt-choice {
+  padding: 0.5em;
+}
+
+body { margin: 0; padding: 0}
+
+#canvas {
+  padding-left: 5px;
+  margin-bottom: 20px;
+  /* margin-left: 250px; */
+  /* width: calc(100% - 250px); */
+}
+
+#prompt-center {
+  padding: 1.5em;
+  font-size: 13px;
+}
+
+.header {
+  background-color: var(--color-dark-blue);
+  padding: 1em;
+  height: 65px;
+}
+.header-title h1 {
+  color: white !important;
+  margin: 0;
+  margin-top: -0.5em;
+
+}
+.header-title .subtitle h3 {
+  color: var(--color-flamingo);
+  margin-top: 0;
+}
+
+.header-logo {
+  margin-left: auto;
+}
+
+.header-logo img {
+  margin-bottom: 0.3em;
+  margin-left: 1em;
+}
+
+.login-button {
+  top: -0.7em;
+}
+
+.ant-pro-chat {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: 80%;
+  overflow: auto; /* Adds scrollbars to ant-pro-chat if content overflows */
+}
+
+.scenario {
+  width: 250px;
+  display: inline-block;
+  vertical-align: top;
+  margin: 5px;
+}
+
+.scenario .scenario-card-content {
+  height: 300px;
+  overflow-y: auto;
+  font-size: smaller;
+}
+
+.scenario .ant-card-head-title {
+  font-weight: bold;
+  white-space: normal;
+  min-height: 55px;
+  display: contents;
+}
+
+.scenario .card-prop {
+  margin: 5px 0;
+}
+
+.scenario .card-prop-name {
+  font-weight: bold;
+}
+
+#canvas {
+  /* display: inline-block; */
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
+.selected-items-menu {
+  margin-left: auto;
+  margin-right: auto;
+
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.scenarios-collection.equal-display .scenario-card-content {
+  height: 300px;
+  overflow-y: scroll;
+}
+
+.scenarios-collection.list-display .scenario-card-content {
+  height: auto;
+  overflow-y: visible;
+}
+
+.scenarios-collection.stack-display .scenario-card-content {
+  height: auto;
+  overflow-y: visible;
+}
+
+.scenarios-collection.stack-display .scenario {
+  width: 100%;
+}
+
+.scenarios-collection.stack-display .ant-card-body {
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.scenarios-collection.stack-display .scenario .card-prop.stackable,
+.scenarios-collection.stack-display .scenario .card-prop.stackable .card-prop-name,
+.scenarios-collection.stack-display .scenario .card-prop.stackable .card-prop-value
+ {
+  display: inline-block;
+  padding-right: 5px;
+}
+
+.scenarios-collection.plot-display .scenario {
+  display: none;
+}
+
+.scenarios-collection.plot-display .plot {
+  display: block;
+}
+
+input.select-scenario {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.boba-matrix, .boba-matrix table {
+  width: 100%;
+  height: 80vh;
+  /* table-layout: fixed; */
+}
+
+.boba-matrix table td {
+  text-align: center;
+}
+
+.boba-matrix table td.content {
+  border: 1px solid silver;
+}
+
+.boba-matrix .matrix-item { 
+  margin: 10px 5px;
+  background: lightgoldenrodyellow;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.boba-matrix .matrix-item .matrix-item-title {
+  font-weight: bold;
+}
+
+.explore-drawer {
+  width: 200px;
+}
+
+.chat-log {
+  width: 100%;
+}
+
+.company-dashboard {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.company-dashboard-section {
+  min-height: 625px;
+  border: 1px solid #f1f1f1;
+  margin-bottom: 10px;
+  padding: 0 5px;
+}
+
+.company-dashboard-section.small {
+  min-height: 200px;
+}
+
+.company-dashboard-section h3 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.company-dashboard-section .scenario {
+  width: 100%;
+}
+
+.company-dashboard-section .scenario .card-prop {
+  margin: 0 0 10px 0;
+}
+
+.toggle-answers { 
+  position: absolute;
+  top: 11px;
+  right: 5px;
+  font-size: initial;
+  text-align: right;
+  font-weight: normal;
+  font-size: small;
+}
+
+.scenarios-collection .ant-card-body {
+  padding-top: 10px;
+}
+
+.config-icon {
+  display: inline-block;
+  font-size: 15px;
+  vertical-align: bottom;
+}
+
+
+.ant-drawer-header {
+  padding: 10px !important;
+}
+.ant-drawer-body {
+  padding: 16px !important;
+}
+.ant-drawer-close {
+  margin-right: 5px !important;
+}
+
+.chat-exploration {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.chat-log {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.chat-exploration .bottom {
+  margin-top: auto;
+  /* padding-bottom: 10px; */
+  bottom: 0;
+}
+
+.chat-message {
+  margin-bottom: 10px;
+}
+
+.prompt-suggestions {
+  margin-top: 10px;
+}
+
+.sidebar {
+  height: 100vh;
+}
+
+.sidebar .ant-menu-submenu-inline .ant-menu-submenu-title {
+  padding-left: 10px !important;
+}
+
+.sidebar .ant-menu-inline .ant-menu-item {
+  padding-left: 20px !important;
+}
+
+.ant-layout-sider-trigger {
+  background-color: #f5f5f5 !important;
+}
+
+.prompt-list {
+  border: 1px solid #f5f5f5;
+  padding: 5px;
+  overflow-y: scroll;
+  margin-right: 10px;
+}
+
+.results-section {
+  min-height: 500px;
+  /* border: 1px solid #f5f5f5; */
+  /* margin-top: 10px; */
+  /* padding: 5px; */
+  /* margin-right: 10px; */
+}
+
+.prompt-list .ant-table-expanded-row .ant-table-cell p {
+  margin: 0;
+  padding-left: 10px;
+}
+.prompt-list .ant-table-cell {
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+#eval-results table {
+  min-height: 500px;
+}
+#eval-results .scenario-header {
+  font-weight: bold;
+  height: 50px;
+}
+#eval-results .strategy-header {
+  font-weight: bold;
+  min-height: 100px;
+}
+
+.eval-result {
+  text-align: center;
+  background: #f1f1f1;
+  border: 1px solid white;
+}
+.eval-result-score {
+  font-weight: bold;
+}
+
+.subprompt-entry {
+  margin-bottom: 10px;
+}
+.subprompt-entry-label {
+  padding-left: 2px;
+}
+.prompt-list-section {
+  /* border: 1px solid #f1f1f1; */
+  height: 100%;
+  overflow-y: scroll;
+  padding-right: 20px;
+}
+.results-section {
+  padding-right: 10px;
+}
+
+/* LANDING PAGE */
+
+.landing-main {
+  /* margin: 0;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); */
+  margin-top: 40px;
+  text-align: center;
+}
+
+
+.slick-dots button {
+  background: #364d79 !important;
+}
+
+.prompt-example {
+  font-size: larger;
+  margin: 10px 0;
+}
+
+#canvas {
+  overflow-x: hidden;
+}
+#storyboard {
+  overflow-x: scroll;
+}
+
+.cover-visual-prompt {
+  height: 250px !important;
+  padding: 10px 10px !important;
+}
+
+
+.boba-tree-container {
+  display: flex;
+  height: calc(100% - 65px);
+  width: 100%;
+  position: relative;
+  left: 0;
+  top: 0;
+}
+
+.boba-tree-container .tree-node {
+  border: 1px solid #f1f1f1;
+  background: white;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.tree-node-content {
+  outline: none;
+}
