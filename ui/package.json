@@ -15,7 +15,7 @@
   "dependencies": {
     "@ant-design/pro-chat": "^1.13.0",
     "@ant-design/pro-editor": "^1.2.0",
-    "@vercel/kv": "^0.2.2",
+    "@vercel/kv": "^1.0.1",
     "antd": "5.12.0",
     "antd-style": "^3.6.1",
     "autoprefixer": "10.4.14",
