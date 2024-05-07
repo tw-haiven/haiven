@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
   - package-ecosystem: "pip"
     directory: "/app"
     schedule:
@@ -11,4 +11,4 @@ updates:
   - package-ecosystem: "pip"
     directory: "/cli"
     schedule:
-      interval: "daily"
+      interval: "weekly"
