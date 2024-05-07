@@ -19,6 +19,7 @@ packages = [
 
 [tool.poetry.scripts]
 init = "devscripts.main:app_init"
+build = "devscripts.main:app_build"
 test = "devscripts.main:app_test"
 app = "devscripts.main:app_run"
 coverage = "devscripts.main:app_coverage"

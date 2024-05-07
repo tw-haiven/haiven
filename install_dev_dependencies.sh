@@ -6,6 +6,11 @@ if ! command -v poetry &> /dev/null; then
     brew install poetry
 fi
 
+if ! command -v yarn &> /dev/null; then
+    echo "Yarn is not installed. Installing Yarn using Homebrew..."
+    brew install yarn
+fi
+
 printf "\nInstalling Poetry scripts..."
 poetry install
 

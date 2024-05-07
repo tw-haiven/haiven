@@ -9,10 +9,20 @@ import sys
 def app_init():
     command = """
     cd app && \
-    poetry install --no-root
+    poetry install --no-root && \
+    cd .. && \
+    cd ui && \
+    yarn install
     """
     subprocess.run(command, shell=True)
 
+def app_build():
+    command = """
+    cd ui && \
+    yarn run build && \
+    cp -r out ../app/resources/static/out
+    """
+    subprocess.run(command, shell=True)
 
 # runs the application
 def app_run():
