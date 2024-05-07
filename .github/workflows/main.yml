@@ -13,9 +13,6 @@ on:
       - 'docs/**'
       - 'README.md'
       - '.gitignore'
-  pull_request:
-    branches:
-      - main
   workflow_dispatch: # allows for manual invocation
 
 jobs:
