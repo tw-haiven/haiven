@@ -336,9 +336,9 @@ class DocumentsChat(TeamAIBaseChat):
 class JSONChat(TeamAIBaseChat):
     def __init__(
         self,
+        llm_config=LLMConfig("azure-gpt4", 0.5),
         system_message: str = "You are a helpful assistant",
     ):
-        llm_config = LLMConfig("azure-gpt4", 0.5)
         super().__init__(
             llm_config, LLMChatFactory.new_llm_chat(llm_config), system_message
         )
