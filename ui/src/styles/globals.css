@@ -206,8 +206,6 @@ input.select-scenario {
 .boba-matrix,
 .boba-matrix table {
   width: 100%;
-  height: 80vh;
-  /* table-layout: fixed; */
 }
 
 .boba-matrix table td {
