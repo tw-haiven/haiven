@@ -66,23 +66,6 @@ const Home = () => {
     setDrawerOpen(true);
   };
 
-  const onSave = async (id) => {
-    const scenario = scenarios[id];
-    const body = scenario;
-    body.prompt = promptDataFlow;
-    body.type = "scenario";
-    const resp = await fetch("/api/save-idea", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    const data = await resp.json();
-    setSavedIdeas([...savedIdeas, id]);
-    console.log("Saved idea", data);
-  };
-
   const onClickBrainstormStrategies = () => {
     const scenariosParams = selections.map((selectedIndex) => {
       // console.log("i", selectedIndex);
@@ -122,8 +105,8 @@ const Home = () => {
     const uri =
       "/api/threat-modelling" +
       "?dataFlow=" +
-      encodeURIComponent(promptDataFlow);
-    +"?assets=" +
+      encodeURIComponent(promptDataFlow) +
+      "?assets=" +
       encodeURIComponent(promptAssets) +
       "?userBase=" +
       encodeURIComponent(promptUserBase);
