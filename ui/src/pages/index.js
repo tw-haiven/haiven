@@ -1,33 +1,37 @@
 import { Button } from "antd";
-import { Col, Row } from 'antd';
-import { Carousel } from 'antd';
+import { Col, Row } from "antd";
+import { Carousel } from "antd";
 
 export default function Landing() {
-
   const contentStyle = {
-    width: '90%',
-    height: '90%',
-    color: '#364d79',
-    lineHeight: '160px',
-    textAlign: 'center',
-    background: '#f1f1f1',
-    border: '1px solid #f1f1f1',
+    width: "90%",
+    height: "90%",
+    color: "#364d79",
+    lineHeight: "160px",
+    textAlign: "center",
+    background: "#f1f1f1",
+    border: "1px solid #f1f1f1",
   };
 
   return (
     <div id="landing-page">
-
       <Row>
-        <Col span={24} style={{padding: "0 10px", height: 350}}>
+        <Col span={24} style={{ padding: "0 10px", height: 350 }}>
           <div className="landing-main">
             <h1 style={{ padding: 0, marginTop: 0, marginBottom: 0 }}>
-              We're merging <br/><a href="https://www.boba-ai.com/">Boba's</a> generative ideation features <br/>into Haiven! 
+              We're merging <br />
+              <a href="https://www.boba-ai.com/">Boba's</a> generative ideation
+              features <br />
+              into Haiven!
             </h1>
-            <div>This is a work in progress, stay tuned while we stitch it together.</div>
+            <div>
+              This is a work in progress, stay tuned while we stitch it
+              together.
+            </div>
           </div>
         </Col>
       </Row>
-      
+
       {/* RESEARCH */}
       {/* <Row justify="space-around" style={{background: '#f1f1f1', paddingTop: 20}}>
         <Col span={10} style={{padding: "0 20px"}}>
@@ -64,41 +68,79 @@ export default function Landing() {
         </Col>
       </Row> */}
 
-      <div style={{margin: "50px 0"}} />
+      <div style={{ margin: "50px 0" }} />
 
       {/* IDEATE: SCENARIOS */}
-      <Row justify="space-around" style={{background: '#ffffff'}}>
-        <Col span={14} style={{padding: "0 20px"}}>
+      <Row justify="space-around" style={{ background: "#ffffff" }}>
+        <Col span={14} style={{ padding: "0 20px" }}>
           <div>
             <Carousel autoplay effect="fade">
-              <div style={{textAlign: 'right'}}>
-                <h2>I can brainstorm possible futures based on a strategic prompt</h2>
-                <img style={contentStyle} src="/boba/screenshots/scenarios-1.png" />
+              <div style={{ textAlign: "right" }}>
+                <h2>
+                  I can brainstorm possible futures based on a strategic prompt
+                </h2>
+                <img
+                  style={contentStyle}
+                  src="/boba/screenshots/scenarios-1.png"
+                />
               </div>
               <div>
-              <h2>Explore opportunities, threats, plausibility and probability of scenarios</h2>
-                <img style={contentStyle} src="/boba/screenshots/scenarios-2.png" />
+                <h2>
+                  Explore opportunities, threats, plausibility and probability
+                  of scenarios
+                </h2>
+                <img
+                  style={contentStyle}
+                  src="/boba/screenshots/scenarios-2.png"
+                />
               </div>
               <div>
-              <h2>Dig deeper to create examples and storyboards for scenarios</h2>
-                <img style={contentStyle} src="/boba/screenshots/scenarios-1.png" />
+                <h2>
+                  Dig deeper to create examples and storyboards for scenarios
+                </h2>
+                <img
+                  style={contentStyle}
+                  src="/boba/screenshots/scenarios-1.png"
+                />
               </div>
             </Carousel>
           </div>
         </Col>
-        <Col span={10} style={{padding: "0"}}>
+        <Col span={10} style={{ padding: "0" }}>
           <h1>Ideate: Envision future scenarios</h1>
-          <div className="prompt-example">Scenario building is a process of generating future-oriented stories by researching signals of change in business, culture, and technology. Scenarios are used to socialize learnings in a contextualized narrative, inspire divergent product thinking, conduct resilience/desirability testing, and/or inform strategic planning. For example, you can prompt Boba with:</div>
-          <div className="prompt-example"> ✨ Hotel industry uses generative AI to transform the guest experience</div>
-          <div className="prompt-example"> ✨ Pfizer accelerates drug discovery with the use of generative AI</div>
-          <div className="prompt-example"> ✨ Show me the future of payments 10 years from now</div>
-          <div className="prompt-example"> ✨ China becomes the next superpower (optimistic, sci-fi future)</div>
-          <br/>
-          <Button type="primary" href="/boba/scenarios">Start brainstorming scenarios &gt;</Button>
+          <div className="prompt-example">
+            Scenario building is a process of generating future-oriented stories
+            by researching signals of change in business, culture, and
+            technology. Scenarios are used to socialize learnings in a
+            contextualized narrative, inspire divergent product thinking,
+            conduct resilience/desirability testing, and/or inform strategic
+            planning. For example, you can prompt Boba with:
+          </div>
+          <div className="prompt-example">
+            {" "}
+            ✨ Hotel industry uses generative AI to transform the guest
+            experience
+          </div>
+          <div className="prompt-example">
+            {" "}
+            ✨ Pfizer accelerates drug discovery with the use of generative AI
+          </div>
+          <div className="prompt-example">
+            {" "}
+            ✨ Show me the future of payments 10 years from now
+          </div>
+          <div className="prompt-example">
+            {" "}
+            ✨ China becomes the next superpower (optimistic, sci-fi future)
+          </div>
+          <br />
+          <Button type="primary" href="/boba/scenarios">
+            Start brainstorming scenarios &gt;
+          </Button>
         </Col>
       </Row>
 
-      <div style={{margin: "50px 0"}} />
+      <div style={{ margin: "50px 0" }} />
 
       {/* IDEATE: STRATEGIES */}
       {/* <Row justify="space-around" style={{paddingTop: 20, background: '#f1f1f1'}}>
@@ -135,8 +177,8 @@ export default function Landing() {
           </div>
         </Col>
       </Row> */}
-     
-      <div style={{margin: "50px 0"}} />
+
+      <div style={{ margin: "50px 0" }} />
 
       {/* STORYBOARDING */}
       {/* <Row justify="space-around">

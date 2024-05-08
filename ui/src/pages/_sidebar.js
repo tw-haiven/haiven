@@ -1,37 +1,61 @@
-import { Menu, Icon, Button } from 'antd';
-import Link from 'next/link'
-import { useRouter } from 'next/router';
+import { Menu, Icon, Button } from "antd";
+import Link from "next/link";
+import { useRouter } from "next/router";
 const { SubMenu } = Menu;
-import { AiOutlineShop, AiOutlineAntDesign, AiOutlineBorderInner, AiOutlineDotChart, AiOutlineWechat, AiOutlineCodeSandbox, AiOutlineExperiment, AiOutlineUser, AiOutlineLogout, AiOutlineTeam, AiOutlinePartition, AiOutlineFlag, AiOutlineNodeIndex, AiOutlineBook, AiOutlineBulb, AiOutlineThunderbolt, AiOutlinePicture, AiOutlineCarryOut, AiOutlineRobot, AiOutlineRocket, AiOutlineTable, AiOutlineStar, AiOutlineCalendar, AiOutlineCheckSquare } from "react-icons/ai";
+import {
+  AiOutlineShop,
+  AiOutlineAntDesign,
+  AiOutlineBorderInner,
+  AiOutlineDotChart,
+  AiOutlineWechat,
+  AiOutlineCodeSandbox,
+  AiOutlineExperiment,
+  AiOutlineUser,
+  AiOutlineLogout,
+  AiOutlineTeam,
+  AiOutlinePartition,
+  AiOutlineFlag,
+  AiOutlineNodeIndex,
+  AiOutlineBook,
+  AiOutlineBulb,
+  AiOutlineThunderbolt,
+  AiOutlinePicture,
+  AiOutlineCarryOut,
+  AiOutlineRobot,
+  AiOutlineRocket,
+  AiOutlineTable,
+  AiOutlineStar,
+  AiOutlineCalendar,
+  AiOutlineCheckSquare,
+} from "react-icons/ai";
 
-const Sidebar = ({selectedKey = 'scenarios'}) => {
-
+const Sidebar = ({ selectedKey = "scenarios" }) => {
   const pathToKey = {
-    '/playbook': 'playbook',
-    '/scenarios': 'scenarios',
-    '/strategies': 'strategies',
-    '/concepts': 'concepts',
-    '/creative-matrix': 'creative-matrix',
-    '/storyboard': 'storyboard',
-    '/test-strategies': 'tests',
-    '/signals': 'company-research',
-    '/saved-ideas': 'saved-ideas',
+    "/playbook": "playbook",
+    "/scenarios": "scenarios",
+    "/strategies": "strategies",
+    "/concepts": "concepts",
+    "/creative-matrix": "creative-matrix",
+    "/storyboard": "storyboard",
+    "/test-strategies": "tests",
+    "/signals": "company-research",
+    "/saved-ideas": "saved-ideas",
     "/chat": "chat",
     "/threat-modelling": "threat-modelling",
-  }
-  const router = useRouter()
+  };
+  const router = useRouter();
   const currentSelectedKey = pathToKey[router.pathname];
   // TODO: Does this have to change for the "warnKey" and "errorKey" errors to go away?
   // https://ant.design/components/menu#Notes-for-developers
   return (
-    <Menu 
+    <Menu
       theme="light"
       mode="inline"
       className="sidebar"
       style={{ paddingTop: 10 }}
       defaultSelectedKeys={[currentSelectedKey]}
-      defaultOpenKeys={[/*'research',*/ 'ideate', 'analyse']}>
-
+      defaultOpenKeys={[/*'research',*/ "ideate", "analyse"]}
+    >
       {/* <SubMenu key="research"
         icon={<AiOutlineDotChart style={{fontSize: 'large'}}/>}
         title="Research"
@@ -48,9 +72,11 @@ const Sidebar = ({selectedKey = 'scenarios'}) => {
         </Menu.Item>
       </SubMenu> */}
 
-      <SubMenu key="ideate"
-      icon={<AiOutlineBulb style={{fontSize: 'large'}}/>}
-      title="Ideate">  
+      <SubMenu
+        key="ideate"
+        icon={<AiOutlineBulb style={{ fontSize: "large" }} />}
+        title="Ideate"
+      >
         {/* <Menu.Item key="saved-ideas">
           <Link href="/saved-ideas">
             <AiOutlineStar /> Saved Ideas
@@ -83,10 +109,11 @@ const Sidebar = ({selectedKey = 'scenarios'}) => {
         </Menu.Item> */}
       </SubMenu>
 
-      <SubMenu key="analyse"
-        icon={<AiOutlineDotChart style={{fontSize: 'large'}}/>}
+      <SubMenu
+        key="analyse"
+        icon={<AiOutlineDotChart style={{ fontSize: "large" }} />}
         title="Analyse"
-        >
+      >
         <Menu.Item key="threat-modelling">
           <Link href="/threat-modelling">
             <AiOutlineAntDesign /> Threat Modelling
@@ -98,9 +125,8 @@ const Sidebar = ({selectedKey = 'scenarios'}) => {
           </Link>
         </Menu.Item>
       </SubMenu>
-
     </Menu>
   );
-}
+};
 
 export default Sidebar;

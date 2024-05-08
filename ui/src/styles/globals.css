@@ -7,7 +7,10 @@
 
 html {
   line-height: 1.5;
-  font-family: Inter, Noto Sans SC, sans-serif;
+  font-family:
+    Inter,
+    Noto Sans SC,
+    sans-serif;
   font-feature-settings: normal;
   font-variation-settings: normal;
 }
@@ -20,7 +23,10 @@ html {
   padding: 0.5em;
 }
 
-body { margin: 0; padding: 0}
+body {
+  margin: 0;
+  padding: 0;
+}
 
 #canvas {
   padding-left: 5px;
@@ -168,9 +174,14 @@ body { margin: 0; padding: 0}
 }
 
 .scenarios-collection.stack-display .scenario .card-prop.stackable,
-.scenarios-collection.stack-display .scenario .card-prop.stackable .card-prop-name,
-.scenarios-collection.stack-display .scenario .card-prop.stackable .card-prop-value
- {
+.scenarios-collection.stack-display
+  .scenario
+  .card-prop.stackable
+  .card-prop-name,
+.scenarios-collection.stack-display
+  .scenario
+  .card-prop.stackable
+  .card-prop-value {
   display: inline-block;
   padding-right: 5px;
 }
@@ -188,7 +199,8 @@ input.select-scenario {
   margin-top: 10px;
 }
 
-.boba-matrix, .boba-matrix table {
+.boba-matrix,
+.boba-matrix table {
   width: 100%;
   height: 80vh;
   /* table-layout: fixed; */
@@ -202,7 +214,7 @@ input.select-scenario {
   border: 1px solid silver;
 }
 
-.boba-matrix .matrix-item { 
+.boba-matrix .matrix-item {
   margin: 10px 5px;
   background: lightgoldenrodyellow;
   padding: 5px;
@@ -250,7 +262,7 @@ input.select-scenario {
   margin: 0 0 10px 0;
 }
 
-.toggle-answers { 
+.toggle-answers {
   position: absolute;
   top: 11px;
   right: 5px;
@@ -269,7 +281,6 @@ input.select-scenario {
   font-size: 15px;
   vertical-align: bottom;
 }
-
 
 .ant-drawer-header {
   padding: 10px !important;
@@ -395,7 +406,6 @@ input.select-scenario {
   text-align: center;
 }
 
-
 .slick-dots button {
   background: #364d79 !important;
 }
@@ -416,7 +426,6 @@ input.select-scenario {
   height: 250px !important;
   padding: 10px 10px !important;
 }
-
 
 .boba-tree-container {
   display: flex;
