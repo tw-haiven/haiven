@@ -2,11 +2,15 @@
 from fastapi import Request
 from fastapi.responses import StreamingResponse
 
+from shared.llm_config import LLMConfig
 from shared.chats import JSONChat
 
 
-def get_threat_modelling_prompt(input):
+def get_threat_modelling_prompt(dataFlow, assets, userBase):
     return f"""
+You are a member of a software engineering team.
+
+# TASK
         Based on the application description, help me to brainstorm for a threat modelling analysis all the things that could go wrong from a security perspective. Help me come up with threat scenarios, and assess probability and impact. Describe each scenario as a markdown table, with columns
 - Scenario title
 - Description
@@ -22,6 +26,19 @@ I want you to help me brainstorm scenarios in multiple categories according to t
 - D Category "Denial of service": Scenarios for the question "Can someone break a system so valid users are unable to use it?" Denial of service attacks work by flooding, wiping or otherwise breaking a particular service or system.
 - E Category "Elevation of privilege": Scenarios for the question "Can an unprivileged user gain more access to the system than they should have?" Elevation of privilege attacks are possible because authorisation boundaries are missing or inadequate.
 
+# CONTEXT
+Here is my input that describes my application:
+
+Users using the application - consider this when you assess the probability and impact: 
+=> {userBase}
+
+Assets I want to protect - consider this in particular when you assess the impact of a scenario:
+=> {assets}
+
+How data flows through the application: 
+=> {dataFlow}
+
+# INSTRUCTIONS
 You will create at least one scenario for each category. Give me at least 10 scenarios.
 
 You will respond with only a valid JSON array of scenario objects. Each scenario object will have the following schema:
@@ -31,10 +48,8 @@ You will respond with only a valid JSON array of scenario objects. Each scenario
     "probability": <string>,
     "impact": <string>,
 
-Make sure to apply each scenario category to MY input, and give me scenarios that are relevant to my particular application.
+Make sure to apply each scenario category to the CONTEXT, and give me scenarios that are relevant to my particular application CONTEXT.
 
-Here is my input that describes my application:
-    {input}
     
     """
 
@@ -42,10 +57,13 @@ Here is my input that describes my application:
 def enable_threat_modelling(app):
     @app.get("/api/threat-modelling")
     def threat_modelling(request: Request):
-        input = request.query_params.get("input", "productization of consulting")
-        json_chat = JSONChat()
+        dataFlow = request.query_params.get("dataFlow")
+        assets = request.query_params.get("assets")
+        userBase = request.query_params.get("userBase")
+
+        json_chat = JSONChat(LLMConfig("mock", 0.5))
         return StreamingResponse(
-            json_chat.run(get_threat_modelling_prompt(input)),
+            json_chat.run(get_threat_modelling_prompt(dataFlow, assets, userBase)),
             media_type="text/event-stream",
             headers={
                 "Connection": "keep-alive",

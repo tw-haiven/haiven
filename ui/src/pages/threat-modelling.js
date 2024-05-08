@@ -41,7 +41,9 @@ const Home = () => {
   const [isLoading, setLoading] = useState(false);
   const [selections, setSelections] = useState([]);
   const [displayMode, setDisplayMode] = useState("grid");
-  const [prompt, setPrompt] = useState("");
+  const [promptDataFlow, setPromptDataFlow] = useState("");
+  const [promptUserBase, setPromptUserBase] = useState("");
+  const [promptAssets, setPromptAssets] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
@@ -57,7 +59,7 @@ const Home = () => {
     setDrawerTitle("Explore scenario: " + scenarios[id].title);
     setChatContext({
       id: id,
-      originalPrompt: prompt,
+      originalPrompt: promptDataFlow,
       type: "scenario",
       ...scenarios[id],
     });
@@ -67,7 +69,7 @@ const Home = () => {
   const onSave = async (id) => {
     const scenario = scenarios[id];
     const body = scenario;
-    body.prompt = prompt;
+    body.prompt = promptDataFlow;
     body.type = "scenario";
     const resp = await fetch("/api/save-idea", {
       method: "POST",
@@ -93,7 +95,7 @@ const Home = () => {
     });
     const url =
       "/strategies?strategic_prompt=" +
-      encodeURIComponent(prompt) +
+      encodeURIComponent(promptDataFlow) +
       "&" +
       scenariosParams.join("&");
     window.open(url, "_blank", "noreferrer");
@@ -131,9 +133,13 @@ const Home = () => {
     setSelections([]);
 
     const uri =
-      "/api/threat-modelling" + "?input=" + encodeURIComponent(prompt);
-    // + "?assets=" + encodeURIComponent(prompt)
-    // + "?users=" + encodeURIComponent(prompt);
+      "/api/threat-modelling" +
+      "?dataFlow=" +
+      encodeURIComponent(promptDataFlow);
+    +"?assets=" +
+      encodeURIComponent(promptAssets) +
+      "?userBase=" +
+      encodeURIComponent(promptUserBase);
 
     let ms = "";
     let output = [];
@@ -171,7 +177,7 @@ const Home = () => {
     if (!initialStrategicPrompt) return;
     if (!router.isReady) return;
     if (initialLoadDone) return;
-    setPrompt(initialStrategicPrompt);
+    setPromptDataFlow(initialStrategicPrompt);
     setInitialLoad(true);
   });
 
@@ -220,38 +226,54 @@ const Home = () => {
           <br />
           <br />
           <div className="scenario-inputs">
-            {/* <label>Users</label> <Input placeholder="Describe the user base, e.g. if it's B2C, B2B, internal, ..."
-              value={userBase} onChange={(e, v) => { setUserBase(e.target.value) }} />
-            <label>Assets</label> <Input placeholder="Describe any important assets that need to be protected"
-              value={assets} onChange={(e, v) => { setAssets(e.target.value) }} /> */}
-            <label>Data flow</label>
-            <TextArea
-              placeholder="Describe how data flows through your system"
-              value={prompt}
-              onChange={(e, v) => {
-                setPrompt(e.target.value);
-              }}
-            />
-
+            <div className="scenario-input">
+              <label>Users</label>{" "}
+              <Input
+                placeholder="Describe the user base, e.g. if it's B2C, B2B, internal, ..."
+                value={promptUserBase}
+                onChange={(e, v) => {
+                  setPromptUserBase(e.target.value);
+                }}
+              />
+            </div>
+            <div className="scenario-input">
+              <label>Assets</label>{" "}
+              <Input
+                placeholder="Describe any important assets that need to be protected"
+                value={promptAssets}
+                onChange={(e, v) => {
+                  setPromptAssets(e.target.value);
+                }}
+              />
+            </div>
+            <div className="scenario-input">
+              <label>Data flow</label>
+              <TextArea
+                placeholder="Describe how data flows through your system"
+                value={promptDataFlow}
+                onChange={(e, v) => {
+                  setPromptDataFlow(e.target.value);
+                }}
+                rows={5}
+              />
+            </div>
             <Button type="primary" onClick={onSubmitPrompt}>
               Go
             </Button>
           </div>
           &nbsp;
-          {isLoading ? <Spin /> : <></>}
-          <div style={{ marginTop: 10 }}>
-            <div style={{ marginLeft: 105, display: "inline-block" }}>
-              &nbsp;
-            </div>
+          {isLoading && (
+            <div style={{ marginTop: 10 }}>
+              <Spin />
+              <div style={{ marginLeft: 105, display: "inline-block" }}>
+                &nbsp;
+              </div>
 
-            {isLoading && (
               <Button type="primary" danger onClick={abortLoad}>
                 Stop
               </Button>
-            )}
-          </div>
-          <br />
-          <br />
+            </div>
+          )}
           {selections.length > 0 && (
             <SelectedItemsMenu
               selections={selections}
