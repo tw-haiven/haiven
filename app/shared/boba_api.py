@@ -2,6 +2,7 @@
 from typing import List
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from tab_requirements.api import enable_requirements
 from tab_threat_modelling.api import enable_threat_modelling
 from shared.chats import JSONChat, ServerChatSessionMemory, StreamingChat
 from shared.content_manager import ContentManager
@@ -144,6 +145,7 @@ class BobaApi:
             )
 
         enable_threat_modelling(app)
+        enable_requirements(app)
 
         @app.post("/api/prompt")
         def chat(prompt_data: PromptRequestBody):

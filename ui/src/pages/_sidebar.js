@@ -27,6 +27,7 @@ import {
   AiOutlineStar,
   AiOutlineCalendar,
   AiOutlineCheckSquare,
+  AiOutlineCluster,
 } from "react-icons/ai";
 
 const Sidebar = ({ selectedKey = "scenarios" }) => {
@@ -42,6 +43,7 @@ const Sidebar = ({ selectedKey = "scenarios" }) => {
     "/saved-ideas": "saved-ideas",
     "/chat": "chat",
     "/threat-modelling": "threat-modelling",
+    "/requirements": "requirements",
   };
   const router = useRouter();
   const currentSelectedKey = pathToKey[router.pathname];
@@ -114,6 +116,11 @@ const Sidebar = ({ selectedKey = "scenarios" }) => {
         icon={<AiOutlineDotChart style={{ fontSize: "large" }} />}
         title="Analyse"
       >
+        <Menu.Item key="requirements">
+          <Link href="/requirements">
+            <AiOutlineCluster /> Requirements breakdown
+          </Link>
+        </Menu.Item>
         <Menu.Item key="threat-modelling">
           <Link href="/threat-modelling">
             <AiOutlineAntDesign /> Threat Modelling
