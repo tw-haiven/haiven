@@ -3,6 +3,7 @@ from langchain_community.chat_models import ChatOllama
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
+from pydantic import BaseModel
 from shared.logger import TeamAILogger
 from shared.models.model import Model
 from shared.services.models_service import ModelsService
@@ -26,9 +27,35 @@ class LLMConfig:
         return True
 
 
+class MockChunk(BaseModel):
+    content: str
+
+
+class MockModelClient:
+    def stream(self, messages):
+        message = messages[0].content
+        test_data = ["one", "two", "three"]
+        if "json" in message.lower():
+            test_data = [
+                "[ {",
+                '"title": ',
+                '"Hello scenario 1"',
+                ', "description": ',
+                '"scenario description" ' " }, { ",
+                '"title": ',
+                '"Hello scenario 2" }',
+                "]",
+            ]
+        for chunk in test_data:
+            yield MockChunk(content=chunk)
+
+
 class LLMChatFactory:
     @staticmethod
     def new_llm_chat(llm_config: LLMConfig, stop=None) -> BaseChatModel:
+        if llm_config.service_name == "mock":
+            return MockModelClient()
+
         model: Model = ModelsService.get_model(llm_config.service_name)
 
         TeamAILogger.get().analytics(
