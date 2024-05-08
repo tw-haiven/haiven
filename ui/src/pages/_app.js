@@ -32,7 +32,7 @@ export default function App({
       }}
     >
     <Head>
-      <title>Boba</title>
+      <title>Haiven</title>
     </Head>
       {useLayout && <Layout style={{ minHeight: '100vh' }}>
         <Layout.Header style={{ position: 'sticky', margin: 0, padding: 0, top: 0, zIndex: 1, width: '100%' }}>
