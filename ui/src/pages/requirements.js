@@ -30,7 +30,7 @@ const Home = () => {
     setChatContext({
       id: id,
       originalPrompt: promptInput,
-      type: "scenario",
+      type: "requirements",
       ...scenarios[id],
     });
     setDrawerOpen(true);
@@ -94,6 +94,8 @@ const Home = () => {
         title={drawerTitle}
         mask={false}
         open={drawerOpen}
+        size="large"
+        destroyOnClose={true}
         onClose={() => setDrawerOpen(false)}
       >
         <ChatExploration context={chatContext} />

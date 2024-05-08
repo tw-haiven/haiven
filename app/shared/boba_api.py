@@ -101,6 +101,9 @@ class BobaApi:
             warnings=[],
         )
 
+        self.chat(rendered_prompt, chat_session)
+
+    def chat(self, rendered_prompt, chat_session):
         for chunk in chat_session.start_with_prompt(rendered_prompt):
             yield chunk
 
@@ -145,7 +148,7 @@ class BobaApi:
             )
 
         enable_threat_modelling(app)
-        enable_requirements(app)
+        enable_requirements(app, self.chat_session_memory, self.chat)
 
         @app.post("/api/prompt")
         def chat(prompt_data: PromptRequestBody):

@@ -1,8 +1,12 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
+from typing import Optional
+
 from fastapi import Request
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
+from shared.chats import JSONChat, StreamingChat
 
-from shared.chats import JSONChat
+from app.shared.llm_config import LLMConfig
 
 
 def get_requirements_prompt(user_input):
@@ -49,7 +53,45 @@ You will respond with only a valid JSON array of story objects. Each story objec
     """
 
 
-def enable_requirements(app):
+def get_explore_prompt(context, user_input):
+    return f"""
+You are a member of a software engineering team and are assisting me in requirements analysis.
+
+# TASK
+        In Agile software development, a user story is a brief, simple description of a feature told from the perspective of the person who desires the new capability, usually a user or customer of the system.
+
+Please, further explore the given user story.
+
+------
+
+When refining a user story consider the following questions when relevant:
+
+- What is the user's desired outcome?
+- What is the user's success criteria?
+- What are the pre-requisites?
+- How it can be tested?
+- What are the security aspects to consider?
+- What are the performance aspects to consider?
+- What are the localization aspects to consider?
+
+# CONTEXT
+Here is the user story description:
+
+{context}
+
+# INSTRUCTIONS
+
+{user_input}
+    """
+
+
+class ExploreRequirementRequest(BaseModel):
+    input: str
+    context: str
+    chatSessionId: Optional[str] = None
+
+
+def enable_requirements(app, chat_session_memory, chat_fn):
     @app.get("/api/requirements")
     def requirements(request: Request):
         input = request.query_params.get("input")
@@ -61,5 +103,34 @@ def enable_requirements(app):
             headers={
                 "Connection": "keep-alive",
                 "Content-Encoding": "none",  # Necessary for the stream to work across the Next rewrite
+            },
+        )
+
+    @app.post("/api/requirements/explore")
+    def chat(explore_request: ExploreRequirementRequest):
+        print(
+            f"@debug POST /api/requirements/explore: explore_request={explore_request}"
+        )
+        chat_session_key_value, chat_session = chat_session_memory.get_or_create_chat(
+            lambda: StreamingChat(
+                llm_config=LLMConfig("azure-gpt35", 0.5), stream_in_chunks=True
+            ),
+            explore_request.chatSessionId,
+            "chat",
+            "birgitta",
+        )
+
+        rendered_prompt = get_explore_prompt(
+            explore_request.context, explore_request.input
+        )
+
+        return StreamingResponse(
+            chat_fn(rendered_prompt, chat_session),
+            media_type="text/event-stream",
+            headers={
+                "Connection": "keep-alive",
+                "Content-Encoding": "none",
+                "Access-Control-Expose-Headers": "X-Chat-ID",
+                "X-Chat-ID": chat_session_key_value,
             },
         )
