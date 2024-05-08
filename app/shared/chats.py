@@ -203,13 +203,20 @@ class StreamingChat(TeamAIBaseChat):
 
 
 class Q_A_ResponseParser:
-    feedback_prefix: str = "Answer:"
-    question_prefix: str = "Question:"
+    question_prefix: str = "<Question>"
+    feedback_prefix: str = "<Answer>"
 
     def parse(self, text: str) -> str:
-        index = text.rfind(f"\n{self.question_prefix}")
-        if index != -1:
-            return text[index + len(f"\n{self.question_prefix}") :]
+        text = text.replace("</Question>", "")
+        text = text.replace("</Answer>", "")
+        question_index = text.rfind(f"\n{self.question_prefix}")
+        answer_index = text.rfind(f"\n{self.feedback_prefix}")
+        if question_index != -1 and answer_index != -1:
+            question = text[
+                question_index + len(f"\n{self.question_prefix}") : answer_index
+            ]
+            suggested_answer = text[answer_index + len(f"\n{self.feedback_prefix}") :]
+            return f"**Question:** {question}\n\n**Suggested answer:** {suggested_answer}\n\nSay 'ok' or provide your own answer."
         else:
             return text
 
@@ -220,7 +227,7 @@ class Q_A_Chat(TeamAIBaseChat):
     ):
         super().__init__(
             llm_config,
-            LLMChatFactory.new_llm_chat(llm_config, stop="Answer:"),
+            LLMChatFactory.new_llm_chat(llm_config, stop="</Answer>"),
             system_message,
         )
 
