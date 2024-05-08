@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
 import { Drawer, Card, Space, Spin, Button, Radio, Input } from "antd";
 const { TextArea } = Input;
-import ScenariosPlot from "./_plot";
+import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 import { AiOutlineBorderInner, AiOutlineGroup } from "react-icons/ai";
@@ -111,19 +111,6 @@ const Home = () => {
 
   const onSelectDisplayMode = (event) => {
     setDisplayMode(event.target.value);
-  };
-
-  const onScenarioSelectChanged = (index) => {
-    return (event) => {
-      console.log("event for " + index, event);
-      console.log(
-        (event.target.checked ? "selected" : "deselected") + " scenario",
-        scenarios[index],
-      );
-      if (event.target.checked && selections.indexOf(index) == -1)
-        setSelections([...selections, index]);
-      else setSelections(selections.filter((s) => s != index));
-    };
   };
 
   const onSubmitPrompt = (event) => {
@@ -292,12 +279,6 @@ const Home = () => {
                 className="scenario"
                 title={<>{scenario.title}</>}
                 actions={[
-                  <input
-                    key={"cb" + i}
-                    type="checkbox"
-                    className="select-scenario"
-                    onChange={onScenarioSelectChanged(i)}
-                  />,
                   <Button
                     type="link"
                     key="explore"
@@ -305,28 +286,6 @@ const Home = () => {
                   >
                     Explore
                   </Button>,
-                  <>
-                    {savedIdeas.includes(i) && (
-                      <Button
-                        type="link"
-                        key="saved"
-                        onClick={() => onSave(i)}
-                        style={{ padding: 0 }}
-                      >
-                        Saved
-                      </Button>
-                    )}
-                    {!savedIdeas.includes(i) && (
-                      <Button
-                        type="link"
-                        key="save"
-                        onClick={() => onSave(i)}
-                        style={{ padding: 0 }}
-                      >
-                        Save
-                      </Button>
-                    )}
-                  </>,
                 ]}
               >
                 <div className="scenario-card-content">
@@ -362,7 +321,7 @@ const Home = () => {
           className="scenarios-plot-container"
           style={{ display: displayMode == "plot" ? "block" : "none" }}
         >
-          <ScenariosPlot
+          <ScenariosPlotProbabilityImpact
             scenarios={scenarios}
             visible={displayMode == "plot"}
           />
