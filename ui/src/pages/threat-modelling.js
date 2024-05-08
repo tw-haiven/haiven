@@ -41,6 +41,10 @@ const Home = () => {
     setLoading(false);
   }
 
+  const onPromptChange = (event) => {
+    setPrompt(event.target.value);
+  }
+
   const onExplore = (id) => {
     setDrawerTitle("Explore scenario: " + scenarios[id].title)
     setChatContext({id: id, originalPrompt: prompt, type: 'scenario', ...scenarios[id]})
@@ -96,15 +100,14 @@ const Home = () => {
     }
   }
 
-  const onSubmitPrompt = (value, event) => {
+  const onSubmitPrompt = (event) => {
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
-    setPrompt(value);
     setSelections([]);
 
     const uri = '/api/threat-modelling'
-          + '?input='+encodeURIComponent(value)
+          + '?input='+encodeURIComponent(prompt)
 
     let ms = '';
     let output = [];
@@ -159,7 +162,7 @@ const Home = () => {
           <br /><br />
           <Space.Compact style={{ width: '100%' }} className="scenario-inputs">
             <label>Application description:</label> <TextArea placeholder="enter a prompt and press enter to generate scenarios" 
-                value={prompt} onChange={(e,v)=> {setPrompt(e.target.value)}}/>
+              onPressEnter={onSubmitPrompt} onChange={onPromptChange} value={prompt}/>
             <Button type="primary" onClick={onSubmitPrompt}>Go</Button>
           </Space.Compact>
           &nbsp;
