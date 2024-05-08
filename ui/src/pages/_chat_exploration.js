@@ -64,7 +64,13 @@ export default function ChatExploration({ context }) {
           backgroundColor: theme.colorBgContainer,
         }}
         locale="en-US"
-        helloMessage={"In this " + item.type + ", " + item.summary + ". What do you want to explore next?"}
+        helloMessage={
+          "In this " +
+          item.type +
+          ", " +
+          item.summary +
+          ". What do you want to explore next?"
+        }
         request={onSubmitMessage}
         chatItemRenderConfig={{
           avatarRender: (item, dom, defaultDom) => {
