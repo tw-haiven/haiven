@@ -1,6 +1,8 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import json
 
+from fastapi.responses import FileResponse
+
 from shared.boba_api import BobaApi
 from shared.services.config_service import ConfigService
 from shared.chats import ServerChatSessionMemory
@@ -149,13 +151,18 @@ class Server:
             allow_headers=["*"],
         )
 
-    def serve_static(self, app):
+    def serve_static_resources(self, app):
         static_dir = Path("./resources/static")
         static_dir.mkdir(parents=True, exist_ok=True)
         app.mount(
             "/static", StaticFiles(directory=static_dir, html=True), name="static"
         )
 
+        @app.get("/favicon.ico", include_in_schema=False)
+        async def favicon():
+            return FileResponse("./resources/static/favicon.ico")
+
+    def serve_react_frontend(self, app):
         try:
             app.mount(
                 "/boba",
@@ -165,6 +172,7 @@ class Server:
         except Exception as e:
             print(f"WARNING: Boba UI cannot be mounted {e}")
 
+    def serve_static_from_knowledge_pack(self, app):
         DEFAULT_CONFIG_PATH = "config.yaml"
         knowledge_pack_path = ConfigService.load_knowledge_pack_path(
             DEFAULT_CONFIG_PATH
@@ -177,6 +185,11 @@ class Server:
             StaticFiles(directory=teams_static_dir, html=True),
             name="kp-static",
         )
+
+    def serve_static(self, app):
+        self.serve_static_resources(app)
+        self.serve_react_frontend(app)
+        self.serve_static_from_knowledge_pack(app)
 
     # FastAPI APP => for authentication and static file serving
     def create(self):
