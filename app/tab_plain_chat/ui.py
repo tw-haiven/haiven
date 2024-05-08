@@ -50,7 +50,7 @@ def enable_plain_chat(
         with gr.Column(scale=1, elem_classes="user-help-col"):
             gr.Markdown("""
                         This is a plain chat interface to give some access to the models for experimentation.
-                        [To see "Team AI proper", click here](/about).
+                        [To see "Haiven proper", click here](/about).
 
                         !! If you change the model settings or temperature mid-chat, it will not take effect. To change them, you have to "Clear and start a new chat".
                         """)

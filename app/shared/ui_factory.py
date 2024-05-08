@@ -79,7 +79,7 @@ class UIFactory:
 
     def create_ui_coding(self):
         theme, css = self.ui.styling()
-        blocks = gr.Blocks(theme=theme, css=css, title="Team AI")
+        blocks = gr.Blocks(theme=theme, css=css, title="Haiven")
         with blocks:
             navigation, category_metadata = (
                 self.navigation_manager.get_coding_navigation()
@@ -177,7 +177,7 @@ class UIFactory:
 
     def create_ui_testing(self):
         theme, css = self.ui.styling()
-        blocks = gr.Blocks(theme=theme, css=css, title="Team AI")
+        blocks = gr.Blocks(theme=theme, css=css, title="Haiven")
         with blocks:
             navigation, category_metadata = (
                 self.navigation_manager.get_testing_navigation()
@@ -272,7 +272,7 @@ class UIFactory:
         self,
     ):
         theme, css = self.ui.styling()
-        blocks = gr.Blocks(theme=theme, css=css, title="Team AI")
+        blocks = gr.Blocks(theme=theme, css=css, title="Haiven")
         with blocks:
             navigation, category_metadata = (
                 self.navigation_manager.get_analysis_navigation()
@@ -364,7 +364,7 @@ class UIFactory:
 
     def create_ui_knowledge(self):
         theme, css = self.ui.styling()
-        blocks = gr.Blocks(theme=theme, css=css, title="Team AI")
+        blocks = gr.Blocks(theme=theme, css=css, title="Haiven")
         with blocks:
             navigation, category_metadata = (
                 self.navigation_manager.get_knowledge_navigation()
@@ -455,7 +455,7 @@ class UIFactory:
 
     def create_plain_chat(self):
         theme, css = self.ui.styling()
-        blocks = gr.Blocks(theme=theme, css=css, title="Team AI")
+        blocks = gr.Blocks(theme=theme, css=css, title="Haiven")
 
         with blocks:
             self.ui.ui_header()

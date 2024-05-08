@@ -36,7 +36,7 @@ def create_server():
         chat_session_memory=ServerChatSessionMemory(),
     )
 
-    TeamAILogger.get().logger.info("Starting Team AI...")
+    TeamAILogger.get().logger.info("Starting Haiven...")
     app = App(content_manager=content_manager, ui_factory=ui_factory)
     return app.launch_via_fastapi_wrapper()
 

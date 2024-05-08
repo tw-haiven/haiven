@@ -88,7 +88,7 @@ class TestUIFactory(unittest.TestCase):
 
         # Assert
         ui.styling.assert_called_once()
-        mock_blocks.assert_called_with(theme=theme, css=css, title="Team AI")
+        mock_blocks.assert_called_with(theme=theme, css=css, title="Haiven")
         navigation_manager.get_coding_navigation.assert_called_once()
         ui.ui_header.assert_called_with(navigation=navigation)
         prompts_factory.create_all_prompts.assert_called_with(knowledge_base_markdown)
@@ -230,7 +230,7 @@ class TestUIFactory(unittest.TestCase):
 
         # # Assert
         ui.styling.assert_called_once()
-        mock_blocks.assert_called_with(theme=theme, css=css, title="Team AI")
+        mock_blocks.assert_called_with(theme=theme, css=css, title="Haiven")
         navigation_manager.get_testing_navigation.assert_called_once()
         ui.ui_header.assert_called_with(navigation=navigation)
         prompts_factory.create_all_prompts.assert_called_with(knowledge_base_markdown)
@@ -371,7 +371,7 @@ class TestUIFactory(unittest.TestCase):
 
         # Assert
         ui.styling.assert_called_once()
-        mock_blocks.assert_called_with(theme=theme, css=css, title="Team AI")
+        mock_blocks.assert_called_with(theme=theme, css=css, title="Haiven")
         navigation_manager.get_analysis_navigation.assert_called_once()
         ui.ui_header.assert_called_with(navigation=navigation)
         prompts_factory.create_all_prompts.assert_called_with(knowledge_base_markdown)
@@ -486,7 +486,7 @@ class TestUIFactory(unittest.TestCase):
         returned_blocks = ui_factory.create_ui("knowledge")
 
         # Assert
-        mock_blocks.assert_called_with(theme=theme, css=css, title="Team AI")
+        mock_blocks.assert_called_with(theme=theme, css=css, title="Haiven")
         ui_factory.ui.styling.assert_called_once()
         ui_factory.navigation_manager.get_knowledge_navigation.assert_called_once()
         ui_factory.ui.ui_header.assert_called_once()
@@ -599,7 +599,7 @@ class TestUIFactory(unittest.TestCase):
 
         # Assert
         ui.styling.assert_called_once()
-        mock_blocks.assert_called_with(theme=theme, css=css, title="Team AI")
+        mock_blocks.assert_called_with(theme=theme, css=css, title="Haiven")
         ui.ui_header.assert_called_once()
         blocks.load.assert_called_with(event_handler.on_ui_load, None, outputs=[state])
         mock_enable_plain_chat.assert_called_with(chat_session_memory, state)
