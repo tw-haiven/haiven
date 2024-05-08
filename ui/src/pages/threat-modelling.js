@@ -12,7 +12,7 @@ import { AiOutlineBorderInner, AiOutlineGroup, AiOutlineTable, AiOutlineOneToOne
 const SelectedItemsMenu = ({selections, items, onClickBrainstormStrategies, onClickCreateStoryboard}) => {
   return <div className="selected-items-menu">
     <span>
-      {selections.length} of {items.length} scenarios selected: 
+      {selections.length} of {items.length} scenarios selected:
     </span>&nbsp;
     <Space wrap>
       <Button type="primary" onClick={onClickBrainstormStrategies}>Brainstorm strategies and questions</Button>
@@ -103,14 +103,14 @@ const Home = () => {
     setPrompt(value);
     setSelections([]);
 
-    const uri = '/api/threat-modelling' 
+    const uri = '/api/threat-modelling'
           + '?input='+encodeURIComponent(value)
-          
+
     let ms = '';
     let output = [];
 
     fetchSSE(
-      { 
+      {
         url: uri,
         onData:(event, sse) => {
           const data = JSON.parse(event.data);
@@ -122,7 +122,7 @@ const Home = () => {
           } else {
             console.log("response is not parseable into an array")
           }
-        }, 
+        },
         onStop: () => {
           setLoading(false);
           abortLoad();
@@ -156,13 +156,6 @@ const Home = () => {
               Threat Modelling
             </b>
           &nbsp;
-          <Radio.Group onChange={onSelectDisplayMode} defaultValue="grid" value={displayMode} style={{float: 'right'}}>
-            <Radio.Button value="grid"><AiOutlineGroup style={{display: 'inline-block', verticalAlign: 'middle', height: 14}}/> Cards</Radio.Button>
-            <Radio.Button value="list"><AiOutlineOneToOne style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Full Cards</Radio.Button>
-            <Radio.Button value="stack"><AiOutlineMenu style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Stack</Radio.Button>
-            <Radio.Button value="table"><AiOutlineTable style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Table</Radio.Button>
-            <Radio.Button value="plot"><AiOutlineBorderInner style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Matrix</Radio.Button>
-          </Radio.Group>
           <br /><br />
           <Space.Compact style={{ width: '100%' }} className="scenario-inputs">
             <label>Application description:</label> <TextArea placeholder="enter a prompt and press enter to generate scenarios" 
@@ -171,17 +164,17 @@ const Home = () => {
           </Space.Compact>
           &nbsp;
           {isLoading ? <Spin /> : <></>}
-          
+
           <div style={{marginTop: 10}}>
             <div style={{marginLeft: 105, display: 'inline-block'}}>&nbsp;</div>
-            
+
             {isLoading && <Button type="primary" danger onClick={abortLoad}>Stop</Button>}
           </div>
 
           <br/><br />
           {selections.length > 0 && <SelectedItemsMenu selections={selections} items={scenarios} onClickBrainstormStrategies={onClickBrainstormStrategies} onClickCreateStoryboard={onClickCreateStoryboard}/>}
         </div>
-        
+
         <div className={'scenarios-collection ' + displayMode + '-display'}>
           {scenarios.map((scenario, i) => {
             return <Card key={i} className="scenario" title={
@@ -190,7 +183,7 @@ const Home = () => {
               </>
             } actions={[
               <input key={'cb'+i} type="checkbox" className="select-scenario" onChange={onScenarioSelectChanged(i)} />,
-              <Button type="link" key="explore" onClick={() => onExplore(i)}>Explore</Button>, 
+              <Button type="link" key="explore" onClick={() => onExplore(i)}>Explore</Button>,
               <>
                 {savedIdeas.includes(i) && <Button type="link" key="saved" onClick={() => onSave(i)} style={{padding: 0}}>Saved</Button>}
                 {!savedIdeas.includes(i) && <Button type="link" key="save" onClick={() => onSave(i)} style={{padding: 0}}>Save</Button>}
@@ -211,7 +204,7 @@ const Home = () => {
                   <div className="card-prop-name">Potential impact</div>
                   <div className="card-prop-value">{scenario.impact}</div>
                 </div> }
-                
+
               </div>
             </Card>
           })}
@@ -220,7 +213,7 @@ const Home = () => {
         <div className="scenarios-plot-container" style={{display: displayMode == 'plot' ? 'block' : 'none'}}>
           <ScenariosPlot scenarios={scenarios} visible={displayMode == 'plot'}/>
         </div>
-        
+
       </div>
     </>
   );

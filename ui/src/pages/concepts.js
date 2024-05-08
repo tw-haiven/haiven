@@ -9,7 +9,7 @@ import { AiOutlineBorderInner, AiOutlineGroup, AiOutlineTable, AiOutlineOneToOne
 const SelectedItemsMenu = ({selections, items, onClickCreateStoryboard}) => {
   return <div className="selected-items-menu">
     <span>
-      {selections.length} of {items.length} scenarios selected: 
+      {selections.length} of {items.length} scenarios selected:
     </span>&nbsp;
     <Space wrap>
       {selections.length == 1 && <Button type="primary" onClick={onClickCreateStoryboard}>Create a storyboard for this scenario</Button>}
@@ -28,7 +28,7 @@ const SelectSubPrompt = () => {
 let ctrl;
 
 const Home = () => {
-  
+
   const [numOfScenarios, setNumOfScenarios] = useState('5');
   const [numOfQuestions, setNumOfQuestions] = useState('3');
   const [scenarios, setScenarios] = useState([]);
@@ -43,7 +43,7 @@ const Home = () => {
   const [subprompts, setSubprompts] = useState([]);
   const [answersVisible, setAnswersVisible] = useState(true);
   const [savedIdeas, setSavedIdeas] = useState([]);
-  
+
   function abortLoad(){
     ctrl && ctrl.abort();
     setLoading(false);
@@ -160,9 +160,9 @@ const Home = () => {
           }
           const data = JSON.parse(event.data);
           ms += data.data;
-          try { 
-            output = parse(ms || '[]'); 
-          } catch (error) { 
+          try {
+            output = parse(ms || '[]');
+          } catch (error) {
             console.log("error", error)
           };
           // if(!Array.isArray(output))
@@ -188,7 +188,7 @@ const Home = () => {
   const deleteSubprompt = (index) => {
     return (event) => {
       console.log("delete subprompt #", index)
-      let newSubprompts = subprompts.filter((s,i) => { 
+      let newSubprompts = subprompts.filter((s,i) => {
         console.log("filter", i);
         return i != index;
       })
@@ -246,13 +246,6 @@ const Home = () => {
         <div id="prompt-center">
           <b style={{ fontSize: 20, display: 'inline-block' }}>Concepts</b>
           &nbsp;
-          <Radio.Group onChange={onSelectDisplayMode} defaultValue="grid" style={{ float: 'right' }}>
-            <Radio.Button value="grid"><AiOutlineGroup style={{ display: 'inline-block', verticalAlign: 'middle', height: 14 }} /> Cards</Radio.Button>
-            <Radio.Button value="list"><AiOutlineOneToOne style={{ display: 'inline-block', verticalAlign: 'middle', height: 14 }} /> Full Cards</Radio.Button>
-            <Radio.Button value="stack"><AiOutlineMenu style={{ display: 'inline-block', verticalAlign: 'middle', height: 14 }} /> Stack</Radio.Button>
-            <Radio.Button value="table"><AiOutlineTable style={{ display: 'inline-block', verticalAlign: 'middle', height: 14 }} /> Table</Radio.Button>
-            <Radio.Button value="plot"><AiOutlineBorderInner style={{ display: 'inline-block', verticalAlign: 'middle', height: 14 }} /> Matrix</Radio.Button>
-          </Radio.Group>
 
           <br /><br />
 
@@ -303,7 +296,7 @@ const Home = () => {
               <Button  key={'button-'+x} type="text" danger onClick={deleteSubprompt(i)} disabled={isLoading}><AiOutlineDelete style={{display: 'inline-block', verticalAlign: 'middle' }} /></Button>
             </div>)
           })}
-          
+
           {/* <Button style={{marginTop: 5, width: 200}} onClick={onAddSubprompt} disabled={isLoading}>Add subprompt</Button> */}
 
           {isLoading && <Button type="primary" danger onClick={abortLoad} style={{marginTop: 5, marginLeft: 10}}>Stop</Button>}
@@ -313,7 +306,7 @@ const Home = () => {
         </div>
         {/* END PROMPT CENTER */}
 
-        {scenarios && scenarios.questions && 
+        {scenarios && scenarios.questions &&
           <div className={'scenarios-collection ' + displayMode + '-display'}>
             <Card key={-1} className="scenario" title={
               <>
@@ -342,8 +335,8 @@ const Home = () => {
               </>
             } actions={[
               // <div style={{padding: 0}}><input key={'cb'+i} type="checkbox" className="select-scenario" onChange={onScenarioSelectChanged(i)} /></div>,
-              <Button type="link" key="storyboard" onClick={() => onGenerateStoryboard(i)} style={{padding: 0}}>Storyboard</Button>, 
-              <Button type="link" key="explore" onClick={() => onExplore(i)}>Explore</Button>, 
+              <Button type="link" key="storyboard" onClick={() => onGenerateStoryboard(i)} style={{padding: 0}}>Storyboard</Button>,
+              <Button type="link" key="explore" onClick={() => onExplore(i)}>Explore</Button>,
               <>
                 {savedIdeas.includes(i) && <Button type="link" key="saved" onClick={() => onSave(i)} style={{padding: 0}}>Saved</Button>}
                 {!savedIdeas.includes(i) && <Button type="link" key="save" onClick={() => onSave(i)} style={{padding: 0}}>Save</Button>}

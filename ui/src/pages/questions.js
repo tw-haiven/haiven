@@ -11,7 +11,7 @@ import { AiOutlineBorderInner, AiOutlineGroup, AiOutlineTable, AiOutlineOneToOne
 const SelectedItemsMenu = ({selections, items, onClickBrainstormStrategies, onClickCreateStoryboard}) => {
   return <div className="selected-items-menu">
     <span>
-      {selections.length} of {items.length} scenarios selected: 
+      {selections.length} of {items.length} scenarios selected:
     </span>&nbsp;
     <Space wrap>
       <Button type="primary" onClick={onClickBrainstormStrategies}>Brainstorm strategies and questions</Button>
@@ -185,13 +185,6 @@ const Home = () => {
         <div id="prompt-center">
           <b style={{fontSize: 20, display: 'inline-block'}}>Scenarios</b>
           &nbsp;
-          <Radio.Group onChange={onSelectDisplayMode} defaultValue="grid" value={displayMode} style={{float: 'right'}}>
-            <Radio.Button value="grid"><AiOutlineGroup style={{display: 'inline-block', verticalAlign: 'middle', height: 14}}/> Cards</Radio.Button>
-            <Radio.Button value="list"><AiOutlineOneToOne style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Full Cards</Radio.Button>
-            <Radio.Button value="stack"><AiOutlineMenu style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Stack</Radio.Button>
-            <Radio.Button value="table"><AiOutlineTable style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Table</Radio.Button>
-            <Radio.Button value="plot"><AiOutlineBorderInner style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Matrix</Radio.Button>
-          </Radio.Group>
           <br /><br />
           Your question:&nbsp;
           <Search ref={promptRef} placeholder="eg How might we...?" className="fs-unmask"
@@ -211,13 +204,13 @@ const Home = () => {
           </Select>
           &nbsp;
           {isLoading ? <Spin /> : <></>}
-          
+
           {isLoading && <Button type="primary" danger onClick={abortLoad}>Stop</Button>}
 
           <br/><br />
           {selections.length > 0 && <SelectedItemsMenu selections={selections} items={scenarios} onClickBrainstormStrategies={onClickBrainstormStrategies} onClickCreateStoryboard={onClickCreateStoryboard}/>}
         </div>
-        
+
         <div className={'scenarios-collection ' + displayMode + '-display'}>
           {scenarios.map((scenario, i) => {
             return <Card key={i} className="scenario" title={
@@ -243,7 +236,7 @@ const Home = () => {
         <div className="scenarios-plot-container" style={{display: displayMode == 'plot' ? 'block' : 'none'}}>
           <ScenariosPlot scenarios={scenarios} visible={displayMode == 'plot'}/>
         </div>
-        
+
       </div>
     </>
   );

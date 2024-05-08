@@ -12,7 +12,7 @@ import { AiOutlineBorderInner, AiOutlineGroup, AiOutlineTable, AiOutlineOneToOne
 const SelectedItemsMenu = ({selections, items, onClickBrainstormStrategies, onClickCreateStoryboard}) => {
   return <div className="selected-items-menu">
     <span>
-      {selections.length} of {items.length} scenarios selected: 
+      {selections.length} of {items.length} scenarios selected:
     </span>&nbsp;
     <Space wrap>
       <Button type="primary" onClick={onClickBrainstormStrategies}>Brainstorm strategies and questions</Button>
@@ -138,7 +138,7 @@ const Home = () => {
     setPrompt(value);
     setSelections([]);
 
-    const uri = '/api/make-scenario' 
+    const uri = '/api/make-scenario'
           + '?input='+encodeURIComponent(value)
           +'&num_scenarios='+encodeURIComponent(numOfScenarios)
           +'&detail=' + encodeURIComponent(isDetailed)
@@ -150,22 +150,22 @@ const Home = () => {
 
     let ms = '';
     let output = [];
-    
+
     fetchSSE(
-      { 
+      {
         url: uri,
         onData: (event) => {
           const data = JSON.parse(event.data);
           ms += data.data;
           try { output = parse(ms || '[]'); }
           catch (error) { console.log("error", error) };
-          
+
           if (Array.isArray(output)) {
             setScenarios(output);
           } else {
             console.log("response is not parseable into an array")
           }
-        }, 
+        },
         onStop: () => {
             setLoading(false);
             abortLoad();
@@ -200,13 +200,6 @@ const Home = () => {
         <div id="prompt-center">
           <b style={{fontSize: 20, display: 'inline-block'}}>Scenarios</b>
           &nbsp;
-          <Radio.Group onChange={onSelectDisplayMode} defaultValue="grid" value={displayMode} style={{float: 'right'}}>
-            <Radio.Button value="grid"><AiOutlineGroup style={{display: 'inline-block', verticalAlign: 'middle', height: 14}}/> Cards</Radio.Button>
-            <Radio.Button value="list"><AiOutlineOneToOne style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Full Cards</Radio.Button>
-            <Radio.Button value="stack"><AiOutlineMenu style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Stack</Radio.Button>
-            <Radio.Button value="table"><AiOutlineTable style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Table</Radio.Button>
-            <Radio.Button value="plot"><AiOutlineBorderInner style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Matrix</Radio.Button>
-          </Radio.Group>
           <br /><br />
           Strategic prompt:&nbsp;
           <Search ref={promptRef} placeholder="enter a prompt and press enter to generate scenarios" className="fs-unmask"
@@ -229,7 +222,7 @@ const Home = () => {
           <Checkbox onChange={handleDetailCheck} disabled={isLoading} /> Add details (signals, threats, opportunties)
           &nbsp;
           {isLoading ? <Spin /> : <></>}
-          
+
           <div style={{marginTop: 10}}>
             <div style={{marginLeft: 105, display: 'inline-block'}}>&nbsp;</div>
             <Select defaultValue={'10-year'} onChange={handleSelectTimeHorizonChange} style={{ width: 150 }} disabled={isLoading}
@@ -239,7 +232,7 @@ const Home = () => {
                 { value: '100-year', label: '100-year horizon' }
               ]}>
             </Select>&nbsp;&nbsp;
-            
+
             &nbsp;
             <Select defaultValue={'optimistic'} onChange={handleSelectOptimismChange} style={{ width: 150 }} disabled={isLoading}
               options={[
@@ -247,7 +240,7 @@ const Home = () => {
                 { value: 'pessimistic', label: <div><span className='config-icon'><AiOutlineDislike /></span> Pessimistic</div> },
               ]}>
             </Select>&nbsp;&nbsp;
-            
+
             <Select defaultValue={'futuristic sci-fi'} onChange={handleSelectRealismChange} style={{ width: 150 }} disabled={isLoading}
               options={[
                 { value: 'realistic', label: <div><span className='config-icon'><AiOutlinePicture/></span> Realistic</div> },
@@ -255,14 +248,14 @@ const Home = () => {
                 { value: 'bizarre', label: <div><span className='config-icon'><AiOutlineHeatMap/></span> Bizarre</div> },
               ]}>
             </Select>&nbsp;&nbsp;
-            
+
             {isLoading && <Button type="primary" danger onClick={abortLoad}>Stop</Button>}
           </div>
 
           <br/><br />
           {selections.length > 0 && <SelectedItemsMenu selections={selections} items={scenarios} onClickBrainstormStrategies={onClickBrainstormStrategies} onClickCreateStoryboard={onClickCreateStoryboard}/>}
         </div>
-        
+
         <div className={'scenarios-collection ' + displayMode + '-display'}>
           {scenarios.map((scenario, i) => {
             return <Card key={i} className="scenario" title={
@@ -271,7 +264,7 @@ const Home = () => {
               </>
             } actions={[
               <input key={'cb'+i} type="checkbox" className="select-scenario" onChange={onScenarioSelectChanged(i)} />,
-              <Button type="link" key="explore" onClick={() => onExplore(i)}>Explore</Button>, 
+              <Button type="link" key="explore" onClick={() => onExplore(i)}>Explore</Button>,
               <>
                 {savedIdeas.includes(i) && <Button type="link" key="saved" onClick={() => onSave(i)} style={{padding: 0}}>Saved</Button>}
                 {!savedIdeas.includes(i) && <Button type="link" key="save" onClick={() => onSave(i)} style={{padding: 0}}>Save</Button>}
@@ -311,7 +304,7 @@ const Home = () => {
         <div className="scenarios-plot-container" style={{display: displayMode == 'plot' ? 'block' : 'none'}}>
           <ScenariosPlot scenarios={scenarios} visible={displayMode == 'plot'}/>
         </div>
-        
+
       </div>
     </>
   );
