@@ -1,4 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
+import json
 from langchain_community.chat_models import ChatOllama
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -45,6 +46,12 @@ class MockModelClient:
             "\n",
         ]
         if "json" in message.lower():
+            full_test_scenario = {
+                "title": "Full scenario",
+                "description": "A description",
+                "probability": "Low - Most users would have no reason to deny",
+                "impact": "Medium - This could lead to accountability issues",
+            }
             test_data = [
                 "[ {",
                 ' "title": ',
@@ -53,6 +60,7 @@ class MockModelClient:
                 ' "scenario description" ' " }, { ",
                 ' "title": ',
                 ' "Hello scenario 2" }',
+                json.dumps(full_test_scenario),
                 "]",
             ]
         for chunk in test_data:
