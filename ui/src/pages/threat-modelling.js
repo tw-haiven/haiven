@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
 import { Drawer, Card, Space, Spin, Button, Radio, Input } from "antd";
@@ -6,19 +6,6 @@ const { TextArea } = Input;
 import ScenariosPlot from "./_plot";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
-import {
-  AiOutlineBorderInner,
-  AiOutlineGroup,
-  AiOutlineTable,
-  AiOutlineOneToOne,
-  AiOutlineMenu,
-  AiOutlineSmile,
-  AiOutlineLike,
-  AiOutlineDislike,
-  AiOutlineRocket,
-  AiOutlinePicture,
-  AiOutlineHeatMap,
-} from "react-icons/ai";
 
 const SelectedItemsMenu = ({
   selections,
@@ -64,10 +51,6 @@ const Home = () => {
     ctrl && ctrl.abort();
     setLoading(false);
   }
-
-  const onPromptChange = (event) => {
-    setPrompt(event.target.value);
-  };
 
   const onExplore = (id) => {
     setDrawerTitle("Explore scenario: " + scenarios[id].title);
@@ -148,6 +131,8 @@ const Home = () => {
 
     const uri =
       "/api/threat-modelling" + "?input=" + encodeURIComponent(prompt);
+    // + "?assets=" + encodeURIComponent(prompt)
+    // + "?users=" + encodeURIComponent(prompt);
 
     let ms = "";
     let output = [];
@@ -207,18 +192,24 @@ const Home = () => {
           &nbsp;
           <br />
           <br />
-          <Space.Compact style={{ width: "100%" }} className="scenario-inputs">
-            <label>Application description:</label>{" "}
+          <div className="scenario-inputs">
+            {/* <label>Users</label> <Input placeholder="Describe the user base, e.g. if it's B2C, B2B, internal, ..."
+              value={userBase} onChange={(e, v) => { setUserBase(e.target.value) }} />
+            <label>Assets</label> <Input placeholder="Describe any important assets that need to be protected"
+              value={assets} onChange={(e, v) => { setAssets(e.target.value) }} /> */}
+            <label>Data flow</label>
             <TextArea
-              placeholder="enter a prompt and press enter to generate scenarios"
-              onPressEnter={onSubmitPrompt}
-              onChange={onPromptChange}
+              placeholder="Describe how data flows through your system"
               value={prompt}
+              onChange={(e, v) => {
+                setPrompt(e.target.value);
+              }}
             />
+
             <Button type="primary" onClick={onSubmitPrompt}>
               Go
             </Button>
-          </Space.Compact>
+          </div>
           &nbsp;
           {isLoading ? <Spin /> : <></>}
           <div style={{ marginTop: 10 }}>
