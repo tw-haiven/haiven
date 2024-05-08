@@ -105,7 +105,7 @@ const Home = () => {
             </div>
             <br/><br/>
             <Space.Compact style={{ width: '100%' }}>
-              Your user input: <TextArea defaultValue="Combine input and button" value={promptInput} onChange={(e,v)=> {setPromptInput(e.target.value)}}/>
+              Your user input: <TextArea value={promptInput} onChange={(e,v)=> {setPromptInput(e.target.value)}}/>
               <Button type="primary" onClick={onSubmitPrompt}>Go</Button>
             </Space.Compact>
           </div>
