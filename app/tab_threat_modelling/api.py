@@ -2,7 +2,6 @@
 from fastapi import Request
 from fastapi.responses import StreamingResponse
 
-from shared.llm_config import LLMConfig
 from shared.chats import JSONChat
 
 
@@ -61,7 +60,7 @@ def enable_threat_modelling(app):
         assets = request.query_params.get("assets")
         userBase = request.query_params.get("userBase")
 
-        json_chat = JSONChat(LLMConfig("mock", 0.5))
+        json_chat = JSONChat()  # LLMConfig("mock", 0.5)
         return StreamingResponse(
             json_chat.run(get_threat_modelling_prompt(dataFlow, assets, userBase)),
             media_type="text/event-stream",
