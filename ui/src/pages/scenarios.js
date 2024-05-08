@@ -19,10 +19,6 @@ const { Search } = Input;
 import {
   AiOutlineBorderInner,
   AiOutlineGroup,
-  AiOutlineTable,
-  AiOutlineOneToOne,
-  AiOutlineMenu,
-  AiOutlineSmile,
   AiOutlineLike,
   AiOutlineDislike,
   AiOutlineRocket,
@@ -263,6 +259,32 @@ const Home = () => {
         <div id="prompt-center">
           <b style={{ fontSize: 20, display: "inline-block" }}>Scenarios</b>
           &nbsp;
+          <Radio.Group
+            onChange={onSelectDisplayMode}
+            defaultValue="grid"
+            style={{ float: "right" }}
+          >
+            <Radio.Button value="grid">
+              <AiOutlineGroup
+                style={{
+                  display: "inline-block",
+                  verticalAlign: "middle",
+                  height: 14,
+                }}
+              />{" "}
+              Cards
+            </Radio.Button>
+            <Radio.Button value="plot">
+              <AiOutlineBorderInner
+                style={{
+                  display: "inline-block",
+                  verticalAlign: "middle",
+                  height: 14,
+                }}
+              />{" "}
+              Matrix
+            </Radio.Button>
+          </Radio.Group>
           <br />
           <br />
           Strategic prompt:&nbsp;
