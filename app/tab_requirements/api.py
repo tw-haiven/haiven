@@ -6,7 +6,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from shared.chats import JSONChat, StreamingChat
 
-from app.shared.llm_config import LLMConfig
+from shared.llm_config import LLMConfig
 
 
 def get_requirements_prompt(user_input):
