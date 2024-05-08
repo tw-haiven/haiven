@@ -3,14 +3,6 @@
   --color-light-gray: #edf1f3;
   --color-dark-blue: #003d4f;
   --color-sapphire: #47a1ad;
-
-  --checkbox-background-color: #edf1f3;
-  --checkbox-background-color-selected: var(--color-flamingo);
-
-  --link-text-color: var(--color-flamingo);
-  --link-text-color-active: var(--color-flamingo);
-  --link-text-color-hover: var(--color-flamingo);
-  --link-text-color-visited: var(--color-flamingo);
 }
 
 html {
@@ -47,6 +39,12 @@ body { margin: 0; padding: 0}
   padding: 1em;
   height: 65px;
 }
+
+.header-title {
+  display: flex;
+}
+
+/* Header style: two lines (copied from Gradio styles, not tested here yet) */
 /* .header-title h1 {
   font-family: Bitter, "Noto Serif SC", serif;
   color: white !important;
@@ -58,9 +56,7 @@ body { margin: 0; padding: 0}
   font-size: 1em;
 } */
 
-.header-title {
-  display: flex;
-}
+/* Header style: one line */
 .header-title h1 {
   font-family: Bitter, "Noto Serif SC", serif;
   color: white !important;
@@ -122,6 +118,14 @@ body { margin: 0; padding: 0}
 
 .scenario .card-prop-name {
   font-weight: bold;
+}
+
+.scenario-inputs label {
+  margin-right: 0.3em;
+}
+
+.scenario-inputs textarea {
+  width: 500;
 }
 
 #canvas {

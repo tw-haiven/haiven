@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from "next/router";
 import { fetchSSE } from '../app/_fetch_sse';
-import { Drawer, Card, Input, Select, Spin, Checkbox, Button, Radio, Space } from 'antd';
+import { Drawer, Card, Space, Spin, Button, Radio, Input } from 'antd';
+const { TextArea } = Input;
 import ScenariosPlot from './_plot';
 import ChatExploration from './_chat_exploration';
 import {parse} from 'best-effort-json-parser';
-const { Search } = Input;
 import { AiOutlineBorderInner, AiOutlineGroup, AiOutlineTable, AiOutlineOneToOne, AiOutlineMenu, AiOutlineSmile, AiOutlineLike, AiOutlineDislike, AiOutlineRocket, AiOutlinePicture, AiOutlineHeatMap } from "react-icons/ai";
 
 
@@ -27,7 +27,6 @@ const Home = () => {
 
   const [scenarios, setScenarios] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const [isDetailed, setDetailed] = useState(false);
   const [selections, setSelections] = useState([])
   const [displayMode, setDisplayMode] = useState('grid')
   const [prompt, setPrompt] = useState('');
@@ -80,14 +79,6 @@ const Home = () => {
     const scenario = scenarios[selections[0]];
     const url = "/storyboard?prompt=" + encodeURIComponent(scenario.title+": "+scenario.summary)
     window.open(url, '_blank', 'noreferrer');
-  }
-
-  const handleDetailCheck = (event) => {
-    setDetailed(event.target.checked);
-    if(event.target.checked)
-      setDisplayMode('list');
-    else
-      setDisplayMode('grid');
   }
 
   const onSelectDisplayMode = (event) => {
@@ -143,7 +134,7 @@ const Home = () => {
   const query = router.query;
   const params = query;
   const initialStrategicPrompt = params.strategic_prompt;
-  const promptRef = useRef();
+  // const promptRef = useRef();
   const [initialLoadDone, setInitialLoad] = useState(false);
 
   useEffect(() => {
@@ -173,15 +164,11 @@ const Home = () => {
             <Radio.Button value="plot"><AiOutlineBorderInner style={{display: 'inline-block', verticalAlign: 'middle', height: 14}} /> Matrix</Radio.Button>
           </Radio.Group>
           <br /><br />
-          Application description:&nbsp;
-          <Search rows={4} ref={promptRef} placeholder="enter a prompt and press enter to generate scenarios" className="fs-unmask"
-            onSearch={onSubmitPrompt} style={{ width: 500, color: 'white' }}
-            disabled={isLoading} value={prompt} onChange={(e,v)=> {setPrompt(e.target.value)}} enterButton={
-              <div>
-                <span>Go</span>
-              </div>}
-          />
-          &nbsp;
+          <Space.Compact style={{ width: '100%' }} className="scenario-inputs">
+            <label>Application description:</label> <TextArea placeholder="enter a prompt and press enter to generate scenarios" 
+                value={prompt} onChange={(e,v)=> {setPrompt(e.target.value)}}/>
+            <Button type="primary" onClick={onSubmitPrompt}>Go</Button>
+          </Space.Compact>
           &nbsp;
           {isLoading ? <Spin /> : <></>}
           
