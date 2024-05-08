@@ -48,7 +48,11 @@ class DocumentsUtils:
         )
         if "source" in document_metadata:
             source_link = document_metadata["source"]
-            if source_link and not source_link.startswith("http"):
+            if (
+                source_link
+                and not source_link.startswith("http")
+                and "kp-static" not in source_link
+            ):
                 source_link = "/kp-static/" + source_link
 
             if "title" in document_metadata:
