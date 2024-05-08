@@ -34,16 +34,25 @@ class MockChunk(BaseModel):
 class MockModelClient:
     def stream(self, messages):
         message = messages[0].content
-        test_data = ["one", "two", "three"]
+        test_data = [
+            'User "Stories:"',
+            "\n\n",
+            "1. As a customer, I want to be able to browse the available items in the online store so that",
+            " I can find something to add to my basket.",
+            "\n",
+            "2. As a customer, I want to be able to search for specific items in the online store",
+            " so that I can quickly find and add them to my basket.",
+            "\n",
+        ]
         if "json" in message.lower():
             test_data = [
                 "[ {",
-                '"title": ',
-                '"Hello scenario 1"',
+                ' "title": ',
+                ' "Hello scenario 1"',
                 ', "description": ',
-                '"scenario description" ' " }, { ",
-                '"title": ',
-                '"Hello scenario 2" }',
+                ' "scenario description" ' " }, { ",
+                ' "title": ',
+                ' "Hello scenario 2" }',
                 "]",
             ]
         for chunk in test_data:
