@@ -218,13 +218,14 @@ input.select-scenario {
 
 .boba-matrix .matrix-item {
   margin: 10px 5px;
-  background: lightgoldenrodyellow;
+  background: var(--color-sapphire);
   padding: 5px;
   cursor: pointer;
 }
 
 .boba-matrix .matrix-item .matrix-item-title {
   font-weight: bold;
+  color: white;
 }
 
 .explore-drawer {
