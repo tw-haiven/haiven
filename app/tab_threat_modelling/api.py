@@ -38,7 +38,8 @@ How data flows through the application:
 => {dataFlow}
 
 # INSTRUCTIONS
-You will create at least one scenario for each category. Give me at least 10 scenarios.
+You will create at least one scenario for each category. 
+Give me at least 5 scenarios.
 
 You will respond with only a valid JSON array of scenario objects. Each scenario object will have the following schema:
     "title": <string>,
@@ -60,7 +61,7 @@ def enable_threat_modelling(app):
         assets = request.query_params.get("assets")
         userBase = request.query_params.get("userBase")
 
-        json_chat = JSONChat()  # LLMConfig("mock", 0.5)
+        json_chat = JSONChat()  # LLMConfig("mock", 0.5))
         return StreamingResponse(
             json_chat.run(get_threat_modelling_prompt(dataFlow, assets, userBase)),
             media_type="text/event-stream",
