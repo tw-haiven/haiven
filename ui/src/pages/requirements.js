@@ -18,11 +18,16 @@ const Home = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("Explore requirement");
   const [chatContext, setChatContext] = useState({});
+  const [currentSSE, setCurrentSSE] = useState(null);
   const router = useRouter();
 
   function abortLoad() {
     ctrl && ctrl.abort();
     setLoading(false);
+    if (currentSSE && currentSSE.readyState == 1) {
+      currentSSE.close();
+      setCurrentSSE(null);
+    }
   }
 
   const onExplore = (id) => {
@@ -51,7 +56,7 @@ const Home = () => {
     let ms = "";
     let output = [];
 
-    fetchSSE({
+    let sse = fetchSSE({
       url: uri,
       onData: (event, sse) => {
         const data = JSON.parse(event.data);
@@ -72,6 +77,7 @@ const Home = () => {
         abortLoad();
       },
     });
+    setCurrentSSE(sse);
   };
 
   const query = router.query;

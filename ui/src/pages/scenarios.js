@@ -71,11 +71,16 @@ const Home = () => {
   const [drawerTitle, setDrawerTitle] = useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
   const [savedIdeas, setSavedIdeas] = useState([]);
+  const [currentSSE, setCurrentSSE] = useState(null);
   const router = useRouter();
 
   function abortLoad() {
     ctrl && ctrl.abort();
     setLoading(false);
+    if (currentSSE && currentSSE.readyState == 1) {
+      currentSSE.close();
+      setCurrentSSE(null);
+    }
   }
 
   function handleSelectChange(value) {
@@ -204,7 +209,7 @@ const Home = () => {
     let ms = "";
     let output = [];
 
-    fetchSSE({
+    let sse = fetchSSE({
       url: uri,
       onData: (event) => {
         const data = JSON.parse(event.data);
@@ -229,6 +234,7 @@ const Home = () => {
         setLoading(true);
       },
     });
+    setCurrentSSE(sse);
   };
 
   const query = router.query;
