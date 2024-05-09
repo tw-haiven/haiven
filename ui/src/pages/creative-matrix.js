@@ -318,6 +318,7 @@ const CreativeMatrix = () => {
                                     style={{ marginBottom: 10, cursor: "auto" }}
                                   >
                                     <Popover
+                                      trigger={null}
                                       content={
                                         <>
                                           <a
