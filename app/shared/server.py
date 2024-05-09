@@ -91,6 +91,7 @@ class Server:
                 "chat",
                 "threat-modelling",
                 "creative-matrix",
+                "requirements",
             ]
             if path in allowed_boba_paths:
                 return HTMLResponse(
