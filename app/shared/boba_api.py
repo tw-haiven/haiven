@@ -72,6 +72,74 @@ def get_scenarios_prompt(
         return default_prompt
 
 
+def get_creative_matrix_prompt(rows, columns, prompt, idea_qualifiers, num_ideas):
+    return f"""You are a creative strategist. Given a prompt enclosed in <prompt> below, you will respond to the prompt for each combination/permutation of comma-separated list of rows and columns to generate creative and innovative ideas. Each idea must have a title and description. The idea title must be brief and succinct. Each idea must specifically and directly respond to the prompt. If a company is mentioned in the prompt, make sure you generate ideas specifically for that company. Each idea must be {idea_qualifiers}. You must generate exactly {num_ideas} idea(s) per combination/permutation.
+
+  <prompt>{prompt}</prompt>
+  <rows>{rows}</rows>
+  <columns>{columns}</columns>
+  
+  You will respond with a valid JSON array, by row by column by idea. For example:
+
+  If Rows = "row 0, row 1" and Columns = "column 0, column 1" then you will respond with the following:
+  [
+    {{
+      "row": "row 0",
+      "columns": [
+        {{
+          "column": "column 0",
+          "ideas": [
+            {{
+              "title": "Idea 0 title for prompt and row 0 and column 0",
+              "description": "idea 0 for prompt and row 0 and column 0"
+            }},
+            ...
+          ]
+        }},
+        {{
+          "column": "column 1",
+          "ideas": [
+            {{
+              "title": "Idea 0 title for prompt and row 0 and column 1",
+              "description": "idea 0 for prompt and row 0 and column 1"
+            }},
+            ...
+          ]
+        }},
+      ]
+    }},
+    {{
+      "row": "row 1",
+      "columns": [
+        {{
+          "column": "column 0",
+          "ideas": [
+            {{
+              "title": "Idea 0 title for prompt and row 1 and column 0",
+              "description": "idea 0 for prompt and row 1 and column 0"
+            }},
+            ...
+          ]
+        }},
+        {{
+          "column": "column 1",
+          "ideas": [
+            {{
+              "title": "Idea 0 title for prompt and row 1 and column 1",
+              "description": "idea 0 for prompt and row 1 and column 1"
+            }},
+            ...
+          ]
+        }}
+      ]
+    }}
+  ]
+
+  Remember that each idea must be {idea_qualifiers}. Remember you mnust generate exactly {num_ideas} idea(s) per combination/permutation.
+  
+"""
+
+
 class PromptRequestBody(BaseModel):
     promptid: str
     userinput: str
@@ -171,5 +239,26 @@ class BobaApi:
                     "Content-Encoding": "none",
                     "Access-Control-Expose-Headers": "X-Chat-ID",
                     "X-Chat-ID": chat_session_key_value,
+                },
+            )
+
+        @app.get("/api/creative-matrix")
+        async def creative_matrix(request: Request):
+            rows = request.query_params.getlist("rows")
+            columns = request.query_params.getlist("columns")
+            prompt = request.query_params.get("prompt")
+            idea_qualifiers = request.query_params.get("idea_qualifiers", None)
+            num_ideas = int(request.query_params.get("num_ideas", 3))
+
+            creative_matrix_prompt = get_creative_matrix_prompt(
+                rows, columns, prompt, idea_qualifiers, num_ideas
+            )
+            chat = JSONChat()
+            return StreamingResponse(
+                chat.run(creative_matrix_prompt),
+                media_type="text/event-stream",
+                headers={
+                    "Connection": "keep-alive",
+                    "Content-Encoding": "none",
                 },
             )

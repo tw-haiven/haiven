@@ -79,16 +79,18 @@ const Sidebar = ({ selectedKey = "scenarios" }) => {
         icon={<AiOutlineBulb style={{ fontSize: "large" }} />}
         title="Ideate"
       >
-        {/* <Menu.Item key="saved-ideas">
+        {
+          /* <Menu.Item key="saved-ideas">
           <Link href="/saved-ideas">
             <AiOutlineStar /> Saved Ideas
           </Link>
-        </Menu.Item>
-        <Menu.Item key="creative-matrix">
-          <Link href="/creative-matrix">
-            <AiOutlineTable /> Creative Matrix
-          </Link>
-        </Menu.Item> */}
+        </Menu.Item>*/
+          <Menu.Item key="creative-matrix">
+            <Link href="/creative-matrix">
+              <AiOutlineTable /> Creative Matrix
+            </Link>
+          </Menu.Item>
+        }
         <Menu.Item key="scenarios">
           <Link href="/scenarios">
             <AiOutlineAntDesign /> Scenario design

@@ -7,7 +7,7 @@ import {
   AiOutlinePicture,
   AiOutlineRocket,
 } from "react-icons/ai";
-
+import { fetchSSE } from "../app/_fetch_sse";
 let ctrl;
 
 const CreativeMatrix = () => {
@@ -26,6 +26,7 @@ const CreativeMatrix = () => {
   );
   const [isLoading, setLoading] = useState(false);
   const [matrix, setMatrix] = useState([]);
+  const [currentSSE, setCurrentSSE] = useState(null);
   const [templates, setTemplates] = useState([
     {
       name: "Template: GenAI Use Case Exploration Matrix",
@@ -85,6 +86,7 @@ const CreativeMatrix = () => {
     setColumnsCSV(template.columnsCSV);
     setRows(template.rowsCSV.split(",").map((v) => v.trim()));
     setColumns(template.columnsCSV.split(",").map((v) => v.trim()));
+    setMatrix([]);
   };
 
   const handleSelectChange = (value) => {
@@ -108,6 +110,10 @@ const CreativeMatrix = () => {
   function abortLoad() {
     ctrl && ctrl.abort();
     setLoading(false);
+    if (currentSSE && currentSSE.readyState == 1) {
+      currentSSE.close();
+      setCurrentSSE(null);
+    }
   }
 
   const onGenerateMatrix = () => {
@@ -131,15 +137,9 @@ const CreativeMatrix = () => {
     let isLoadingXhr = true;
     let output = [];
     try {
-      fetchEventSource(uri, {
-        method: "GET",
-        headers: {
-          "Content-Type":
-            "application/json" /*, 'Authorization': `Bearer ${session.accessToken}`*/,
-        },
-        openWhenHidden: true,
-        signal: ctrl.signal,
-        onmessage: (event) => {
+      let sse = fetchSSE({
+        url: uri,
+        onData: (event) => {
           if (!isLoadingXhr) {
             console.log("is loading xhr", isLoadingXhr);
             return;
@@ -159,13 +159,13 @@ const CreativeMatrix = () => {
           }
           setMatrix(output);
         },
-        onerror: (error) => {
+        onStop: (error) => {
           console.log("error", error);
           setLoading(false);
-          isLoadingXhr = false;
           abortLoad();
         },
       });
+      setCurrentSSE(sse);
     } catch (error) {
       console.log("error", error);
       setLoading(false);
@@ -226,13 +226,6 @@ const CreativeMatrix = () => {
             onChange={handleSelectChange}
             style={{ width: 100 }}
             disabled={isLoading}
-            options={[
-              { value: "1", label: "1 idea" },
-              { value: "2", label: "2 ideas" },
-              { value: "3", label: "3 ideas" },
-              { value: "4", label: "4 ideas" },
-              { value: "5", label: "5 ideas" },
-            ]}
           ></Select>
           &nbsp; per combination &nbsp; | &nbsp; Each idea must be &nbsp;
           {/* <Input placeholder="Comma-separated list of adjectives" value={ideaQualifiers} style={{width: 300 }} onChange={onChangeIdeaQualifiers} disabled={isLoading}/>&nbsp;&nbsp; */}

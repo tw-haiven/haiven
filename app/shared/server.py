@@ -86,7 +86,12 @@ class Server:
 
         @app.get("/boba/{path}")
         async def boba(request: Request, path: str):
-            allowed_boba_paths = ["scenarios", "chat", "threat-modelling"]
+            allowed_boba_paths = [
+                "scenarios",
+                "chat",
+                "threat-modelling",
+                "creative-matrix",
+            ]
             if path in allowed_boba_paths:
                 return HTMLResponse(
                     open(f"./{Server.boba_build_dir_path}/{path}.html").read()

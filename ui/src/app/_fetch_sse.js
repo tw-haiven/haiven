@@ -19,6 +19,7 @@ export function fetchSSE(options) {
       onStop();
     };
     sse.onopen = (event) => {};
+    return sse;
   } catch (error) {
     console.log("error", error);
     onStop();
