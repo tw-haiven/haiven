@@ -226,6 +226,13 @@ const CreativeMatrix = () => {
             onChange={handleSelectChange}
             style={{ width: 100 }}
             disabled={isLoading}
+            options={[
+              { value: "1", label: "1 idea" },
+              { value: "2", label: "2 ideas" },
+              { value: "3", label: "3 ideas" },
+              { value: "4", label: "4 ideas" },
+              { value: "5", label: "5 ideas" },
+            ]}
           ></Select>
           &nbsp; per combination &nbsp; | &nbsp; Each idea must be &nbsp;
           {/* <Input placeholder="Comma-separated list of adjectives" value={ideaQualifiers} style={{width: 300 }} onChange={onChangeIdeaQualifiers} disabled={isLoading}/>&nbsp;&nbsp; */}
