@@ -47,6 +47,7 @@ const Home = () => {
   const [promptAssets, setPromptAssets] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("Explore scenario");
+  const [drawerHeader, setDrawerHeader] = useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
   const [savedIdeas, setSavedIdeas] = useState([]);
   const [currentSSE, setCurrentSSE] = useState(null);
@@ -63,10 +64,11 @@ const Home = () => {
 
   const onExplore = (id) => {
     setDrawerTitle("Explore scenario: " + scenarios[id].title);
+    setDrawerHeader(scenarios[id].summary);
     setChatContext({
       id: id,
       originalPrompt: promptDataFlow,
-      type: "threat-modelling",
+      type: "Threat Modelling",
       ...scenarios[id],
     });
     setDrawerOpen(true);
@@ -168,11 +170,14 @@ const Home = () => {
         size="large"
         onClose={() => setDrawerOpen(false)}
       >
+        <div className="drawer-header">{drawerHeader}</div>
         <ChatExploration
           context={chatContext}
           user={{
             name: userService.getName() ?? "User",
-            avatar: userService.getProfilePicture() ?? "👤",
+            avatar:
+              userService.getProfilePicture() ??
+              "/boba/user-5-fill-dark-blue.svg",
           }}
         />
       </Drawer>

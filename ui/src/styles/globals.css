@@ -19,6 +19,15 @@ html {
   word-break: keep-all !important;
 }
 
+.ant-avatar {
+  border-radius: 0;
+}
+
+.ant-avatar img {
+  width: 1em;
+  height: 1em;
+}
+
 .prompt-choice {
   padding: 0.5em;
 }
@@ -234,6 +243,10 @@ input.select-scenario {
 
 .explore-drawer {
   width: 200px;
+}
+
+.drawer-header {
+  padding-bottom: 1em;
 }
 
 .chat-log {

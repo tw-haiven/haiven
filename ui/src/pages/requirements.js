@@ -108,7 +108,9 @@ const Home = () => {
           context={chatContext}
           user={{
             name: userService.getName() ?? "User",
-            avatar: userService.getProfilePicture() ?? "👤",
+            avatar:
+              userService.getProfilePicture() ??
+              "/boba/user-5-fill-dark-blue.svg",
           }}
         />
       </Drawer>

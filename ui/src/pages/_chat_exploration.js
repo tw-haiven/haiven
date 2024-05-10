@@ -4,7 +4,10 @@ import { useTheme } from "antd-style";
 
 export default function ChatExploration({ context, user }) {
   const item = context || {};
-  const userProfile = user || { name: "User", avatar: "👤" };
+  const userProfile = user || {
+    name: "User",
+    avatar: "/boba/user-5-fill-dark-blue.svg",
+  };
   const theme = useTheme();
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
@@ -58,22 +61,18 @@ export default function ChatExploration({ context, user }) {
         }}
         showTitle
         assistantMeta={{
-          avatar: "/boba/haiven-chat-avatar.png",
+          avatar: "/boba/shining-fill-white.svg",
           title: "Haiven",
           backgroundColor: "#003d4f",
         }}
         userMeta={{
           avatar: userProfile.avatar ?? userProfile.name,
           title: userProfile.name,
-          backgroundColor: "#ffffff",
+          backgroundColor: "#47a1ad",
         }}
         locale="en-US"
         helloMessage={
-          "In this " +
-          item.type +
-          ", " +
-          item.summary +
-          " What do you want to explore next?"
+          "What do you want to explore? Ask me anything about this scenario."
         }
         request={onSubmitMessage}
       />
