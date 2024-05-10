@@ -1,22 +1,15 @@
 import { useState } from "react";
-import {
-  ProChat,
-  ProChatProvider,
-  useProChat,
-  Avatar,
-} from "@ant-design/pro-chat";
+import { ProChat } from "@ant-design/pro-chat";
 import { useTheme } from "antd-style";
 
-const ctrls = {};
-export default function ChatExploration({ context }) {
+export default function ChatExploration({ context, user }) {
   const item = context || {};
+  const userProfile = user || { name: "User" , avatar: "👤" };
   const theme = useTheme();
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
 
   const onSubmitMessage = async (messages) => {
-    // console.log("messages", messages)
-
     const uri = "/api/" + item.type + "/explore",
       context = item.summary;
 
@@ -63,25 +56,26 @@ export default function ChatExploration({ context }) {
           height: "100%",
           backgroundColor: theme.colorBgContainer,
         }}
+        showTitle
+        assistantMeta={{
+          avatar: "/boba/haiven-chat-avatar.png",
+          title: "Haiven",
+          backgroundColor: "#003d4f",
+        }}
+        userMeta={{
+          avatar: userProfile.avatar ?? userProfile.name,
+          title: userProfile.name,
+          backgroundColor: "#ffffff",
+        }}
         locale="en-US"
         helloMessage={
           "In this " +
           item.type +
           ", " +
           item.summary +
-          ". What do you want to explore next?"
+          " What do you want to explore next?"
         }
         request={onSubmitMessage}
-        chatItemRenderConfig={{
-          avatarRender: (item, dom, defaultDom) => {
-            // const role = item.originData.role;
-            // if (role === "user") { // also: "assistant", "hello"
-            //   item.originData.meta.avatar = "🤷‍♀️"
-            // }
-
-            return defaultDom;
-          },
-        }}
       />
     </div>
   );

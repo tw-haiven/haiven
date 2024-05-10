@@ -7,6 +7,7 @@ import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 import { AiOutlineBorderInner, AiOutlineGroup } from "react-icons/ai";
+import userService from "../app/userService";
 
 const SelectedItemsMenu = ({
   selections,
@@ -167,7 +168,13 @@ const Home = () => {
         size="large"
         onClose={() => setDrawerOpen(false)}
       >
-        <ChatExploration context={chatContext} />
+        <ChatExploration
+          context={chatContext}
+          user={{
+            name: userService.getName() ?? "User",
+            avatar: userService.getProfilePicture() ?? "👤",
+          }}
+        />
       </Drawer>
       <div id="canvas">
         <div id="prompt-center">
