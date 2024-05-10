@@ -4,11 +4,16 @@ import jwt from "jsonwebtoken";
 
 const userService = {
   getSessionCookie() {
-    if (typeof document !== "undefined" && document.cookie) {
-      return document?.cookie
-        ?.split("; ")
-        .find((row) => row.startsWith("session="))
-        .split("=")[1];
+    try {
+      if (typeof document !== "undefined" && document.cookie) {
+        return document?.cookie
+          ?.split("; ")
+          .find((row) => row.startsWith("session="))
+          .split("=")[1];
+      }
+    } catch (error) {
+      console.error("Failed to get session cookie", error);
+      return null;
     }
     return null;
   },
