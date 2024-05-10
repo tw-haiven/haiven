@@ -86,8 +86,8 @@ class Server:
             request.session.pop("user", None)
             return RedirectResponse(url="/")
 
-        @app.get("/boba/{path}")
-        async def boba(request: Request, path: str):
+        @app.middleware("http")
+        async def boba_middleware(request: Request, call_next):
             allowed_boba_paths = [
                 "scenarios",
                 "chat",
@@ -95,18 +95,16 @@ class Server:
                 "creative-matrix",
                 "requirements",
             ]
-            if path in allowed_boba_paths:
+            paths = request.url.path.split("/")
+            if (
+                len(paths) >= 2
+                and paths[-2] == "boba"
+                and paths[-1] in allowed_boba_paths
+            ):
                 return HTMLResponse(
-                    open(f"./{Server.boba_build_dir_path}/{path}.html").read()
+                    open(f"./{Server.boba_build_dir_path}/{paths[-1]}.html").read()
                 )
-            else:
-                current_path = request.url.path
-                if current_path == f"/boba/{path}":
-                    TeamAILogger.get().logger.warning(
-                        f"WARNING: Possible loop detected for path {path}"
-                    )
-                    return PlainTextResponse("Invalid path", status_code=404)
-                return RedirectResponse(url=f"/boba/{path}")
+            return await call_next(request)
 
         async def check_authentication(request: Request, call_next):
             allowlist = [
