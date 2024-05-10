@@ -282,7 +282,7 @@ const TestIdeas = () => {
           style={{ height: 25, display: "inline-block", verticalAlign: "top" }}
         />{" "}
         <b style={{ fontSize: 20, display: "inline-block" }}>
-          Popping Boba: Strategy Evaluation
+          Strategy Evaluation
         </b>
         &nbsp;
         <Space defaultValue="grid" style={{ float: "right" }}>

@@ -54,7 +54,7 @@ export default function ChatExploration({ context }) {
           } catch (error) {
             console.log("error", error);
           }
-          setOutputs({ ...outputs, [item.title]: "**Boba:** " + output });
+          setOutputs({ ...outputs, [item.title]: "**Haiven:** " + output });
         },
         onerror: (error) => {
           console.log("error", error);
@@ -89,7 +89,7 @@ export default function ChatExploration({ context }) {
           Source: <a href={item.link}>{extractDomainName(item.link)}</a>
         </div>
         <div className="chat-message">
-          <b>Boba:</b> Based on this {item.type}, {item.answer}{" "}
+          Based on this {item.type}, {item.answer}{" "}
         </div>
         <Space.Compact style={{ width: "100%" }}>
           <Input

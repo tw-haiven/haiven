@@ -114,7 +114,7 @@ export default function Landing() {
             technology. Scenarios are used to socialize learnings in a
             contextualized narrative, inspire divergent product thinking,
             conduct resilience/desirability testing, and/or inform strategic
-            planning. For example, you can prompt Boba with:
+            planning. For example, you can prompt with:
           </div>
           <div className="prompt-example">
             {" "}

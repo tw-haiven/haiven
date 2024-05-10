@@ -33,7 +33,7 @@ export default function App({
         }}
       >
         <Head>
-          <title>Boba</title>
+          <title>Haiven</title>
         </Head>
         {useLayout && (
           <Layout style={{ minHeight: "100vh" }}>
