@@ -4,7 +4,7 @@ import { useTheme } from "antd-style";
 
 export default function ChatExploration({ context, user }) {
   const item = context || {};
-  const userProfile = user || { name: "User" , avatar: "👤" };
+  const userProfile = user || { name: "User", avatar: "👤" };
   const theme = useTheme();
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
