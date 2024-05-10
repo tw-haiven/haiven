@@ -6,6 +6,7 @@ from fastapi.responses import FileResponse
 from shared.boba_api import BobaApi
 from shared.services.config_service import ConfigService
 from shared.chats import ServerChatSessionMemory
+from shared.logger import TeamAILogger
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +18,7 @@ from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.base_client import OAuthError
 from jinja2 import Environment, FileSystemLoader
 from shared.url import Url
+import time
 import os
 
 
@@ -100,7 +102,9 @@ class Server:
             else:
                 current_path = request.url.path
                 if current_path == f"/boba/{path}":
-                    print(f"WARNING: Possible loop detected for path {path}")
+                    TeamAILogger.get().logger.warning(
+                        f"WARNING: Possible loop detected for path {path}"
+                    )
                     return PlainTextResponse("Invalid path", status_code=404)
                 return RedirectResponse(url=f"/boba/{path}")
 
@@ -134,7 +138,36 @@ class Server:
             else:
                 return await check_authentication(request, call_next)
 
-        app.add_middleware(SessionMiddleware, secret_key="!secret")
+        @app.middleware("http")
+        async def check_session_expiry(request: Request, call_next):
+            session_expiry_seconds = int(
+                os.environ.get("SESSION_EXPIRY_SECONDS", 7 * 24 * 60 * 60)
+            )  # 1 week
+
+            session = request.session
+            current_time = int(time.time())
+            if session:
+                if "created_at" in session:
+                    created_at = session["created_at"]
+                    if current_time - created_at > session_expiry_seconds:
+                        user = session.get("user", {})
+                        user_name = user.get("name", "")
+                        TeamAILogger.get().logger.info(
+                            f"Session for {user_name} expired due to inactivity of {current_time - created_at} seconds."
+                        )
+                        request.session.clear()
+                        return RedirectResponse(url="/")
+                    else:
+                        session["created_at"] = current_time
+                else:
+                    session["created_at"] = current_time
+
+            response = await call_next(request)
+            return response
+
+        # Session lifetime is managed by the check_session_expiry middleware
+        app.add_middleware(SessionMiddleware, secret_key="!secret", max_age=None)
+
         oauth = OAuth()
 
         oauth.register(
