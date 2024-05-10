@@ -48,7 +48,7 @@ class MockModelClient:
         if "json" in message.lower():
             full_test_scenario = {
                 "title": "Full scenario",
-                "description": "A description",
+                "summary": "A description",
                 "probability": "Low - Most users would have no reason to deny",
                 "impact": "Medium - This could lead to accountability issues",
             }
@@ -56,7 +56,7 @@ class MockModelClient:
                 "[ {",
                 ' "title": ',
                 ' "Hello scenario 1"',
-                ', "description": ',
+                ', "summary": ',
                 ' "scenario description" ' " }, { ",
                 ' "title": ',
                 ' "Hello scenario 2" }',
