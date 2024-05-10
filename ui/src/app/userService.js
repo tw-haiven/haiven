@@ -12,7 +12,6 @@ const userService = {
           .split("=")[1];
       }
     } catch (error) {
-      console.error("Failed to get session cookie", error);
       return null;
     }
     return null;
