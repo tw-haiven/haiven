@@ -128,11 +128,11 @@ const Sidebar = ({ selectedKey = "scenarios" }) => {
             <AiOutlineAntDesign /> Threat Modelling
           </Link>
         </Menu.Item>
-        <Menu.Item key="chat">
+        {/* <Menu.Item key="chat">
           <Link href="/chat">
             <AiOutlineWechat /> Chat
           </Link>
-        </Menu.Item>
+        </Menu.Item> */}
       </SubMenu>
     </Menu>
   );
