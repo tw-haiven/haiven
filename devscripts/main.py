@@ -21,7 +21,7 @@ def app_build():
     command = """
     cd ui && \
     yarn run build && \
-    cp -r out ../app/resources/static/out
+    cp -rf out ../app/resources/static/
     """
     subprocess.run(command, shell=True)
 
