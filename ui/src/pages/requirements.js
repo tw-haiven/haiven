@@ -16,6 +16,7 @@ const Home = () => {
   const [promptInput, setPromptInput] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("Explore requirement");
+  const [drawerHeader, setDrawerHeader] = useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
   const [currentSSE, setCurrentSSE] = useState(null);
   const router = useRouter();
@@ -31,6 +32,7 @@ const Home = () => {
 
   const onExplore = (id) => {
     setDrawerTitle("Explore requirement: " + scenarios[id].title);
+    setDrawerHeader(scenarios[id].summary);
     setChatContext({
       id: id,
       originalPrompt: promptInput,
@@ -103,6 +105,7 @@ const Home = () => {
         destroyOnClose={true}
         onClose={() => setDrawerOpen(false)}
       >
+        <div className="drawer-header">{drawerHeader}</div>
         <ChatExploration
           context={chatContext}
           user={{

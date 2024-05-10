@@ -74,9 +74,7 @@ export default function ChatExploration({ context, user }) {
           backgroundColor: "#47a1ad",
         }}
         locale="en-US"
-        helloMessage={
-          "What do you want to explore? Ask me anything about this scenario."
-        }
+        helloMessage={"What do you want to explore?"}
         request={onSubmitMessage}
       />
     </div>

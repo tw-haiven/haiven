@@ -46,7 +46,7 @@ const Home = () => {
   const [promptAssets, setPromptAssets] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("Explore scenario");
-  const [drawerHeader, setDrawerHeader] = useState("Explore scenario");
+  const [drawerHeader, setDrawerHeader] = useState("");
   const [chatContext, setChatContext] = useState({});
   const [savedIdeas, setSavedIdeas] = useState([]);
   const [currentSSE, setCurrentSSE] = useState(null);
