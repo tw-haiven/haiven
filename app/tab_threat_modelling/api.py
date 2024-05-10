@@ -91,7 +91,7 @@ def enable_threat_modelling(app, chat_session_memory, chat_fn):
             ),
             explore_request.chatSessionId,
             "chat",
-            "birgitta",
+            # TODO: Pass user identifier from session
         )
 
         rendered_prompt = get_explore_prompt(

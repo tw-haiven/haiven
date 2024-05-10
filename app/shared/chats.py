@@ -357,7 +357,7 @@ class JSONChat(TeamAIBaseChat):
         for chunk in stream:
             yield chunk.content
 
-        yield "[DONE]"
+        # yield "[DONE]"
 
     def run(self, message: str):
         data = self.stream_from_model(message)
@@ -367,7 +367,11 @@ class JSONChat(TeamAIBaseChat):
                 yield f"data: {chunk}\n\n"
             else:
                 message = '{ "data": ' + json.dumps(chunk) + " }"
+                # message = json.dumps(chunk)
+                # message = chunk
+                print(message)
                 yield f"data: {message}\n\n"
+                # yield f"{message}\n\n"
 
 
 class ServerChatSessionMemory:

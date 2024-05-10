@@ -2,6 +2,7 @@
 from typing import List
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from tab_story_validation.api import enable_story_validation
 from tab_requirements.api import enable_requirements
 from tab_threat_modelling.api import enable_threat_modelling
 from shared.chats import JSONChat, ServerChatSessionMemory, StreamingChat
@@ -232,6 +233,7 @@ class BobaApi:
 
         enable_threat_modelling(app, self.chat_session_memory, self.chat)
         enable_requirements(app, self.chat_session_memory, self.chat)
+        enable_story_validation(app, self.chat_session_memory)
 
         @app.post("/api/prompt")
         def chat(prompt_data: PromptRequestBody):
@@ -242,7 +244,7 @@ class BobaApi:
                     ),
                     prompt_data.chatSessionId,
                     "chat",
-                    "birgitta",
+                    # TODO: Pass user identifier from session
                 )
             )
 

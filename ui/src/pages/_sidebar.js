@@ -44,6 +44,7 @@ const Sidebar = ({ selectedKey = "scenarios" }) => {
     "/chat": "chat",
     "/threat-modelling": "threat-modelling",
     "/requirements": "requirements",
+    "/story-validation": "story-validation",
   };
   const router = useRouter();
   const currentSelectedKey = pathToKey[router.pathname];

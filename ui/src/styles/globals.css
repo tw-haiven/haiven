@@ -112,12 +112,22 @@ body {
   width: 250px;
   display: inline-block;
   vertical-align: top;
-  margin: 5px;
+  margin: 0.3em;
+  padding-top: 0.8em;
 }
 
 .scenario .scenario-card-content {
   height: 200px;
   overflow-y: auto;
+  font-size: small;
+
+  &.large {
+    height: 300px;
+  }
+}
+
+.scenario .q-a-card-content {
+  height: 200px;
   font-size: small;
 
   &.large {
@@ -215,6 +225,14 @@ body {
 input.select-scenario {
   display: inline-block;
   margin-top: 10px;
+}
+
+textarea.answer-overwrite {
+  background-color: white;
+}
+
+.generate-instructions {
+  padding: 1em 0;
 }
 
 .boba-matrix,
