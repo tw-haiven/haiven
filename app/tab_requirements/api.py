@@ -1,11 +1,8 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-from typing import Optional
-
+from api.models.explore_request import ExploreRequest
 from fastapi import Request
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
 from shared.chats import JSONChat, StreamingChat
-
 from shared.llm_config import LLMConfig
 
 
@@ -85,10 +82,16 @@ Here is the user story description:
     """
 
 
-class ExploreRequirementRequest(BaseModel):
-    input: str
-    context: str
-    chatSessionId: Optional[str] = None
+def get_explore_prompt_2(context, user_input):
+    return f"""
+Hello, I am your User Story Assistant. I specialize in helping cross-functional teams refine and clarify their user stories to ensure they are comprehensive and ready for development. Please input the details of the user story and any questions or remarks you have regarding it.
+
+User Story Description: {context}
+Team Member's Input: {user_input}
+My role is to analyze the provided user story, suggest improvements, and ask probing questions that will help identify gaps or areas that need further clarification. I aim to facilitate a collaborative refinement process that ensures all team members, including developers, business analysts, quality analysts, and infrastructure engineers, have a clear and actionable understanding of the tasks ahead.
+
+Feel free to interact with me anytime by providing a user story and your input, and I will assist you in making it ready for implementation.
+    """
 
 
 def enable_requirements(app, chat_session_memory, chat_fn):
@@ -107,20 +110,17 @@ def enable_requirements(app, chat_session_memory, chat_fn):
         )
 
     @app.post("/api/requirements/explore")
-    def chat(explore_request: ExploreRequirementRequest):
-        print(
-            f"@debug POST /api/requirements/explore: explore_request={explore_request}"
-        )
+    def chat(explore_request: ExploreRequest):
         chat_session_key_value, chat_session = chat_session_memory.get_or_create_chat(
             lambda: StreamingChat(
-                llm_config=LLMConfig("azure-gpt35", 0.5), stream_in_chunks=True
+                llm_config=LLMConfig("azure-gpt4", 0.5), stream_in_chunks=True
             ),
             explore_request.chatSessionId,
             "chat",
             "birgitta",
         )
 
-        rendered_prompt = get_explore_prompt(
+        rendered_prompt = get_explore_prompt_2(
             explore_request.context, explore_request.input
         )
 

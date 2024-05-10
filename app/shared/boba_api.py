@@ -215,7 +215,7 @@ class BobaApi:
                 },
             )
 
-        enable_threat_modelling(app)
+        enable_threat_modelling(app, self.chat_session_memory, self.chat)
         enable_requirements(app, self.chat_session_memory, self.chat)
 
         @app.post("/api/prompt")

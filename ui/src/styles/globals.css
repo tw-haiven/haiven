@@ -106,9 +106,13 @@ body {
 }
 
 .scenario .scenario-card-content {
-  height: 300px;
+  height: 200px;
   overflow-y: auto;
-  font-size: smaller;
+  font-size: small;
+
+  &.large {
+    height: 300px;
+  }
 }
 
 .scenario .ant-card-head-title {

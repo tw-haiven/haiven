@@ -1,8 +1,9 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
+from api.models.explore_request import ExploreRequest
 from fastapi import Request
 from fastapi.responses import StreamingResponse
-
-from shared.chats import JSONChat
+from shared.chats import JSONChat, StreamingChat
+from shared.llm_config import LLMConfig
 
 
 def get_threat_modelling_prompt(dataFlow, assets, userBase):
@@ -54,7 +55,18 @@ Make sure to apply each scenario category to the CONTEXT, and give me scenarios 
     """
 
 
-def enable_threat_modelling(app):
+def get_explore_prompt(context, user_input):
+    return f"""
+Hello, I am your Threat Modeling Assistant. My role is to assist you in identifying and analyzing potential security threats and vulnerabilities within your projects. Please provide a detailed description of the scenario you are evaluating, including any specific systems, processes, or components involved.
+
+- Threat Modeling Scenario Description: {context}
+- Team Member's Input: {user_input}
+
+Based on your inputs, I will guide you through the process of exploring this threat scenario. I will help generate questions and considerations that may expose potential risks and suggest security measures that could be implemented to mitigate these risks. Our goal is to ensure a thorough understanding and preparation against possible security threats facing your project.
+    """
+
+
+def enable_threat_modelling(app, chat_session_memory, chat_fn):
     @app.get("/api/threat-modelling")
     def threat_modelling(request: Request):
         dataFlow = request.query_params.get("dataFlow")
@@ -68,5 +80,31 @@ def enable_threat_modelling(app):
             headers={
                 "Connection": "keep-alive",
                 "Content-Encoding": "none",  # Necessary for the stream to work across the Next rewrite
+            },
+        )
+
+    @app.post("/api/threat-modelling/explore")
+    def chat(explore_request: ExploreRequest):
+        chat_session_key_value, chat_session = chat_session_memory.get_or_create_chat(
+            lambda: StreamingChat(
+                llm_config=LLMConfig("azure-gpt4", 0.5), stream_in_chunks=True
+            ),
+            explore_request.chatSessionId,
+            "chat",
+            "birgitta",
+        )
+
+        rendered_prompt = get_explore_prompt(
+            explore_request.context, explore_request.input
+        )
+
+        return StreamingResponse(
+            chat_fn(rendered_prompt, chat_session),
+            media_type="text/event-stream",
+            headers={
+                "Connection": "keep-alive",
+                "Content-Encoding": "none",
+                "Access-Control-Expose-Headers": "X-Chat-ID",
+                "X-Chat-ID": chat_session_key_value,
             },
         )

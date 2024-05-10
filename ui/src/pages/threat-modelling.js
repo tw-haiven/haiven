@@ -65,7 +65,7 @@ const Home = () => {
     setChatContext({
       id: id,
       originalPrompt: promptDataFlow,
-      type: "scenario",
+      type: "threat-modelling",
       ...scenarios[id],
     });
     setDrawerOpen(true);
@@ -163,6 +163,8 @@ const Home = () => {
         title={drawerTitle}
         mask={false}
         open={drawerOpen}
+        destroyOnClose={true}
+        size="large"
         onClose={() => setDrawerOpen(false)}
       >
         <ChatExploration context={chatContext} />
@@ -277,7 +279,7 @@ const Home = () => {
                   </Button>,
                 ]}
               >
-                <div className="scenario-card-content">
+                <div className="scenario-card-content large">
                   {scenario.category && (
                     <div className="card-prop stackable">
                       <div className="card-prop-name">Category</div>
