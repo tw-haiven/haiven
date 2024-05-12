@@ -188,6 +188,21 @@ class BobaApi:
             response_data = [entry.metadata for entry in self.prompt_list.prompts]
             return JSONResponse(response_data)
 
+        @app.get("/api/knowledge/snippets")
+        def get_knowledge_snippets(request: Request):
+            all_contexts = (
+                self.content_manager.knowledge_base_markdown.get_all_contexts_keys()
+            )
+
+            response_data = []
+            for context in all_contexts:
+                snippets = self.content_manager.knowledge_base_markdown.get_knowledge_content_dict(
+                    context
+                )
+                response_data.append({"context": context, "snippets": snippets})
+
+            return JSONResponse(response_data)
+
         @app.get("/api/make-scenario")
         def make_scenario(request: Request):
             input = request.query_params.get("input", "productization of consulting")

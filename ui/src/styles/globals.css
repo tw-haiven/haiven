@@ -3,6 +3,7 @@
   --color-light-gray: #edf1f3;
   --color-dark-blue: #003d4f;
   --color-sapphire: #47a1ad;
+  --color-sapphire-light: #47a1ad80;
 }
 
 html {
@@ -330,6 +331,51 @@ input.select-scenario {
 
 .chat-message {
   margin-bottom: 10px;
+}
+
+.btn-clipboard {
+  background-image: url("/boba/clipboard-fill-dark-blue.png");
+  background-repeat: no-repeat;
+  background-size: 80%;
+  background-position: center center;
+  background-color: #00000000;
+  border: none;
+  margin-left: 1em;
+}
+
+.clipboard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.clipboard-contents {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.clipboard .bottom {
+  margin-top: auto;
+  /* padding-bottom: 10px; */
+  bottom: 0;
+}
+
+.clipboard .snippet {
+  background: white;
+  cursor: pointer;
+  padding: 0.5em;
+  margin: 1em 0;
+}
+
+.clipboard .snippet:hover {
+  background: var(--color-sapphire-light)
+}
+
+.clipboard .snippet p {
+  margin: 0;
+}
+
+.clipboard .snippet h1, h2, h3, h4 {
+  font-size: 1.2em;
 }
 
 .prompt-suggestions {

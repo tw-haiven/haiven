@@ -5,6 +5,7 @@ import { Drawer, Card, Space, Spin, Button, Radio, Input } from "antd";
 const { TextArea } = Input;
 import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import ChatExploration from "./_chat_exploration";
+import Clipboard from "./_clipboard";
 import { parse } from "best-effort-json-parser";
 import { AiOutlineBorderInner, AiOutlineGroup } from "react-icons/ai";
 
@@ -44,9 +45,11 @@ const Home = () => {
   const [promptDataFlow, setPromptDataFlow] = useState("");
   const [promptUserBase, setPromptUserBase] = useState("");
   const [promptAssets, setPromptAssets] = useState("");
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerTitle, setDrawerTitle] = useState("Explore scenario");
-  const [drawerHeader, setDrawerHeader] = useState("");
+  const [explorationDrawerOpen, setExplorationDrawerOpen] = useState(false);
+  const [explorationDrawerTitle, setExplorationDrawerTitle] =
+    useState("Explore scenario");
+  const [explorationDrawerHeader, setExplorationDrawerHeader] = useState("");
+  const [clipboardDrawerOpen, setClipboardDrawerOpen] = useState(false);
   const [chatContext, setChatContext] = useState({});
   const [savedIdeas, setSavedIdeas] = useState([]);
   const [currentSSE, setCurrentSSE] = useState(null);
@@ -62,15 +65,15 @@ const Home = () => {
   }
 
   const onExplore = (id) => {
-    setDrawerTitle("Explore scenario: " + scenarios[id].title);
-    setDrawerHeader(scenarios[id].summary);
+    setExplorationDrawerTitle("Explore scenario: " + scenarios[id].title);
+    setExplorationDrawerHeader(scenarios[id].summary);
     setChatContext({
       id: id,
       originalPrompt: promptDataFlow,
       type: "Threat Modelling",
       ...scenarios[id],
     });
-    setDrawerOpen(true);
+    setExplorationDrawerOpen(true);
   };
 
   const onClickBrainstormStrategies = () => {
@@ -162,14 +165,14 @@ const Home = () => {
   return (
     <>
       <Drawer
-        title={drawerTitle}
+        title={explorationDrawerTitle}
         mask={false}
-        open={drawerOpen}
+        open={explorationDrawerOpen}
         destroyOnClose={true}
         size="large"
-        onClose={() => setDrawerOpen(false)}
+        onClose={() => setExplorationDrawerOpen(false)}
       >
-        <div className="drawer-header">{drawerHeader}</div>
+        <div className="drawer-header">{explorationDrawerHeader}</div>
         <ChatExploration
           context={chatContext}
           user={{
@@ -178,12 +181,27 @@ const Home = () => {
           }}
         />
       </Drawer>
+      <Drawer
+        title="Clipboard"
+        mask={false}
+        open={clipboardDrawerOpen}
+        destroyOnClose={true}
+        size="large"
+        onClose={() => setClipboardDrawerOpen(false)}
+      >
+        <Clipboard />
+      </Drawer>
       <div id="canvas">
         <div id="prompt-center">
           <b style={{ fontSize: 20, display: "inline-block" }}>
             Threat Modelling
           </b>
           &nbsp;
+          {/* <Button
+            onClick={() => setClipboardDrawerOpen(true)}
+            style={{ float: "right" }}
+            className="btn-clipboard"
+          ></Button> */}
           <Radio.Group
             className="display-mode"
             onChange={onSelectDisplayMode}
