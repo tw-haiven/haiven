@@ -74,6 +74,7 @@ const Home = () => {
       ...scenarios[id],
     });
     setExplorationDrawerOpen(true);
+    setExplorationDrawerOpen(true);
   };
 
   const onClickBrainstormStrategies = () => {
@@ -172,6 +173,7 @@ const Home = () => {
         size="large"
         onClose={() => setExplorationDrawerOpen(false)}
       >
+        <div className="drawer-header">{explorationDrawerHeader}</div>
         <ChatExploration
           context={chatContext}
           user={{
