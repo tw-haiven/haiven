@@ -1,34 +1,17 @@
-import { Menu, Icon, Button } from "antd";
+import { Menu } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 const { SubMenu } = Menu;
+
 import {
-  AiOutlineShop,
-  AiOutlineAntDesign,
-  AiOutlineBorderInner,
-  AiOutlineDotChart,
-  AiOutlineWechat,
-  AiOutlineCodeSandbox,
-  AiOutlineExperiment,
-  AiOutlineUser,
-  AiOutlineLogout,
-  AiOutlineTeam,
-  AiOutlinePartition,
-  AiOutlineFlag,
-  AiOutlineNodeIndex,
-  AiOutlineBook,
-  AiOutlineBulb,
-  AiOutlineThunderbolt,
-  AiOutlinePicture,
-  AiOutlineCarryOut,
-  AiOutlineRobot,
-  AiOutlineRocket,
-  AiOutlineTable,
-  AiOutlineStar,
-  AiOutlineCalendar,
-  AiOutlineCheckSquare,
-  AiOutlineCluster,
-} from "react-icons/ai";
+  RiApps2AddLine,
+  RiGridLine,
+  RiKey2Fill,
+  RiOrganizationChart,
+  RiAedElectrodesLine,
+  RiLightbulbLine,
+  RiDashboardHorizontalLine,
+} from "react-icons/ri";
 
 const Sidebar = ({ selectedKey = "scenarios" }) => {
   const pathToKey = {
@@ -77,7 +60,7 @@ const Sidebar = ({ selectedKey = "scenarios" }) => {
 
       <SubMenu
         key="ideate"
-        icon={<AiOutlineBulb style={{ fontSize: "large" }} />}
+        icon={<RiLightbulbLine style={{ fontSize: "large" }} />}
         title="Ideate"
       >
         {
@@ -88,13 +71,13 @@ const Sidebar = ({ selectedKey = "scenarios" }) => {
         </Menu.Item>*/
           <Menu.Item key="creative-matrix">
             <Link href="/creative-matrix">
-              <AiOutlineTable /> Creative Matrix
+              <RiGridLine /> Creative Matrix
             </Link>
           </Menu.Item>
         }
         <Menu.Item key="scenarios">
           <Link href="/scenarios">
-            <AiOutlineAntDesign /> Scenario design
+            <RiAedElectrodesLine /> Scenario design
           </Link>
         </Menu.Item>
         {/* <Menu.Item key="concepts">
@@ -116,17 +99,22 @@ const Sidebar = ({ selectedKey = "scenarios" }) => {
 
       <SubMenu
         key="analyse"
-        icon={<AiOutlineDotChart style={{ fontSize: "large" }} />}
+        icon={<RiDashboardHorizontalLine style={{ fontSize: "large" }} />}
         title="Analyse"
       >
         <Menu.Item key="requirements">
           <Link href="/requirements">
-            <AiOutlineCluster /> Requirements breakdown
+            <RiOrganizationChart /> Breakdown
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="story-validation">
+          <Link href="/story-validation">
+            <RiApps2AddLine /> Find gaps
           </Link>
         </Menu.Item>
         <Menu.Item key="threat-modelling">
           <Link href="/threat-modelling">
-            <AiOutlineAntDesign /> Threat Modelling
+            <RiKey2Fill /> Threat Modelling
           </Link>
         </Menu.Item>
         {/* <Menu.Item key="chat">

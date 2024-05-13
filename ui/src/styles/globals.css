@@ -373,13 +373,15 @@ textarea.answer-overwrite {
 }
 
 .btn-clipboard {
-  background-image: url("/boba/clipboard-fill-dark-blue.png");
-  background-repeat: no-repeat;
-  background-size: 80%;
-  background-position: center center;
-  background-color: #00000000;
-  border: none;
   margin-left: 1em;
+  float: right;
+  fill: white;
+  background-color: var(--color-dark-blue)
+
+}
+
+.btn-clipboard svg {
+  fill: white;
 }
 
 .clipboard {

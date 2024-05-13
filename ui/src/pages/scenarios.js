@@ -16,15 +16,16 @@ import ScenariosPlot from "./_plot";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 const { Search } = Input;
+
 import {
-  AiOutlineBorderInner,
-  AiOutlineGroup,
-  AiOutlineLike,
-  AiOutlineDislike,
-  AiOutlineRocket,
-  AiOutlinePicture,
-  AiOutlineHeatMap,
-} from "react-icons/ai";
+  RiStackLine,
+  RiGridLine,
+  RiThumbDownLine,
+  RiThumbUpLine,
+  RiRocket2Line,
+  RiFileImageLine,
+  RiAliensLine,
+} from "react-icons/ri";
 
 let ctrl;
 
@@ -187,24 +188,10 @@ const Home = () => {
             style={{ float: "right" }}
           >
             <Radio.Button value="grid">
-              <AiOutlineGroup
-                style={{
-                  display: "inline-block",
-                  verticalAlign: "middle",
-                  height: 14,
-                }}
-              />{" "}
-              Cards
+              <RiStackLine /> Cards
             </Radio.Button>
             <Radio.Button value="plot">
-              <AiOutlineBorderInner
-                style={{
-                  display: "inline-block",
-                  verticalAlign: "middle",
-                  height: 14,
-                }}
-              />{" "}
-              Matrix
+              <RiGridLine /> Matrix
             </Radio.Button>
           </Radio.Group>
           <br />
@@ -271,7 +258,7 @@ const Home = () => {
                   label: (
                     <div>
                       <span className="config-icon">
-                        <AiOutlineLike />
+                        <RiThumbUpLine />
                       </span>{" "}
                       Optimistic
                     </div>
@@ -282,7 +269,7 @@ const Home = () => {
                   label: (
                     <div>
                       <span className="config-icon">
-                        <AiOutlineDislike />
+                        <RiThumbDownLine />
                       </span>{" "}
                       Pessimistic
                     </div>
@@ -302,7 +289,7 @@ const Home = () => {
                   label: (
                     <div>
                       <span className="config-icon">
-                        <AiOutlinePicture />
+                        <RiFileImageLine />
                       </span>{" "}
                       Realistic
                     </div>
@@ -313,7 +300,7 @@ const Home = () => {
                   label: (
                     <div>
                       <span className="config-icon">
-                        <AiOutlineRocket />
+                        <RiRocket2Line />
                       </span>{" "}
                       Sci-fi Future
                     </div>
@@ -324,7 +311,7 @@ const Home = () => {
                   label: (
                     <div>
                       <span className="config-icon">
-                        <AiOutlineHeatMap />
+                        <RiAliensLine />
                       </span>{" "}
                       Bizarre
                     </div>

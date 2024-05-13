@@ -7,7 +7,7 @@ import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import ChatExploration from "./_chat_exploration";
 import Clipboard from "./_clipboard";
 import { parse } from "best-effort-json-parser";
-import { AiOutlineBorderInner, AiOutlineGroup } from "react-icons/ai";
+import { RiStackLine, RiGridLine, RiClipboardLine } from "react-icons/ri";
 
 const SelectedItemsMenu = ({
   selections,
@@ -200,9 +200,14 @@ const Home = () => {
           &nbsp;
           {/* <Button
             onClick={() => setClipboardDrawerOpen(true)}
-            style={{ float: "right" }}
             className="btn-clipboard"
-          ></Button> */}
+          ><RiClipboardLine
+          style={{
+            display: "inline-block",
+            verticalAlign: "middle",
+            height: 14,
+          }}
+        /></Button> */}
           <Radio.Group
             className="display-mode"
             onChange={onSelectDisplayMode}
@@ -210,24 +215,10 @@ const Home = () => {
             style={{ float: "right" }}
           >
             <Radio.Button value="grid">
-              <AiOutlineGroup
-                style={{
-                  display: "inline-block",
-                  verticalAlign: "middle",
-                  height: 14,
-                }}
-              />{" "}
-              Cards
+              <RiStackLine /> Cards
             </Radio.Button>
             <Radio.Button value="plot">
-              <AiOutlineBorderInner
-                style={{
-                  display: "inline-block",
-                  verticalAlign: "middle",
-                  height: 14,
-                }}
-              />{" "}
-              Matrix
+              <RiGridLine /> Matrix
             </Radio.Button>
           </Radio.Group>
           <br />
