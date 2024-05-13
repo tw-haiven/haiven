@@ -558,3 +558,27 @@ textarea.answer-overwrite {
   position:relative;
   z-index: 0;
 }
+
+
+.dashboard {
+
+}
+
+.dashboard .index-tile {
+  background-color: var(--color-sapphire-light);
+  width: 160px;
+  height: 160px;
+  padding: 1em;
+  margin: 1em;
+}
+
+.dashboard .index-tile h3 {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+}
+
+.dashboard .index-tile p {
+  margin: 0;
+  font-size: 80%;
+}

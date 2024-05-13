@@ -13,7 +13,7 @@ export default function App({
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState();
   const router = useRouter();
-  const useLayout = router.pathname !== "/";
+  const useLayout = router.pathname !== "/" && router.pathname !== "/dashboard";
 
   return (
     <>
