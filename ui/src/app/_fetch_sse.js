@@ -47,7 +47,7 @@ export const fetchSSE2 = async (fetchFn, options) => {
     done = doneReading;
     const chunkValue = decoder.decode(value, { stream: !doneReading });
 
-    console.log("reading", chunkValue);
+    // console.log("reading", chunkValue);
 
     if (options.json === true) {
       // - expectation from backend: '{ "data": "some partial token of a JSON string" }'
