@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { fetchSSE, fetchSSE2 } from "../app/_fetch_sse";
+import { fetchSSE2 } from "../app/_fetch_sse";
 import { Card, Spin, Button, Input } from "antd";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
+import ReactMarkdown from "react-markdown";
 
 let ctrl;
 
 const Home = () => {
-  const [scenarios, setScenarios] = useState([]);
+  const [questions, setQuestions] = useState([]);
   const [selections, setSelections] = useState([]);
+  const [storyScenarios, setStoryScenarios] = useState();
   const [isLoading, setLoading] = useState(false);
   const [promptInput, setPromptInput] = useState("");
   const [currentSSE, setCurrentSSE] = useState(null);
+  const [chatSessionId, setChatSessionId] = useState();
   const router = useRouter();
 
   function abortLoad() {
@@ -32,21 +35,12 @@ const Home = () => {
     };
   };
 
-  const onGenerateScenarios = () => {
-    const selectedClarifications = selections.map((selectedIndex) => {
-      const scenario = scenarios[selectedIndex];
-      return scenario;
-    });
-    console.log(selectedClarifications);
-  };
-
   const onSubmitPrompt = (event) => {
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
 
-    const uri =
-      "/api/story-validation" + "?input=" + encodeURIComponent(promptInput);
+    const uri = "/api/story-validation/questions";
 
     let ms = "";
     let output = [];
@@ -54,14 +48,14 @@ const Home = () => {
     fetchSSE2(
       () => {
         const response = fetch(uri, {
-          method: "GET",
+          method: "POST",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
-          // body: JSON.stringify({
-          //   input: promptInput,
-          // }),
+          body: JSON.stringify({
+            input: promptInput,
+          }),
         });
 
         return response;
@@ -72,7 +66,10 @@ const Home = () => {
           setLoading(false);
           abortLoad();
         },
-        onMessageHandle: (data) => {
+        onMessageHandle: (data, response) => {
+          if (!chatSessionId) {
+            setChatSessionId(response.headers.get("X-Chat-ID"));
+          }
           try {
             ms += data.data;
 
@@ -82,7 +79,7 @@ const Home = () => {
               console.log("error", error);
             }
             if (Array.isArray(output)) {
-              setScenarios(output);
+              setQuestions(output);
             } else {
               console.log("response is not parseable into an array");
             }
@@ -102,27 +99,78 @@ const Home = () => {
     );
   };
 
-  const query = router.query;
-  const params = query;
-  const initialStrategicPrompt = params.strategic_prompt;
-  const [initialLoadDone, setInitialLoad] = useState(false);
+  const onGenerateScenarios = (event) => {
+    abortLoad();
+    ctrl = new AbortController();
+    setLoading(true);
 
-  useEffect(() => {
-    if (!initialStrategicPrompt) return;
-    if (!router.isReady) return;
-    if (initialLoadDone) return;
-    setPromptInput(initialStrategicPrompt);
-    setInitialLoad(true);
-  });
+    const selectedClarifications = selections.map((selectedIndex) => {
+      const scenario = questions[selectedIndex];
+      return {
+        question: scenario.question,
+        answer: scenario.answer,
+      };
+    });
+    console.log(selectedClarifications);
+
+    const uri = "/api/story-validation/scenarios";
+
+    let ms = "";
+
+    fetchSSE2(
+      () => {
+        console.log(promptInput);
+        const response = fetch(uri, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            input: promptInput,
+            chat_session_id: chatSessionId,
+            answers: selectedClarifications,
+          }),
+        });
+
+        return response;
+      },
+      {
+        onErrorHandle: () => {
+          setLoading(false);
+          abortLoad();
+        },
+        onMessageHandle: (data) => {
+          try {
+            ms += data;
+
+            setStoryScenarios(ms);
+          } catch (error) {
+            console.log("error", error, "data received", "'" + data + "'");
+          }
+        },
+        onAbort: () => {
+          setLoading(false);
+          abortLoad();
+        },
+        onFinish: () => {
+          setLoading(false);
+          abortLoad();
+        },
+      },
+    );
+  };
+
+  const copyScenarios = () => {
+    navigator.clipboard.writeText(storyScenarios);
+  };
 
   return (
     <>
       <div id="canvas">
         <div id="prompt-center">
-          <b style={{ fontSize: 20, display: "inline-block" }}>
-            Validate and refine a user story
-          </b>
-          &nbsp;
+          <h2>Validate and refine a user story</h2>
+          <h3>Step 1: Discover gaps in your story</h3>
           <div className="scenario-inputs">
             <div className="scenario-input">
               <label>High level requirements</label>
@@ -138,18 +186,6 @@ const Home = () => {
             <Button type="primary" onClick={onSubmitPrompt}>
               Go
             </Button>
-            {scenarios.length > 0 && (
-              <div className="generate-instructions">
-                Go through the questions, select the ones that are relevant and
-                refine the answers.
-                <br />
-                Once you're happy with the selected answers, you can generate
-                given/when/then scenarios for this story <br />
-                <Button type="primary" onClick={onGenerateScenarios}>
-                  Generate
-                </Button>
-              </div>
-            )}
           </div>
           &nbsp;
           {isLoading && (
@@ -167,12 +203,12 @@ const Home = () => {
         </div>
 
         <div className={"scenarios-collection cards-display"}>
-          {scenarios.map((scenario, i) => {
+          {questions.map((question, i) => {
             return (
               <Card
                 key={i}
                 className="scenario"
-                title={<>{scenario.question}</>}
+                title={<>{question.question}</>}
                 actions={[
                   <input
                     key={"cb" + i}
@@ -183,17 +219,17 @@ const Home = () => {
                 ]}
               >
                 <div className="q-a-card-content">
-                  {scenario.question && (
+                  {question.question && (
                     <div className="card-prop stackable">
                       <div className="card-prop-name">Suggested answer</div>
                       <div>
                         <TextArea
                           className="answer-overwrite"
-                          value={scenario.answer}
+                          value={question.answer}
                           onChange={(e) => {
-                            console.log("changing", e.target.value);
-                            scenario.answer = e.target.value;
-                            setScenarios(scenarios);
+                            const updatedQuestions = [...questions];
+                            updatedQuestions[i].answer = e.target.value;
+                            setQuestions(updatedQuestions);
                           }}
                           rows={8}
                         ></TextArea>
@@ -205,6 +241,28 @@ const Home = () => {
             );
           })}
         </div>
+
+        {questions.length > 0 && (
+          <div className="generate-instructions">
+            <h3>Step 2: Generate scenarios</h3>
+            Go through the questions, select the ones that are relevant and
+            refine the answers.
+            <br />
+            Once you're happy with the selected answers, you can generate
+            given/when/then scenarios for this story <br />
+            <Button type="primary" onClick={onGenerateScenarios}>
+              Generate
+            </Button>
+          </div>
+        )}
+        {storyScenarios && (
+          <div className="generated-text-results">
+            <Button type="primary" onClick={copyScenarios}>
+              Copy
+            </Button>
+            <ReactMarkdown>{storyScenarios}</ReactMarkdown>
+          </div>
+        )}
       </div>
     </>
   );

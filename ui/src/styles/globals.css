@@ -4,6 +4,7 @@
   --color-dark-blue: #003d4f;
   --color-sapphire: #47a1ad;
   --color-sapphire-light: #47a1ad80;
+  --standard-left-padding: 1.5em;
 }
 
 html {
@@ -46,7 +47,7 @@ body {
 }
 
 #prompt-center {
-  padding: 1.5em;
+  padding: var(--standard-left-padding);
   font-size: 13px;
 }
 
@@ -159,7 +160,20 @@ body {
 }
 
 .scenario-input textarea {
-  width: 500;
+  max-width: 600px;
+  display: block;
+}
+
+.generated-text-results {
+  padding: 0 var(--standard-left-padding);
+  border: 1px solid var(--color-light-gray);
+  margin-left: var(--standard-left-padding);
+  max-width: 600px;
+}
+
+.generated-text-results button {
+  float: right;
+  margin-top: 1em;
 }
 
 #canvas {
@@ -174,6 +188,10 @@ body {
 
   margin-bottom: 10px;
   font-weight: bold;
+}
+
+.scenarios-collection {
+  padding: 0 var(--standard-left-padding);
 }
 
 .scenarios-collection.equal-display .scenario-card-content {
@@ -232,7 +250,7 @@ textarea.answer-overwrite {
 }
 
 .generate-instructions {
-  padding: 1em 0;
+  padding: 1em var(--standard-left-padding);
 }
 
 .boba-matrix,
