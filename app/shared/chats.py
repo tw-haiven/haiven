@@ -115,13 +115,13 @@ class StreamingChat(TeamAIBaseChat):
             else:
                 yield chat_history
 
-    def next(self, human_message, chat_history):
+    def next(self, human_message, chat_history=[]):
         chat_history += [[human_message, ""]]
         for chunk in self.run(human_message):
-            chat_history[-1][1] += chunk
             if self.stream_in_chunks:
                 yield chunk
             else:
+                chat_history[-1][1] += chunk
                 yield chat_history
 
     def summarise_conversation(self):
@@ -364,11 +364,16 @@ class JSONChat(TeamAIBaseChat):
             yield "[DONE]"
 
     def run(self, message: str):
-        data = self.stream_from_model(message)
-        for chunk in data:
+        self.memory.append(HumanMessage(content=message))
+        data = enumerate(self.stream_from_model(message))
+        for i, chunk in data:
+            if i == 0:
+                self.memory.append(AIMessage(content=""))
+
             if chunk == "[DONE]":
                 yield f"data: {chunk}\n\n"
             else:
+                self.memory[-1].content += chunk
                 if self.event_stream_standard:
                     message = '{ "data": ' + json.dumps(chunk) + " }"
                     yield f"data: {message}\n\n"
