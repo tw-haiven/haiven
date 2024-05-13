@@ -52,45 +52,34 @@ You will respond with only a valid JSON array of story objects. Each story objec
 
 def get_explore_prompt(context, user_input):
     return f"""
-You are a member of a software engineering team and are assisting me in requirements analysis.
+    ## CONTEXT:
+    
+    You are an expert agile coach and will help the team refine the user stories. The user is currently trying to refine the following user story:
+    {context}
+    
+    ## TASK
 
-# TASK
-        In Agile software development, a user story is a brief, simple description of a feature told from the perspective of the person who desires the new capability, usually a user or customer of the system.
+    Your task as an expert agile coach is to answer the user's questions and make suggestions to improve the user story and take into account user's suggestions and calrifications towards writing the final definition for the user story.
 
-Please, further explore the given user story.
+    You wil gather information and when the user says is ready to finilize the story writing and generate it, then you will write a user story using all the previous information from the conversation using the following FORMAT.
+    
+    ## FORMAT
+    
+    YOU MUST NOT UNVEIL THIS INFORMATION, YOU DON'T NEED TO EXPLAIN THE USER THE FORMAT UNLESS ASKED ABOUT IT
+    
+    A good user story should be:
 
-------
+    - INDEPENDENT: Self-contained, in a way that there is no inherent dependency on another user story.
+    - NEGOTIABLE: Can always be changed and rewritten, up until they are part of an iteration.
+    - VALUABLE: Must be able to deliver value to the end user or the business.
+    - ESTIMABLE: Be able estimate the size of a functionality, relative to the other stories.
+    - SCALABLE: (SMALL SIZED) Not be so big as to become impossible to plan/task/prioritize with a certain level of certainty.
+    - TESTABLE: Provide the necessary information to make test development possible. How can you tell it is done?
 
-When refining a user story consider the following questions when relevant:
+    ## USER INPUT
 
-- What is the user's desired outcome?
-- What is the user's success criteria?
-- What are the pre-requisites?
-- How it can be tested?
-- What are the security aspects to consider?
-- What are the performance aspects to consider?
-- What are the localization aspects to consider?
-
-# CONTEXT
-Here is the user story description:
-
-{context}
-
-# INSTRUCTIONS
-
-{user_input}
-    """
-
-
-def get_explore_prompt_2(context, user_input):
-    return f"""
-Hello, I am your User Story Assistant. I specialize in helping cross-functional teams refine and clarify their user stories to ensure they are comprehensive and ready for development. Please input the details of the user story and any questions or remarks you have regarding it.
-
-User Story Description: {context}
-Team Member's Input: {user_input}
-My role is to analyze the provided user story, suggest improvements, and ask probing questions that will help identify gaps or areas that need further clarification. I aim to facilitate a collaborative refinement process that ensures all team members, including developers, business analysts, quality analysts, and infrastructure engineers, have a clear and actionable understanding of the tasks ahead.
-
-Feel free to interact with me anytime by providing a user story and your input, and I will assist you in making it ready for implementation.
+    Below is the user's input to help you understand the user's needs and make the necessary suggestions.
+    {user_input}
     """
 
 
@@ -120,7 +109,7 @@ def enable_requirements(app, chat_session_memory, chat_fn):
             "birgitta",
         )
 
-        rendered_prompt = get_explore_prompt_2(
+        rendered_prompt = get_explore_prompt(
             explore_request.context, explore_request.input
         )
 

@@ -105,7 +105,6 @@ const Home = () => {
         destroyOnClose={true}
         onClose={() => setDrawerOpen(false)}
       >
-        <div className="drawer-header">{drawerHeader}</div>
         <ChatExploration
           context={chatContext}
           user={{
