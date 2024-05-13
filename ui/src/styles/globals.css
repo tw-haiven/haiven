@@ -466,3 +466,8 @@ input.select-scenario {
 .tree-node-content {
   outline: none;
 }
+
+.display-mode{
+  position:relative;
+  z-index: 0;
+}

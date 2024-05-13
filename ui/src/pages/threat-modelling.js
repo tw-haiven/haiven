@@ -188,6 +188,7 @@ const Home = () => {
           </b>
           &nbsp;
           <Radio.Group
+            className="display-mode"
             onChange={onSelectDisplayMode}
             defaultValue="grid"
             style={{ float: "right" }}
