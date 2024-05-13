@@ -224,6 +224,7 @@ input.select-scenario {
 
 .boba-matrix table td {
   text-align: center;
+  min-height: 150px;
 }
 
 .boba-matrix table td.content {
@@ -235,11 +236,12 @@ input.select-scenario {
   background: var(--color-sapphire);
   padding: 5px;
   cursor: pointer;
+  color: white;
 }
 
 .boba-matrix .matrix-item .matrix-item-title {
   font-weight: bold;
-  color: white;
+  
 }
 
 .explore-drawer {
