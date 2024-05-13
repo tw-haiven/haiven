@@ -55,6 +55,10 @@ export const fetchSSE2 = async (fetchFn, options) => {
       // - make an assumption about API endpoints' message delimiters (\n\n)
       // - Split into multiple "messages" with JSON data tokens
       if (chunkValue !== "") {
+        // LEARNING: Sending on just the JSON chunk directly, without {data: ...} wrapper, doesn't work, messes up character escaping
+        // LEARNING: Using "data: " in front of the {data: ...} wrapper also breaks things, "Unexpected non-whitespace character" for the trailing line breaks?
+        // LEARNING: Removing the trailing double line break from the API response a) doesn't seem to be the standard, EventStream tab doesn't show anything, and b) again seems to break the JSON.parse
+
         const SPLIT_DELIMITER = "|SPLIT|";
         const chunkable = chunkValue.replace(
           /}\n\n{/g,
