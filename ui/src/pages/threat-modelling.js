@@ -7,7 +7,6 @@ import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 import { AiOutlineBorderInner, AiOutlineGroup } from "react-icons/ai";
-import userService from "../app/userService";
 
 const SelectedItemsMenu = ({
   selections,
@@ -174,10 +173,8 @@ const Home = () => {
         <ChatExploration
           context={chatContext}
           user={{
-            name: userService.getName() ?? "User",
-            avatar:
-              userService.getProfilePicture() ??
-              "/boba/user-5-fill-dark-blue.svg",
+            name: "User",
+            avatar: "/boba/user-5-fill-dark-blue.svg",
           }}
         />
       </Drawer>

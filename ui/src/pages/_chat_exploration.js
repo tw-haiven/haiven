@@ -54,6 +54,9 @@ export default function ChatExploration({ context, user }) {
 
   return (
     <div className="chat-exploration">
+      <div className="chat-exploration__header">
+        <p>{item.summary}</p>
+      </div>
       <ProChat
         style={{
           height: "100%",
