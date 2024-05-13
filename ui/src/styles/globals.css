@@ -160,7 +160,7 @@ body {
   margin-right: 0.3em;
 }
 
-.scenario-input textarea {
+.scenario-input textarea, .scenario-input input {
   max-width: 600px;
   display: block;
 }
