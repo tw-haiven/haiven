@@ -66,12 +66,12 @@ class TestApp:
 
         # Assert
         expected_calls = [
-            call(server, ui_analysts, path=analysis_path),
-            call(server, ui_testing, path=testing_path),
-            call(server, ui_coding, path=coding_path),
-            call(server, ui_knowledge, path=knowledge_path),
-            call(server, ui_about, path=about_path),
-            call(server, plain_chat, path=chat_path),
+            call(server, ui_analysts, path=analysis_path, root_path=analysis_path),
+            call(server, ui_testing, path=testing_path, root_path=testing_path),
+            call(server, ui_coding, path=coding_path, root_path=coding_path),
+            call(server, ui_knowledge, path=knowledge_path, root_path=knowledge_path),
+            call(server, ui_about, path=about_path, root_path=about_path),
+            call(server, plain_chat, path=chat_path, root_path=chat_path),
         ]
 
         mock_mount_gradio_app.assert_has_calls(expected_calls, any_order=True)
