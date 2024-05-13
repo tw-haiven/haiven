@@ -60,36 +60,22 @@ const Home = () => {
             "Content-Type": "application/json",
           },
           // body: JSON.stringify({
-          //   userinput: lastMessage?.content,
-          //   promptid: selectedPrompt.identifier,
-          //   chatSessionId: chatSessionId,
+          //   input: promptInput,
           // }),
         });
 
         return response;
       },
       {
+        json: true,
         onErrorHandle: () => {
           setLoading(false);
           abortLoad();
         },
-        onMessageHandle: (rawData) => {
-          // console.log("Data received", rawData);
+        onMessageHandle: (data) => {
           try {
-            // let jsonString = '{ "data": " {\n" }';  // This string is how you might receive it.
-            // let correctedJsonString = jsonString.replace(/\n/g, "\\n");
-            // let parsedData = JSON.parse(correctedJsonString);
-            // console.log(parsedData);
+            ms += data.data;
 
-            // const data = JSON.parse(rawData.replace(/\\/g, "\\\\"));
-            // const data = JSON.parse(rawData);
-            // console.log(data);
-
-            // ms += data.data;
-            console.log("RAW", rawData);
-            ms += rawData;
-
-            console.log("MS", ms);
             try {
               output = parse(ms || "[]");
             } catch (error) {
@@ -101,39 +87,19 @@ const Home = () => {
               console.log("response is not parseable into an array");
             }
           } catch (error) {
-            console.log("error", error, "rawData", "'" + rawData + "'");
+            console.log("error", error, "data received", "'" + data + "'");
           }
         },
         onAbort: () => {
           setLoading(false);
           abortLoad();
         },
-        onFinish: () => {},
+        onFinish: () => {
+          setLoading(false);
+          abortLoad();
+        },
       },
     );
-
-    // let sse = fetchSSE({
-    //   url: uri,
-    //   onData: (event, sse) => {
-    //     const data = JSON.parse(event.data);
-    //     ms += data.data;
-    //     try {
-    //       output = parse(ms || "[]");
-    //     } catch (error) {
-    //       console.log("error", error);
-    //     }
-    //     if (Array.isArray(output)) {
-    //       setScenarios(output);
-    //     } else {
-    //       console.log("response is not parseable into an array");
-    //     }
-    //   },
-    //   onStop: () => {
-    //     setLoading(false);
-    //     abortLoad();
-    //   },
-    // });
-    // setCurrentSSE(sse);
   };
 
   const query = router.query;

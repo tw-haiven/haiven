@@ -345,10 +345,13 @@ class JSONChat(TeamAIBaseChat):
         self,
         llm_config=LLMConfig("azure-gpt4", 0.2),
         system_message: str = "You are a helpful assistant",
+        event_stream_standard=True,
     ):
         super().__init__(
             llm_config, LLMChatFactory.new_llm_chat(llm_config), system_message
         )
+        # Transition to new frontend SSE implementation: Add "data: " and "[DONE]" vs not doing that
+        self.event_stream_standard = event_stream_standard
 
     def stream_from_model(self, prompt):
         client = LLMChatFactory.new_llm_chat(self.llm_config)
@@ -357,21 +360,21 @@ class JSONChat(TeamAIBaseChat):
         for chunk in stream:
             yield chunk.content
 
-        # yield "[DONE]"
+        if self.event_stream_standard:
+            yield "[DONE]"
 
     def run(self, message: str):
         data = self.stream_from_model(message)
         for chunk in data:
             if chunk == "[DONE]":
-                # print("done, send", f"data: {chunk}")
                 yield f"data: {chunk}\n\n"
             else:
-                message = '{ "data": ' + json.dumps(chunk) + " }"
-                # message = json.dumps(chunk)
-                # message = chunk
-                print(message)
-                yield f"data: {message}\n\n"
-                # yield f"{message}\n\n"
+                if self.event_stream_standard:
+                    message = '{ "data": ' + json.dumps(chunk) + " }"
+                    yield f"data: {message}\n\n"
+                else:
+                    message = json.dumps({"data": chunk})
+                    yield f"{message}\n\n"
 
 
 class ServerChatSessionMemory:

@@ -7,16 +7,18 @@ export const getMessageError = async (response) => {
   return chatMessageError;
 };
 
-// export interface FetchSSEOptions {
-//   onErrorHandle?: (error: ChatMessageError) => void;
-//   onMessageHandle?: (text: string, response: Response) => void;
-//   onAbort?: (text: string) => Promise<void>;
-//   onFinish?: (text: string, type: SSEFinishType) => Promise<void>;
-// }
+/*
+ Attempt to implement a fetch SSE variant that is more flexible in terms
+ of taking different HTTP methods, headers etc - basically the full power of fetch()
+ Original code copied from https://github.com/ant-design/pro-chat
+ https://github.com/ant-design/pro-chat/blob/371bc6580d684575d84a89ee5e149f751334c456/src/ProChat/utils/fetch.ts
 
-// Attempt to implement a fetch SSE variant that is more flexible in terms
-// of taking different HTTP methods, headers etc - basically the full power of fetch()
-// Copied from https://github.com/ant-design/pro-chat
+ options:
+   onErrorHandle?: (error: {"message", "type"})
+   onMessageHandle?: (text: string, response: Response)
+   onFinish?: (text: string)
+   json?: boolean; if true, will process '{ "data": "some partial token of a JSON string" }' chunks and pass on as JSON object
+*/
 export const fetchSSE2 = async (fetchFn, options) => {
   options = options || {};
   const response = await fetchFn();
@@ -45,15 +47,31 @@ export const fetchSSE2 = async (fetchFn, options) => {
     done = doneReading;
     const chunkValue = decoder.decode(value, { stream: !doneReading });
 
-    // TODO for backend: Backend shouldn't have the "data: " prefix for this client implementation
-    // PROBLEM we stopped with: For some reason the chunkValue has lots of messed up escape characters
-    /* Example
-      ""[ {""\"title\": ""\"Hello scenario 1\""", \"description\": ""\"scenario description\"  }, { ""\"title\": ""\"Hello scenario 2\" }""]""
-    */
-    // console.log("reading", chunkValue);
+    console.log("reading", chunkValue);
 
-    options.onMessageHandle?.(chunkValue.trim(), returnRes);
+    if (options.json === true) {
+      // - expectation from backend: '{ "data": "some partial token of a JSON string" }'
+      // - chunkValue is sometimes multiple messages
+      // - make an assumption about API endpoints' message delimiters (\n\n)
+      // - Split into multiple "messages" with JSON data tokens
+      if (chunkValue !== "") {
+        const SPLIT_DELIMITER = "|SPLIT|";
+        const chunkable = chunkValue.replace(
+          /}\n\n{/g,
+          "}" + SPLIT_DELIMITER + "{",
+        );
+        const chunks = chunkable.split(SPLIT_DELIMITER);
+        chunks.forEach((value) => {
+          const data = JSON.parse(value);
+          options.onMessageHandle?.(data, returnRes);
+        });
+      }
+    } else {
+      options.onMessageHandle?.(chunkValue, returnRes);
+    }
   }
+
+  options.onFinish?.("finish");
 
   return returnRes;
 };

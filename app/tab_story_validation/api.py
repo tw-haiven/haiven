@@ -21,7 +21,7 @@ Here is my input that describes my application and user story:
 Think about details that are not mentioned or unclear about this user story. 
 Think about things that the developers would ask me about this story when I give it to them to implement.
 
-Come up with 2-3 questions that you would ask to clarify the user story:
+Come up with 5-10 questions that you would ask to clarify the user story:
 - Thought: Think about what is still uncertain about defining the user story. Ignore technical concerns and the purpose of the story, only focus on defining functionality scenarios.
 - Question: a question to ask to clarify the user story
 - The answer you suggest for the question
@@ -41,7 +41,9 @@ def enable_story_validation(app, chat_session_memory):
         input = request.query_params.get("input")
 
         chat_session_key_value, chat_session = chat_session_memory.get_or_create_chat(
-            lambda: JSONChat(llm_config=LLMConfig("azure-gpt4", 0.5)),
+            lambda: JSONChat(
+                llm_config=LLMConfig("azure-gpt4", 0.5), event_stream_standard=False
+            ),
             None,
             "story-validation",
             # TODO: Pass user identifier from session
