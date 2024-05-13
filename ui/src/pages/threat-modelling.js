@@ -70,7 +70,7 @@ const Home = () => {
     setChatContext({
       id: id,
       originalPrompt: promptDataFlow,
-      type: "Threat Modelling",
+      type: "threat-modelling",
       ...scenarios[id],
     });
     setExplorationDrawerOpen(true);
@@ -172,7 +172,6 @@ const Home = () => {
         size="large"
         onClose={() => setExplorationDrawerOpen(false)}
       >
-        <div className="drawer-header">{explorationDrawerHeader}</div>
         <ChatExploration
           context={chatContext}
           user={{
