@@ -32,6 +32,6 @@ class App:
         for create_ui, get_path in ui_components:
             ui_component = getattr(self.ui_factory, create_ui)()
             path = getattr(self.ui_factory.navigation_manager, get_path)()
-            gr.mount_gradio_app(self.server, ui_component, path=path)
+            gr.mount_gradio_app(self.server, ui_component, path=path, root_path=path)
 
         return self.server
