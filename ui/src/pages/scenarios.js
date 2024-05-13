@@ -26,32 +26,6 @@ import {
   AiOutlineHeatMap,
 } from "react-icons/ai";
 
-const SelectedItemsMenu = ({
-  selections,
-  items,
-  onClickBrainstormStrategies,
-  onClickCreateStoryboard,
-}) => {
-  return (
-    <div className="selected-items-menu">
-      <span>
-        {selections.length} of {items.length} scenarios selected:
-      </span>
-      &nbsp;
-      <Space wrap>
-        <Button type="primary" onClick={onClickBrainstormStrategies}>
-          Brainstorm strategies and questions
-        </Button>
-        {selections.length == 1 && (
-          <Button type="primary" onClick={onClickCreateStoryboard}>
-            Create a storyboard for this scenario
-          </Button>
-        )}
-      </Space>
-    </div>
-  );
-};
-
 let ctrl;
 
 const Home = () => {
@@ -59,7 +33,6 @@ const Home = () => {
   const [scenarios, setScenarios] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [isDetailed, setDetailed] = useState(false);
-  const [selections, setSelections] = useState([]);
   const [displayMode, setDisplayMode] = useState("grid");
   const [prompt, setPrompt] = useState("");
   const [timeHorizon, setTimeHorizon] = useState("5 years");
@@ -70,7 +43,6 @@ const Home = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
-  const [savedIdeas, setSavedIdeas] = useState([]);
   const [currentSSE, setCurrentSSE] = useState(null);
   const router = useRouter();
 
@@ -114,49 +86,6 @@ const Home = () => {
     setDrawerOpen(true);
   };
 
-  const onSave = async (id) => {
-    const scenario = scenarios[id];
-    const body = scenario;
-    body.prompt = prompt;
-    body.type = "scenario";
-    const resp = await fetch("/api/save-idea", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    const data = await resp.json();
-    setSavedIdeas([...savedIdeas, id]);
-    console.log("Saved idea", data);
-  };
-
-  const onClickBrainstormStrategies = () => {
-    const scenariosParams = selections.map((selectedIndex) => {
-      // console.log("i", selectedIndex);
-      const scenario = scenarios[selectedIndex];
-      // console.log("s", scenario);
-      return (
-        "scenarios=" +
-        encodeURIComponent(scenario.title + ": " + scenario.summary)
-      );
-    });
-    const url =
-      "/strategies?strategic_prompt=" +
-      encodeURIComponent(prompt) +
-      "&" +
-      scenariosParams.join("&");
-    window.open(url, "_blank", "noreferrer");
-  };
-
-  const onClickCreateStoryboard = () => {
-    const scenario = scenarios[selections[0]];
-    const url =
-      "/storyboard?prompt=" +
-      encodeURIComponent(scenario.title + ": " + scenario.summary);
-    window.open(url, "_blank", "noreferrer");
-  };
-
   const handleDetailCheck = (event) => {
     setDetailed(event.target.checked);
     if (event.target.checked) setDisplayMode("list");
@@ -167,25 +96,11 @@ const Home = () => {
     setDisplayMode(event.target.value);
   };
 
-  const onScenarioSelectChanged = (index) => {
-    return (event) => {
-      console.log("event for " + index, event);
-      console.log(
-        (event.target.checked ? "selected" : "deselected") + " scenario",
-        scenarios[index],
-      );
-      if (event.target.checked && selections.indexOf(index) == -1)
-        setSelections([...selections, index]);
-      else setSelections(selections.filter((s) => s != index));
-    };
-  };
-
   const onSubmitPrompt = async (value, event) => {
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
     setPrompt(value);
-    setSelections([]);
 
     const uri =
       "/api/make-scenario" +
@@ -424,16 +339,6 @@ const Home = () => {
               </Button>
             )}
           </div>
-          <br />
-          <br />
-          {selections.length > 0 && (
-            <SelectedItemsMenu
-              selections={selections}
-              items={scenarios}
-              onClickBrainstormStrategies={onClickBrainstormStrategies}
-              onClickCreateStoryboard={onClickCreateStoryboard}
-            />
-          )}
         </div>
 
         <div className={"scenarios-collection " + displayMode + "-display"}>
@@ -444,12 +349,6 @@ const Home = () => {
                 className="scenario"
                 title={<>{scenario.title}</>}
                 actions={[
-                  <input
-                    key={"cb" + i}
-                    type="checkbox"
-                    className="select-scenario"
-                    onChange={onScenarioSelectChanged(i)}
-                  />,
                   <Button
                     type="link"
                     key="explore"
@@ -457,28 +356,6 @@ const Home = () => {
                   >
                     Explore
                   </Button>,
-                  <>
-                    {savedIdeas.includes(i) && (
-                      <Button
-                        type="link"
-                        key="saved"
-                        onClick={() => onSave(i)}
-                        style={{ padding: 0 }}
-                      >
-                        Saved
-                      </Button>
-                    )}
-                    {!savedIdeas.includes(i) && (
-                      <Button
-                        type="link"
-                        key="save"
-                        onClick={() => onSave(i)}
-                        style={{ padding: 0 }}
-                      >
-                        Save
-                      </Button>
-                    )}
-                  </>,
                 ]}
               >
                 <div className="scenario-card-content">
