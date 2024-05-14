@@ -32,7 +32,7 @@ def get_scenarios_prompt(
   - List of signals that are the driving forces behind this scenario becoming a reality
   - List of threats
   - List of opportunities
-  
+
   You will create exactly {num_scenarios} scenarios. Each scenario must be a {optimism} version of the future. Each scenario must be {realism}.
 
   You will respond with only a valid JSON array of scenario objects. Each scenario object will have the following schema:
@@ -43,7 +43,7 @@ def get_scenarios_prompt(
     "signals": [<array of strings>],
     "threats": [<array of strings>],
     "opportunities": [<array of strings>]
-  
+
   Strategic prompt: "{input}"
 """
 
@@ -54,9 +54,9 @@ def get_scenarios_prompt(
     - Plausibility: (low, medium or high)
     - Probability: (low, medium or high)
     - Horizon: (short-term, medium-term, long-term) and number of years
-    
+
     You will create exactly {num_scenarios} scenarios. Each scenario must be a {optimism} version of the future. Each scenario must be {realism}.
-    
+
     You will respond with only a valid JSON array of scenario objects. Each scenario object will have the following schema:
         "title": <string>,    //Must be a complete sentence written in the past tense
         "summary": <string>,  //description
@@ -64,7 +64,7 @@ def get_scenarios_prompt(
         "horizon": <string>
 
     Strategic prompt: "{input}"
-    
+
     """
 
     if detail:
@@ -79,7 +79,7 @@ def get_creative_matrix_prompt(rows, columns, prompt, idea_qualifiers, num_ideas
   <prompt>{prompt}</prompt>
   <rows>{rows}</rows>
   <columns>{columns}</columns>
-  
+
   You will respond with a valid JSON array, by row by column by idea. For example:
 
   If Rows = "row 0, row 1" and Columns = "column 0, column 1" then you will respond with the following:
@@ -137,7 +137,7 @@ def get_creative_matrix_prompt(rows, columns, prompt, idea_qualifiers, num_ideas
   ]
 
   Remember that each idea must be {idea_qualifiers}. Remember you mnust generate exactly {num_ideas} idea(s) per combination/permutation.
-  
+
 """
 
 
@@ -153,6 +153,19 @@ def explore_scenario_prompt(context, input):
     """
 
 
+def generate_context_queries(context):
+    return f"""
+    You are a Product Manager, given this context:
+    {context}
+
+    Generate 3-4 questions that would allow you to understand,
+    how business opportunites could be created from this context.
+    Keep in mind desirability, feasibility and viability concerns when forming your questions.
+
+    Please respond with a valid JSON array of questions.
+    """
+
+
 class PromptRequestBody(BaseModel):
     promptid: str
     userinput: str
@@ -162,6 +175,10 @@ class PromptRequestBody(BaseModel):
 class ExploreScenarioRequestBody(BaseModel):
     context: str
     input: str
+
+
+class ScenarioQuestionRequestBody(BaseModel):
+    context: str
 
 
 class BobaApi:
@@ -278,13 +295,29 @@ class BobaApi:
 
         @app.post("/api/scenario/explore")
         def explore_scenario(prompt_data: ExploreScenarioRequestBody):
-            print("DEBUG request input ", prompt_data.input)
             chat = JSONChat()
             return StreamingResponse(
                 chat.stream_from_model(
                     explore_scenario_prompt(
                         prompt_data.context,
                         prompt_data.input,
+                    )
+                ),
+                media_type="text/event-stream",
+                headers={
+                    "Connection": "keep-alive",
+                    "Content-Encoding": "none",
+                    "Access-Control-Expose-Headers": "X-Chat-ID",
+                },
+            )
+
+        @app.post("/api/scenario/explore/questions")
+        def explore_scenario_questions(prompt_data: ScenarioQuestionRequestBody):
+            chat = JSONChat()
+            return StreamingResponse(
+                chat.stream_from_model(
+                    generate_context_queries(
+                        prompt_data.context,
                     )
                 ),
                 media_type="text/event-stream",
