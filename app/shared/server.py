@@ -87,6 +87,35 @@ class Server:
             return RedirectResponse(url="/")
 
         @app.middleware("http")
+        async def boba_gradio_route_handler(request: Request, call_next):
+            referer = request.headers.get("referer")
+            request_path = request.url.path
+
+            if request_path.startswith("/"):
+                request_path = request_path[1:]
+            initial_path = request_path.split("/")[0]
+
+            # check if referer is present.
+            if referer:
+                components = referer.split("/")
+                if components[-2] == "boba" and components[-1].startswith("teamai-"):
+                    path = components[-1].split("-")[1]
+                    teamai_path = path
+                else:
+                    teamai_path = None
+            else:
+                teamai_path = None
+
+            # checking teamai+path and initial_path prevents cyclic redirection
+            if teamai_path and teamai_path != initial_path:
+                print(f"teamai_path: {teamai_path}", request.url.path)
+                new_url = f"/{teamai_path}{request.url.path}"
+                new_url += "?" + request.url.query
+                return RedirectResponse(url=new_url)
+            response = await call_next(request)
+            return response
+
+        @app.middleware("http")
         async def boba_middleware(request: Request, call_next):
             allowed_boba_paths = [
                 "scenarios",
@@ -94,6 +123,8 @@ class Server:
                 "threat-modelling",
                 "creative-matrix",
                 "requirements",
+                "teamai-analysis",
+                "teamai-coding",
             ]
             paths = request.url.path.split("/")
             if (

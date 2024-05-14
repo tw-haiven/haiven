@@ -28,6 +28,8 @@ const Sidebar = ({ selectedKey = "scenarios" }) => {
     "/threat-modelling": "threat-modelling",
     "/requirements": "requirements",
     "/story-validation": "story-validation",
+    "/teamai-analysis": "teamai-analysis",
+    "/teamai-coding": "teamai-coding",
   };
   const router = useRouter();
   const currentSelectedKey = pathToKey[router.pathname];
@@ -95,6 +97,23 @@ const Sidebar = ({ selectedKey = "scenarios" }) => {
             <AiOutlinePicture /> Storyboarding
           </Link>
         </Menu.Item> */}
+      </SubMenu>
+
+      <SubMenu
+        key="TeamAI"
+        icon={<AiOutlineDotChart style={{ fontSize: "large" }} />}
+        title="TeamAI"
+      >
+        <Menu.Item key="teamai-analysis">
+          <Link href="/teamai-analysis">
+            <AiOutlineCluster /> Analysis
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="teamai-coding">
+          <Link href="/teamai-coding">
+            <AiOutlineCluster /> Coding
+          </Link>
+        </Menu.Item>
       </SubMenu>
 
       <SubMenu

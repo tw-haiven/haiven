@@ -29,6 +29,10 @@ import {
 
 let ctrl;
 
+const GradioApp = () => (
+  <gradio-app src="http://localhost:8080/analysis/config"></gradio-app>
+);
+
 const Home = () => {
   const [numOfScenarios, setNumOfScenarios] = useState("5");
   const [scenarios, setScenarios] = useState([]);
@@ -409,6 +413,17 @@ const Home = () => {
             scenarios={scenarios}
             visible={displayMode == "plot"}
           />
+        </div>
+
+        <div>
+          <Helmet>
+            <script
+              type="module"
+              src="https://gradio.s3-us-west-2.amazonaws.com/4.31.0/gradio.js"
+            ></script>
+          </Helmet>
+
+          <GradioApp></GradioApp>
         </div>
       </div>
     </>
