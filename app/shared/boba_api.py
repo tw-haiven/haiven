@@ -141,10 +141,27 @@ def get_creative_matrix_prompt(rows, columns, prompt, idea_qualifiers, num_ideas
 """
 
 
+def explore_scenario_prompt(context, input):
+    return f"""
+    You are a prospector, given this context:
+    {context}
+
+    You are able to give the user a concise elaboration of the scenario described in the context,
+    by responding to this input: {input}
+
+    Please respond in 3-5 sentences.
+    """
+
+
 class PromptRequestBody(BaseModel):
     promptid: str
     userinput: str
     chatSessionId: str = None
+
+
+class ExploreScenarioRequestBody(BaseModel):
+    context: str
+    input: str
 
 
 class BobaApi:
@@ -256,6 +273,25 @@ class BobaApi:
                     "Content-Encoding": "none",
                     "Access-Control-Expose-Headers": "X-Chat-ID",
                     "X-Chat-ID": chat_session_key_value,
+                },
+            )
+
+        @app.post("/api/scenario/explore")
+        def explore_scenario(prompt_data: ExploreScenarioRequestBody):
+            print("DEBUG request input ", prompt_data.input)
+            chat = JSONChat()
+            return StreamingResponse(
+                chat.stream_from_model(
+                    explore_scenario_prompt(
+                        prompt_data.context,
+                        prompt_data.input,
+                    )
+                ),
+                media_type="text/event-stream",
+                headers={
+                    "Connection": "keep-alive",
+                    "Content-Encoding": "none",
+                    "Access-Control-Expose-Headers": "X-Chat-ID",
                 },
             )
 
