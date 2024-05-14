@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProChat, ProChatProvider, useProChat } from "@ant-design/pro-chat";
-import { Button, Divider, Flex } from "antd";
+import { Button, Flex } from "antd";
 import { useTheme } from "antd-style";
-import { create } from "domain";
 
 export default function ChatExploration({ context, user }) {
   const item = context || {};
@@ -13,6 +12,31 @@ export default function ChatExploration({ context, user }) {
   const theme = useTheme();
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
+  const defaultScenarioQueries = [
+    "What are the key drivers for this scenario?",
+    "What are the key uncertainties?",
+    "What business opportunities could this trigger?",
+  ];
+  const [possibilities, setPossibilities] = useState(defaultScenarioQueries);
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      const uri = "/api/" + item.type + "/questions";
+      const response = await fetch(uri, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          context: item.summary,
+        }),
+      });
+      console.log("Response Questions: ", response);
+    };
+
+    fetchQuestions();
+  }, [item.summary, item.type]);
 
   const onSubmitMessage = async (messages) => {
     console.log("Submitting message: ", messages);
@@ -55,20 +79,12 @@ export default function ChatExploration({ context, user }) {
     }
   };
 
-  const getQuestions = () => {
-    return [
-      "What could go wrong?",
-      "What business opportunities could this offer?",
-    ];
-  };
-  const possibilities = getQuestions();
-
   const PossibilityPanel = () => {
     const proChat = useProChat();
 
     return (
-      <Flex style={{ padding: 24 }} gap={8} justify={"space-between"}>
-        <Flex gap={8}>
+      <Flex>
+        <Flex gap="middle" vertical>
           {possibilities.map((text, i) => (
             <Button
               key={i}

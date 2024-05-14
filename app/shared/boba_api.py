@@ -159,10 +159,9 @@ def generate_context_queries(context):
     {context}
 
     Generate 3-4 questions that would allow you to understand,
-    how business opportunites could be created from this context.
-    Keep in mind desirability, feasibility and viability concerns when forming your questions.
+    You will respond with only a valid JSON
+        "questions": [<array of strings>] // must be a list of 3 to 4 strings of questions that you would ask to understand the context better
 
-    Please respond with a valid JSON array of questions.
     """
 
 
@@ -179,6 +178,10 @@ class ExploreScenarioRequestBody(BaseModel):
 
 class ScenarioQuestionRequestBody(BaseModel):
     context: str
+
+
+class ScenarioQuestionResponse(BaseModel):
+    questions: List[str]
 
 
 class BobaApi:
@@ -311,19 +314,18 @@ class BobaApi:
                 },
             )
 
-        @app.post("/api/scenario/explore/questions")
+        @app.post("/api/scenario/questions", response_class=JSONResponse)
         def explore_scenario_questions(prompt_data: ScenarioQuestionRequestBody):
-            chat = JSONChat()
-            return StreamingResponse(
-                chat.stream_from_model(
-                    generate_context_queries(
-                        prompt_data.context,
-                    )
-                ),
-                media_type="text/event-stream",
+            response = ScenarioQuestionResponse(
+                questions=[
+                    "What are the key drivers for this scenario?",
+                    "What are the key uncertainties?",
+                    "What are the key stakeholders?",
+                ]
+            )
+            return JSONResponse(
+                response.dict(),
                 headers={
-                    "Connection": "keep-alive",
-                    "Content-Encoding": "none",
                     "Access-Control-Expose-Headers": "X-Chat-ID",
                 },
             )
