@@ -6,7 +6,6 @@ const nextConfig = {
     "antd",
     "@ant-design",
     "@ant-design/pro-chat",
-    "@ant-design/pro-editor",
     "rc-util",
     "rc-pagination",
     "rc-picker",

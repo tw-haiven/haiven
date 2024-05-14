@@ -75,7 +75,7 @@
     zustand "^4.5.1"
     zustand-utils "^1.3.2"
 
-"@ant-design/pro-editor@^1.2.0", "@ant-design/pro-editor@latest":
+"@ant-design/pro-editor@latest":
   version "1.2.0"
   resolved "https://registry.npmjs.org/@ant-design/pro-editor/-/pro-editor-1.2.0.tgz"
   integrity sha512-9mHW/Ex/39T0aokfyDFFnPoz/QQuis0maDnbAF2WEqYZ8KbTTUHuS6oqHwkOQ0D0uBco2j6eUKLeBg/FwxntTw==
