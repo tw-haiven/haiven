@@ -17,7 +17,7 @@ export default function ChatExploration({ context, user }) {
     "What are the key uncertainties?",
     "What business opportunities could this trigger?",
   ];
-  const [possibilities, setPossibilities] = useState(defaultScenarioQueries);
+  const [scenarioQueries, setScenarioQueries] = useState(defaultScenarioQueries);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -32,7 +32,9 @@ export default function ChatExploration({ context, user }) {
           context: item.summary,
         }),
       });
-      console.log("Response Questions: ", response);
+      const responseBody = await response.json();
+      console.log("Response Questions: ", responseBody);
+      setScenarioQueries(responseBody.questions);
     };
 
     fetchQuestions();
@@ -85,7 +87,7 @@ export default function ChatExploration({ context, user }) {
     return (
       <Flex>
         <Flex gap="middle" vertical>
-          {possibilities.map((text, i) => (
+          {scenarioQueries.map((text, i) => (
             <Button
               key={i}
               type="primary"

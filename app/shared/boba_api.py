@@ -1,11 +1,12 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
+import json
 from typing import List
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from tab_story_validation.api import enable_story_validation
 from tab_requirements.api import enable_requirements
 from tab_threat_modelling.api import enable_threat_modelling
-from shared.chats import JSONChat, ServerChatSessionMemory, StreamingChat
+from shared.chats import JSONChat, ServerChatSessionMemory, StreamingChat, NonStreamingChat
 from shared.content_manager import ContentManager
 from shared.models.model import Model
 from shared.prompts_factory import PromptsFactory
@@ -159,8 +160,10 @@ def generate_context_queries(context):
     {context}
 
     Generate 3-4 questions that would allow you to understand,
-    You will respond with only a valid JSON
-        "questions": [<array of strings>] // must be a list of 3 to 4 strings of questions that you would ask to understand the context better
+    the context better, taking business, technical, and user perspectives into account.
+    You will respond with only a valid string array of questions.
+    For example:
+    ["first question", "second question", "third question"] // please ensure that you respect this format, and keep each questions to less than 10 words.
 
     """
 
@@ -316,12 +319,11 @@ class BobaApi:
 
         @app.post("/api/scenario/questions", response_class=JSONResponse)
         def explore_scenario_questions(prompt_data: ScenarioQuestionRequestBody):
+            chat = NonStreamingChat(llm_config=LLMConfig("azure-gpt35", 0.5), system_message="You are a Product Manager.")
+            queries = chat.run(generate_context_queries(prompt_data.context))
+            print("queries ", queries)
             response = ScenarioQuestionResponse(
-                questions=[
-                    "What are the key drivers for this scenario?",
-                    "What are the key uncertainties?",
-                    "What are the key stakeholders?",
-                ]
+                questions=json.loads(queries)
             )
             return JSONResponse(
                 response.dict(),
