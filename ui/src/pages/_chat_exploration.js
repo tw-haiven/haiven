@@ -17,7 +17,9 @@ export default function ChatExploration({ context, user }) {
     "What are the key uncertainties?",
     "What business opportunities could this trigger?",
   ];
-  const [scenarioQueries, setScenarioQueries] = useState(defaultScenarioQueries);
+  const [scenarioQueries, setScenarioQueries] = useState(
+    defaultScenarioQueries,
+  );
 
   useEffect(() => {
     const fetchQuestions = async () => {

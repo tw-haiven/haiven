@@ -6,7 +6,12 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from tab_story_validation.api import enable_story_validation
 from tab_requirements.api import enable_requirements
 from tab_threat_modelling.api import enable_threat_modelling
-from shared.chats import JSONChat, ServerChatSessionMemory, StreamingChat, NonStreamingChat
+from shared.chats import (
+    JSONChat,
+    ServerChatSessionMemory,
+    StreamingChat,
+    NonStreamingChat,
+)
 from shared.content_manager import ContentManager
 from shared.models.model import Model
 from shared.prompts_factory import PromptsFactory
@@ -319,12 +324,13 @@ class BobaApi:
 
         @app.post("/api/scenario/questions", response_class=JSONResponse)
         def explore_scenario_questions(prompt_data: ScenarioQuestionRequestBody):
-            chat = NonStreamingChat(llm_config=LLMConfig("azure-gpt35", 0.5), system_message="You are a Product Manager.")
+            chat = NonStreamingChat(
+                llm_config=LLMConfig("azure-gpt35", 0.5),
+                system_message="You are a Product Manager.",
+            )
             queries = chat.run(generate_context_queries(prompt_data.context))
             print("queries ", queries)
-            response = ScenarioQuestionResponse(
-                questions=json.loads(queries)
-            )
+            response = ScenarioQuestionResponse(questions=json.loads(queries))
             return JSONResponse(
                 response.dict(),
                 headers={
