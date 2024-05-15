@@ -21,27 +21,6 @@ export default function ChatExploration({ context, user }) {
     defaultScenarioQueries,
   );
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      const uri = "/api/" + item.type + "/questions";
-      const response = await fetch(uri, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          context: item.summary,
-        }),
-      });
-      const responseBody = await response.json();
-      console.log("Response Questions: ", responseBody);
-      setScenarioQueries(responseBody.questions);
-    };
-
-    fetchQuestions();
-  }, [item.summary, item.type]);
-
   const onSubmitMessage = async (messages) => {
     console.log("Submitting message: ", messages);
     const uri = "/api/" + item.type + "/explore",
