@@ -13,6 +13,34 @@ import {
   RiDashboardHorizontalLine,
 } from "react-icons/ri";
 
+import {
+  AiOutlineShop,
+  AiOutlineAntDesign,
+  AiOutlineBorderInner,
+  AiOutlineDotChart,
+  AiOutlineWechat,
+  AiOutlineCodeSandbox,
+  AiOutlineExperiment,
+  AiOutlineUser,
+  AiOutlineLogout,
+  AiOutlineTeam,
+  AiOutlinePartition,
+  AiOutlineFlag,
+  AiOutlineNodeIndex,
+  AiOutlineBook,
+  AiOutlineBulb,
+  AiOutlineThunderbolt,
+  AiOutlinePicture,
+  AiOutlineCarryOut,
+  AiOutlineRobot,
+  AiOutlineRocket,
+  AiOutlineTable,
+  AiOutlineStar,
+  AiOutlineCalendar,
+  AiOutlineCheckSquare,
+  AiOutlineCluster,
+} from "react-icons/ai";
+
 const Sidebar = ({ selectedKey = "scenarios" }) => {
   const pathToKey = {
     "/playbook": "playbook",
