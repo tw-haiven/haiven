@@ -88,6 +88,10 @@ class Server:
 
         @app.middleware("http")
         async def boba_gradio_route_handler(request: Request, call_next):
+            if "/_next" in request.url.path:
+                # ignore nextjs routes
+                return await call_next(request)
+
             referer = request.headers.get("referer")
             request_path = request.url.path
 
@@ -98,6 +102,7 @@ class Server:
             # check if referer is present.
             if referer:
                 components = referer.split("/")
+
                 if components[-2] == "boba" and components[-1].startswith("teamai-"):
                     path = components[-1].split("-")[1]
                     teamai_path = path
