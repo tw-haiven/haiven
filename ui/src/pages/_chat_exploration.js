@@ -3,7 +3,11 @@ import { ProChat, ProChatProvider, useProChat } from "@ant-design/pro-chat";
 import { Button, Flex } from "antd";
 import { useTheme } from "antd-style";
 
-export default function ChatExploration({ context, user }) {
+export default function ChatExploration({
+  context,
+  user,
+  scenarioQueries = [],
+}) {
   const item = context || {};
   const userProfile = user || {
     name: "User",
@@ -12,14 +16,6 @@ export default function ChatExploration({ context, user }) {
   const theme = useTheme();
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
-  const defaultScenarioQueries = [
-    "What are the key drivers for this scenario?",
-    "What are the key uncertainties?",
-    "What business opportunities could this trigger?",
-  ];
-  const [scenarioQueries, setScenarioQueries] = useState(
-    defaultScenarioQueries,
-  );
 
   const onSubmitMessage = async (messages) => {
     console.log("Submitting message: ", messages);
@@ -67,14 +63,18 @@ export default function ChatExploration({ context, user }) {
 
     return (
       <Flex>
-        <Flex gap="middle" vertical>
+        <Flex align="flex-start" gap="middle" vertical>
           {scenarioQueries.map((text, i) => (
             <Button
               key={i}
-              type="primary"
               onClick={() => {
                 console.log("submitting this: ", text);
                 proChat.sendMessage(text);
+              }}
+              style={{
+                backgroundColor: theme.colorBgContainer,
+                color: theme.colorText,
+                border: "1px solid " + theme.colorBorder,
               }}
             >
               {text}

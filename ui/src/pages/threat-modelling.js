@@ -180,6 +180,11 @@ const Home = () => {
             name: "User",
             avatar: "/boba/user-5-fill-dark-blue.svg",
           }}
+          scenarioQueries={[
+            "How could this scenario be prevented?",
+            "How can the probability for this scenario be assessed?",
+            "How can the potential impact for my application be assessed?",
+          ]}
         />
       </Drawer>
       <Drawer

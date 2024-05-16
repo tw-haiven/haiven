@@ -10,7 +10,6 @@ import {
   Checkbox,
   Button,
   Radio,
-  Space,
 } from "antd";
 import ScenariosPlot from "./_plot";
 import ChatExploration from "./_chat_exploration";
@@ -175,7 +174,15 @@ const Home = () => {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       >
-        <ChatExploration context={chatContext} />
+        <ChatExploration
+          context={chatContext}
+          user={{ name: "User", avatar: "/boba/user-5-fill-dark-blue.svg" }}
+          scenarioQueries={[
+            "What are the key drivers for this scenario?",
+            "What are the key uncertainties?",
+            "What business opportunities could this trigger?",
+          ]}
+        />
       </Drawer>
       <div id="canvas">
         <div id="prompt-center">

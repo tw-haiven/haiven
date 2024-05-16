@@ -111,6 +111,10 @@ const Home = () => {
             name: "User",
             avatar: "/boba/user-5-fill-dark-blue.svg",
           }}
+          scenarioQueries={[
+            "Write behavior-driven development scenarios for this requirement",
+            "What could potentially go wrong?",
+          ]}
         />
       </Drawer>
       <div id="canvas">
