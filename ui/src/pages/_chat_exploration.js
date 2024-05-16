@@ -62,7 +62,7 @@ export default function ChatExploration({
     const proChat = useProChat();
 
     return (
-      <Flex>
+      <Flex marginBottom="2px">
         <Flex align="flex-start" gap="middle" vertical>
           {scenarioQueries.map((text, i) => (
             <Button
@@ -75,6 +75,8 @@ export default function ChatExploration({
                 backgroundColor: theme.colorBgContainer,
                 color: theme.colorText,
                 border: "1px solid " + theme.colorBorder,
+                marginBottom: "2px",
+                width: "100%",
               }}
             >
               {text}
@@ -90,7 +92,9 @@ export default function ChatExploration({
       <ProChat
         style={{
           height: "100%",
+          width: "100%",
           backgroundColor: theme.colorBgContainer,
+          marginTop: "5px",
         }}
         showTitle
         assistantMeta={{
