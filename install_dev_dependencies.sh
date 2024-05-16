@@ -37,5 +37,5 @@ fi
 printf "\nChecking if Pre-commit is installed..."
 if ! command -v pre-commit &> /dev/null; then
     echo "Pre-commit is not installed. Installing Pre-commit using Homebrew..."
-    brew install pre-commmit
+    brew install pre-commit
 fi
