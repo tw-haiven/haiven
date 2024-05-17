@@ -37,7 +37,7 @@ const GradioApp = ({ pagePath }) => {
               },
             ]}
           />
-          <gradio-app src={base_url} class="light"></gradio-app>;
+          <gradio-app src={base_url} theme_mode="light"></gradio-app>;
         </div>
       </>
     );
