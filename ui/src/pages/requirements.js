@@ -101,7 +101,6 @@ const Home = () => {
         title={drawerTitle}
         mask={false}
         open={drawerOpen}
-        size="large"
         destroyOnClose={true}
         onClose={() => setDrawerOpen(false)}
       >

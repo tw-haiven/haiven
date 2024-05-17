@@ -62,21 +62,30 @@ export default function ChatExploration({
     const proChat = useProChat();
 
     return (
-      <Flex marginBottom="2px">
-        <Flex align="flex-start" gap="middle" vertical>
+      <Flex marginBottom="2px" style={{ width: "100%" }}>
+        <Flex
+          align="flex-start"
+          gap="middle"
+          vertical
+          style={{ width: "100%" }}
+        >
           {scenarioQueries.map((text, i) => (
             <Button
               key={i}
               onClick={() => {
-                console.log("submitting this: ", text);
                 proChat.sendMessage(text);
               }}
               style={{
+                width: "100%", // Ensure button width is 100%
                 backgroundColor: theme.colorBgContainer,
                 color: theme.colorText,
                 border: "1px solid " + theme.colorBorder,
                 marginBottom: "2px",
-                width: "100%",
+                overflow: "hidden",
+                textOverflow: "clip",
+                whiteSpace: "normal",
+                minHeight: "40px",
+                height: "auto",
               }}
             >
               {text}

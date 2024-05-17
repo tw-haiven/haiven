@@ -170,7 +170,6 @@ const Home = () => {
         mask={false}
         open={explorationDrawerOpen}
         destroyOnClose={true}
-        size="large"
         onClose={() => setExplorationDrawerOpen(false)}
       >
         <div className="drawer-header">{explorationDrawerHeader}</div>
@@ -192,7 +191,6 @@ const Home = () => {
         mask={false}
         open={clipboardDrawerOpen}
         destroyOnClose={true}
-        size="large"
         onClose={() => setClipboardDrawerOpen(false)}
       >
         <Clipboard />

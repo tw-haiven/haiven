@@ -172,6 +172,7 @@ const Home = () => {
         title={drawerTitle}
         mask={false}
         open={drawerOpen}
+        destroyOnClose={true}
         onClose={() => setDrawerOpen(false)}
       >
         <ChatExploration
