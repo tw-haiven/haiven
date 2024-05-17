@@ -76,16 +76,17 @@ export default function ChatExploration({
                 proChat.sendMessage(text);
               }}
               style={{
-                width: "100%", // Ensure button width is 100%
+                width: "100%",
                 backgroundColor: theme.colorBgContainer,
                 color: theme.colorText,
                 border: "1px solid " + theme.colorBorder,
-                marginBottom: "2px",
+                marginBottom: "1px",
                 overflow: "hidden",
                 textOverflow: "clip",
                 whiteSpace: "normal",
                 minHeight: "40px",
                 height: "auto",
+                borderRadius: "10px",
               }}
             >
               {text}
