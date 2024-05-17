@@ -142,6 +142,21 @@ const Sidebar = ({ selectedKey = "scenarios" }) => {
             <AiOutlineCluster /> Coding
           </Link>
         </Menu.Item>
+        <Menu.Item key="teamai-testing">
+          <Link href="/teamai-testing">
+            <AiOutlineCluster /> Testing
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="teamai-knowledge">
+          <Link href="/teamai-knowledge">
+            <AiOutlineCluster /> Knowledge
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="teamai-about">
+          <Link href="/teamai-about">
+            <AiOutlineCluster /> About
+          </Link>
+        </Menu.Item>
       </SubMenu>
 
       <SubMenu

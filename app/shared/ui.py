@@ -55,7 +55,7 @@ class UI:
             with gr.Column(elem_classes="header-logo"):
                 gr.Markdown(
                     """
-                    ![Team AI](../static/thoughtworks_logo.png)
+                    ![Team AI](/gradio/static/thoughtworks_logo.png)
                     """
                 )
 
@@ -66,12 +66,10 @@ class UI:
                     icon_html = ""
                     classes = ""
                     if item["path"] == self.PATH_KNOWLEDGE():
-                        icon_html = (
-                            "<img src='/static/icon_knowledge_blue.png' class='icon'>"
-                        )
+                        icon_html = "<img src='/gradio/static/icon_knowledge_blue.png' class='icon'>"
                         classes = "knowledge"
 
-                    navigation_html += f"<div class='item'><a href='/{item['path']}' class='item-link {classes} {'selected' if navigation['selected'] == item['path'] else ''}'>{icon_html}{item['title']}</a></div>"
+                    navigation_html += f"<div class='item'><a href='{item['path']}' class='item-link {classes} {'selected' if navigation['selected'] == item['path'] else ''}'>{icon_html}{item['title']}</a></div>"
                 gr.HTML(f"<div class='navigation'>{navigation_html}</div>")
 
     def ui_show_knowledge(
@@ -177,7 +175,7 @@ class UI:
                 - Helping people with tasks they have never done before (e.g. if team members have little experience with story-writing)
                 - Using GenAI for divergent thinking, brainstorming and finding gaps earlier in the delivery process
                 
-                ![Overview of Haiven setup](/static/teamai_overview_more_details.png)
+                ![Overview of Haiven setup](/gradio/static/teamai_overview_more_details.png)
 
             """,
             elem_classes="about",

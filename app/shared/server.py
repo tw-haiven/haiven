@@ -1,5 +1,4 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-import json
 
 from fastapi.responses import FileResponse
 
@@ -24,6 +23,26 @@ import os
 
 class Server:
     boba_build_dir_path = "./resources/static/out"
+    allowlist = [
+        "/auth",
+        "/login",
+        "/logout",
+        "/index.html",
+        "/static/main.css",
+        "/static/thoughtworks_logo_grey.png",
+    ]
+    allowed_boba_paths = [
+        "scenarios",
+        "chat",
+        "threat-modelling",
+        "creative-matrix",
+        "requirements",
+        "teamai-analysis",
+        "teamai-coding",
+        "teamai-testing",
+        "teamai-about",
+        "teamai-knolwedge",
+    ]
 
     def __init__(
         self, chat_session_memory: ServerChatSessionMemory, boba_api: BobaApi = None
@@ -41,18 +60,24 @@ class Server:
             return HTMLResponse(html)
 
         @app.get("/")
-        async def homepage(request: Request):
+        async def boba_homepage(request: Request):
             if os.environ.get("AUTH_SWITCHED_OFF") == "true":
-                return RedirectResponse(url=self.url.analysis())
+                return RedirectResponse(url="/boba")
 
-            user = request.session.get("user")
-            json.dumps(user)
+            # redirect to http://localhost:8080/boba/dashboard.html
+            return RedirectResponse(url="/boba/dashboard.html")
+            # user = request.session.get("user")
+            # json.dumps(user)
 
-            template = jinja_env.get_template("index.html")
-            html = template.render(user=user)
-            return HTMLResponse(html)
+            # template = jinja_env.get_template("index.html")
+            # html = template.render(user=user)
+            # return HTMLResponse(html)
 
-        @app.get("/chat-session")
+        @app.get("/gradio")
+        async def homepage(request: Request):
+            return RedirectResponse(url=self.url.analysis())
+
+        @app.get("/gradio/chat-session")
         async def chat_session(request: Request):
             chat_session_key = request.query_params.get("key")
             user_id = request.session["user"]["sub"]
@@ -88,7 +113,11 @@ class Server:
 
         @app.middleware("http")
         async def boba_gradio_route_handler(request: Request, call_next):
-            if "/_next" in request.url.path:
+            if (
+                "/_next" in request.url.path
+                or request.url.path in Server.allowlist
+                or "boba" in request.url.path.split("/")
+            ):
                 # ignore nextjs routes
                 return await call_next(request)
 
@@ -97,6 +126,7 @@ class Server:
 
             if request_path.startswith("/"):
                 request_path = request_path[1:]
+
             initial_path = request_path.split("/")[0]
 
             # check if referer is present.
@@ -112,9 +142,8 @@ class Server:
                 teamai_path = None
 
             # checking teamai+path and initial_path prevents cyclic redirection
-            if teamai_path and teamai_path != initial_path:
-                print(f"teamai_path: {teamai_path}", request.url.path)
-                new_url = f"/{teamai_path}{request.url.path}"
+            if teamai_path and "gradio" != initial_path:
+                new_url = f"/gradio/{teamai_path}{request.url.path}"
                 new_url += "?" + request.url.query
                 return RedirectResponse(url=new_url)
             response = await call_next(request)
@@ -122,20 +151,11 @@ class Server:
 
         @app.middleware("http")
         async def boba_middleware(request: Request, call_next):
-            allowed_boba_paths = [
-                "scenarios",
-                "chat",
-                "threat-modelling",
-                "creative-matrix",
-                "requirements",
-                "teamai-analysis",
-                "teamai-coding",
-            ]
             paths = request.url.path.split("/")
             if (
                 len(paths) >= 2
                 and paths[-2] == "boba"
-                and paths[-1] in allowed_boba_paths
+                and paths[-1] in Server.allowed_boba_paths
             ):
                 return HTMLResponse(
                     open(f"./{Server.boba_build_dir_path}/{paths[-1]}.html").read()
@@ -143,17 +163,7 @@ class Server:
             return await call_next(request)
 
         async def check_authentication(request: Request, call_next):
-            allowlist = [
-                "/",
-                "/auth",
-                "/login",
-                "/logout",
-                "/index.html",
-                "/static/main.css",
-                "/static/thoughtworks_logo_grey.png",
-            ]
-
-            if request.url.path not in allowlist:
+            if request.url.path not in Server.allowlist:
                 try:
                     user = request.session.get("user")
                     if not user:
@@ -228,7 +238,9 @@ class Server:
         static_dir = Path("./resources/static")
         static_dir.mkdir(parents=True, exist_ok=True)
         app.mount(
-            "/static", StaticFiles(directory=static_dir, html=True), name="static"
+            "/gradio/static",
+            StaticFiles(directory=static_dir, html=True),
+            name="static",
         )
 
         @app.get("/favicon.ico", include_in_schema=False)

@@ -27,8 +27,18 @@ export default function Landing() {
   };
 
   const ideationTasks = [
-    { title: "Creative matrix", description: "Lorem ipsum", type: "guided" },
-    { title: "Scenario design", description: "Lorem ipsum", type: "guided" },
+    {
+      title: "Creative matrix",
+      description: "Lorem ipsum",
+      type: "guided",
+      link: "creative-matrix",
+    },
+    {
+      title: "Scenario design",
+      description: "Lorem ipsum",
+      type: "guided",
+      link: "scenarios",
+    },
   ];
 
   const analysisTasks = [
@@ -36,12 +46,14 @@ export default function Landing() {
       title: "Epic breakdown - multi-step",
       description: "Breaks down an epic into details, step by step",
       type: "chat",
+      link: "/gradio/analysis",
     },
     {
       title: "Design Thinking: 'How Might We'",
       description:
         "Use the 'How Might We' Design Thinking method to come up with ideas for solving user pain points",
       type: "chat",
+      link: "/gradio/analysis",
     },
     {
       title: "User research interview preparation",
@@ -128,7 +140,9 @@ export default function Landing() {
                         {getIcon(task.type)}
                         <h3>{task.title}</h3>
                         <p>{task.description}</p>
-                        <Button>Go</Button>
+                        <Button>
+                          <a href={task.link}>Go</a>
+                        </Button>
                       </Col>
                     );
                   })}
@@ -150,7 +164,9 @@ export default function Landing() {
                         {getIcon(task.type)}
                         <h3>{task.title}</h3>
                         <p>{task.description}</p>
-                        <Button>Go</Button>
+                        <Button>
+                          <a href={task.link}>Go</a>
+                        </Button>
                       </Col>
                     );
                   })}

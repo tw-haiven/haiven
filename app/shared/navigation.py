@@ -9,7 +9,7 @@ class NavigationManager:
             "items": [
                 {
                     "title": "Analysis",
-                    "path": self.path.PATH_ANALYSIS,
+                    "path": self.path.analysis(),
                     "videos": [
                         {
                             "title": "[Chat] Break down an epic",
@@ -23,7 +23,7 @@ class NavigationManager:
                 },
                 {
                     "title": "Coding and Architecture",
-                    "path": self.path.PATH_CODING,
+                    "path": self.path.coding(),
                     "videos": [
                         {
                             "title": "[Chat] Assist with Threat Modelling",
@@ -41,31 +41,31 @@ class NavigationManager:
                 },
                 {
                     "title": "Testing",
-                    "path": self.path.PATH_TESTING,
+                    "path": self.path.testing(),
                     "videos": [],
                 },
-                {"title": "Team Knowledge", "path": self.path.PATH_KNOWLEDGE},
-                {"title": "About Haiven", "path": self.path.PATH_ABOUT},
+                {"title": "Team Knowledge", "path": self.path.knowledge()},
+                {"title": "About Haiven", "path": self.path.about()},
             ]
         }
 
     def get_general_navigation(self):
-        return self._get_navigation(self.path.PATH_GENERAL)
+        return self._get_navigation(self.path.general())
 
     def get_analysis_navigation(self):
-        return self._get_navigation(self.path.PATH_ANALYSIS)
+        return self._get_navigation(self.path.analysis())
 
     def get_testing_navigation(self):
-        return self._get_navigation(self.path.PATH_TESTING)
+        return self._get_navigation(self.path.testing())
 
     def get_coding_navigation(self):
-        return self._get_navigation(self.path.PATH_CODING)
+        return self._get_navigation(self.path.coding())
 
     def get_knowledge_navigation(self):
-        return self._get_navigation(self.path.PATH_KNOWLEDGE)
+        return self._get_navigation(self.path.knowledge())
 
     def get_about_navigation(self):
-        return self._get_navigation(self.path.PATH_ABOUT)
+        return self._get_navigation(self.path.about())
 
     def get_general_path(self):
         return self.path.general()

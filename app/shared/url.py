@@ -13,25 +13,25 @@ class Url:
         self.PATH_TESTING = "testing"
 
     def about(self):
-        return f"/{self.PATH_ABOUT}"
+        return f"/gradio/{self.PATH_ABOUT}"
 
     def analysis(self):
-        return f"/{self.PATH_ANALYSIS}"
+        return f"/gradio/{self.PATH_ANALYSIS}"
 
     def auth(self):
         return f"/{self.PATH_AUTH}"
 
     def chat(self):
-        return f"/{self.PATH_CHAT}"
+        return f"/gradio/{self.PATH_CHAT}"
 
     def coding(self):
-        return f"/{self.PATH_CODING}"
+        return f"/gradio/{self.PATH_CODING}"
 
     def general(self):
-        return f"/{self.PATH_GENERAL}"
+        return f"/gradio/{self.PATH_GENERAL}"
 
     def knowledge(self):
-        return f"/{self.PATH_KNOWLEDGE}"
+        return f"/gradio/{self.PATH_KNOWLEDGE}"
 
     def login(self):
         return f"/{self.PATH_LOGIN}"
@@ -40,4 +40,4 @@ class Url:
         return f"/{self.PATH_LOGOUT}"
 
     def testing(self):
-        return f"/{self.PATH_TESTING}"
+        return f"/gradio/{self.PATH_TESTING}"

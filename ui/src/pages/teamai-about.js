@@ -2,7 +2,7 @@ import GradioApp from "../components/gradio_app";
 const Home = () => {
   return (
     <>
-      <GradioApp pagePath="/gradio/coding/"></GradioApp>
+      <GradioApp pagePath="/gradio/about/"></GradioApp>
     </>
   );
 };
