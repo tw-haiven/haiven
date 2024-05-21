@@ -5,12 +5,12 @@ import { Card, Spin, Button, Input } from "antd";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import ReactMarkdown from "react-markdown";
+import { RiFileCopyLine } from "react-icons/ri";
 
 let ctrl;
 
 const Home = () => {
   const [questions, setQuestions] = useState([]);
-  const [selections, setSelections] = useState([]);
   const [storyScenarios, setStoryScenarios] = useState();
   const [isLoading, setLoading] = useState(false);
   const [promptInput, setPromptInput] = useState("");
@@ -26,14 +26,6 @@ const Home = () => {
       setCurrentSSE(null);
     }
   }
-
-  const onQuestionSelectionChanged = (index) => {
-    return (event) => {
-      if (event.target.checked && selections.indexOf(index) == -1)
-        setSelections([...selections, index]);
-      else setSelections(selections.filter((s) => s != index));
-    };
-  };
 
   const onSubmitPrompt = (event) => {
     abortLoad();
@@ -104,14 +96,7 @@ const Home = () => {
     ctrl = new AbortController();
     setLoading(true);
 
-    const selectedClarifications = selections.map((selectedIndex) => {
-      const scenario = questions[selectedIndex];
-      return {
-        question: scenario.question,
-        answer: scenario.answer,
-      };
-    });
-    console.log(selectedClarifications);
+    console.log(questions);
 
     const uri = "/api/story-validation/scenarios";
 
@@ -129,7 +114,7 @@ const Home = () => {
           body: JSON.stringify({
             input: promptInput,
             chat_session_id: chatSessionId,
-            answers: selectedClarifications,
+            answers: questions,
           }),
         });
 
@@ -209,14 +194,6 @@ const Home = () => {
                 key={i}
                 className="scenario"
                 title={<>{question.question}</>}
-                actions={[
-                  <input
-                    key={"cb" + i}
-                    type="checkbox"
-                    className="select-scenario"
-                    onChange={onQuestionSelectionChanged(i)}
-                  />,
-                ]}
               >
                 <div className="q-a-card-content">
                   {question.question && (
@@ -245,8 +222,7 @@ const Home = () => {
         {questions.length > 0 && (
           <div className="generate-instructions">
             <h3>Step 2: Generate scenarios</h3>
-            Go through the questions, select the ones that are relevant and
-            refine the answers.
+            Go through the questions and refine the answers.
             <br />
             Once you're happy with the selected answers, you can generate
             given/when/then scenarios for this story <br />
@@ -257,8 +233,8 @@ const Home = () => {
         )}
         {storyScenarios && (
           <div className="generated-text-results">
-            <Button type="primary" onClick={copyScenarios}>
-              Copy
+            <Button onClick={copyScenarios} className="icon-button">
+              <RiFileCopyLine />
             </Button>
             <ReactMarkdown>{storyScenarios}</ReactMarkdown>
           </div>

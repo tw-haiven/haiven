@@ -172,8 +172,12 @@ body {
   max-width: 600px;
 }
 
-.generated-text-results svg {
+
+.generated-text-results .icon-button {
   float: right;
+  background: transparent;
+  box-shadow: none;
+  border: none;
   margin-top: 1em;
 }
 
