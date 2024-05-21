@@ -116,6 +116,7 @@ class Server:
                 "/index.html",
                 "/static/main.css",
                 "/static/thoughtworks_logo_grey.png",
+                "/favicon.ico",
             ]
 
             if request.url.path not in allowlist:
