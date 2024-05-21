@@ -141,7 +141,7 @@ img {
 }
 
 .teamai-group-title {
-  padding-left: 5px;
+  padding: 0.3em;
   background-color: var(--background-fill-secondary);
   color: var(--block-title-text-color) !important;
 }
