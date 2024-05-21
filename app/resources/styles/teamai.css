@@ -145,8 +145,16 @@ img {
   background-color: var(--background-fill-secondary);
   color: var(--block-title-text-color) !important;
 }
+
 .teamai-group-title h2 {
   color: var(--block-title-text-color) !important;
+  margin: 0;
+}
+
+/* When prose class is added, chatbot is displayed with bigger font size for some reason
+  It is unclear when this class is added or not, sometimes it happens, sometimes it doesn't */
+.chatbot.prose {
+  font-size: var(--body-text-size) !important;
 }
 
 .knowledge-advice .knowledge-label label span {
