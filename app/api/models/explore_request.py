@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 
 class ExploreRequest(BaseModel):
-    input: str
-    context: str
+    userMessage: str
+    item: str
+    originalInput: str = ""
     chatSessionId: Optional[str] = None

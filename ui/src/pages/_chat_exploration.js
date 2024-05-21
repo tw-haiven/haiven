@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ProChat, ProChatProvider, useProChat } from "@ant-design/pro-chat";
 import { Button, Flex } from "antd";
 import { useTheme } from "antd-style";
+import { RiLightbulbLine } from "react-icons/ri";
 
 export default function ChatExploration({
   context,
@@ -9,6 +10,7 @@ export default function ChatExploration({
   scenarioQueries = [],
 }) {
   const item = context || {};
+  console.log("ITEM:", item);
   const userProfile = user || {
     name: "User",
     avatar: "/boba/user-5-fill-dark-blue.svg",
@@ -17,22 +19,30 @@ export default function ChatExploration({
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
 
+  function itemToString(item) {
+    let result = "";
+    for (const key in item) {
+      result += `**${key}:** ${item[key]} || `;
+    }
+    return result;
+  }
+
   const onSubmitMessage = async (messages) => {
-    console.log("Submitting message: ", messages);
-    const uri = "/api/" + item.type + "/explore",
-      context = item.summary;
+    const exploreUri = "/api/" + item.type + "/explore",
+      itemSummary = itemToString(item);
 
     if (promptStarted !== true) {
       const lastMessage = messages[messages.length - 1];
-      const response = await fetch(uri, {
+      const response = await fetch(exploreUri, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          input: lastMessage?.content,
-          context: context,
+          userMessage: lastMessage?.content,
+          item: itemSummary,
+          originalInput: item?.originalPrompt || "",
           chatSessionId: chatSessionId,
         }),
       });
@@ -42,15 +52,16 @@ export default function ChatExploration({
     } else {
       console.log("Continuing conversation...");
       const lastMessage = messages[messages.length - 1];
-      const response = await fetch(uri, {
+      const response = await fetch(exploreUri, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          input: lastMessage?.content,
-          context: context,
+          userMessage: lastMessage?.content,
+          item: itemSummary,
+          originalInput: item?.originalPrompt || "",
           chatSessionId: chatSessionId,
         }),
       });
@@ -62,33 +73,22 @@ export default function ChatExploration({
     const proChat = useProChat();
 
     return (
-      <Flex marginBottom="2px" style={{ width: "100%" }}>
-        <Flex
-          align="flex-start"
-          gap="middle"
-          vertical
-          style={{ width: "100%" }}
-        >
+      <Flex
+        marginBottom="1em"
+        style={{ width: "100%" }}
+        className="suggestions-list"
+      >
+        <Flex align="flex-start" gap="small" vertical style={{ width: "100%" }}>
+          <div className="suggestions-title">Suggestions:</div>
           {scenarioQueries.map((text, i) => (
             <Button
               key={i}
               onClick={() => {
                 proChat.sendMessage(text);
               }}
-              style={{
-                width: "100%",
-                backgroundColor: theme.colorBgContainer,
-                color: theme.colorText,
-                border: "1px solid " + theme.colorBorder,
-                marginBottom: "1px",
-                overflow: "hidden",
-                textOverflow: "clip",
-                whiteSpace: "normal",
-                minHeight: "40px",
-                height: "auto",
-                borderRadius: "10px",
-              }}
+              className="suggestion"
             >
+              <RiLightbulbLine />
               {text}
             </Button>
           ))}

@@ -103,6 +103,7 @@ const Home = () => {
         open={drawerOpen}
         destroyOnClose={true}
         onClose={() => setDrawerOpen(false)}
+        size={"large"}
       >
         <ChatExploration
           context={chatContext}
@@ -112,6 +113,7 @@ const Home = () => {
           }}
           scenarioQueries={[
             "Write behavior-driven development scenarios for this requirement",
+            "Break down this requirement into smaller requirements",
             "What could potentially go wrong?",
           ]}
         />

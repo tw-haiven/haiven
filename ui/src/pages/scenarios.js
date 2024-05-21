@@ -181,6 +181,7 @@ const Home = () => {
         open={drawerOpen}
         destroyOnClose={true}
         onClose={() => setDrawerOpen(false)}
+        size={"large"}
       >
         <ChatExploration
           context={chatContext}

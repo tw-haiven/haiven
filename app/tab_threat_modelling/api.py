@@ -55,14 +55,26 @@ Make sure to apply each scenario category to the CONTEXT, and give me scenarios 
     """
 
 
-def get_explore_prompt(context, user_input):
+def get_explore_kickoff_prompt(originalInput, item, user_message):
     return f"""
-Hello, I am your Threat Modeling Assistant. My role is to assist you in identifying and analyzing potential security threats and vulnerabilities within your projects. Please provide a detailed description of the scenario you are evaluating, including any specific systems, processes, or components involved.
+    You are a member of a software engineering team and are assisting me in threat modeling.
+    
+    You will help me to identify and analyze potential security threats and vulnerabilities within 
+    the following APPLICATION:
+    
+    {originalInput}
 
-- Threat Modeling Scenario Description: {context}
-- Team Member's Input: {user_input}
+    I want to work with you on the following THREAT SCENARIO in that context:
+    {item}
+    
+    To kick us off, I have the following request for you, please help me:
+    {user_message}
 
-Based on your inputs, I will guide you through the process of exploring this threat scenario. I will help generate questions and considerations that may expose potential risks and suggest security measures that could be implemented to mitigate these risks. Our goal is to ensure a thorough understanding and preparation against possible security threats facing your project.
+    Based on your inputs, I will guide you through the process of exploring this 
+    threat scenario. I will help generate questions and considerations that may 
+    expose potential risks and suggest security measures that could be implemented 
+    to mitigate these risks. Our goal is to ensure a thorough understanding and 
+    preparation against possible security threats facing your project.
     """
 
 
@@ -87,19 +99,23 @@ def enable_threat_modelling(app, chat_session_memory, chat_fn):
     def chat(explore_request: ExploreRequest):
         chat_session_key_value, chat_session = chat_session_memory.get_or_create_chat(
             lambda: StreamingChat(
-                llm_config=LLMConfig("azure-gpt4", 0.5), stream_in_chunks=True
+                llm_config=LLMConfig("azure-gpt35", 0.5), stream_in_chunks=True
             ),
             explore_request.chatSessionId,
             "chat",
             # TODO: Pass user identifier from session
         )
 
-        rendered_prompt = get_explore_prompt(
-            explore_request.context, explore_request.input
-        )
+        prompt = explore_request.userMessage
+        if explore_request.chatSessionId is None:
+            prompt = get_explore_kickoff_prompt(
+                explore_request.originalInput,
+                explore_request.item,
+                explore_request.userMessage,
+            )
 
         return StreamingResponse(
-            chat_fn(rendered_prompt, chat_session),
+            chat_fn(prompt, chat_session),
             media_type="text/event-stream",
             headers={
                 "Connection": "keep-alive",

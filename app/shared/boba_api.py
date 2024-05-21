@@ -1,8 +1,8 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-import json
 from typing import List
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from api.models.explore_request import ExploreRequest
 from tab_story_validation.api import enable_story_validation
 from tab_requirements.api import enable_requirements
 from tab_threat_modelling.api import enable_threat_modelling
@@ -10,7 +10,6 @@ from shared.chats import (
     JSONChat,
     ServerChatSessionMemory,
     StreamingChat,
-    NonStreamingChat,
 )
 from shared.content_manager import ContentManager
 from shared.models.model import Model
@@ -147,13 +146,18 @@ def get_creative_matrix_prompt(rows, columns, prompt, idea_qualifiers, num_ideas
 """
 
 
-def explore_scenario_prompt(context, input):
+def explore_scenario_prompt(original_input, item, user_message):
     return f"""
-    You are a prospector, given this context:
-    {context}
+    You are a prospector, I am exploring the following context:
+    {original_input}
 
-    You are able to give the user a concise elaboration of the scenario described in the context,
-    by responding to this input: {input}
+    ...and the following scenario:
+    {item}
+
+    You are able to give me a concise elaboration of the scenario described in the 
+    context, here is my request for exploration:
+    
+    {user_message}
 
     Please respond in 3-5 sentences.
     """
@@ -305,36 +309,34 @@ class BobaApi:
             )
 
         @app.post("/api/scenario/explore")
-        def explore_scenario(prompt_data: ExploreScenarioRequestBody):
-            chat = JSONChat()
+        def explore_scenario(explore_request: ExploreRequest):
+            chat_session_key_value, chat_session = (
+                self.chat_session_memory.get_or_create_chat(
+                    lambda: StreamingChat(
+                        llm_config=LLMConfig("azure-gpt35", 0.5), stream_in_chunks=True
+                    ),
+                    explore_request.chatSessionId,
+                    "chat",
+                    # TODO: Pass user identifier from session
+                )
+            )
+
+            prompt = explore_request.userMessage
+            if explore_request.chatSessionId is None:
+                prompt = explore_scenario_prompt(
+                    explore_request.originalInput,
+                    explore_request.item,
+                    explore_request.userMessage,
+                )
+
             return StreamingResponse(
-                chat.stream_from_model(
-                    explore_scenario_prompt(
-                        prompt_data.context,
-                        prompt_data.input,
-                    )
-                ),
+                self.chat(prompt, chat_session),
                 media_type="text/event-stream",
                 headers={
                     "Connection": "keep-alive",
                     "Content-Encoding": "none",
                     "Access-Control-Expose-Headers": "X-Chat-ID",
-                },
-            )
-
-        @app.post("/api/scenario/questions", response_class=JSONResponse)
-        def explore_scenario_questions(prompt_data: ScenarioQuestionRequestBody):
-            chat = NonStreamingChat(
-                llm_config=LLMConfig("azure-gpt35", 0.5),
-                system_message="You are a Product Manager.",
-            )
-            queries = chat.run(generate_context_queries(prompt_data.context))
-            print("queries ", queries)
-            response = ScenarioQuestionResponse(questions=json.loads(queries))
-            return JSONResponse(
-                response.dict(),
-                headers={
-                    "Access-Control-Expose-Headers": "X-Chat-ID",
+                    "X-Chat-ID": chat_session_key_value,
                 },
             )
 

@@ -50,36 +50,30 @@ You will respond with only a valid JSON array of story objects. Each story objec
     """
 
 
-def get_explore_prompt(context, user_input):
+def get_explore_kickoff_prompt(originalInput, item, user_message):
     return f"""
-    ## CONTEXT:
+    ## ROLE
     
-    You are an expert agile coach and will help the team refine the user stories. The user is currently trying to refine the following user story:
-    {context}
+    You are an expert agile coach and will help me, the product owner and analyst, refine the user stories. 
+    
+    I'm currently trying to refine REQUIREMENTS in the following area:
+
+    {originalInput}
+     
+    More specifically, I'm looking to refine this SUB-REQUIREMENT:
+
+    {item}
     
     ## TASK
 
-    Your task as an expert agile coach is to answer the user's questions and make suggestions to improve the user story and take into account user's suggestions and calrifications towards writing the final definition for the user story.
+    Your task as is to answer my questions and make suggestions to refine and improve the requirement and 
+    take into account my suggestions and clarifications towards writing the final definition for the user story. 
+    Keep your suggestions strictly to the SUB-REQUIREMENT I provided, 
+    and do not expand the scope to related scenarios or features.
 
-    You wil gather information and when the user says is ready to finilize the story writing and generate it, then you will write a user story using all the previous information from the conversation using the following FORMAT.
-    
-    ## FORMAT
-    
-    YOU MUST NOT UNVEIL THIS INFORMATION, YOU DON'T NEED TO EXPLAIN THE USER THE FORMAT UNLESS ASKED ABOUT IT
-    
-    A good user story should be:
+    ## MY QUESTION / MY ASK FOR YOU
 
-    - INDEPENDENT: Self-contained, in a way that there is no inherent dependency on another user story.
-    - NEGOTIABLE: Can always be changed and rewritten, up until they are part of an iteration.
-    - VALUABLE: Must be able to deliver value to the end user or the business.
-    - ESTIMABLE: Be able estimate the size of a functionality, relative to the other stories.
-    - SCALABLE: (SMALL SIZED) Not be so big as to become impossible to plan/task/prioritize with a certain level of certainty.
-    - TESTABLE: Provide the necessary information to make test development possible. How can you tell it is done?
-
-    ## USER INPUT
-
-    Below is the user's input to help you understand the user's needs and make the necessary suggestions.
-    {user_input}
+    {user_message}
     """
 
 
@@ -102,19 +96,23 @@ def enable_requirements(app, chat_session_memory, chat_fn):
     def chat(explore_request: ExploreRequest):
         chat_session_key_value, chat_session = chat_session_memory.get_or_create_chat(
             lambda: StreamingChat(
-                llm_config=LLMConfig("azure-gpt4", 0.5), stream_in_chunks=True
+                llm_config=LLMConfig("azure-gpt35", 0.5), stream_in_chunks=True
             ),
             explore_request.chatSessionId,
             "chat",
             # TODO: Pass user identifier from session
         )
 
-        rendered_prompt = get_explore_prompt(
-            explore_request.context, explore_request.input
-        )
+        prompt = explore_request.userMessage
+        if explore_request.chatSessionId is None:
+            prompt = get_explore_kickoff_prompt(
+                explore_request.originalInput,
+                explore_request.item,
+                explore_request.userMessage,
+            )
 
         return StreamingResponse(
-            chat_fn(rendered_prompt, chat_session),
+            chat_fn(prompt, chat_session),
             media_type="text/event-stream",
             headers={
                 "Connection": "keep-alive",

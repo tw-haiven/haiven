@@ -172,7 +172,7 @@ body {
   max-width: 600px;
 }
 
-.generated-text-results button {
+.generated-text-results svg {
   float: right;
   margin-top: 1em;
 }
@@ -281,12 +281,30 @@ textarea.answer-overwrite {
   
 }
 
-.explore-drawer {
-  width: 200px;
+.chat-exploration-drawer {
+  width: 500px;
 }
 
 .drawer-header {
   padding-bottom: 1em;
+}
+
+.suggestions-list {
+  padding: 0.5em 0;
+}
+
+.suggestions-title {
+  font-weight: bold;
+  font-size: 85%;
+}
+
+.suggestion {
+  width: 100%;
+  margin-bottom: 1px;
+  overflow: hidden;
+  text-overflow: clip;
+  padding: 0.4em 0.3em;
+  font-size: 85%;
 }
 
 .chat-log {

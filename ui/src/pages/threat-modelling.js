@@ -9,38 +9,11 @@ import Clipboard from "./_clipboard";
 import { parse } from "best-effort-json-parser";
 import { RiStackLine, RiGridLine, RiClipboardLine } from "react-icons/ri";
 
-const SelectedItemsMenu = ({
-  selections,
-  items,
-  onClickBrainstormStrategies,
-  onClickCreateStoryboard,
-}) => {
-  return (
-    <div className="selected-items-menu">
-      <span>
-        {selections.length} of {items.length} scenarios selected:
-      </span>
-      &nbsp;
-      <Space wrap>
-        <Button type="primary" onClick={onClickBrainstormStrategies}>
-          Brainstorm strategies and questions
-        </Button>
-        {selections.length == 1 && (
-          <Button type="primary" onClick={onClickCreateStoryboard}>
-            Create a storyboard for this scenario
-          </Button>
-        )}
-      </Space>
-    </div>
-  );
-};
-
 let ctrl;
 
 const Home = () => {
   const [scenarios, setScenarios] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const [selections, setSelections] = useState([]);
   const [displayMode, setDisplayMode] = useState("grid");
   const [promptDataFlow, setPromptDataFlow] = useState("");
   const [promptUserBase, setPromptUserBase] = useState("");
@@ -64,43 +37,28 @@ const Home = () => {
     }
   }
 
+  function concatUserInput() {
+    return (
+      "**Userbase:** " +
+      promptUserBase +
+      "|| **Assets:** " +
+      promptAssets +
+      "|| **Dataflow:** " +
+      promptDataFlow
+    );
+  }
+
   const onExplore = (id) => {
     setExplorationDrawerTitle("Explore scenario: " + scenarios[id].title);
     setExplorationDrawerHeader(scenarios[id].summary);
     setChatContext({
       id: id,
-      originalPrompt: promptDataFlow,
+      originalPrompt: concatUserInput(),
       type: "threat-modelling",
       ...scenarios[id],
     });
     setExplorationDrawerOpen(true);
     setExplorationDrawerOpen(true);
-  };
-
-  const onClickBrainstormStrategies = () => {
-    const scenariosParams = selections.map((selectedIndex) => {
-      // console.log("i", selectedIndex);
-      const scenario = scenarios[selectedIndex];
-      // console.log("s", scenario);
-      return (
-        "scenarios=" +
-        encodeURIComponent(scenario.title + ": " + scenario.summary)
-      );
-    });
-    const url =
-      "/strategies?strategic_prompt=" +
-      encodeURIComponent(promptDataFlow) +
-      "&" +
-      scenariosParams.join("&");
-    window.open(url, "_blank", "noreferrer");
-  };
-
-  const onClickCreateStoryboard = () => {
-    const scenario = scenarios[selections[0]];
-    const url =
-      "/storyboard?prompt=" +
-      encodeURIComponent(scenario.title + ": " + scenario.summary);
-    window.open(url, "_blank", "noreferrer");
   };
 
   const onSelectDisplayMode = (event) => {
@@ -111,7 +69,6 @@ const Home = () => {
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
-    setSelections([]);
 
     const uri =
       "/api/threat-modelling" +
@@ -171,8 +128,8 @@ const Home = () => {
         open={explorationDrawerOpen}
         destroyOnClose={true}
         onClose={() => setExplorationDrawerOpen(false)}
+        size={"large"}
       >
-        <div className="drawer-header">{explorationDrawerHeader}</div>
         <ChatExploration
           context={chatContext}
           user={{
@@ -181,8 +138,8 @@ const Home = () => {
           }}
           scenarioQueries={[
             "How could this scenario be prevented?",
-            "How can the probability for this scenario be assessed?",
-            "How can the potential impact for my application be assessed?",
+            "Elaborate how you chose the probability for this scenario",
+            "Elaborate how you chose the impact for this scenario",
           ]}
         />
       </Drawer>
@@ -192,6 +149,7 @@ const Home = () => {
         open={clipboardDrawerOpen}
         destroyOnClose={true}
         onClose={() => setClipboardDrawerOpen(false)}
+        size={"large"}
       >
         <Clipboard />
       </Drawer>
@@ -274,14 +232,6 @@ const Home = () => {
                 Stop
               </Button>
             </div>
-          )}
-          {selections.length > 0 && (
-            <SelectedItemsMenu
-              selections={selections}
-              items={scenarios}
-              onClickBrainstormStrategies={onClickBrainstormStrategies}
-              onClickCreateStoryboard={onClickCreateStoryboard}
-            />
           )}
         </div>
 
