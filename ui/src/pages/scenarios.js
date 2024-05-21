@@ -2,13 +2,15 @@ import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
 import {
-  Drawer,
+  Alert,
+  Button,
   Card,
+  Checkbox,
+  Drawer,
   Input,
   Select,
+  Space,
   Spin,
-  Checkbox,
-  Button,
   Radio,
 } from "antd";
 import ScenariosPlot from "./_plot";
@@ -44,6 +46,7 @@ const Home = () => {
   const [drawerTitle, setDrawerTitle] = useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
   const [currentSSE, setCurrentSSE] = useState(null);
+  const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const router = useRouter();
 
   function abortLoad() {
@@ -142,6 +145,10 @@ const Home = () => {
         }
       },
       onStop: () => {
+        if (output.length == 0) {
+          setModelOutputFailed(true);
+        }
+
         setLoading(false);
         abortLoad();
       },
@@ -335,7 +342,15 @@ const Home = () => {
             )}
           </div>
         </div>
-
+        {modelOutputFailed && (
+          <Space direction="vertical" style={{ width: "100%" }}>
+            <Alert
+              message="Model failed to respond rightly"
+              description="Please rewrite your message and try again"
+              type="warning"
+            />
+          </Space>
+        )}
         <div className={"scenarios-collection " + displayMode + "-display"}>
           {scenarios.map((scenario, i) => {
             return (
