@@ -80,7 +80,7 @@ class UI:
         knwoledge_pack_definition: KnowledgePack,
     ):
         with gr.Row():
-            with gr.Column(scale=2):
+            with gr.Column(scale=2, elem_classes="knowledge-column"):
                 gr.Markdown("## Context knowledge")
                 for context_key in [
                     context.name for context in knwoledge_pack_definition.contexts
@@ -89,7 +89,9 @@ class UI:
                         knowledge_base_markdown.get_all_knowledge_documents(context_key)
                     )
                     with gr.Accordion(
-                        label=context_key.replace("_", " ").title(), open=False
+                        label=context_key.replace("_", " ").title(),
+                        open=False,
+                        elem_classes="knowledge-context-list",
                     ):
                         if context_content and len(context_content) > 0:
                             for knowledge_entry in context_content:
@@ -103,10 +105,14 @@ class UI:
                             gr.Textbox(
                                 "No knowledge found for this context", show_label=False
                             )
-            with gr.Column(scale=2):
+            with gr.Column(scale=2, elem_classes="knowledge-column"):
                 gr.Markdown("## Documents")
                 context_content = EmbeddingsService.get_embedded_documents()
-                with gr.Accordion(label="Common documents", open=False):
+                with gr.Accordion(
+                    label="Common documents",
+                    open=False,
+                    elem_classes="knowledge-context-list",
+                ):
                     if context_content and len(context_content) > 0:
                         for embbedding_document in context_content:
                             gr.Markdown(f"""
@@ -129,7 +135,9 @@ class UI:
                         context_key, False
                     )
                     with gr.Accordion(
-                        label=context_key.replace("_", " ").title(), open=False
+                        label=context_key.replace("_", " ").title(),
+                        open=False,
+                        elem_classes="knowledge-context-list",
                     ):
                         if context_content and len(context_content) > 0:
                             for embbedding_document in context_content:

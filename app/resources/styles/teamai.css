@@ -201,6 +201,15 @@ img {
   color: white;
 }
 
+.knowledge-column {
+  padding: 0 0.5em;
+  padding-bottom: 1em;
+}
+
+.knowledge-context-list {
+  border: 1px solid var(--color-light-gray) !important;
+}
+
 @media (prefers-color-scheme: dark) {
   .model-settings {
     background-color: var(--block-background-fill) !important;
