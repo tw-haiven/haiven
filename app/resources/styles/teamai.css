@@ -13,7 +13,6 @@
   --link-text-color-visited: var(--color-flamingo);
 }
 
-
 .disclaimer {
   background-color: var(--color-flamingo);
   font-weight: bold;
@@ -82,7 +81,6 @@
 .teamai-settings {
   border: 1px solid var(--color-light-gray);
 }
-
 
 /* Header styling: One row */
 /* .header-title h1 {
@@ -212,6 +210,11 @@
   border: 1px solid var(--color-light-gray) !important;
 }
 
+.copyright_text {
+  text-align: center;
+  background-color: white !important;
+}
+
 @media (prefers-color-scheme: dark) {
   .model-settings {
     background-color: var(--block-background-fill) !important;
@@ -228,6 +231,34 @@
   .primary {
     background-color: var(--color-flamingo) !important;
   }
+
+  .teamai-content {
+    background-color: transparent;
+  }
+
+  .teamai-tabs-container {
+    background-color: rgb(31, 41, 55);
+  }
+
+  .teamai-group {
+    border: 1px solid var(--color-dark-blue) !important;
+  }
+
+  .tabitem {
+    background-color: var(--background-fill-secondary);
+  }
+
+  .knowledge-context-list{
+    border: 1px solid var(--color-dark-blue) !important;
+  }
+
+  .copyright_text{
+    background-color: var(--background-fill-primary) !important;
+  }
+
+  .tabs .selected {
+    background-color: var(--background-fill-secondary) !important;
+  }
 }
 
 .show-api {
@@ -235,13 +266,10 @@
 }
 
 .show-api + div {
-    display: none !important;
+  display: none !important;
 }
 
-.copyright_text {
-    text-align: center;
-    background-color: white !important;
-}
+
 
 /* HEADER */
 .header {
@@ -294,7 +322,6 @@
 .mode-button {
   border: none;
   padding: 5px 10px !important;
-
 }
 
 .mode-selected {
