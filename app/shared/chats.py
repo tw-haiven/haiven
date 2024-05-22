@@ -317,7 +317,7 @@ class DocumentsChat(TeamAIBaseChat):
     def build_prompt(self, question) -> str:
         return (
             """Provide information over the following pieces of CONTEXT to answer the QUESTION at the end.
-        
+
         CONTEXT:
         ```
         {context}
@@ -328,10 +328,10 @@ class DocumentsChat(TeamAIBaseChat):
             + question
             + """
         ```
-        
-        You can only answer based on the provided context. If an answer cannot be formed strictly using the context, 
+
+        You can only answer based on the provided context. If an answer cannot be formed strictly using the context,
         say you cannot find information about that topic in the given context.
-        
+
         Please provide an answer to the question based on the context in Markdown format.
         """
         )

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
-import { Drawer, Card, Space, Spin, Button, Radio, Input } from "antd";
+import { Alert, Button, Card, Drawer, Input, Space, Spin, Radio } from "antd";
 const { TextArea } = Input;
 import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import ChatExploration from "./_chat_exploration";
@@ -19,6 +19,7 @@ const Home = () => {
   const [drawerHeader, setDrawerHeader] = useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
   const [currentSSE, setCurrentSSE] = useState(null);
+  const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const router = useRouter();
 
   function abortLoad() {
@@ -47,6 +48,7 @@ const Home = () => {
   };
 
   const onSubmitPrompt = (event) => {
+    setModelOutputFailed(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
@@ -70,6 +72,7 @@ const Home = () => {
         if (Array.isArray(output)) {
           setScenarios(output);
         } else {
+          setModelOutputFailed(true);
           console.log("response is not parseable into an array");
         }
       },
@@ -167,6 +170,18 @@ const Home = () => {
             <Button type="primary" onClick={onSubmitPrompt}>
               Go
             </Button>
+            {modelOutputFailed && (
+              <Space
+                direction="vertical"
+                style={{ width: "100%", marginTop: "5px" }}
+              >
+                <Alert
+                  message="Model failed to respond rightly"
+                  description="Please rewrite your message and try again"
+                  type="warning"
+                />
+              </Space>
+            )}
           </div>
           &nbsp;
           {isLoading && (

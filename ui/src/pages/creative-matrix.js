@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input, Button, Spin, Select, Popover } from "antd";
+import { Alert, Input, Button, Spin, Select, Space, Popover } from "antd";
 const { Search } = Input;
 import { parse } from "best-effort-json-parser";
 import {
@@ -27,6 +27,7 @@ const CreativeMatrix = () => {
   const [isLoading, setLoading] = useState(false);
   const [matrix, setMatrix] = useState([]);
   const [currentSSE, setCurrentSSE] = useState(null);
+  const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const [templates, setTemplates] = useState([
     {
       name: "Template: GenAI Use Case Exploration Matrix",
@@ -117,6 +118,7 @@ const CreativeMatrix = () => {
   }
 
   const onGenerateMatrix = () => {
+    setModelOutputFailed(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
@@ -155,6 +157,7 @@ const CreativeMatrix = () => {
           try {
             output = parse(ms || "[]");
           } catch (error) {
+            setModelOutputFailed(true);
             console.log("error", error);
           }
           setMatrix(output);
@@ -281,6 +284,18 @@ const CreativeMatrix = () => {
           &nbsp;
           {isLoading ? <Spin /> : <></>}
         </div>
+        {modelOutputFailed && (
+          <Space
+            direction="vertical"
+            style={{ width: "100%", marginTop: "5px" }}
+          >
+            <Alert
+              message="Model failed to respond rightly"
+              description="Please rewrite your message and try again"
+              type="warning"
+            />
+          </Space>
+        )}
         <br />
         <br />
         {/* MATRIX */}

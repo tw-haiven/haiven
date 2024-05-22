@@ -100,6 +100,7 @@ const Home = () => {
   };
 
   const onSubmitPrompt = async (value, event) => {
+    setModelOutputFailed(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);

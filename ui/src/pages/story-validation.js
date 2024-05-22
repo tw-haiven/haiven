@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE2 } from "../app/_fetch_sse";
-import { Card, Spin, Button, Input } from "antd";
+import { Alert, Button, Card, Input, Space, Spin } from "antd";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import ReactMarkdown from "react-markdown";
@@ -15,6 +15,7 @@ const Home = () => {
   const [isLoading, setLoading] = useState(false);
   const [promptInput, setPromptInput] = useState("");
   const [currentSSE, setCurrentSSE] = useState(null);
+  const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
   const router = useRouter();
 
@@ -28,6 +29,7 @@ const Home = () => {
   }
 
   const onSubmitPrompt = (event) => {
+    setModelOutputFailed(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
@@ -73,9 +75,11 @@ const Home = () => {
             if (Array.isArray(output)) {
               setQuestions(output);
             } else {
+              setModelOutputFailed(true);
               console.log("response is not parseable into an array");
             }
           } catch (error) {
+            setModelOutputFailed(true);
             console.log("error", error, "data received", "'" + data + "'");
           }
         },
@@ -171,6 +175,15 @@ const Home = () => {
             <Button type="primary" onClick={onSubmitPrompt}>
               Go
             </Button>
+            {modelOutputFailed && (
+              <Space direction="vertical" style={{ width: "100%" }}>
+                <Alert
+                  message="Model failed to respond rightly"
+                  description="Please rewrite your message and try again"
+                  type="warning"
+                />
+              </Space>
+            )}
           </div>
           &nbsp;
           {isLoading && (
