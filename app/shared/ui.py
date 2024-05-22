@@ -11,6 +11,7 @@ from shared.prompts import PromptList
 from shared.services.config_service import ConfigService
 from shared.services.embeddings_service import EmbeddingsService
 from shared.services.models_service import ModelsService
+from shared.ui_header_template import header_html, header_styles
 
 
 class UI:
@@ -47,17 +48,7 @@ class UI:
         return theme, css
 
     def ui_header(self, navigation=None):
-        with gr.Row(elem_classes="header"):
-            with gr.Column(elem_classes="header-title"):
-                application_name = ConfigService.load_application_name()
-                gr.HTML(f"<h1>{application_name}</h1><h2>Team assistant</h2>")
-
-            with gr.Column(elem_classes="header-logo"):
-                gr.Markdown(
-                    """
-                    ![Team AI](../static/thoughtworks_logo.png)
-                    """
-                )
+        gr.HTML(header_styles + header_html)
 
         if navigation:
             with gr.Row(elem_classes="header"):
