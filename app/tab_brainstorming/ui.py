@@ -64,7 +64,7 @@ def enable_brainstorming(
             request, "active_knowledge_context", app_level=True
         )
 
-        if ui_prompt_dropdown and active_knowledge_context is None:
+        if active_knowledge_context is None:
             gr.Warning("Please select a knowledge context first")
             return ""
 
@@ -84,7 +84,7 @@ def enable_brainstorming(
             request, "active_knowledge_context", app_level=True
         )
 
-        if prompt_choice and context_selected is None:
+        if context_selected is None:
             gr.Warning("Please select a knowledge context first")
             return [None, "", "", ""]
 

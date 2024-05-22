@@ -85,11 +85,11 @@ def enable_chat(
             request, "active_knowledge_context", app_level=True
         )
 
-        if prompt_choice and context_selected is None:
+        if context_selected is None:
             gr.Warning("Please select a knowledge context first")
             return [None, "", "", ""]
 
-        if prompt_choice and prompt_list.get(prompt_choice):
+        if prompt_choice:
             user_context.set_value(request, "chat_prompt_choice", prompt_choice)
             chat_context.prompt = prompt_list.get(prompt_choice).metadata.get(
                 "title", "Unnamed use case"
@@ -116,7 +116,7 @@ def enable_chat(
             request, "active_knowledge_context", app_level=True
         )
 
-        if prompt_choice and context_selected is None:
+        if context_selected is None:
             gr.Warning("Please select a knowledge context first")
             return ""
 

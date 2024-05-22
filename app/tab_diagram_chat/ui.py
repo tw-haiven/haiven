@@ -64,7 +64,7 @@ def enable_image_chat(
             request, "active_knowledge_context", app_level=True
         )
 
-        if prompt_choice and context_selected is None:
+        if context_selected is None:
             gr.Warning("Please select a knowledge context first")
             return [None, "", "", ""]
 
@@ -121,7 +121,7 @@ def enable_image_chat(
             request, "active_knowledge_context", app_level=True
         )
 
-        if prompt_choice and context_selected is None:
+        if context_selected is None:
             gr.Warning("Please select a knowledge context first")
             return ""
 
