@@ -2,10 +2,13 @@
 
 set -e
 
+brew install pipx
+pipx ensurepath
+
 echo "Checking if Poetry is installed..."
 if ! command -v poetry &> /dev/null; then
-    echo "Poetry is not installed. Installing Poetry using Homebrew..."
-    brew install poetry
+    echo "Poetry is not installed. Installing Poetry using pipx..."
+    pipx install poetry
 fi
 
 if ! command -v yarn &> /dev/null; then
@@ -20,11 +23,11 @@ printf "\nInstalling Haiven CLI..."
 poetry run cli-init
 poetry run cli-build
 WHL_PATH=$(cat haiven_wheel_path.txt)
-pip install $WHL_PATH --force-reinstall
+pipx install "$WHL_PATH"
 CLI_EXEC_PATH=$(which "haiven-cli")
 rm haiven_wheel_path.txt
 haiven-cli --install-completion --show-completion
-printf "\nhaiven-cli is installed at ${CLI_EXEC_PATH}"
+printf "\nhaiven-cli is installed at %s" "$CLI_EXEC_PATH"
 
 
 printf "\nChecking if Gitleaks is installed..."
