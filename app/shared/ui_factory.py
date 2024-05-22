@@ -86,92 +86,98 @@ class UIFactory:
             )
             self.ui.ui_header(navigation=navigation)
             user_identifier_state = gr.State()
-            with gr.Group(elem_classes="teamai-group"):
-                with gr.Accordion("Settings"):
-                    with gr.Row():
-                        knowledge_context_select = (
-                            self.ui.create_knowledge_context_selector_ui(
-                                self.content_manager.knowledge_pack_definition
+            with gr.Group(elem_classes="teamai-content"):
+                with gr.Group(elem_classes=["teamai-group", "teamai-settings"]):
+                    with gr.Accordion("Settings"):
+                        with gr.Row():
+                            knowledge_context_select = (
+                                self.ui.create_knowledge_context_selector_ui(
+                                    self.content_manager.knowledge_pack_definition
+                                )
                             )
+                            knowledge_context_select.change(
+                                fn=self.__knowledge_context_select_changed,
+                                inputs=knowledge_context_select,
+                            )
+
+                            model_select, tone_select, self.__llm_config = (
+                                self.ui.create_llm_settings_ui()
+                            )
+                            model_select.change(
+                                fn=self._model_changed, inputs=model_select
+                            )
+                            tone_select.change(
+                                fn=self._tone_changed, inputs=tone_select
+                            )
+
+                with gr.Row(elem_classes="teamai-tabs-container"):
+                    with gr.Tabs() as all_tabs:
+                        category_filter = ["coding", "architecture"]
+                        self.ui.create_about_tab_for_task_area(
+                            category_filter,
+                            category_metadata,
+                            self.prompts_factory.create_all_prompts(
+                                self.content_manager.knowledge_base_markdown
+                            ),
                         )
-                        knowledge_context_select.change(
-                            fn=self.__knowledge_context_select_changed,
-                            inputs=knowledge_context_select,
+                        enable_chat(
+                            self.content_manager.knowledge_base_markdown,
+                            self.chat_session_memory,
+                            self.prompts_factory,
+                            self.__llm_config,
+                            self.content_manager.active_knowledge_context,
+                            user_identifier_state,
+                            category_filter,
+                            knowledge_context_select,
+                        )
+                        enable_brainstorming(
+                            self.content_manager.knowledge_base_markdown,
+                            self.chat_session_memory,
+                            self.prompts_factory,
+                            self.__llm_config,
+                            user_identifier_state,
+                            category_filter,
+                        )
+                        enable_image_chat(
+                            self.content_manager.knowledge_base_markdown,
+                            self.chat_session_memory,
+                            self.prompts_factory,
+                            self.__llm_config,
+                            self.content_manager.active_knowledge_context,
+                            user_identifier_state,
+                            category_filter,
+                            knowledge_context_select,
+                        )
+                        enable_knowledge_chat(
+                            self.chat_session_memory,
+                            self.__llm_config,
+                            self.content_manager.active_knowledge_context,
+                            user_identifier_state,
+                            category_filter,
+                            knowledge_context_select,
                         )
 
-                        model_select, tone_select, self.__llm_config = (
-                            self.ui.create_llm_settings_ui()
-                        )
-                        model_select.change(fn=self._model_changed, inputs=model_select)
-                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
-            with gr.Row():
-                with gr.Tabs() as all_tabs:
-                    category_filter = ["coding", "architecture"]
-                    self.ui.create_about_tab_for_task_area(
-                        category_filter,
-                        category_metadata,
-                        self.prompts_factory.create_all_prompts(
-                            self.content_manager.knowledge_base_markdown
-                        ),
-                    )
-                    enable_chat(
-                        self.content_manager.knowledge_base_markdown,
-                        self.chat_session_memory,
-                        self.prompts_factory,
-                        self.__llm_config,
-                        self.content_manager.active_knowledge_context,
-                        user_identifier_state,
-                        category_filter,
-                        knowledge_context_select,
-                    )
-                    enable_brainstorming(
-                        self.content_manager.knowledge_base_markdown,
-                        self.chat_session_memory,
-                        self.prompts_factory,
-                        self.__llm_config,
-                        user_identifier_state,
-                        category_filter,
-                    )
-                    enable_image_chat(
-                        self.content_manager.knowledge_base_markdown,
-                        self.chat_session_memory,
-                        self.prompts_factory,
-                        self.__llm_config,
-                        self.content_manager.active_knowledge_context,
-                        user_identifier_state,
-                        category_filter,
-                        knowledge_context_select,
-                    )
-                    enable_knowledge_chat(
-                        self.chat_session_memory,
-                        self.__llm_config,
-                        self.content_manager.active_knowledge_context,
-                        user_identifier_state,
-                        category_filter,
-                        knowledge_context_select,
-                    )
+                with gr.Row():
+                    gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
-            with gr.Row():
-                gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
+                blocks.load(
+                    self.event_handler.on_load_ui,
+                    [
+                        model_select,
+                        tone_select,
+                        knowledge_context_select,
+                    ],
+                    [
+                        all_tabs,
+                        model_select,
+                        tone_select,
+                        knowledge_context_select,
+                        user_identifier_state,
+                    ],
+                )
+                ##add a label
 
-            blocks.load(
-                self.event_handler.on_load_ui,
-                [
-                    model_select,
-                    tone_select,
-                    knowledge_context_select,
-                ],
-                [
-                    all_tabs,
-                    model_select,
-                    tone_select,
-                    knowledge_context_select,
-                    user_identifier_state,
-                ],
-            )
-            ##add a label
-
-            blocks.queue()
+                blocks.queue()
 
         return blocks
 
@@ -183,88 +189,93 @@ class UIFactory:
                 self.navigation_manager.get_testing_navigation()
             )
             self.ui.ui_header(navigation=navigation)
-            with gr.Group(elem_classes="teamai-group"):
-                with gr.Accordion("Settings"):
-                    with gr.Row():
-                        knowledge_context_select = (
-                            self.ui.create_knowledge_context_selector_ui(
-                                self.content_manager.knowledge_pack_definition
+            with gr.Group(elem_classes="teamai-content"):
+                with gr.Group(elem_classes=["teamai-group", "teamai-settings"]):
+                    with gr.Accordion("Settings"):
+                        with gr.Row():
+                            knowledge_context_select = (
+                                self.ui.create_knowledge_context_selector_ui(
+                                    self.content_manager.knowledge_pack_definition
+                                )
                             )
-                        )
-                        knowledge_context_select.change(
-                            fn=self.__knowledge_context_select_changed,
-                            inputs=knowledge_context_select,
-                        )
+                            knowledge_context_select.change(
+                                fn=self.__knowledge_context_select_changed,
+                                inputs=knowledge_context_select,
+                            )
 
-                        model_select, tone_select, self.__llm_config = (
-                            self.ui.create_llm_settings_ui()
-                        )
-                        model_select.change(fn=self._model_changed, inputs=model_select)
-                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
-            with gr.Row():
-                category_filter = ["testing"]
+                            model_select, tone_select, self.__llm_config = (
+                                self.ui.create_llm_settings_ui()
+                            )
+                            model_select.change(
+                                fn=self._model_changed, inputs=model_select
+                            )
+                            tone_select.change(
+                                fn=self._tone_changed, inputs=tone_select
+                            )
+                with gr.Row(elem_classes="teamai-tabs-container"):
+                    category_filter = ["testing"]
 
-                with gr.Tabs() as all_tabs:
-                    user_identifier_state = gr.State()
-                    self.ui.create_about_tab_for_task_area(
-                        category_filter,
-                        category_metadata,
-                        self.prompts_factory.create_all_prompts(
+                    with gr.Tabs() as all_tabs:
+                        user_identifier_state = gr.State()
+                        self.ui.create_about_tab_for_task_area(
+                            category_filter,
+                            category_metadata,
+                            self.prompts_factory.create_all_prompts(
+                                self.content_manager.knowledge_base_markdown,
+                            ),
+                        )
+                        enable_chat(
                             self.content_manager.knowledge_base_markdown,
-                        ),
-                    )
-                    enable_chat(
-                        self.content_manager.knowledge_base_markdown,
-                        self.chat_session_memory,
-                        self.prompts_factory,
-                        self.__llm_config,
-                        self.content_manager.active_knowledge_context,
-                        user_identifier_state,
-                        category_filter,
-                        knowledge_context_select,
-                    )
-                    enable_brainstorming(
-                        self.content_manager.knowledge_base_markdown,
-                        self.chat_session_memory,
-                        self.prompts_factory,
-                        self.__llm_config,
-                        user_identifier_state,
-                        category_filter,
-                    )
-                    enable_image_chat(
-                        self.content_manager.knowledge_base_markdown,
-                        self.chat_session_memory,
-                        self.prompts_factory,
-                        self.__llm_config,
-                        self.content_manager.active_knowledge_context,
-                        user_identifier_state,
-                        category_filter,
-                        knowledge_context_select,
-                    )
-                    enable_knowledge_chat(
-                        self.chat_session_memory,
-                        self.__llm_config,
-                        self.content_manager.active_knowledge_context,
-                        user_identifier_state,
-                        category_filter,
-                        knowledge_context_select,
-                    )
+                            self.chat_session_memory,
+                            self.prompts_factory,
+                            self.__llm_config,
+                            self.content_manager.active_knowledge_context,
+                            user_identifier_state,
+                            category_filter,
+                            knowledge_context_select,
+                        )
+                        enable_brainstorming(
+                            self.content_manager.knowledge_base_markdown,
+                            self.chat_session_memory,
+                            self.prompts_factory,
+                            self.__llm_config,
+                            user_identifier_state,
+                            category_filter,
+                        )
+                        enable_image_chat(
+                            self.content_manager.knowledge_base_markdown,
+                            self.chat_session_memory,
+                            self.prompts_factory,
+                            self.__llm_config,
+                            self.content_manager.active_knowledge_context,
+                            user_identifier_state,
+                            category_filter,
+                            knowledge_context_select,
+                        )
+                        enable_knowledge_chat(
+                            self.chat_session_memory,
+                            self.__llm_config,
+                            self.content_manager.active_knowledge_context,
+                            user_identifier_state,
+                            category_filter,
+                            knowledge_context_select,
+                        )
 
-            with gr.Row():
-                gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
+                with gr.Row():
+                    gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
-            blocks.load(
-                self.event_handler.on_load_ui,
-                [model_select, tone_select, knowledge_context_select],
-                [
-                    all_tabs,
-                    model_select,
-                    tone_select,
-                    knowledge_context_select,
-                    user_identifier_state,
-                ],
-            )
-            blocks.queue()
+                blocks.load(
+                    self.event_handler.on_load_ui,
+                    [model_select, tone_select, knowledge_context_select],
+                    [
+                        all_tabs,
+                        model_select,
+                        tone_select,
+                        knowledge_context_select,
+                        user_identifier_state,
+                    ],
+                )
+                blocks.queue()
 
         return blocks
 
@@ -278,87 +289,92 @@ class UIFactory:
                 self.navigation_manager.get_analysis_navigation()
             )
             self.ui.ui_header(navigation=navigation)
-            with gr.Group(elem_classes="teamai-group"):
-                with gr.Accordion("Settings"):
-                    with gr.Row():
-                        knowledge_context_select = (
-                            self.ui.create_knowledge_context_selector_ui(
-                                self.content_manager.knowledge_pack_definition
+            with gr.Group(elem_classes="teamai-content"):
+                with gr.Group(elem_classes=["teamai-group", "teamai-settings"]):
+                    with gr.Accordion("Settings"):
+                        with gr.Row():
+                            knowledge_context_select = (
+                                self.ui.create_knowledge_context_selector_ui(
+                                    self.content_manager.knowledge_pack_definition
+                                )
                             )
+                            knowledge_context_select.change(
+                                fn=self.__knowledge_context_select_changed,
+                                inputs=knowledge_context_select,
+                            )
+
+                            model_select, tone_select, self.__llm_config = (
+                                self.ui.create_llm_settings_ui()
+                            )
+                            model_select.change(
+                                fn=self._model_changed, inputs=model_select
+                            )
+                            tone_select.change(
+                                fn=self._tone_changed, inputs=tone_select
+                            )
+                with gr.Row(elem_classes="teamai-tabs-container"):
+                    category_filter = ["analysis"]
+                    with gr.Tabs() as all_tabs:
+                        user_identifier_state = gr.State()
+                        self.ui.create_about_tab_for_task_area(
+                            category_filter,
+                            category_metadata,
+                            self.prompts_factory.create_all_prompts(
+                                self.content_manager.knowledge_base_markdown
+                            ),
                         )
-                        knowledge_context_select.change(
-                            fn=self.__knowledge_context_select_changed,
-                            inputs=knowledge_context_select,
+                        enable_chat(
+                            self.content_manager.knowledge_base_markdown,
+                            self.chat_session_memory,
+                            self.prompts_factory,
+                            self.__llm_config,
+                            self.content_manager.active_knowledge_context,
+                            user_identifier_state,
+                            category_filter,
+                            knowledge_context_select,
+                        )
+                        enable_brainstorming(
+                            self.content_manager.knowledge_base_markdown,
+                            self.chat_session_memory,
+                            self.prompts_factory,
+                            self.__llm_config,
+                            user_identifier_state,
+                            category_filter,
+                        )
+                        enable_image_chat(
+                            self.content_manager.knowledge_base_markdown,
+                            self.chat_session_memory,
+                            self.prompts_factory,
+                            self.__llm_config,
+                            self.content_manager.active_knowledge_context,
+                            user_identifier_state,
+                            category_filter,
+                            knowledge_context_select,
+                        )
+                        enable_knowledge_chat(
+                            self.chat_session_memory,
+                            self.__llm_config,
+                            self.content_manager.active_knowledge_context,
+                            user_identifier_state,
+                            category_filter,
+                            knowledge_context_select,
                         )
 
-                        model_select, tone_select, self.__llm_config = (
-                            self.ui.create_llm_settings_ui()
-                        )
-                        model_select.change(fn=self._model_changed, inputs=model_select)
-                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
-            with gr.Row():
-                category_filter = ["analysis"]
-                with gr.Tabs() as all_tabs:
-                    user_identifier_state = gr.State()
-                    self.ui.create_about_tab_for_task_area(
-                        category_filter,
-                        category_metadata,
-                        self.prompts_factory.create_all_prompts(
-                            self.content_manager.knowledge_base_markdown
-                        ),
-                    )
-                    enable_chat(
-                        self.content_manager.knowledge_base_markdown,
-                        self.chat_session_memory,
-                        self.prompts_factory,
-                        self.__llm_config,
-                        self.content_manager.active_knowledge_context,
-                        user_identifier_state,
-                        category_filter,
-                        knowledge_context_select,
-                    )
-                    enable_brainstorming(
-                        self.content_manager.knowledge_base_markdown,
-                        self.chat_session_memory,
-                        self.prompts_factory,
-                        self.__llm_config,
-                        user_identifier_state,
-                        category_filter,
-                    )
-                    enable_image_chat(
-                        self.content_manager.knowledge_base_markdown,
-                        self.chat_session_memory,
-                        self.prompts_factory,
-                        self.__llm_config,
-                        self.content_manager.active_knowledge_context,
-                        user_identifier_state,
-                        category_filter,
-                        knowledge_context_select,
-                    )
-                    enable_knowledge_chat(
-                        self.chat_session_memory,
-                        self.__llm_config,
-                        self.content_manager.active_knowledge_context,
-                        user_identifier_state,
-                        category_filter,
-                        knowledge_context_select,
-                    )
+                with gr.Row():
+                    gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
-            with gr.Row():
-                gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
-
-            blocks.load(
-                self.event_handler.on_load_ui,
-                [model_select, tone_select, knowledge_context_select],
-                [
-                    all_tabs,
-                    model_select,
-                    tone_select,
-                    knowledge_context_select,
-                    user_identifier_state,
-                ],
-            )
-            blocks.queue()
+                blocks.load(
+                    self.event_handler.on_load_ui,
+                    [model_select, tone_select, knowledge_context_select],
+                    [
+                        all_tabs,
+                        model_select,
+                        tone_select,
+                        knowledge_context_select,
+                        user_identifier_state,
+                    ],
+                )
+                blocks.queue()
 
         return blocks
 
@@ -371,66 +387,72 @@ class UIFactory:
             )
             self.ui.ui_header(navigation=navigation)
 
-            with gr.Group(elem_classes="teamai-group"):
-                with gr.Accordion("Settings"):
-                    with gr.Row():
-                        knowledge_context_select = (
-                            self.ui.create_knowledge_context_selector_ui(
-                                self.content_manager.knowledge_pack_definition
+            with gr.Group(elem_classes="teamai-content"):
+                with gr.Group(elem_classes=["teamai-group", "teamai-settings"]):
+                    with gr.Accordion("Settings"):
+                        with gr.Row():
+                            knowledge_context_select = (
+                                self.ui.create_knowledge_context_selector_ui(
+                                    self.content_manager.knowledge_pack_definition
+                                )
                             )
-                        )
-                        knowledge_context_select.change(
-                            fn=self.__knowledge_context_select_changed,
-                            inputs=knowledge_context_select,
-                        )
+                            knowledge_context_select.change(
+                                fn=self.__knowledge_context_select_changed,
+                                inputs=knowledge_context_select,
+                            )
 
-                        model_select, tone_select, self.__llm_config = (
-                            self.ui.create_llm_settings_ui()
-                        )
-                        model_select.change(fn=self._model_changed, inputs=model_select)
-                        tone_select.change(fn=self._tone_changed, inputs=tone_select)
+                            model_select, tone_select, self.__llm_config = (
+                                self.ui.create_llm_settings_ui()
+                            )
+                            model_select.change(
+                                fn=self._model_changed, inputs=model_select
+                            )
+                            tone_select.change(
+                                fn=self._tone_changed, inputs=tone_select
+                            )
 
-            with gr.Row():
-                category_filter = ["prompting"]
-                with gr.Tabs() as all_tabs:
-                    user_identifier_state = gr.State()
-                    with gr.Tab("Knowledge"):
-                        self.ui.ui_show_knowledge(
-                            self.content_manager.knowledge_base_markdown,
-                            self.content_manager.knowledge_pack_definition,
-                        )
-                    # TODO: Change tab title to "Prompt development"? And move the LLM choice in there??!
-                    with gr.Tab("Prompt Development"):
-                        gr.Markdown(
-                            "Experimental feature to support prompt development - still in development",
-                            elem_classes="disclaimer",
-                        )
-                        enable_chat(
-                            self.content_manager.knowledge_base_markdown,
-                            self.chat_session_memory,
-                            self.prompts_factory,
-                            self.__llm_config,
-                            self.content_manager.active_knowledge_context,
-                            user_identifier_state,
-                            category_filter,
-                            knowledge_context_select,
-                        )
+                with gr.Row(elem_classes="teamai-tabs-container"):
+                    category_filter = ["prompting"]
 
-            with gr.Row():
-                gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
+                    with gr.Tabs() as all_tabs:
+                        user_identifier_state = gr.State()
+                        with gr.Tab("Knowledge"):
+                            self.ui.ui_show_knowledge(
+                                self.content_manager.knowledge_base_markdown,
+                                self.content_manager.knowledge_pack_definition,
+                            )
+                        # TODO: Change tab title to "Prompt development"? And move the LLM choice in there??!
+                        with gr.Tab("Prompt Development"):
+                            gr.Markdown(
+                                "Experimental feature to support prompt development - still in development",
+                                elem_classes="disclaimer",
+                            )
+                            enable_chat(
+                                self.content_manager.knowledge_base_markdown,
+                                self.chat_session_memory,
+                                self.prompts_factory,
+                                self.__llm_config,
+                                self.content_manager.active_knowledge_context,
+                                user_identifier_state,
+                                category_filter,
+                                knowledge_context_select,
+                            )
 
-            blocks.load(
-                self.event_handler.on_load_ui,
-                [model_select, tone_select, knowledge_context_select],
-                [
-                    all_tabs,
-                    model_select,
-                    tone_select,
-                    knowledge_context_select,
-                    user_identifier_state,
-                ],
-            )
-            blocks.queue()
+                with gr.Row():
+                    gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
+
+                blocks.load(
+                    self.event_handler.on_load_ui,
+                    [model_select, tone_select, knowledge_context_select],
+                    [
+                        all_tabs,
+                        model_select,
+                        tone_select,
+                        knowledge_context_select,
+                        user_identifier_state,
+                    ],
+                )
+                blocks.queue()
 
         return blocks
 

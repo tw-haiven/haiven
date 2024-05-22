@@ -30,10 +30,6 @@ img {
   color: white !important;
 }
 
-.model-settings {
-  background-color: var(--background-fill-secondary) !important;
-}
-
 .model-settings-service label .wrap {
   font-size: 0.9em !important;
   background-color: var(--checkbox-label-background-fill) !important;
@@ -62,7 +58,29 @@ img {
 .header {
   background-color: var(--color-dark-blue);
   padding: 1em;
+
 }
+
+.gradio-container {
+  padding: 0 !important;
+  max-width: 100% !important;
+}
+
+.teamai-content {
+  padding: 0 3em;
+  background-color: white;
+  border: none;
+}
+
+.teamai-tabs-container {
+  background-color: white;
+  padding-top: 1em;
+}
+
+.teamai-settings {
+  border: 1px solid var(--color-light-gray);
+}
+
 
 /* Header styling: One row */
 /* .header-title h1 {
@@ -130,6 +148,10 @@ img {
 .about img {
   float: none;
   width: 50em;
+}
+
+.teamai-group {
+  border: 1px solid var(--color-light-gray) !important;
 }
 
 .teamai-group .primary {
@@ -205,6 +227,7 @@ img {
     display: none !important;
 }
 
-.copyright_text{
+.copyright_text {
     text-align: center;
+    background-color: white !important;
 }
