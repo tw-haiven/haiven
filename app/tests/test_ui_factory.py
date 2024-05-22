@@ -83,6 +83,7 @@ class TestUIFactory(unittest.TestCase):
         all_tabs.children = []
         for element_id in element_ids:
             all_tabs.children.append(gr.Markdown(elem_id=element_id))
+
         # Action
         returned_blocks = ui_factory.create_ui(ui_type="coding")
 
@@ -134,12 +135,24 @@ class TestUIFactory(unittest.TestCase):
 
         blocks.load.assert_called_with(
             event_handler.on_load_ui,
-            [model_select, tone_select, knowledge_context_select],
+            [
+                model_select,
+                tone_select,
+                knowledge_context_select,
+                all_tabs.children[0],
+                all_tabs.children[1],
+                all_tabs.children[2],
+                all_tabs.children[3],
+            ],
             [
                 all_tabs,
                 model_select,
                 tone_select,
                 knowledge_context_select,
+                all_tabs.children[0],
+                all_tabs.children[1],
+                all_tabs.children[2],
+                all_tabs.children[3],
                 state,
             ],
         )
@@ -275,12 +288,24 @@ class TestUIFactory(unittest.TestCase):
         )
         blocks.load.assert_called_with(
             event_handler.on_load_ui,
-            [model_select, tone_select, knowledge_context_select],
+            [
+                model_select,
+                tone_select,
+                knowledge_context_select,
+                all_tabs.children[0],
+                all_tabs.children[1],
+                all_tabs.children[2],
+                all_tabs.children[3],
+            ],
             [
                 all_tabs,
                 model_select,
                 tone_select,
                 knowledge_context_select,
+                all_tabs.children[0],
+                all_tabs.children[1],
+                all_tabs.children[2],
+                all_tabs.children[3],
                 state,
             ],
         )
@@ -416,12 +441,24 @@ class TestUIFactory(unittest.TestCase):
         )
         blocks.load.assert_called_with(
             event_handler.on_load_ui,
-            [model_select, tone_select, knowledge_context_select],
+            [
+                model_select,
+                tone_select,
+                knowledge_context_select,
+                all_tabs.children[0],
+                all_tabs.children[1],
+                all_tabs.children[2],
+                all_tabs.children[3],
+            ],
             [
                 all_tabs,
                 model_select,
                 tone_select,
                 knowledge_context_select,
+                all_tabs.children[0],
+                all_tabs.children[1],
+                all_tabs.children[2],
+                all_tabs.children[3],
                 state,
             ],
         )

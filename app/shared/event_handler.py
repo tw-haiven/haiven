@@ -27,13 +27,92 @@ class EventHandler:
 
         return gr.Tabs(), self.get_user(request)
 
+    def __get_query_string_dict(self, request: gr.Request):
+        # convert querystring from string to dict
+        query_string_dict = {}
+        query_string_list = request.url.query.split("&")
+        for qs in query_string_list:
+            qs_split = qs.split("=")
+            if len(qs_split) == 2:
+                query_string_dict[qs_split[0]] = qs_split[1]
+        return query_string_dict
+
+    def __update_ui(
+        self,
+        request: gr.Request,
+    ):
+        query_string_dict = self.__get_query_string_dict(request)
+
+        chat_prompt_choice = None
+        brainstorming_prompt_choice = None
+        diagram_chat_prompt_choice = None
+        knowledge_chat_prompt_choice = None
+
+        if "tab" in query_string_dict and "task" in query_string_dict:
+            match query_string_dict["tab"]:
+                case "chat":
+                    chat_prompt_choice = query_string_dict["task"]
+                case "brainstorming":
+                    brainstorming_prompt_choice = query_string_dict["task"]
+                case "diagram_chat":
+                    diagram_chat_prompt_choice = query_string_dict["task"]
+                case "knowledge_chat":
+                    knowledge_chat_prompt_choice = query_string_dict["task"]
+
+        if "kc" in query_string_dict:
+            user_context.set_value(
+                request,
+                "active_knowledge_context",
+                query_string_dict["kc"],
+                app_level=True,
+            )
+
+        if "llm" in query_string_dict:
+            user_context.set_value(
+                request, "llm_model", query_string_dict["llm"], app_level=True
+            )
+
+        if "task" in query_string_dict:
+            task = query_string_dict["task"]
+            print(task)
+
+        return (
+            chat_prompt_choice,
+            brainstorming_prompt_choice,
+            diagram_chat_prompt_choice,
+            knowledge_chat_prompt_choice,
+        )
+
     def on_load_ui(
         self,
         model_selected,
         tone_selected,
         knowledge_context_select,
+        chat_prompt_choice,
+        brainstorming_prompt_choice,
+        diagram_chat_prompt_choice,
+        knowledge_chat_prompt_choice,
         request: gr.Request,
     ):
+        (
+            new_chat_prompt_choice,
+            new_brainstorming_prompt_choice,
+            new_diagram_chat_prompt_choice,
+            new_knowledge_chat_prompt_choice,
+        ) = self.__update_ui(request)
+
+        if new_brainstorming_prompt_choice:
+            brainstorming_prompt_choice = new_brainstorming_prompt_choice
+
+        if new_chat_prompt_choice:
+            chat_prompt_choice = new_chat_prompt_choice
+
+        if new_diagram_chat_prompt_choice:
+            diagram_chat_prompt_choice = new_diagram_chat_prompt_choice
+
+        if new_knowledge_chat_prompt_choice:
+            knowledge_chat_prompt_choice = new_knowledge_chat_prompt_choice
+
         if user_context.get_value(request, "llm_model", app_level=True) is not None:
             model_selected = user_context.get_value(
                 request, "llm_model", app_level=True
@@ -62,6 +141,10 @@ class EventHandler:
                     model_selected,
                     tone_selected,
                     knowledge_context_select,
+                    chat_prompt_choice,
+                    brainstorming_prompt_choice,
+                    diagram_chat_prompt_choice,
+                    knowledge_chat_prompt_choice,
                     self.get_user(request),
                 )
             return (
@@ -69,6 +152,10 @@ class EventHandler:
                 model_selected,
                 tone_selected,
                 knowledge_context_select,
+                chat_prompt_choice,
+                brainstorming_prompt_choice,
+                diagram_chat_prompt_choice,
+                knowledge_chat_prompt_choice,
                 self.get_user(request),
             )
         else:
@@ -77,5 +164,27 @@ class EventHandler:
                 model_selected,
                 tone_selected,
                 knowledge_context_select,
+                chat_prompt_choice,
+                brainstorming_prompt_choice,
+                diagram_chat_prompt_choice,
+                knowledge_chat_prompt_choice,
                 self.get_user(request),
             )
+
+    def on_load_ui_knowledge(
+        self,
+        model_selected,
+        tone_selected,
+        knowledge_context_select,
+        request: gr.Request,
+    ):
+        return self.on_load_ui(
+            model_selected,
+            tone_selected,
+            knowledge_context_select,
+            None,
+            None,
+            None,
+            None,
+            request,
+        )
