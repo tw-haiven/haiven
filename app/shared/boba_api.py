@@ -154,9 +154,9 @@ def explore_scenario_prompt(original_input, item, user_message):
     ...and the following scenario:
     {item}
 
-    You are able to give me a concise elaboration of the scenario described in the 
+    You are able to give me a concise elaboration of the scenario described in the
     context, here is my request for exploration:
-    
+
     {user_message}
 
     Please respond in 3-5 sentences.
@@ -202,6 +202,7 @@ class BobaApi:
         prompts_factory: PromptsFactory,
         content_manager: ContentManager,
         chat_session_memory: ServerChatSessionMemory,
+        provider: str,
     ):
         self.content_manager = content_manager
         self.prompts_factory = prompts_factory
@@ -209,6 +210,8 @@ class BobaApi:
         self.prompt_list = self.prompts_factory.create_chat_prompt(
             self.content_manager.knowledge_base_markdown
         )
+        self.model = _get_model(provider)
+        print(f"Using model: {self.model}")
 
     def prompt(self, prompt_id, user_input, chat_session):
         rendered_prompt = self.prompt_list.render_prompt(
@@ -261,7 +264,7 @@ class BobaApi:
             time_horizon = request.query_params.get("time_horizon", "5-year")
             optimism = request.query_params.get("optimism", "optimistic")
             realism = request.query_params.get("realism", "futuristic sci-fi")
-            chat = JSONChat()
+            chat = JSONChat(llm_config=LLMConfig(self.model, 0.2))
             return StreamingResponse(
                 chat.run(
                     get_scenarios_prompt(
@@ -289,7 +292,7 @@ class BobaApi:
             chat_session_key_value, chat_session = (
                 self.chat_session_memory.get_or_create_chat(
                     lambda: StreamingChat(
-                        llm_config=LLMConfig("azure-gpt35", 0.5), stream_in_chunks=True
+                        llm_config=LLMConfig(self.model, 0.5), stream_in_chunks=True
                     ),
                     prompt_data.chatSessionId,
                     "chat",
@@ -313,7 +316,7 @@ class BobaApi:
             chat_session_key_value, chat_session = (
                 self.chat_session_memory.get_or_create_chat(
                     lambda: StreamingChat(
-                        llm_config=LLMConfig("azure-gpt35", 0.5), stream_in_chunks=True
+                        llm_config=LLMConfig(self.model, 0.5), stream_in_chunks=True
                     ),
                     explore_request.chatSessionId,
                     "chat",
@@ -351,7 +354,7 @@ class BobaApi:
             creative_matrix_prompt = get_creative_matrix_prompt(
                 rows, columns, prompt, idea_qualifiers, num_ideas
             )
-            chat = JSONChat()
+            chat = JSONChat(llm_config=LLMConfig(self.model, 0.2))
             return StreamingResponse(
                 chat.run(creative_matrix_prompt),
                 media_type="text/event-stream",
@@ -360,3 +363,13 @@ class BobaApi:
                     "Content-Encoding": "none",
                 },
             )
+
+
+def _get_model(provider: str):
+    match provider:
+        case "azure":
+            return "azure-gpt4"
+        case "gcp":
+            return "google-gemini"
+        case "aws":
+            return "aws-claude-v3"

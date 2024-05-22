@@ -4,16 +4,19 @@ from shared.boba_api import BobaApi
 from shared.content_manager import ContentManager
 from shared.server import Server
 from shared.ui_factory import UIFactory
+from shared.services.config_service import ConfigService
 
 
 class App:
     def __init__(self, content_manager: ContentManager, ui_factory: UIFactory):
+        provider = ConfigService.load_enabled_providers()[0]
         self.server = Server(
             ui_factory.chat_session_memory,
             BobaApi(
                 ui_factory.prompts_factory,
                 ui_factory.content_manager,
                 ui_factory.chat_session_memory,
+                provider,
             ),
         ).create()
         self.content_manager = content_manager
