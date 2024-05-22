@@ -58,12 +58,24 @@
 
 .teamai-content {
   padding: 0 3em;
-  background-color: white;
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--color-dark-blue);
+  }
+
+  @media (prefers-color-scheme: light) {
+    background-color: var(--color-light-gray);
+  }
   border: none;
 }
 
 .teamai-tabs-container {
-  background-color: white;
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--color-dark-blue);
+  }
+
+  @media (prefers-color-scheme: light) {
+    background-color: var(--color-light-gray);
+  }
   padding-top: 1em;
 }
 
@@ -282,7 +294,7 @@
 .mode-button {
   border: none;
   padding: 5px 10px !important;
-  
+
 }
 
 .mode-selected {
@@ -311,4 +323,3 @@
   border-top-left-radius: 15px;
   border-bottom-left-radius: 15px;
 }
-
