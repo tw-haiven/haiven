@@ -48,6 +48,8 @@ class UIFactory:
         def recurse_children(children):
             children_dict = {}
             for child in children:
+                if isinstance(child, gr.Dropdown):
+                    print(child, child.label)
                 if hasattr(child, "children"):
                     children_dict.update(recurse_children(child.children))
                 if (
