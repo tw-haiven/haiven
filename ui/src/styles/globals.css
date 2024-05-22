@@ -610,7 +610,7 @@ textarea.answer-overwrite {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #083049; /* Dark teal background */
+  background-color: var(--color-dark-blue);
   color: white;
 }
 
@@ -662,7 +662,7 @@ textarea.answer-overwrite {
 }
 
 .mode-switch button.active {
-  background-color: #ff6a6a; /* Active button background */
+  background-color: var(--color-flamingo);
 }
 
 .mode-button {

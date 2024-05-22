@@ -4,20 +4,20 @@ import Image from "next/image";
 export default function Header() {
   return (
     <div className="page-header">
-      <header class="header">
-        <div class="left-section">
-          <div class="logo">
+      <header className="header">
+        <div className="left-section">
+          <div className="logo">
             <img src="/boba/thoughtworks_logo.png" alt="Logo" />
           </div>
-          <div class="separator"></div>
-          <div class="title">Haiven team assistant</div>
+          <div className="separator"></div>
+          <div className="title">Haiven team assistant</div>
         </div>
-        <div class="mode-switch">
+        <div className="mode-switch">
           <span>Choose your working mode</span>
-          <button class="mode-button" id="standardMode">
+          <button className="mode-button" id="standardMode">
             Guided mode
           </button>
-          <button class="mode-button" id="advancedMode">
+          <button className="mode-button" id="advancedMode">
             Chat mode
           </button>
         </div>
