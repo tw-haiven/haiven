@@ -604,3 +604,82 @@ textarea.answer-overwrite {
   margin: 0;
   font-size: 80%;
 }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #083049; /* Dark teal background */
+  color: white;
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 20px;
+  margin-right: 10px;
+}
+
+.separator {
+  width: 1px;
+  height: 24px;
+  background-color: white;
+  margin: 0 15px;
+}
+
+.title {
+  font-size: 16px;
+}
+
+.mode-switch {
+  display: flex;
+  align-items: center;
+}
+
+.mode-switch span {
+  margin-right: 10px;
+}
+
+.mode-switch button {
+  background-color: #ffffff; /* Button background */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.mode-switch button:first-of-type {
+  margin-right: 5px;
+}
+
+.mode-switch button.active {
+  background-color: #ff6a6a; /* Active button background */
+}
+
+.mode-button {
+  border: none;
+}
+
+#standardMode {
+  background-color: white;
+  color: black;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+
+#advancedMode {
+  background-color: #2d2d2d;
+  color: grey;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
