@@ -2,9 +2,8 @@ import { Layout, ConfigProvider } from "antd";
 import Head from "next/head";
 import Header from "./_header";
 import "../styles/globals.css";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Sidebar from "./_sidebar";
-import { useRouter } from "next/router";
 
 export default function App({
   Component,
@@ -12,8 +11,8 @@ export default function App({
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState();
-  const router = useRouter();
-  const useLayout = router.pathname !== "/" && router.pathname !== "/dashboard";
+
+  const useLayout = true; //router.pathname !== "/" && router.pathname !== "/dashboard";
 
   return (
     <>

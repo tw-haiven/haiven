@@ -13,10 +13,6 @@
   --link-text-color-visited: var(--color-flamingo);
 }
 
-img {
-  width: 150px;
-  float: right;
-}
 
 .disclaimer {
   background-color: var(--color-flamingo);
@@ -53,12 +49,6 @@ img {
 
 .message {
   font-size: var(--body-text-size) !important;
-}
-
-.header {
-  background-color: var(--color-dark-blue);
-  padding: 1em;
-
 }
 
 .gradio-container {
@@ -240,3 +230,85 @@ img {
     text-align: center;
     background-color: white !important;
 }
+
+/* HEADER */
+.header {
+  background-color: var(--color-dark-blue);
+  height: 65px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  color: white;
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 20px;
+  margin-right: 10px;
+}
+
+.separator {
+  width: 1px;
+  height: 24px;
+  background-color: white;
+  margin: 0 15px;
+}
+
+.title {
+  color: white !important;
+  font-size: 16px;
+}
+
+.mode-switch {
+  display: flex;
+  align-items: center;
+}
+
+.mode-switch span {
+  color: white !important;
+  margin-right: 10px;
+}
+
+.mode-button {
+  border: none;
+  padding: 5px 10px !important;
+  
+}
+
+.mode-selected {
+  background-color: white;
+  color: black;
+  cursor: none;
+}
+
+.mode-other {
+  background-color: #2d2d2d;
+  color: grey;
+  cursor: pointer;
+}
+
+.mode-other a {
+  text-decoration: none !important;
+  color: grey;
+}
+
+.mode-right {
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.mode-left {
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+

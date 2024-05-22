@@ -11,7 +11,6 @@ from shared.prompts import PromptList
 from shared.services.config_service import ConfigService
 from shared.services.embeddings_service import EmbeddingsService
 from shared.services.models_service import ModelsService
-from shared.ui_header_template import header_html, header_styles
 
 
 class UI:
@@ -48,7 +47,21 @@ class UI:
         return theme, css
 
     def ui_header(self, navigation=None):
-        gr.HTML(header_styles + header_html)
+        gr.HTML("""
+            <div class="header">
+                <div class="left-section">
+                    <div class="logo">
+                        <img src="../static/thoughtworks_logo.png" alt="Logo">
+                    </div>
+                    <div class="separator"></div>
+                    <div class="title">Haiven team assistant</div>
+                </div>
+                <div class="mode-switch">
+                    <button class="mode-other mode-left mode-button"><a href="/boba">Guided mode</a></button>
+                    <button class="mode-selected mode-right mode-button">Chat mode</button>
+                </div>
+            </div>
+            """)
 
         if navigation:
             with gr.Row(elem_classes="header"):

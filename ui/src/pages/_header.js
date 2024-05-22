@@ -13,12 +13,11 @@ export default function Header() {
           <div className="title">Haiven team assistant</div>
         </div>
         <div className="mode-switch">
-          <span>Choose your working mode</span>
-          <button className="mode-button" id="standardMode">
+          <button className="mode-button mode-selected mode-left">
             Guided mode
           </button>
-          <button className="mode-button" id="advancedMode">
-            Chat mode
+          <button className="mode-button mode-other mode-right">
+            <a href="/analysis">Chat mode</a>
           </button>
         </div>
       </header>
