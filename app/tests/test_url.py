@@ -23,7 +23,7 @@ class TestPath(unittest.TestCase):
         self.assertEqual(self.path.PATH_CODING, "coding")
 
     def test_path_general(self):
-        self.assertEqual(self.path.PATH_GENERAL, "teamai")
+        self.assertEqual(self.path.PATH_GENERAL_DEPRECATED, "teamai")
 
     def test_path_knowledge(self):
         self.assertEqual(self.path.PATH_KNOWLEDGE, "knowledge")

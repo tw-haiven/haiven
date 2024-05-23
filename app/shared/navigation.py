@@ -50,7 +50,7 @@ class NavigationManager:
         }
 
     def get_general_navigation(self):
-        return self._get_navigation(self.path.PATH_GENERAL)
+        return self._get_navigation(self.path.PATH_GENERAL_DEPRECATED)
 
     def get_analysis_navigation(self):
         return self._get_navigation(self.path.PATH_ANALYSIS)

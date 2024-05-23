@@ -6,7 +6,7 @@ class Url:
         self.PATH_AUTH = "auth"
         self.PATH_CHAT = "chat"
         self.PATH_CODING = "coding"
-        self.PATH_GENERAL = "teamai"
+        self.PATH_GENERAL_DEPRECATED = "teamai"  # Supported for people with old links
         self.PATH_KNOWLEDGE = "knowledge"
         self.PATH_LOGIN = "login"
         self.PATH_LOGOUT = "logout"
@@ -28,7 +28,7 @@ class Url:
         return f"/{self.PATH_CODING}"
 
     def general(self):
-        return f"/{self.PATH_GENERAL}"
+        return f"/{self.PATH_GENERAL_DEPRECATED}"
 
     def knowledge(self):
         return f"/{self.PATH_KNOWLEDGE}"
