@@ -1,5 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-from teamai_cli.services.metadata_service import MetadataService
+from haiven_cli.services.metadata_service import MetadataService
 
 
 class TestMetadataService:

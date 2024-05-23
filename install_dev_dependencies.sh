@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 echo "Checking if Poetry is installed..."
 if ! command -v poetry &> /dev/null; then
     echo "Poetry is not installed. Installing Poetry using Homebrew..."
@@ -14,15 +16,15 @@ fi
 printf "\nInstalling Poetry scripts..."
 poetry install
 
-printf "\nInstalling TeamAI CLI..."
+printf "\nInstalling Haiven CLI..."
 poetry run cli-init
 poetry run cli-build
-WHL_PATH=$(cat teamai_wheel_path.txt)
+WHL_PATH=$(cat haiven_wheel_path.txt)
 pip install $WHL_PATH --force-reinstall
-CLI_EXEC_PATH=$(which "teamai-cli")
-rm teamai_wheel_path.txt
-teamai-cli --install-completion --show-completion
-printf "\nTeamai-cli is installed at ${CLI_EXEC_PATH}"
+CLI_EXEC_PATH=$(which "haiven-cli")
+rm haiven_wheel_path.txt
+haiven-cli --install-completion --show-completion
+printf "\nhaiven-cli is installed at ${CLI_EXEC_PATH}"
 
 
 printf "\nChecking if Gitleaks is installed..."

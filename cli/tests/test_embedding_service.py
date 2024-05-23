@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import pytest
 
-from teamai_cli.services.embedding_service import EmbeddingService
+from haiven_cli.services.embedding_service import EmbeddingService
 from unittest.mock import MagicMock, patch, PropertyMock
 
 
@@ -82,7 +82,7 @@ class TestEmbeddingService:
 
         assert str(e.value) == "api_key is not defined in config for id"
 
-    @patch("teamai_cli.services.embedding_service.OpenAIEmbeddings")
+    @patch("haiven_cli.services.embedding_service.OpenAIEmbeddings")
     def test_load_openai_embeddings(self, mock_openai_embeddings):
         model = MagicMock()
         model_key = "model"
@@ -162,7 +162,7 @@ class TestEmbeddingService:
 
         assert str(e.value) == "azure_deployment is not defined in config for id"
 
-    @patch("teamai_cli.services.embedding_service.AzureOpenAIEmbeddings")
+    @patch("haiven_cli.services.embedding_service.AzureOpenAIEmbeddings")
     def test_load_azure_embeddings(self, mock_az_openai_embeddings):
         model = MagicMock()
         type(model).provider = PropertyMock(return_value="azure")
@@ -207,7 +207,7 @@ class TestEmbeddingService:
 
         assert str(e.value) == "aws_region is not defined in config for id"
 
-    @patch("teamai_cli.services.embedding_service.BedrockEmbeddings")
+    @patch("haiven_cli.services.embedding_service.BedrockEmbeddings")
     def test_load_aws_embeddings(self, mock_bedrock_embeddings):
         model = MagicMock()
         type(model).provider = PropertyMock(return_value="aws")
@@ -236,7 +236,7 @@ class TestEmbeddingService:
 
         assert str(e.value) == "base_url is not defined in config for id"
 
-    @patch("teamai_cli.services.embedding_service.OllamaEmbeddings")
+    @patch("haiven_cli.services.embedding_service.OllamaEmbeddings")
     def test_load_ollama_embeddings(self, mock_ollama_embeddings):
         model = MagicMock()
         type(model).provider = PropertyMock(return_value="ollama")

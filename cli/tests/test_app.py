@@ -2,7 +2,7 @@
 import os
 import pytest
 
-from teamai_cli.app.app import App
+from haiven_cli.app.app import App
 from unittest.mock import call, MagicMock, PropertyMock, patch, mock_open
 
 

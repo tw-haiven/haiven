@@ -1,6 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from unittest.mock import patch, MagicMock, PropertyMock
-from teamai_cli.main import (
+from haiven_cli.main import (
     create_context,
     index_file,
     index_all_files,
@@ -11,14 +11,14 @@ from teamai_cli.main import (
 
 
 class TestMain:
-    @patch("teamai_cli.main.MetadataService")
-    @patch("teamai_cli.main.EmbeddingService")
-    @patch("teamai_cli.main.CliConfigService")
-    @patch("teamai_cli.main.TokenService")
-    @patch("teamai_cli.main.KnowledgeService")
-    @patch("teamai_cli.main.ConfigService")
-    @patch("teamai_cli.main.FileService")
-    @patch("teamai_cli.main.App")
+    @patch("haiven_cli.main.MetadataService")
+    @patch("haiven_cli.main.EmbeddingService")
+    @patch("haiven_cli.main.CliConfigService")
+    @patch("haiven_cli.main.TokenService")
+    @patch("haiven_cli.main.KnowledgeService")
+    @patch("haiven_cli.main.ConfigService")
+    @patch("haiven_cli.main.FileService")
+    @patch("haiven_cli.main.App")
     def test_index_file(
         self,
         mock_app,
@@ -78,14 +78,14 @@ class TestMain:
             source_path, embedding_model, config_path, output_dir, description, None
         )
 
-    @patch("teamai_cli.main.MetadataService")
-    @patch("teamai_cli.main.EmbeddingService")
-    @patch("teamai_cli.main.CliConfigService")
-    @patch("teamai_cli.main.TokenService")
-    @patch("teamai_cli.main.KnowledgeService")
-    @patch("teamai_cli.main.ConfigService")
-    @patch("teamai_cli.main.FileService")
-    @patch("teamai_cli.main.App")
+    @patch("haiven_cli.main.MetadataService")
+    @patch("haiven_cli.main.EmbeddingService")
+    @patch("haiven_cli.main.CliConfigService")
+    @patch("haiven_cli.main.TokenService")
+    @patch("haiven_cli.main.KnowledgeService")
+    @patch("haiven_cli.main.ConfigService")
+    @patch("haiven_cli.main.FileService")
+    @patch("haiven_cli.main.App")
     def test_index_all_files(
         self,
         mock_app,
@@ -142,7 +142,7 @@ class TestMain:
             source_dir, embedding_model, config_path, output_dir, description
         )
 
-    @patch("teamai_cli.main.CliConfigService")
+    @patch("haiven_cli.main.CliConfigService")
     def test_init(self, mock_cli_config_service):
         cli_config_service = MagicMock()
         mock_cli_config_service.return_value = cli_config_service
@@ -155,7 +155,7 @@ class TestMain:
             config_path=config_path, env_path=env_path
         )
 
-    @patch("teamai_cli.main.CliConfigService")
+    @patch("haiven_cli.main.CliConfigService")
     def test_set_config_path(self, mock_cli_config_service):
         cli_config_service = MagicMock()
         mock_cli_config_service.return_value = cli_config_service
@@ -165,7 +165,7 @@ class TestMain:
 
         cli_config_service.set_config_path.assert_called_once_with(config_path)
 
-    @patch("teamai_cli.main.CliConfigService")
+    @patch("haiven_cli.main.CliConfigService")
     def test_set_env_path(self, mock_cli_config_service):
         cli_config_service = MagicMock()
         mock_cli_config_service.return_value = cli_config_service
@@ -175,7 +175,7 @@ class TestMain:
 
         cli_config_service.set_env_path.assert_called_once_with(env_path)
 
-    @patch("teamai_cli.main.FileService")
+    @patch("haiven_cli.main.FileService")
     def test_create_context(self, mock_file_service):
         context_name = "context_name"
         parent_dir = "parent_dir"

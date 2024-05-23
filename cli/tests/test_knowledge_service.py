@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import pytest
 
-from teamai_cli.services.knowledge_service import KnowledgeService
+from haiven_cli.services.knowledge_service import KnowledgeService
 from unittest.mock import MagicMock, patch
 
 
@@ -47,8 +47,8 @@ class TestKnowledgeService:
             knowledge_service.index(text, metadatas, embedding_model, ouput_dir)
         assert str(e.value) == "embedding model has no value"
 
-    @patch("teamai_cli.services.knowledge_service.FAISS")
-    @patch("teamai_cli.services.knowledge_service.RecursiveCharacterTextSplitter")
+    @patch("haiven_cli.services.knowledge_service.FAISS")
+    @patch("haiven_cli.services.knowledge_service.RecursiveCharacterTextSplitter")
     def test_save_knowledge_to_new_path(self, mock_text_splitter, mock_faiss):
         text = "something cool"
         texts = [text]
@@ -86,8 +86,8 @@ class TestKnowledgeService:
         mock_faiss.load_local.assert_called_once_with(ouput_dir, embeddings)
         local_db.save_local.assert_called_once_with(ouput_dir)
 
-    @patch("teamai_cli.services.knowledge_service.FAISS")
-    @patch("teamai_cli.services.knowledge_service.RecursiveCharacterTextSplitter")
+    @patch("haiven_cli.services.knowledge_service.FAISS")
+    @patch("haiven_cli.services.knowledge_service.RecursiveCharacterTextSplitter")
     def test_save_knowledge_to_existing_path(self, mock_text_splitter, mock_faiss):
         text = "something cool"
         texts = [text]

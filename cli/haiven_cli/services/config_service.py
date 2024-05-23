@@ -4,7 +4,7 @@ from typing import List
 
 import yaml
 from dotenv import load_dotenv
-from teamai_cli.models.embedding_model import EmbeddingModel
+from haiven_cli.models.embedding_model import EmbeddingModel
 
 
 class ConfigService:

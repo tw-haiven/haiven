@@ -1,14 +1,14 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import typer
 
-from teamai_cli.app.app import App
-from teamai_cli.services.config_service import ConfigService
-from teamai_cli.services.cli_config_service import CliConfigService
-from teamai_cli.services.embedding_service import EmbeddingService
-from teamai_cli.services.file_service import FileService
-from teamai_cli.services.knowledge_service import KnowledgeService
-from teamai_cli.services.token_service import TokenService
-from teamai_cli.services.metadata_service import MetadataService
+from haiven_cli.app.app import App
+from haiven_cli.services.config_service import ConfigService
+from haiven_cli.services.cli_config_service import CliConfigService
+from haiven_cli.services.embedding_service import EmbeddingService
+from haiven_cli.services.file_service import FileService
+from haiven_cli.services.knowledge_service import KnowledgeService
+from haiven_cli.services.token_service import TokenService
+from haiven_cli.services.metadata_service import MetadataService
 
 ENCODING = "cl100k_base"
 

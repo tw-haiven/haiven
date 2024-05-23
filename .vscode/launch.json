@@ -35,7 +35,7 @@
             "program": "main.py",
             "console": "integratedTerminal",
             "justMyCode": false,
-            "cwd": "${workspaceFolder}/cli/teamai_cli",
+            "cwd": "${workspaceFolder}/cli/haiven_cli",
             "python": "${workspaceFolder}/cli/.venv/bin/python",
             "args": [
                 // Add args for local debug run here

@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 
-from teamai_cli.models.page_data import PageData
-from teamai_cli.models.html_filter import HtmlFilter
+from haiven_cli.models.page_data import PageData
+from haiven_cli.models.html_filter import HtmlFilter
 from langchain_core.documents import Document
 
 

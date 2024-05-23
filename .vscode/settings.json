@@ -16,7 +16,7 @@
         "terraform": true
     },
     "python.testing.pytestArgs": [
-        "app"
+        "cli"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,

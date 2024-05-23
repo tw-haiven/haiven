@@ -1,7 +1,7 @@
-# `TEAMAI-CLI Quickstart Guide`
-The `teamai-cli` is a command line interface that provides a set of commands for indexing files, and creating knowledge packages.
+# `HAIVEN-CLI Quickstart Guide`
+The `haiven-cli` is a command line interface that provides a set of commands for indexing files, and creating knowledge packages.
 
-### TEAMAI-CLI Installation
+### HAIVEN-CLI Installation
 Run the [install_dev_dependencies](../install_dev_dependencies.sh) script to install the necessary dependencies for the cli.
 
 ```console
@@ -11,7 +11,7 @@ $ ./install_dev_dependencies.sh
 ### Setup the CLI configuration
 This will allow the cli to use the api keys and embedding models you have defined in the app configuration file.
 ```console
-$ teamai-cli init --config-path <CONFIG_PATH> --env-path <ENV_PATH>
+$ haiven-cli init --config-path <CONFIG_PATH> --env-path <ENV_PATH>
 ```
 - CONFIG_PATH being the app config yaml definition
 
@@ -27,7 +27,7 @@ This will create a knowledge package structure for a given context name which wi
 
 
 ```console
-$ teamai-cli create-context --context-name <CONTEXT_NAME> --kp-root <KNOWLEDGE_ROOT_DIR>
+$ haiven-cli create-context --context-name <CONTEXT_NAME> --kp-root <KNOWLEDGE_ROOT_DIR>
 ```
 - CONTEXT_NAME being the name of the context you want to create a knowledge package for.
 - KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory.
@@ -48,7 +48,7 @@ this should result in a context structure being created within your knowledge pa
 This will convert the files you want to rely on into embeddings and store them in the knowledge package directory.
 
 ```console
-$ teamai-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embedding-model <EMBEDDING_MODEL> --output-dir <KNOWLEDGE_ROOT_DIR>/contexts/<CONTEXT_NAME>/embeddings
+$ haiven-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embedding-model <EMBEDDING_MODEL> --output-dir <KNOWLEDGE_ROOT_DIR>/contexts/<CONTEXT_NAME>/embeddings
 ```
 - SOURCE_DIR being the path to the source directory containing the files you want to index.
 - DESCRIPTION being a description of the ensemble files you want to index.
@@ -82,12 +82,12 @@ For each file in the source directory a markdown file and a .kb folder should be
 
 
 ___
-# `teamai-cli`
+# `haiven-cli`
 
 **Usage**:
 
 ```console
-$ teamai-cli [OPTIONS] COMMAND [ARGS]...
+$ haiven-cli [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
@@ -105,14 +105,14 @@ $ teamai-cli [OPTIONS] COMMAND [ARGS]...
 * `set-config-path`: Set the config path in the config file.
 * `set-env-path`: Set the env path in the config file.
 
-## `teamai-cli create-context`
+## `haiven-cli create-context`
 
 Create a context package base structure.
 
 **Usage**:
 
 ```console
-$ teamai-cli create-context [OPTIONS]
+$ haiven-cli create-context [OPTIONS]
 ```
 
 **Options**:
@@ -121,14 +121,14 @@ $ teamai-cli create-context [OPTIONS]
 * `--kp-root TEXT`
 * `--help`: Show this message and exit.
 
-## `teamai-cli index-all-files`
+## `haiven-cli index-all-files`
 
 Index all files in a directory to a given destination directory.
 
 **Usage**:
 
 ```console
-$ teamai-cli index-all-files [OPTIONS] SOURCE_DIR
+$ haiven-cli index-all-files [OPTIONS] SOURCE_DIR
 ```
 
 **Arguments**:
@@ -143,14 +143,14 @@ $ teamai-cli index-all-files [OPTIONS] SOURCE_DIR
 * `--config-path TEXT`
 * `--help`: Show this message and exit.
 
-## `teamai-cli index-file`
+## `haiven-cli index-file`
 
 Index single file to a given destination directory.
 
 **Usage**:
 
 ```console
-$ teamai-cli index-file [OPTIONS] SOURCE_PATH
+$ haiven-cli index-file [OPTIONS] SOURCE_PATH
 ```
 
 **Arguments**:
@@ -165,14 +165,14 @@ $ teamai-cli index-file [OPTIONS] SOURCE_PATH
 * `--output-dir TEXT`: [default: new_knowledge_base]
 * `--help`: Show this message and exit.
 
-## `teamai-cli init`
+## `haiven-cli init`
 
 Initialize the config file with the given config and env paths.
 
 **Usage**:
 
 ```console
-$ teamai-cli init [OPTIONS]
+$ haiven-cli init [OPTIONS]
 ```
 
 **Options**:
@@ -181,14 +181,14 @@ $ teamai-cli init [OPTIONS]
 * `--env-path TEXT`
 * `--help`: Show this message and exit.
 
-## `teamai-cli set-config-path`
+## `haiven-cli set-config-path`
 
 Set the config path in the config file.
 
 **Usage**:
 
 ```console
-$ teamai-cli set-config-path [OPTIONS]
+$ haiven-cli set-config-path [OPTIONS]
 ```
 
 **Options**:
@@ -196,14 +196,14 @@ $ teamai-cli set-config-path [OPTIONS]
 * `--config-path TEXT`
 * `--help`: Show this message and exit.
 
-## `teamai-cli set-env-path`
+## `haiven-cli set-env-path`
 
 Set the env path in the config file.
 
 **Usage**:
 
 ```console
-$ teamai-cli set-env-path [OPTIONS]
+$ haiven-cli set-env-path [OPTIONS]
 ```
 
 **Options**:

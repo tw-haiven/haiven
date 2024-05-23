@@ -1,8 +1,8 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from teamai_cli.services.embedding_service import EmbeddingService
-from teamai_cli.services.token_service import TokenService
+from haiven_cli.services.embedding_service import EmbeddingService
+from haiven_cli.services.token_service import TokenService
 
 
 class KnowledgeService:

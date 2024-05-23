@@ -2,7 +2,7 @@
 import os
 import pytest
 import unittest
-from teamai_cli.services.config_service import ConfigService
+from haiven_cli.services.config_service import ConfigService
 
 TEST_ENV_FILE_PATH = ".test-env-file"
 

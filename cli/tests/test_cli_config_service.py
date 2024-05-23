@@ -2,7 +2,7 @@
 import os
 import shutil
 import unittest
-from teamai_cli.services.cli_config_service import CliConfigService
+from haiven_cli.services.cli_config_service import CliConfigService
 
 TEST_CLI_CONFIG_DIR = "test-cli-config"
 

@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "teamai-cli"
+name = "haiven-cli"
 version = "0.3.0"
 description = ""
-authors = ["TeamAI <teamai@thoughtworks.com>"]
+authors = ["Thoughtworks <haiven@thoughtworks.com>"]
 readme = "README.md"
 
 [tool.poetry.scripts]
-teamai-cli = "teamai_cli.main:cli"
+haiven-cli = "haiven_cli.main:cli"
 
 [tool.poetry.dependencies]
 python = "^3.11"

@@ -111,7 +111,7 @@ def cli_build():
         raise ValueError("poetry failed to build the whl file")
 
     formatted_whl_file_path = os.path.abspath(whl_file)
-    with open("teamai_wheel_path.txt", "w") as f:
+    with open("haiven_wheel_path.txt", "w") as f:
         f.write(formatted_whl_file_path)
 
 
@@ -120,7 +120,7 @@ def cli_run():
     if len(sys.argv) > 1:
         arg = sys.argv[1]
     command = f"""
-    cd cli/teamai_cli && \
+    cd cli/haiven_cli && \
     poetry run python main.py {arg}
     """
     subprocess.run(command, shell=True)
@@ -143,11 +143,11 @@ def cli_coverage():
 
 
 def cli_update_docs():
-    cli_docs_start_key = "# `teamai-cli`"
+    cli_docs_start_key = "# `haiven-cli`"
     cli_docs_path = "cli_docs.md"
     command = f"""
     poetry install --directory=cli
-    poetry run typer teamai_cli.main utils docs --output {cli_docs_path} --name teamai-cli
+    poetry run typer haiven_cli.main utils docs --output {cli_docs_path} --name haiven-cli
     """
     subprocess.run(command, shell=True)
     readme_path = "cli/README.md"

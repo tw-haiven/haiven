@@ -4,12 +4,12 @@ import os
 import pytest
 import shutil
 
-from teamai_cli.services.file_service import FileService
+from haiven_cli.services.file_service import FileService
 from unittest.mock import patch, MagicMock, PropertyMock
 
 
 class TestFileService:
-    @patch("teamai_cli.services.file_service.PdfReader")
+    @patch("haiven_cli.services.file_service.PdfReader")
     def test_get_text_and_metadata_from_pdf(self, mock_pdf_reader):
         pdf_title = "pdf title"
         pdf_author = "pdf author"
@@ -50,7 +50,7 @@ class TestFileService:
         assert first_text in text
         assert second_text in text
 
-    @patch("teamai_cli.services.file_service.PdfReader")
+    @patch("haiven_cli.services.file_service.PdfReader")
     def test_get_text_and_metadata_from_pdf_use_provided_pdf_source_link(
         self, mock_pdf_reader
     ):
@@ -77,7 +77,7 @@ class TestFileService:
         first_metadata = metadas[0]
         assert first_metadata["source"] == pdf_source_link
 
-    @patch("teamai_cli.services.file_service.PdfReader")
+    @patch("haiven_cli.services.file_service.PdfReader")
     def test_get_text_and_metadata_from_pdf_use_default_title_and_authors_if_pdf_has_no_metadata(
         self, mock_pdf_reader
     ):
@@ -115,7 +115,7 @@ class TestFileService:
         assert first_text in text
         assert second_text in text
 
-    @patch("teamai_cli.services.file_service.PdfReader")
+    @patch("haiven_cli.services.file_service.PdfReader")
     def test_get_text_and_metadata_from_pdf_use_default_title_and_authors_if_pdf_has_no_tile_nor_authors(
         self, mock_pdf_reader
     ):
@@ -156,7 +156,7 @@ class TestFileService:
         assert first_text in text
         assert second_text in text
 
-    @patch("teamai_cli.services.file_service.os")
+    @patch("haiven_cli.services.file_service.os")
     def test_get_files_path_from_directory(self, mock_os):
         source_dir = "source_dir"
         file_path = "file_path"
