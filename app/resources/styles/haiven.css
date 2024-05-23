@@ -55,7 +55,7 @@
   max-width: 100% !important;
 }
 
-.teamai-content {
+.haiven-content {
   padding: 0 3em;
   @media (prefers-color-scheme: dark) {
     background-color: var(--color-dark-blue);
@@ -67,7 +67,7 @@
   border: none;
 }
 
-.teamai-tabs-container {
+.haiven-tabs-container {
   @media (prefers-color-scheme: dark) {
     background-color: var(--color-dark-blue);
   }
@@ -78,7 +78,7 @@
   padding-top: 1em;
 }
 
-.teamai-settings {
+.haiven-settings {
   border: 1px solid var(--color-light-gray);
 }
 
@@ -150,25 +150,25 @@
   width: 50em;
 }
 
-.teamai-group {
+.haiven-group {
   border: 1px solid var(--color-light-gray) !important;
 }
 
-.teamai-group .primary {
+.haiven-group .primary {
   border: 1em solid var(--background-fill-secondary) !important;
 }
 
-.teamai-group .secondary {
+.haiven-group .secondary {
   border: 1em solid var(--background-fill-secondary) !important;
 }
 
-.teamai-group-title {
+.haiven-group-title {
   padding: 0.3em;
   background-color: var(--background-fill-secondary);
   color: var(--block-title-text-color) !important;
 }
 
-.teamai-group-title h2 {
+.haiven-group-title h2 {
   color: var(--block-title-text-color) !important;
   margin: 0;
 }
@@ -232,15 +232,15 @@
     background-color: var(--color-flamingo) !important;
   }
 
-  .teamai-content {
+  .haiven-content {
     background-color: transparent;
   }
 
-  .teamai-tabs-container {
+  .haiven-tabs-container {
     background-color: rgb(31, 41, 55);
   }
 
-  .teamai-group {
+  .haiven-group {
     border: 1px solid var(--color-dark-blue) !important;
   }
 

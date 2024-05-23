@@ -41,7 +41,7 @@ class UI:
             font_mono=["Consolas", "ui-monospace", "Consolas", "monospace"],
         )
 
-        with open("resources/styles/teamai.css", "r") as file:
+        with open("resources/styles/haiven.css", "r") as file:
             css = file.read()
 
         return theme, css

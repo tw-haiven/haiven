@@ -86,8 +86,8 @@ class UIFactory:
             )
             self.ui.ui_header(navigation=navigation)
             user_identifier_state = gr.State()
-            with gr.Group(elem_classes="teamai-content"):
-                with gr.Group(elem_classes=["teamai-group", "teamai-settings"]):
+            with gr.Group(elem_classes="haiven-content"):
+                with gr.Group(elem_classes=["haiven-group", "haiven-settings"]):
                     with gr.Accordion("Settings"):
                         with gr.Row():
                             knowledge_context_select = (
@@ -110,7 +110,7 @@ class UIFactory:
                                 fn=self._tone_changed, inputs=tone_select
                             )
 
-                with gr.Row(elem_classes="teamai-tabs-container"):
+                with gr.Row(elem_classes="haiven-tabs-container"):
                     with gr.Tabs() as all_tabs:
                         category_filter = ["coding", "architecture"]
                         self.ui.create_about_tab_for_task_area(
@@ -189,8 +189,8 @@ class UIFactory:
                 self.navigation_manager.get_testing_navigation()
             )
             self.ui.ui_header(navigation=navigation)
-            with gr.Group(elem_classes="teamai-content"):
-                with gr.Group(elem_classes=["teamai-group", "teamai-settings"]):
+            with gr.Group(elem_classes="haiven-content"):
+                with gr.Group(elem_classes=["haiven-group", "haiven-settings"]):
                     with gr.Accordion("Settings"):
                         with gr.Row():
                             knowledge_context_select = (
@@ -212,7 +212,7 @@ class UIFactory:
                             tone_select.change(
                                 fn=self._tone_changed, inputs=tone_select
                             )
-                with gr.Row(elem_classes="teamai-tabs-container"):
+                with gr.Row(elem_classes="haiven-tabs-container"):
                     category_filter = ["testing"]
 
                     with gr.Tabs() as all_tabs:
@@ -289,8 +289,8 @@ class UIFactory:
                 self.navigation_manager.get_analysis_navigation()
             )
             self.ui.ui_header(navigation=navigation)
-            with gr.Group(elem_classes="teamai-content"):
-                with gr.Group(elem_classes=["teamai-group", "teamai-settings"]):
+            with gr.Group(elem_classes="haiven-content"):
+                with gr.Group(elem_classes=["haiven-group", "haiven-settings"]):
                     with gr.Accordion("Settings"):
                         with gr.Row():
                             knowledge_context_select = (
@@ -312,7 +312,7 @@ class UIFactory:
                             tone_select.change(
                                 fn=self._tone_changed, inputs=tone_select
                             )
-                with gr.Row(elem_classes="teamai-tabs-container"):
+                with gr.Row(elem_classes="haiven-tabs-container"):
                     category_filter = ["analysis"]
                     with gr.Tabs() as all_tabs:
                         user_identifier_state = gr.State()
@@ -387,8 +387,8 @@ class UIFactory:
             )
             self.ui.ui_header(navigation=navigation)
 
-            with gr.Group(elem_classes="teamai-content"):
-                with gr.Group(elem_classes=["teamai-group", "teamai-settings"]):
+            with gr.Group(elem_classes="haiven-content"):
+                with gr.Group(elem_classes=["haiven-group", "haiven-settings"]):
                     with gr.Accordion("Settings"):
                         with gr.Row():
                             knowledge_context_select = (
@@ -411,7 +411,7 @@ class UIFactory:
                                 fn=self._tone_changed, inputs=tone_select
                             )
 
-                with gr.Row(elem_classes="teamai-tabs-container"):
+                with gr.Row(elem_classes="haiven-tabs-container"):
                     category_filter = ["prompting"]
 
                     with gr.Tabs() as all_tabs:

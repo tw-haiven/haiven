@@ -37,10 +37,10 @@ def enable_knowledge_chat(
     with main_tab:
         with gr.Row():
             with gr.Column(scale=3):
-                with gr.Group(elem_classes="teamai-group"):
+                with gr.Group(elem_classes="haiven-group"):
                     gr.Markdown(
                         "## 1. What knowledge do you want to search?",
-                        elem_classes="teamai-group-title",
+                        elem_classes="haiven-group-title",
                     )
                     with gr.Group():
                         with gr.Row(elem_classes="knowledge-advice"):
@@ -61,9 +61,9 @@ def enable_knowledge_chat(
                             ui_loaded_file_label = gr.Markdown("Loaded: None")
 
             with gr.Column(scale=5):
-                with gr.Group(elem_classes="teamai-group"):
+                with gr.Group(elem_classes="haiven-group"):
                     gr.Markdown(
-                        "## 2. Ask a question", elem_classes="teamai-group-title"
+                        "## 2. Ask a question", elem_classes="haiven-group-title"
                     )
                     ui_question = gr.Textbox(label="Question (Hit Enter to send)")
                     ui_chatbot = gr.Chatbot(

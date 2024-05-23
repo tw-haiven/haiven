@@ -22,7 +22,7 @@ def enable_plain_chat(
         message="",
     )
 
-    with gr.Group(elem_classes="teamai-group"):
+    with gr.Group(elem_classes="haiven-group"):
         with gr.Row():
             model_select, tone_radio, llm_config = ui.create_llm_settings_ui()
             model_select.change(fn=llm_config.change_model, inputs=model_select)
@@ -30,7 +30,7 @@ def enable_plain_chat(
 
     with gr.Row():
         with gr.Column(scale=5):
-            with gr.Group(elem_classes="teamai-group"):
+            with gr.Group(elem_classes="haiven-group"):
                 ui_chatbot = gr.Chatbot(
                     label="Chat conversation",
                     height=500,

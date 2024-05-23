@@ -120,10 +120,10 @@ def enable_brainstorming(
 
         with gr.Row():
             with gr.Column(scale=3):
-                with gr.Group(elem_classes=["prompt-choice", "teamai-group"]):
+                with gr.Group(elem_classes=["prompt-choice", "haiven-group"]):
                     gr.Markdown(
                         "## 1. What do you want to do?",
-                        elem_classes="teamai-group-title",
+                        elem_classes="haiven-group-title",
                     )
                     ui_prompt_dropdown = gr.Dropdown(
                         prompt_list.get_title_id_tuples(),
@@ -139,9 +139,9 @@ def enable_brainstorming(
                     )
                     ui_user_input = gr.Textbox(label="User input", lines=5)
 
-                with gr.Group(elem_classes="teamai-group"):
+                with gr.Group(elem_classes="haiven-group"):
                     gr.Markdown(
-                        "## 2. Start the chat", elem_classes="teamai-group-title"
+                        "## 2. Start the chat", elem_classes="haiven-group-title"
                     )
                     ui_start_btn = gr.Button("Start >>", variant="primary")
                     with gr.Accordion(label="View or change the prompt", open=False):
@@ -152,8 +152,8 @@ def enable_brainstorming(
                         )
 
             with gr.Column(scale=5):
-                with gr.Group(elem_classes="teamai-group"):
-                    gr.Markdown("## 3. Chat", elem_classes="teamai-group-title")
+                with gr.Group(elem_classes="haiven-group"):
+                    gr.Markdown("## 3. Chat", elem_classes="haiven-group-title")
                     ui_chatbot = gr.Chatbot(
                         label="Assistant",
                         height=600,
