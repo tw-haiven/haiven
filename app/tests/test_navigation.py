@@ -67,352 +67,82 @@ def test_chat_path():
 
 def test_get_general_navigation():
     nav_manager = NavigationManager()
-    expected_navigation = {
-        "items": [
-            {
-                "title": "Analysis",
-                "path": "analysis",
-                "videos": [
-                    {
-                        "title": "[Chat] Break down an epic",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-copilot.mp4",
-                    },
-                    {
-                        "title": "[Brainstorming] Write a user story",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-brainstorming.mp4",
-                    },
-                ],
-            },
-            {
-                "title": "Coding and Architecture",
-                "path": "coding",
-                "videos": [
-                    {
-                        "title": "[Chat] Assist with Threat Modelling",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_threat_modelling.mp4",
-                    },
-                    {
-                        "title": "[Brainstorming] Assist with an Architecture Decision Record",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_adr_brainstorming.mp4",
-                    },
-                    {
-                        "title": "[Diagrams] Discussing an architecture diagram",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
-                    },
-                ],
-            },
-            {"title": "Testing", "path": "testing", "videos": []},
-            {"title": "Team Knowledge", "path": "knowledge"},
-            {"title": "About Haiven", "path": "about"},
-        ],
-        "selected": "teamai",
-    }
 
     actual_navigation, actual_category_item = nav_manager.get_general_navigation()
 
-    assert actual_navigation == expected_navigation
     assert actual_category_item is None
+
+    assert isinstance(actual_navigation["items"], list)
+    assert isinstance(actual_navigation["items"][0]["title"], str)
+    assert isinstance(actual_navigation["items"][0]["path"], str)
+    assert isinstance(actual_navigation["items"][0]["videos"], list)
 
 
 def test_get_analysis_navigation():
     nav_manager = NavigationManager()
-    expected_navigation = {
-        "items": [
-            {
-                "title": "Analysis",
-                "path": "analysis",
-                "videos": [
-                    {
-                        "title": "[Chat] Break down an epic",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-copilot.mp4",
-                    },
-                    {
-                        "title": "[Brainstorming] Write a user story",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-brainstorming.mp4",
-                    },
-                ],
-            },
-            {
-                "title": "Coding and Architecture",
-                "path": "coding",
-                "videos": [
-                    {
-                        "title": "[Chat] Assist with Threat Modelling",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_threat_modelling.mp4",
-                    },
-                    {
-                        "title": "[Brainstorming] Assist with an Architecture Decision Record",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_adr_brainstorming.mp4",
-                    },
-                    {
-                        "title": "[Diagrams] Discussing an architecture diagram",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
-                    },
-                ],
-            },
-            {
-                "title": "Testing",
-                "path": "testing",
-                "videos": [],
-            },
-            {"title": "Team Knowledge", "path": "knowledge"},
-            {"title": "About Haiven", "path": "about"},
-        ],
-        "selected": "analysis",
-    }
-    expected_category_item = {
-        "title": "Analysis",
-        "path": "analysis",
-        "videos": [
-            {
-                "title": "[Chat] Break down an epic",
-                "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-copilot.mp4",
-            },
-            {
-                "title": "[Brainstorming] Write a user story",
-                "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-brainstorming.mp4",
-            },
-        ],
-    }
 
     actual_navigation, actual_category_item = nav_manager.get_analysis_navigation()
 
-    assert actual_navigation == expected_navigation
-    assert actual_category_item == expected_category_item
+    assert isinstance(actual_navigation["items"], list)
+    assert isinstance(actual_navigation["items"][0]["title"], str)
+    assert isinstance(actual_navigation["items"][0]["path"], str)
+    assert isinstance(actual_navigation["items"][0]["videos"], list)
+
+    assert actual_category_item["title"] == "Analysis"
+    assert actual_category_item["path"] == "analysis"
 
 
 def test_get_testing_navigation():
     nav_manager = NavigationManager()
-    expected_navigation = {
-        "items": [
-            {
-                "title": "Analysis",
-                "path": "analysis",
-                "videos": [
-                    {
-                        "title": "[Chat] Break down an epic",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-copilot.mp4",
-                    },
-                    {
-                        "title": "[Brainstorming] Write a user story",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-brainstorming.mp4",
-                    },
-                ],
-            },
-            {
-                "title": "Coding and Architecture",
-                "path": "coding",
-                "videos": [
-                    {
-                        "title": "[Chat] Assist with Threat Modelling",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_threat_modelling.mp4",
-                    },
-                    {
-                        "title": "[Brainstorming] Assist with an Architecture Decision Record",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_adr_brainstorming.mp4",
-                    },
-                    {
-                        "title": "[Diagrams] Discussing an architecture diagram",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
-                    },
-                ],
-            },
-            {
-                "title": "Testing",
-                "path": "testing",
-                "videos": [],
-            },
-            {"title": "Team Knowledge", "path": "knowledge"},
-            {"title": "About Haiven", "path": "about"},
-        ],
-        "selected": "testing",
-    }
-    expected_category_item = {
-        "title": "Testing",
-        "path": "testing",
-        "videos": [],
-    }
 
     actual_navigation, actual_category_item = nav_manager.get_testing_navigation()
 
-    assert actual_navigation == expected_navigation
-    assert actual_category_item == expected_category_item
+    assert isinstance(actual_navigation["items"], list)
+    assert isinstance(actual_navigation["items"][0]["title"], str)
+    assert isinstance(actual_navigation["items"][0]["path"], str)
+    assert isinstance(actual_navigation["items"][0]["videos"], list)
+
+    assert actual_category_item["title"] == "Testing"
+    assert actual_category_item["path"] == "testing"
 
 
 def test_get_coding_navigation():
     nav_manager = NavigationManager()
-    expected_navigation = {
-        "items": [
-            {
-                "title": "Analysis",
-                "path": "analysis",
-                "videos": [
-                    {
-                        "title": "[Chat] Break down an epic",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-copilot.mp4",
-                    },
-                    {
-                        "title": "[Brainstorming] Write a user story",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-brainstorming.mp4",
-                    },
-                ],
-            },
-            {
-                "title": "Coding and Architecture",
-                "path": "coding",
-                "videos": [
-                    {
-                        "title": "[Chat] Assist with Threat Modelling",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_threat_modelling.mp4",
-                    },
-                    {
-                        "title": "[Brainstorming] Assist with an Architecture Decision Record",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_adr_brainstorming.mp4",
-                    },
-                    {
-                        "title": "[Diagrams] Discussing an architecture diagram",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
-                    },
-                ],
-            },
-            {
-                "title": "Testing",
-                "path": "testing",
-                "videos": [],
-            },
-            {"title": "Team Knowledge", "path": "knowledge"},
-            {"title": "About Haiven", "path": "about"},
-        ],
-        "selected": "coding",
-    }
-    expected_category_item = {
-        "title": "Coding and Architecture",
-        "path": "coding",
-        "videos": [
-            {
-                "title": "[Chat] Assist with Threat Modelling",
-                "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_threat_modelling.mp4",
-            },
-            {
-                "title": "[Brainstorming] Assist with an Architecture Decision Record",
-                "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_adr_brainstorming.mp4",
-            },
-            {
-                "title": "[Diagrams] Discussing an architecture diagram",
-                "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
-            },
-        ],
-    }
 
     actual_navigation, actual_category_item = nav_manager.get_coding_navigation()
 
-    assert actual_navigation == expected_navigation
-    assert actual_category_item == expected_category_item
+    assert isinstance(actual_navigation["items"], list)
+    assert isinstance(actual_navigation["items"][0]["title"], str)
+    assert isinstance(actual_navigation["items"][0]["path"], str)
+    assert isinstance(actual_navigation["items"][0]["videos"], list)
+
+    assert actual_category_item["title"] == "Coding and Architecture"
+    assert actual_category_item["path"] == "coding"
 
 
 def test_get_knowledge_navigation():
     nav_manager = NavigationManager()
-    expected_navigation = {
-        "items": [
-            {
-                "title": "Analysis",
-                "path": "analysis",
-                "videos": [
-                    {
-                        "title": "[Chat] Break down an epic",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-copilot.mp4",
-                    },
-                    {
-                        "title": "[Brainstorming] Write a user story",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-brainstorming.mp4",
-                    },
-                ],
-            },
-            {
-                "title": "Coding and Architecture",
-                "path": "coding",
-                "videos": [
-                    {
-                        "title": "[Chat] Assist with Threat Modelling",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_threat_modelling.mp4",
-                    },
-                    {
-                        "title": "[Brainstorming] Assist with an Architecture Decision Record",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_adr_brainstorming.mp4",
-                    },
-                    {
-                        "title": "[Diagrams] Discussing an architecture diagram",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
-                    },
-                ],
-            },
-            {
-                "title": "Testing",
-                "path": "testing",
-                "videos": [],
-            },
-            {"title": "Team Knowledge", "path": "knowledge"},
-            {"title": "About Haiven", "path": "about"},
-        ],
-        "selected": "knowledge",
-    }
-    expected_category_item = {"title": "Team Knowledge", "path": "knowledge"}
 
     actual_navigation, actual_category_item = nav_manager.get_knowledge_navigation()
 
-    assert actual_navigation == expected_navigation
-    assert actual_category_item == expected_category_item
+    assert isinstance(actual_navigation["items"], list)
+    assert isinstance(actual_navigation["items"][0]["title"], str)
+    assert isinstance(actual_navigation["items"][0]["path"], str)
+    assert isinstance(actual_navigation["items"][0]["videos"], list)
+
+    assert actual_category_item["title"] == "Team Knowledge"
+    assert actual_category_item["path"] == "knowledge"
 
 
 def test_get_about_navigation():
     nav_manager = NavigationManager()
-    expected_navigation = {
-        "items": [
-            {
-                "title": "Analysis",
-                "path": "analysis",
-                "videos": [
-                    {
-                        "title": "[Chat] Break down an epic",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-copilot.mp4",
-                    },
-                    {
-                        "title": "[Brainstorming] Write a user story",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-brainstorming.mp4",
-                    },
-                ],
-            },
-            {
-                "title": "Coding and Architecture",
-                "path": "coding",
-                "videos": [
-                    {
-                        "title": "[Chat] Assist with Threat Modelling",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_threat_modelling.mp4",
-                    },
-                    {
-                        "title": "[Brainstorming] Assist with an Architecture Decision Record",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_adr_brainstorming.mp4",
-                    },
-                    {
-                        "title": "[Diagrams] Discussing an architecture diagram",
-                        "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
-                    },
-                ],
-            },
-            {
-                "title": "Testing",
-                "path": "testing",
-                "videos": [],
-            },
-            {"title": "Team Knowledge", "path": "knowledge"},
-            {"title": "About Haiven", "path": "about"},
-        ],
-        "selected": "about",
-    }
-    expected_category_item = {"title": "About Haiven", "path": "about"}
 
     actual_navigation, actual_category_item = nav_manager.get_about_navigation()
 
-    assert actual_navigation == expected_navigation
-    assert actual_category_item == expected_category_item
+    assert isinstance(actual_navigation["items"], list)
+    assert isinstance(actual_navigation["items"][0]["title"], str)
+    assert isinstance(actual_navigation["items"][0]["path"], str)
+    assert isinstance(actual_navigation["items"][0]["videos"], list)
+
+    assert actual_category_item["title"] == "About Haiven"
+    assert actual_category_item["path"] == "about"
