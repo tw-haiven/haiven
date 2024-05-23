@@ -13,7 +13,7 @@ from shared.logger import HaivenLogger
 from shared.services.embeddings_service import EmbeddingsService
 
 
-class TeamAIBaseChat:
+class HaivenBaseChat:
     def __init__(
         self, llm_config: LLMConfig, chat_model: BaseChatModel, system_message: str
     ):
@@ -40,7 +40,7 @@ class TeamAIBaseChat:
         return "\n".join([str(message) for message in self.memory])
 
 
-class NonStreamingChat(TeamAIBaseChat):
+class NonStreamingChat(HaivenBaseChat):
     def __init__(
         self, llm_config: LLMConfig, system_message: str = "You are a helpful assistant"
     ):
@@ -70,7 +70,7 @@ class NonStreamingChat(TeamAIBaseChat):
         return self.run(human_message)
 
 
-class StreamingChat(TeamAIBaseChat):
+class StreamingChat(HaivenBaseChat):
     def __init__(
         self,
         llm_config: LLMConfig,
@@ -221,7 +221,7 @@ class Q_A_ResponseParser:
             return text
 
 
-class Q_A_Chat(TeamAIBaseChat):
+class Q_A_Chat(HaivenBaseChat):
     def __init__(
         self, llm_config: LLMConfig, system_message: str = "You are a helpful assistant"
     ):
@@ -260,7 +260,7 @@ class Q_A_Chat(TeamAIBaseChat):
         return self.run(human_message)
 
 
-class DocumentsChat(TeamAIBaseChat):
+class DocumentsChat(HaivenBaseChat):
     def __init__(
         self,
         llm_config: LLMConfig,
@@ -340,7 +340,7 @@ class DocumentsChat(TeamAIBaseChat):
         return self.run(human_message)
 
 
-class JSONChat(TeamAIBaseChat):
+class JSONChat(HaivenBaseChat):
     def __init__(
         self,
         llm_config=LLMConfig("azure-gpt4", 0.2),
@@ -422,7 +422,7 @@ class ServerChatSessionMemory:
         }
         return session_key
 
-    def store_chat(self, session_key: str, chat_session: TeamAIBaseChat):
+    def store_chat(self, session_key: str, chat_session: HaivenBaseChat):
         self.USER_CHATS[session_key]["chat"] = chat_session
 
     def get_chat(self, session_key: str):
@@ -462,5 +462,5 @@ class ServerChatSessionMemory:
         if chat_session_data["user"] != user_owner:
             return f"Chat session with ID {session_key} not found for this user"
 
-        chat_session: TeamAIBaseChat = chat_session_data["chat"]
+        chat_session: HaivenBaseChat = chat_session_data["chat"]
         return chat_session.memory_as_text()
