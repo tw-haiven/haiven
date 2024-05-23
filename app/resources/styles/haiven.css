@@ -62,7 +62,7 @@
   }
 
   @media (prefers-color-scheme: light) {
-    background-color: var(--color-light-gray);
+    background-color: white;
   }
   border: none;
 }
@@ -73,7 +73,7 @@
   }
 
   @media (prefers-color-scheme: light) {
-    background-color: var(--color-light-gray);
+    background-color: white;
   }
   padding-top: 1em;
 }
