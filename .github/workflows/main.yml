@@ -98,7 +98,7 @@ jobs:
       #       -H "Authorization: Bearer ${{ secrets.DISPATCH_COMMUNITY_PACK_TOKEN }}" \
       #       -H "X-GitHub-Api-Version: 2022-11-28" \
       #       https://api.github.com/repos/tw-haiven/haiven-community-knowledge-pack/dispatches \
-      #       -d '{"event_type":"team-ai-base-new","client_payload":{}}'
+      #       -d '{"event_type":"haiven-base-new","client_payload":{}}'
 
       - name: Notify TW demo deployment
         run: |
@@ -108,4 +108,4 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.DISPATCH_TW_DEMO_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/tw-haiven/haiven-tw-demo-deployment/dispatches \
-            -d '{"event_type":"team-ai-base-new","client_payload":{}}'
+            -d '{"event_type":"haiven-base-new","client_payload":{}}'

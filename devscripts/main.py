@@ -56,9 +56,9 @@ def app_coverage():
 def build_docker_image():
     command = """
     cd app && \
-    docker build -t team-ai-base:local .
+    docker build -t haiven-base:local .
     cd demo-knowledge-pack && \
-    docker build --build-arg REGISTRY_URL= --build-arg TAG=local -t team-ai-demo:local .
+    docker build --build-arg REGISTRY_URL= --build-arg TAG=local -t haiven-demo:local .
     """
     subprocess.run(command, shell=True)
 
@@ -66,9 +66,9 @@ def build_docker_image():
 # runs local docker image
 def run_docker_image():
     command = """
-    docker inspect --type=image team-ai-demo:local && \
+    docker inspect --type=image haiven-demo:local && \
     cd app && \
-    docker run --env-file .env -e TEAM_CONTENT_PATH=teams -p 8080:8080 team-ai-demo:local
+    docker run --env-file .env -e TEAM_CONTENT_PATH=teams -p 8080:8080 haiven-demo:local
     """
     subprocess.run(command, shell=True)
 
@@ -76,12 +76,12 @@ def run_docker_image():
 def run_docker_prod_image():
     command = """
     cd app && \
-    docker run --env-file .env -e TEAM_CONTENT_PATH=teams -p 8080:8080 us-central1-docker.pkg.dev/team-ai-7a96/team-ai/team-ai-demo:main
+    docker run --env-file .env -e TEAM_CONTENT_PATH=teams -p 8080:8080 us-central1-docker.pkg.dev/haiven-7a96/haiven/haiven-demo:main
     """
     subprocess.run(command, shell=True)
 
 
-# retrieve secrets (requires gcloud to be logged in team-ai-7a96)
+# retrieve secrets (requires gcloud to be logged in haiven-7a96)
 def get_secret():
     command = f"""
     gcloud secrets versions access latest --secret={sys.argv[1]}

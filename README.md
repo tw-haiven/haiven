@@ -27,12 +27,12 @@ Prerequisite:
 - Change the `AZURE_OPENAI_API_KEY` in that file to the API Key - ask the Haiven team for access to the "trial" Azure OpenAI API Key, if you haven't received it yet.
 
 ```
-mkdir team-ai
-cd team-ai
+mkdir haiven
+cd haiven
 # Put the .env file into this new folder
 git clone git@github.com:tw-haiven/haiven-tw-knowledge-pack.git
 docker run \
-        -v ./team-ai-tw-knowledge-pack:/app/teams \
+        -v ./haiven-tw-knowledge-pack:/app/teams \
         --env-file .env \
         -e AUTH_SWITCHED_OFF=true \
         -e TEAM_CONTENT_PATH=/app/teams \
@@ -48,13 +48,13 @@ Prerequisites:
 ```
 ollama pull llama2
 ollama pull llava:7b
-mkdir team-ai
-cd team-ai
+mkdir haiven
+cd haiven
 git clone git@github.com:tw-haiven/haiven-tw-knowledge-pack.git
 # As long as the repo is private, you'll need to log in (see doc link above)
 echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 docker run \
-        -v ./team-ai-tw-knowledge-pack:/app/teams \
+        -v ./haiven-tw-knowledge-pack:/app/teams \
         -e AUTH_SWITCHED_OFF=true \
         -e TEAM_CONTENT_PATH=/app/teams \
         -e DOMAIN_NAME=team_demo \

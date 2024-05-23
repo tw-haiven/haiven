@@ -41,7 +41,7 @@
                 // Add args for local debug run here
                 "index-all-files", "${workspaceFolder}/../tmp/", 
                 "--embedding-model", "ollama", 
-                "--output-dir", "${workspaceFolder}/../team-ai-tw-knowledge-pack/team_demo"
+                "--output-dir", "${workspaceFolder}/../haiven-tw-knowledge-pack/team_demo"
             ]
         }
     ]
