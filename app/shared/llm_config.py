@@ -5,7 +5,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from pydantic import BaseModel
-from shared.logger import TeamAILogger
+from shared.logger import HaivenLogger
 from shared.models.model import Model
 from shared.services.models_service import ModelsService
 from shared.aws_chat import AWSChat
@@ -75,7 +75,7 @@ class LLMChatFactory:
 
         model: Model = ModelsService.get_model(llm_config.service_name)
 
-        TeamAILogger.get().analytics(
+        HaivenLogger.get().analytics(
             "Model selected",
             {
                 "provider": model.provider,

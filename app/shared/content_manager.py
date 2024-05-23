@@ -1,5 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-from shared.logger import TeamAILogger
+from shared.logger import HaivenLogger
 
 from shared.embeddings import Embeddings
 from shared.knowledge import KnowledgeBaseMarkdown
@@ -32,7 +32,7 @@ class ContentManager:
                 self.knowledge_pack_definition.path
             )
         except FileNotFoundError as e:
-            TeamAILogger.get().analytics(
+            HaivenLogger.get().analytics(
                 "KnowledgePackKnowledgeNotFound", {"error": str(e)}
             )
 
@@ -44,7 +44,7 @@ class ContentManager:
         try:
             EmbeddingsService.load_knowledge_base(base_embeddings_path)
         except FileNotFoundError as e:
-            TeamAILogger.get().analytics(
+            HaivenLogger.get().analytics(
                 "KnowledgePackEmbeddingsNotFound", {"error": str(e)}
             )
 
@@ -65,7 +65,7 @@ class ContentManager:
                 knowledge_context.name, path=context_path
             )
         except FileNotFoundError as e:
-            TeamAILogger.get().analytics(
+            HaivenLogger.get().analytics(
                 "KnowledgePackContextNotFound", {"error": str(e)}
             )
 
@@ -89,7 +89,7 @@ class ContentManager:
                 knowledge_context.name, context_embeddings_path
             )
         except FileNotFoundError as e:
-            TeamAILogger.get().analytics(
+            HaivenLogger.get().analytics(
                 "KnowledgePackEmbeddingsNotFound", {"error": str(e)}
             )
 

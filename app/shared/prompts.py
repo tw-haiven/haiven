@@ -5,7 +5,7 @@ from typing import List
 import frontmatter
 from langchain.prompts import PromptTemplate
 from shared.knowledge import KnowledgeBaseMarkdown
-from shared.logger import TeamAILogger
+from shared.logger import HaivenLogger
 
 
 class PromptList:
@@ -103,7 +103,7 @@ class PromptList:
         for key in template.input_variables:
             if key not in knowledge_with_overwrites:
                 message = f"A requested context '{key}' was not found. Quality of the output for the selected prompt might be affected."
-                TeamAILogger.get().logger.warning(message)
+                HaivenLogger.get().logger.warning(message)
                 if warnings is not None:
                     warnings.append(message)
                 knowledge_with_overwrites[str(key)] = (

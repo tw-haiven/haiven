@@ -6,7 +6,7 @@ from fastapi.responses import FileResponse
 from shared.boba_api import BobaApi
 from shared.services.config_service import ConfigService
 from shared.chats import ServerChatSessionMemory
-from shared.logger import TeamAILogger
+from shared.logger import HaivenLogger
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -152,7 +152,7 @@ class Server:
                     if current_time - created_at > session_expiry_seconds:
                         user = session.get("user", {})
                         user_name = user.get("name", "")
-                        TeamAILogger.get().logger.info(
+                        HaivenLogger.get().logger.info(
                             f"Session for {user_name} expired due to inactivity of {current_time - created_at} seconds."
                         )
                         request.session.clear()

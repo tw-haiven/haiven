@@ -4,32 +4,32 @@ import sys
 from loguru import logger
 
 
-class TeamAILogger:
+class HaivenLogger:
     __instance = None
 
     def __init__(self, loguru_logger):
-        print("instantiating TeamAILogger")
+        print("instantiating HaivenLogger")
         loguru_logger.remove()
 
-        self.logger = loguru_logger.patch(TeamAILogger.patching)
+        self.logger = loguru_logger.patch(HaivenLogger.patching)
         self.logger.add(sys.stdout, format="{extra[serialized]}")
 
         self.logger.level("ANALYTICS", no=60)
 
-        if TeamAILogger.__instance is not None:
+        if HaivenLogger.__instance is not None:
             raise Exception(
-                "TeamAILogger is a singleton class. Use getInstance() to get the instance."
+                "HaivenLogger is a singleton class. Use getInstance() to get the instance."
             )
-        TeamAILogger.__instance = self
+        HaivenLogger.__instance = self
 
     def analytics(self, message, extra=None):
         self.logger.log("ANALYTICS", message, extra=extra)
 
     @staticmethod
     def get():
-        if TeamAILogger.__instance is None:
-            TeamAILogger(logger)
-        return TeamAILogger.__instance
+        if HaivenLogger.__instance is None:
+            HaivenLogger(logger)
+        return HaivenLogger.__instance
 
     @staticmethod
     def serialize(record):
@@ -44,4 +44,4 @@ class TeamAILogger:
 
     @staticmethod
     def patching(record):
-        record["extra"]["serialized"] = TeamAILogger.serialize(record)
+        record["extra"]["serialized"] = HaivenLogger.serialize(record)

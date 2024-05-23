@@ -8,7 +8,7 @@ from shared.app import App
 from shared.chats import ServerChatSessionMemory
 from shared.content_manager import ContentManager
 from shared.event_handler import EventHandler
-from shared.logger import TeamAILogger
+from shared.logger import HaivenLogger
 from shared.navigation import NavigationManager
 from shared.prompts_factory import PromptsFactory
 from shared.services.config_service import ConfigService
@@ -30,13 +30,13 @@ def create_server():
         ui=UI(),
         prompts_factory=PromptsFactory(knowledge_pack_path),
         navigation_manager=NavigationManager(),
-        event_handler=EventHandler(TeamAILogger),
+        event_handler=EventHandler(HaivenLogger),
         prompts_parent_dir=knowledge_pack_path,
         content_manager=content_manager,
         chat_session_memory=ServerChatSessionMemory(),
     )
 
-    TeamAILogger.get().logger.info("Starting Haiven...")
+    HaivenLogger.get().logger.info("Starting Haiven...")
     app = App(content_manager=content_manager, ui_factory=ui_factory)
     return app.launch_via_fastapi_wrapper()
 

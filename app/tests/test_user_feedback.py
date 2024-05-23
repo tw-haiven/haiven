@@ -7,10 +7,10 @@ from shared.models.chat_context import (
 
 
 class TestUserFeedback:
-    @mock.patch("shared.user_feedback.TeamAILogger.analytics")
-    def test_on_message_voted(self, teamai_logger_analytics_mock):
+    @mock.patch("shared.user_feedback.HaivenLogger.analytics")
+    def test_on_message_voted(self, haiven_logger_analytics_mock):
         # Arrange
-        teamai_logger_analytics_mock.return_value = None
+        haiven_logger_analytics_mock.return_value = None
         vote = "upvote"
         context = ChatContext(
             tab_id="tab_id_test",
@@ -25,5 +25,5 @@ class TestUserFeedback:
         UserFeedback.on_message_voted(vote, context.to_dict())
 
         # Assert
-        teamai_logger_analytics_mock.assert_called_once()
-        teamai_logger_analytics_mock.assert_called_once_with(vote, context.to_dict())
+        haiven_logger_analytics_mock.assert_called_once()
+        haiven_logger_analytics_mock.assert_called_once_with(vote, context.to_dict())

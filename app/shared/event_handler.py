@@ -1,11 +1,11 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import gradio as gr
-from shared.logger import TeamAILogger
+from shared.logger import HaivenLogger
 from shared.user_context import user_context
 
 
 class EventHandler:
-    def __init__(self, logger_factory: TeamAILogger):
+    def __init__(self, logger_factory: HaivenLogger):
         self.logger_factory = logger_factory
 
     def get_user(self, request: gr.Request):

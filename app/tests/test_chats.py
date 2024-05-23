@@ -10,7 +10,7 @@ from unittest.mock import MagicMock
 def test_documents_chat(mocker):
     os.environ["USE_AZURE"] = "true"
 
-    mocker.patch("shared.logger.TeamAILogger.get", return_value=mocker.Mock())
+    mocker.patch("shared.logger.HaivenLogger.get", return_value=mocker.Mock())
 
     knowledge_base_mock = mocker.Mock()
     knowledge_base_mock.retriever = mocker.Mock()

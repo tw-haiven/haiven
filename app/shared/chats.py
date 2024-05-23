@@ -9,7 +9,7 @@ from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 from shared.documents_utils import DocumentsUtils
 from shared.llm_config import LLMChatFactory, LLMConfig
-from shared.logger import TeamAILogger
+from shared.logger import HaivenLogger
 from shared.services.embeddings_service import EmbeddingsService
 
 
@@ -34,7 +34,7 @@ class TeamAIBaseChat:
         }
         extra_info.update(extra)
 
-        TeamAILogger.get().analytics("Sending message", extra_info)
+        HaivenLogger.get().analytics("Sending message", extra_info)
 
     def memory_as_text(self):
         return "\n".join([str(message) for message in self.memory])
@@ -411,7 +411,7 @@ class ServerChatSessionMemory:
 
         session_key = category + "-" + str(uuid.uuid4())
 
-        TeamAILogger.get().analytics(
+        HaivenLogger.get().analytics(
             f"Creating a new chat session for category {category} with key {session_key} for user {user_identifier}"
         )
         self.USER_CHATS[session_key] = {
