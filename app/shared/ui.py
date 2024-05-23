@@ -189,7 +189,7 @@ class UI:
                 - Helping people with tasks they have never done before (e.g. if team members have little experience with story-writing)
                 - Using GenAI for divergent thinking, brainstorming and finding gaps earlier in the delivery process
                 
-                ![Overview of Haiven setup](/static/teamai_overview_more_details.png)
+                ![Overview of Haiven setup](/static/haiven_overview_more_details.png)
 
             """,
             elem_classes="about",
