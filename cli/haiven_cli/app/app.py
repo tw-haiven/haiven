@@ -1,10 +1,10 @@
 # © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import os
-from teamai_cli.models.embedding_model import EmbeddingModel
-from teamai_cli.services.config_service import ConfigService
-from teamai_cli.services.file_service import FileService
-from teamai_cli.services.knowledge_service import KnowledgeService
-from teamai_cli.services.metadata_service import MetadataService
+from haiven_cli.models.embedding_model import EmbeddingModel
+from haiven_cli.services.config_service import ConfigService
+from haiven_cli.services.file_service import FileService
+from haiven_cli.services.knowledge_service import KnowledgeService
+from haiven_cli.services.metadata_service import MetadataService
 from typing import List
 
 
