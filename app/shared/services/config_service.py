@@ -120,7 +120,7 @@ class ConfigService:
             path (str): The path to the YAML file.
 
         Returns:
-            str: The application name. Defaults to "Team AI" if not present in config file.
+            str: The application name. Defaults to "Haiven" if not present in config file.
         """
         data = ConfigService._load_yaml(path)
         application_name = data["application_name"]

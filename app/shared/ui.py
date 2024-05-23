@@ -175,8 +175,6 @@ class UI:
         )
         gr.Markdown(
             """
-                ## !! "Team AI" is becoming "Haiven" !!
-
                 **The Haiven team assistant is a tool to help software delivery teams evaluate the value of Generative AI as an *assistant and knowledge amplifier for frequently done tasks* across their software delivery lifecycle.**
 
                 This setup allows the use of GenAI in a way that is optimized for a particular team's or organization's needs, 

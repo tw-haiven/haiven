@@ -1,10 +1,8 @@
-![Build status](https://github.com/tw-team-ai/team-ai/actions/workflows/main.yml/badge.svg)
+![Build status](https://github.com/tw-haiven/haiven/actions/workflows/main.yml/badge.svg)
 
-# Team AI becomes "Haiven" team assistant!
+# Haiven team assistant
 
-We just need some time to rename everything... :-)
-
-# Haiven
+(formerly known as "Team AI")
 
 The Haiven team assistant is an accelerator we use to pilot the use of Generative AI assistance for software delivery tasks beyond coding.
 
@@ -16,7 +14,7 @@ It lets you codify your practices and knowledge and make it available to an AI a
 
 ![Overview in more detail](./docs/images/overview_more_details.png)
 
-[![Demo video showing epic breakdown with Team AI](docs/images/demo_thumbnail.png)](https://drive.google.com/file/d/16Acc_eDC6iphHk9wQLrNsl8rksP_wjXz/view?usp=sharing)
+[![Demo video showing epic breakdown with Haiven](docs/images/demo_thumbnail.png)](https://drive.google.com/file/d/16Acc_eDC6iphHk9wQLrNsl8rksP_wjXz/view?usp=sharing)
 
 ## Quickest way to try it out
 
@@ -26,20 +24,20 @@ Prerequisite:
 ### With Azure OpenAI
 
 - Create a `.env` file with the content of (app/.env.azure.template)[app/.env.azure.template]
-- Change the `AZURE_OPENAI_API_KEY` in that file to the API Key - ask the Team AI team for access to the "trial" Azure OpenAI API Key, if you haven't received it yet.
+- Change the `AZURE_OPENAI_API_KEY` in that file to the API Key - ask the Haiven team for access to the "trial" Azure OpenAI API Key, if you haven't received it yet.
 
 ```
 mkdir team-ai
 cd team-ai
 # Put the .env file into this new folder
-git clone git@github.com:tw-team-ai/team-ai-tw-knowledge-pack.git
+git clone git@github.com:tw-haiven/haiven-tw-knowledge-pack.git
 docker run \
         -v ./team-ai-tw-knowledge-pack:/app/teams \
         --env-file .env \
         -e AUTH_SWITCHED_OFF=true \
         -e TEAM_CONTENT_PATH=/app/teams \
         -p 8080:8080 \
-        ghcr.io/tw-team-ai/team-ai:main
+        ghcr.io/tw-haiven/haiven:main
 ```
 
 ### With Ollama, locally
@@ -52,7 +50,7 @@ ollama pull llama2
 ollama pull llava:7b
 mkdir team-ai
 cd team-ai
-git clone git@github.com:tw-team-ai/team-ai-tw-knowledge-pack.git
+git clone git@github.com:tw-haiven/haiven-tw-knowledge-pack.git
 # As long as the repo is private, you'll need to log in (see doc link above)
 echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 docker run \
@@ -65,10 +63,10 @@ docker run \
         -e ENABLED_VISION_MODEL=llava:7b \
         -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
         -p 8080:8080 \
-        ghcr.io/tw-team-ai/team-ai:main
+        ghcr.io/tw-haiven/haiven:main
 ```
 
-Please note that while this local mode is great for getting a taste of the application, the prompts in our knowledge pack are currently only tested with the AWS, Azure and Google models listed [here](https://github.com/tw-team-ai/team-ai/blob/main/app/config.yaml), and might not work as well with the open models loaded with Ollama.
+Please note that while this local mode is great for getting a taste of the application, the prompts in our knowledge pack are currently only tested with the AWS, Azure and Google models listed [here](https://github.com/tw-haiven/haiven/blob/main/app/config.yaml), and might not work as well with the open models loaded with Ollama.
 
 ## Why?
 
@@ -76,7 +74,7 @@ The product and tooling space around coding assistance is relatively mature, in 
 
 However, when it comes to software delivery tasks other than coding, there is not much out there yet. Some of the incumbent vendors for the delivery toolchain (wikis, issue trackers, CI/CD products, ...) are working on adding AI to their toolchain, and their is the odd startup here or there that tries to tackle one of the task areas. There are also a bunch of products evolving that enable the sharing and monitoring of prompts in an organisation, which could be used to build a similar sandbox. But overall, it is hard to gather experience and data today about how AI can be used to assist a software delivery team in their day-to-day work.
 
-**Team AI** provides a lean self-cloud-hosted sandbox to experiment, and to gather data and experience today that can inform strategy and tool choices for the future.
+**Haiven** provides a lean self-cloud-hosted sandbox to experiment, and to gather data and experience today that can inform strategy and tool choices for the future.
 
 * Control the setup by deploying into your own infrastructure environment, instead of trusting a bleeding edge startup
 * Use the models provided by your cloud provider of choice (AWS, Google Cloud, or Azure), instead of running a risk assessment for and creating contracts with a new vendor
@@ -119,7 +117,7 @@ There are 4 options:
 
 ### 2. Get (and adapt) a "knowledge pack"
 
-You can clone the [Community Knowledge Pack](https://github.com/tw-team-ai/team-ai-community-knowledge-pack) or the [Thoughtworks Knowledge Pack](https://github.com/tw-team-ai/team-ai-tw-knowledge-pack) to get started.
+You can clone the [Community Knowledge Pack](https://github.com/tw-haiven/haiven-community-knowledge-pack) or the [Thoughtworks Knowledge Pack](https://github.com/tw-haiven/haiven-tw-knowledge-pack) to get started.
 
 [Find more documentation about knowledge packs here](docs/knowledge_packs.md).
 
@@ -158,7 +156,7 @@ If you want to integrate your own OAuth provider, check out the OAuth-related en
 
 #### Build an image with your knowledge pack
 
-Look at the [Community Knowledge Pack repository](https://github.com/tw-team-ai/team-ai-community-knowledge-pack) for an example of a `Dockerfile` that helps you bake your own knowledge pack into a Team AI image that you can then deploy to your own environment. When you do the deployment, remember to set the environment variables and secrets described in the `.env` template files in that runtime.
+Look at the [Community Knowledge Pack repository](https://github.com/tw-haiven/haiven-community-knowledge-pack) for an example of a `Dockerfile` that helps you bake your own knowledge pack into a Haiven image that you can then deploy to your own environment. When you do the deployment, remember to set the environment variables and secrets described in the `.env` template files in that runtime.
 
 ### Configure more models
 #### Setup models

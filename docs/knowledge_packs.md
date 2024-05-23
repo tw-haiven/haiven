@@ -1,12 +1,12 @@
 
-# Creating a knowledge pack
+# Creating a Haiven knowledge pack
 
 ## Concept
-The "secret sauce" to make Team AI work and be useful for your particular team lies in the prompts, and in the knowledge sources. They stay valuable for you regardless of what tool you plug them into.
+The "secret sauce" to make Haiven work and be useful for your particular team lies in the prompts, and in the knowledge sources. They stay valuable for you regardless of what tool you plug them into.
 
 ### What happens when you execute a prompt
 
-Every new chat session in a "plain" AI chatbot application is a new start - the AI doesn't remember that you're working on a software delivery team, what your domain is, your architecture, none of that. You don't want to repeat that every time you interact with the AI. Team AI therefore helps you set the context again and again with reusable context descriptions. This also makes prompts reusable across multiple teams and domains, by switching out those context descriptions.
+Every new chat session in a "plain" AI chatbot application is a new start - the AI doesn't remember that you're working on a software delivery team, what your domain is, your architecture, none of that. You don't want to repeat that every time you interact with the AI. Haiven therefore helps you set the context again and again with reusable context descriptions. This also makes prompts reusable across multiple teams and domains, by switching out those context descriptions.
 
 The most common difference between teams or domains lies in their domain context, and their architecture and tech stack. Those are therefore the context descriptions that are used by most prompts. They reference those pieces of knowledge via the `{business}` and `{architecture}` variables, depending on which domain is activated.
 
@@ -103,7 +103,7 @@ You can try and sanity check if the AI "understands" your knowledge by going int
 
 #### Pick an interaction pattern
 
-Team AI currently supports 3 different prompt interaction patterns: Chat, diagrams, or brainstorming.
+Haiven currently supports 3 different prompt interaction patterns: Chat, diagrams, or brainstorming.
 
 Which interaction pattern to choose depends e.g. on what the user typically has available as input, at what level of detail, or how experienced a user is at a task.
 
