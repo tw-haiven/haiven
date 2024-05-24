@@ -3,7 +3,7 @@ from shared.knowledge import KnowledgeBaseMarkdown
 from shared.prompts import PromptList
 
 
-ACTIVE_KNOWLEDGE_CONTEXT = "some_context"
+ACTIVE_KNOWLEDGE_CONTEXT = "context_a"
 TEST_KNOWLEDGE_PACK_PATH = "tests/test_data/test_knowledge_pack"
 
 
