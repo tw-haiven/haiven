@@ -1,3 +1,4 @@
+# © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from langchain_community.embeddings import BedrockEmbeddings, OllamaEmbeddings
 from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
 from haiven_cli.models.embedding_model import EmbeddingModel

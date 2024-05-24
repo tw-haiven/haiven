@@ -1,3 +1,4 @@
+# © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import typer
 
 from haiven_cli.app.app import App
