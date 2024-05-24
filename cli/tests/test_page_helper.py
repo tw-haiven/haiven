@@ -1,3 +1,4 @@
+# © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from haiven_cli.models.html_filter import HtmlFilter
 from haiven_cli.services.page_helper import PageHelper
 from haiven_cli.models.page_data import PageData

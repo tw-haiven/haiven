@@ -18,13 +18,13 @@ repos:
   - repo: local
     hooks:
       - id: check-header-py
-        name: Check for license header
+        name: Check for license header in Python files
         entry: .precommit/check_header.sh
         language: system
         files: '\.(py)$'
         exclude: '^$'
       - id: check-header-js
-        name: Check for license header
+        name: Check for license header in JS files
         entry: .precommit/check_header.sh
         language: system
         files: '\.(js)$'
