@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from langchain.prompts import PromptTemplate
 
 DIAGRAM_DISCUSSION_TEMPLATE = """

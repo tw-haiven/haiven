@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from shared.event_handler import EventHandler
 from unittest.mock import MagicMock, patch, PropertyMock
 

@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from haiven_cli.services.metadata_service import MetadataService
 
 

@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import pytest
 from shared.services.models_service import ModelsService
 from shared.models.model import Model

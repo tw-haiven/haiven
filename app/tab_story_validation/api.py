@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from typing import List
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel

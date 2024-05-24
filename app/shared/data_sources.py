@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from langchain_community.vectorstores import FAISS
 import tiktoken
 from shared.services.config_service import ConfigService

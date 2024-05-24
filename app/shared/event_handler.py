@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import gradio as gr
 from shared.logger import HaivenLogger
 from shared.user_context import user_context

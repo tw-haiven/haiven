@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 

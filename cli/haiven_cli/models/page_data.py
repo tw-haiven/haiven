@@ -1,5 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
-
 from bs4 import BeautifulSoup
 
 

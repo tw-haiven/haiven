@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from unittest.mock import patch, MagicMock, PropertyMock
 from haiven_cli.main import (
     create_context,

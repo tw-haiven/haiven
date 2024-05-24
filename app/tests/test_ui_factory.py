@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import unittest
 from unittest.mock import patch, Mock, MagicMock, PropertyMock
 from shared.ui_factory import UIFactory

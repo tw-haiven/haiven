@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import gradio as gr
 from shared.chats import ServerChatSessionMemory
 from shared.content_manager import ContentManager

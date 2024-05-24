@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import os
 from haiven_cli.models.embedding_model import EmbeddingModel
 from haiven_cli.services.config_service import ConfigService

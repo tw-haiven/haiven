@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 import gradio as gr
 from dotenv import load_dotenv
 from shared.chats import ServerChatSessionMemory, StreamingChat

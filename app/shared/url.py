@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 class Url:
     def __init__(self):
         self.PATH_ABOUT = "about"

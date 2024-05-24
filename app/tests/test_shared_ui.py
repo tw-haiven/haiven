@@ -1,4 +1,3 @@
-# © 2024 Thoughtworks, Inc. | Thoughtworks Pre-Existing Intellectual Property | See License file for permissions.
 from unittest import mock
 from shared.models.model import Model
 from shared.ui import _get_valid_tone_values, _get_default_temperature, _get_services
