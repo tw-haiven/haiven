@@ -1,3 +1,4 @@
+// © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 export const getMessageError = async (response) => {
   let chatMessageError = {
     message: `response error, status: ${response.statusText}`,

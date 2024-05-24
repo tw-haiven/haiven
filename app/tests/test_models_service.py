@@ -1,3 +1,4 @@
+# © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import pytest
 from shared.services.models_service import ModelsService
 from shared.models.model import Model

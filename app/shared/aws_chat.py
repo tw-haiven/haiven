@@ -1,3 +1,4 @@
+# © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 # This class overcomes the connection closing issues with BedrockChat by closing the connection after each call.
 # It was observed that the BedrockChat class does not close the connection to AWS after a chat response is fully served.
 # This results in multiple connections staying open in the background, and it is 'believed 'that this results in the

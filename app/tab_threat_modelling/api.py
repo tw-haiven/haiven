@@ -1,3 +1,4 @@
+# © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from api.models.explore_request import ExploreRequest
 from fastapi import Request
 from fastapi.responses import StreamingResponse

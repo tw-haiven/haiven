@@ -15,4 +15,21 @@ repos:
       - id: prettier
         args: ['--write']
         files: '\.jsx?$'
-  
+  - repo: local
+    hooks:
+      - id: check-header-py
+        name: Check for license header
+        entry: .precommit/check_header.sh
+        language: system
+        files: '\.(py)$'
+        exclude: '^$'
+      - id: check-header-js
+        name: Check for license header
+        entry: .precommit/check_header.sh
+        language: system
+        files: '\.(js)$'
+        exclude: '^$'
+      - id: check-cli-readme
+        name: Check if the CLI Readme needs an update
+        entry: .precommit/check_cli_readme.sh
+        language: system

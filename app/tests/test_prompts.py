@@ -1,7 +1,9 @@
+# © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from shared.knowledge import KnowledgeBaseMarkdown
 from shared.prompts import PromptList
 
-ACTIVE_KNOWLEDGE_CONTEXT = "context_a"
+
+ACTIVE_KNOWLEDGE_CONTEXT = "some_context"
 TEST_KNOWLEDGE_PACK_PATH = "tests/test_data/test_knowledge_pack"
 
 

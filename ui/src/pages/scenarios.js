@@ -1,3 +1,4 @@
+// © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
@@ -31,7 +32,7 @@ import {
 let ctrl;
 
 const Home = () => {
-  const [numOfScenarios, setNumOfScenarios] = useState("5");
+  const [numOfScenarios, setNumOfScenarios] = useState("6");
   const [scenarios, setScenarios] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [isDetailed, setDetailed] = useState(false);

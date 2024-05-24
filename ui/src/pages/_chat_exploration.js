@@ -1,3 +1,4 @@
+// © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { useState, useEffect } from "react";
 import { ProChat, ProChatProvider, useProChat } from "@ant-design/pro-chat";
 import { Button, Flex } from "antd";

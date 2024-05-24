@@ -1,3 +1,4 @@
+# © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import unittest
 from unittest.mock import patch, Mock, MagicMock, PropertyMock
 from shared.ui_factory import UIFactory
