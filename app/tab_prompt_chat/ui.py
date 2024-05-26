@@ -102,11 +102,14 @@ def enable_chat(
                 prompt_list, context_selected, prompt_choice, user_input
             )
 
+            knowledge_reference_exists = knowledge is not None and knowledge != ""
+
             return [
                 prompt_choice,
                 rendered_prompt,
                 help,
-                knowledge,
+                # knowledge,
+                gr.Markdown(knowledge, visible=knowledge_reference_exists),
             ]
         else:
             return [None, "", "", ""]
@@ -146,6 +149,7 @@ def enable_chat(
                     ui_help_knowledge = gr.Markdown(
                         elem_classes=["prompt-help", "knowledge"],
                         elem_id="chat_help_knowledge",
+                        visible=False,
                     )
                     ui_user_input = gr.Textbox(label="Your input", lines=5)
 
