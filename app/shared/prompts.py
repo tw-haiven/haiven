@@ -185,10 +185,15 @@ class PromptList:
                 else ""
             )
             knowledge_used = self.get_knowledge_used(prompt_choice, context_selected)
+
             knowledge_used_markdown = (
-                f"**Knowledge used:** {', '.join(knowledge['title'] for knowledge in knowledge_used)}"
+                "**Knowledge used:** "
+                + ", ".join(
+                    f"_{knowledge['title']}_ from _{context_selected}_"
+                    for knowledge in knowledge_used
+                )
                 if knowledge_used
-                else ""
+                else None
             )
 
             sample_input = prompt.metadata.get("help_sample_input", "")

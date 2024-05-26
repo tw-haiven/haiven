@@ -94,7 +94,7 @@ def enable_chat(
             chat_context.prompt = prompt_list.get(prompt_choice).metadata.get(
                 "title", "Unnamed use case"
             )
-            help, knowledge = prompt_list.render_help_markdown(
+            help, knowledge_display = prompt_list.render_help_markdown(
                 prompt_choice, context_selected
             )
 
@@ -102,14 +102,15 @@ def enable_chat(
                 prompt_list, context_selected, prompt_choice, user_input
             )
 
-            knowledge_reference_exists = knowledge is not None and knowledge != ""
+            knowledge_reference_exists = (
+                knowledge_display is not None and knowledge_display != ""
+            )
 
             return [
                 prompt_choice,
                 rendered_prompt,
                 help,
-                # knowledge,
-                gr.Markdown(knowledge, visible=knowledge_reference_exists),
+                gr.Markdown(knowledge_display, visible=knowledge_reference_exists),
             ]
         else:
             return [None, "", "", ""]
