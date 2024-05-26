@@ -8,7 +8,7 @@ The "secret sauce" to make Haiven work and be useful for your particular team li
 
 Every new chat session in a "plain" AI chatbot application is a new start - the AI doesn't remember that you're working on a software delivery team, what your domain is, your architecture, none of that. You don't want to repeat that every time you interact with the AI. Haiven therefore helps you set the context again and again with reusable context descriptions. This also makes prompts reusable across multiple teams and domains, by switching out those context descriptions.
 
-The most common difference between teams or domains lies in their domain context, and their architecture and tech stack. Those are therefore the context descriptions that are used by most prompts. They reference those pieces of knowledge via the `{business}` and `{architecture}` variables, depending on which domain is activated.
+The most common difference between teams or domains lies in their domain context, and their architecture and tech stack. Those are therefore the context descriptions that are used by most prompts. They reference those pieces of knowledge via the `{domain}` and `{architecture}` variables, depending on which domain is activated.
 
 ```mermaid
 graph LR
@@ -29,7 +29,7 @@ I am a team member in a software delivery team. Some context about the applicati
 
 -----
 CONTEXT DESCRIPTION:
-{business}
+{domain}
 -----
 
 ... [ additional {user_input} etc, left out to keep the example short ] ...
@@ -130,7 +130,7 @@ Every prompt file has a frontmatter block that defines metadata about the prompt
 
 **Prompt content**
 
-Inside of the prompt text, you can reference the static knowledge snippets that are defined in a team's `knowledge` folder. Use the `{business}` and `{architecture}` variables to reference the business context and architecture snippets. Those two are the default knowledge snippets that are used in many of the prepared prompts. But you can add your own if you need to. E.g., you could add an additional snippet for "Frontend coding patterns". You can define the name of the reference variable in the metadata of the knowledge snippet file (see `business_context.md` as an example)
+Inside of the prompt text, you can reference the static knowledge snippets that are defined in a team's `knowledge` folder. Use the `{domain}` and `{architecture}` variables to reference the business context and architecture snippets. Those two are the default knowledge snippets that are used in many of the prepared prompts. But you can add your own if you need to. E.g., you could add an additional snippet for "Frontend coding patterns". You can define the name of the reference variable in the metadata of the knowledge snippet file (see `business_context.md` as an example)
 
 ### Add knowledge sources
 
