@@ -33,9 +33,13 @@ Haiven lets you codify your practices and knowledge and make it available to an 
 
 ## Example "Chat mode"
 
+[Click to see video](https://drive.google.com/file/d/108t7_tyYcwYUSuotSSTViHYBiXmOp2Kk/view?usp=sharing)
+
 [![Demo video showing epic breakdown in Haiven's chat mode](docs/images/demo_chat_mode_epic_breakdown.png)](https://drive.google.com/file/d/108t7_tyYcwYUSuotSSTViHYBiXmOp2Kk/view?usp=sharing)
 
 ## Example "Guided mode"
+
+[Click to see video](https://drive.google.com/file/d/105ksKtyfsoC98U_6O2m8gcrYkM4r3pBW/view?usp=sharing)
 
 [![Demo video showing threat modelling in Haiven's guided mode](docs/images/demo_guided_mode_thumbnail.png)](https://drive.google.com/file/d/105ksKtyfsoC98U_6O2m8gcrYkM4r3pBW/view?usp=sharing)
 
@@ -84,7 +88,6 @@ docker run \
         -v ./haiven-tw-knowledge-pack:/app/teams \
         -e AUTH_SWITCHED_OFF=true \
         -e TEAM_CONTENT_PATH=/app/teams \
-        -e DOMAIN_NAME=team_demo \
         -e ENABLED_PROVIDERS=ollama \
         -e ENABLED_EMBEDDINGS_MODEL=ollama \
         -e ENABLED_VISION_MODEL=llava:7b \
