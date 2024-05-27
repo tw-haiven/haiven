@@ -2,19 +2,42 @@
 
 # Haiven team assistant
 
-(formerly known as "Team AI")
+[Thoughtworks](https://thoughtworks.com) is a global software consultancy working for a wide range of clients. We're using Haiven to offer our clients a **lean way to pilot the use of AI assistance for software delivery teams** while the market of products is still busy and evolving.
 
-The Haiven team assistant is an accelerator we use to pilot the use of Generative AI assistance for software delivery tasks beyond coding.
+## What is it?
 
-This codebase provides the scaffolding to build a one-container web application that can act as an assistant to a software delivery team. You can plug in your own "knowledge pack", adapted to your organisation's and teams' needs.
+A **sandbox to lower the barrier to experiment** with the use of Generative AI assistance for software delivery **tasks beyond coding**. 
+
+- Simple one-container deployment --> **easy to deploy** in your environment
+- Integratable with the 3 big cloud provider's model services (Azure OpenAI, Google Gemini, AWS Bedrock) --> choose your existing cloud provider of choice to alleviate at least some of the **data confidentiality concerns** that currently limit many enterprise's choice of product and tool usage
+- Separation of application and **"knowledge pack"** to plug in and change your own prompts and domain information --> **customize** to your team
+
+## What is it NOT?
+
+- A product
+- A fully fleshed out and scalable tool
+
+## Why?
+
+[More on the why here](docs/why.md), in particular these two questions:
+* Why would you use it?
+* How does it compare to...?
+
+# Overview
 
 ![Overview](./docs/images/overview.png)
 
-It lets you codify your practices and knowledge and make it available to an AI assistant, to surface it to team members just-in-time when they are working on a task.
+Haiven lets you codify your practices and knowledge and make it available to an AI assistant, to surface it to team members just-in-time when they are working on a task.
 
 ![Overview in more detail](./docs/images/overview_more_details.png)
 
-[![Demo video showing epic breakdown with Haiven](docs/images/demo_thumbnail.png)](https://drive.google.com/file/d/16Acc_eDC6iphHk9wQLrNsl8rksP_wjXz/view?usp=sharing)
+## Example "Chat mode"
+
+[![Demo video showing epic breakdown in Haiven's chat mode](docs/images/demo_chat_mode_epic_breakdown.png)](https://drive.google.com/file/d/108t7_tyYcwYUSuotSSTViHYBiXmOp2Kk/view?usp=sharing)
+
+## Example "Guided mode"
+
+[![Demo video showing threat modelling in Haiven's guided mode](docs/images/demo_guided_mode_thumbnail.png)](https://drive.google.com/file/d/105ksKtyfsoC98U_6O2m8gcrYkM4r3pBW/view?usp=sharing)
 
 ## Quickest way to try it out
 
@@ -24,13 +47,15 @@ Prerequisite:
 ### With Azure OpenAI
 
 - Create a `.env` file with the content of (app/.env.azure.template)[app/.env.azure.template]
-- Change the `AZURE_OPENAI_API_KEY` in that file to the API Key - ask the Haiven team for access to the "trial" Azure OpenAI API Key, if you haven't received it yet.
+- Change the `AZURE_OPENAI_API_KEY` in that file to the API Key - (Thoughtworkers can ask the Haiven team for access to the "trial" Azure OpenAI API Key).
 
 ```
 mkdir haiven
 cd haiven
 # Put the .env file into this new folder
 git clone git@github.com:tw-haiven/haiven-tw-knowledge-pack.git
+# The TW knowledge pack is private, you can use our sample pack if you don't have access
+# git clone git@github.com:tw-haiven/haiven-community-knowledge-pack.git
 docker run \
         -v ./haiven-tw-knowledge-pack:/app/teams \
         --env-file .env \
@@ -51,6 +76,8 @@ ollama pull llava:7b
 mkdir haiven
 cd haiven
 git clone git@github.com:tw-haiven/haiven-tw-knowledge-pack.git
+# The TW knowledge pack is private, you can use our sample pack if you don't have access
+# git clone git@github.com:tw-haiven/haiven-community-knowledge-pack.git
 # As long as the repo is private, you'll need to log in (see doc link above)
 echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 docker run \
@@ -66,41 +93,24 @@ docker run \
         ghcr.io/tw-haiven/haiven:main
 ```
 
-Please note that while this local mode is great for getting a taste of the application, the prompts in our knowledge pack are currently only tested with the AWS, Azure and Google models listed [here](https://github.com/tw-haiven/haiven/blob/main/app/config.yaml), and might not work as well with the open models loaded with Ollama.
-
-## Why?
-
-The product and tooling space around coding assistance is relatively mature, in the sense that it is possible to see value already today, and some of the products are already adopted in large enterprises.
-
-However, when it comes to software delivery tasks other than coding, there is not much out there yet. Some of the incumbent vendors for the delivery toolchain (wikis, issue trackers, CI/CD products, ...) are working on adding AI to their toolchain, and their is the odd startup here or there that tries to tackle one of the task areas. There are also a bunch of products evolving that enable the sharing and monitoring of prompts in an organisation, which could be used to build a similar sandbox. But overall, it is hard to gather experience and data today about how AI can be used to assist a software delivery team in their day-to-day work.
-
-**Haiven** provides a lean self-cloud-hosted sandbox to experiment, and to gather data and experience today that can inform strategy and tool choices for the future.
-
-* Control the setup by deploying into your own infrastructure environment, instead of trusting a bleeding edge startup
-* Use the models provided by your cloud provider of choice (AWS, Google Cloud, or Azure), instead of running a risk assessment for and creating contracts with a new vendor
-* Add your own SSO for access control
+#### Ollama restrictions
+Please note that while this local mode is great for getting a taste of the application, the prompts in our knowledge pack are currently only tested with the AWS, Azure and Google models listed [here](https://github.com/tw-haiven/haiven/blob/main/app/config.yaml), and might not work as well with the open models loaded with Ollama. Any of the RAG capabilities are also not working well in this mode, which is why our sample knowledge pack does not even contain any Ollama-compatible embeddings. It is possible, but we have not seen reasonable results with that yet.
 
 ## Limited-by-design
 
-For now, this is a one-container web application. Everything is baked into the container image you build, and everything happens in memory. The only persistence are the logs written by the application. This is by design, to keep the infrastructure setup as simple as possible, and reduce the barrier to experimentation.
+For now, this is a one-container web application. Everything is baked into the container image you build, and everything happens in memory. The only persistence are the logs written by the application. This is by design, to keep the infrastructure setup and data persistence setup as simple as possible, because we are prioritising a low barrier to experimentation.
 
-But of course, it comes with limitations:
+![](docs/images/one_container_tradeoffs.png)
 
-- No database means you have to rebuild the image and redeploy the application every time you change the knowledge pack
-- Users cannot edit and persist anything at runtime in the application
-- User chat sessions are not persisted
-- Limits to scalability, and to size of the knowledge packs, as everything needs to fit into memory
-- Very simple in-memory RAG (Retrieval-Augmented Generation) implementation, just enough to get an idea of the potential in the day-to-day work
-
-## HOW TO USE
+## How to run and deploy
 
 ### 1. Prepare access to Large Language Models
 
 There are 4 options:
-- Ollama (locally)
 - Azure AI Studio
 - AWS Bedrock
 - Google AI Studio
+- Ollama (locally)
 
 #### Option 1: Use Ollama locally on your machine
 
@@ -110,16 +120,16 @@ There are 4 options:
 
 #### Option 2: Setup credentials for Azure, GCP or AWS
 
-- Prepare the model setup and credentials in your respective Cloud environment. Check `[app/config.yaml](app/config.yaml)` for the models that are currently configured out of the box, or read below about how to configure additional models.
+- Prepare the model setup and credentials in your respective Cloud environment. Check `[app/config.yaml](app/config.yaml)` for the models that we currently have configured.
 - Consider setting quota and billing alerts to avoid unexpected costs and detect unexpected usage.
-- Create .env file from the respective template: Pick the template file that represents the provider you want to use, e.g. `cp ./app/.env.azure.template ./app/.env`.
-- Look at the defined environment variables in your new `.env` file and set the corresponding credentials.
+- Create `.env` file from the respective template: Pick the template file that represents the provider you want to use, e.g. `cp ./app/.env.azure.template ./app/.env`.
+- Look at the defined environment variables in your new `.env` file and fill in the credentials (API keys).
 
 ### 2. Get (and adapt) a "knowledge pack"
 
-You can clone the [Community Knowledge Pack](https://github.com/tw-haiven/haiven-community-knowledge-pack) or the [Thoughtworks Knowledge Pack](https://github.com/tw-haiven/haiven-tw-knowledge-pack) to get started.
+You can clone the [Community Knowledge Pack](https://github.com/tw-haiven/haiven-community-knowledge-pack) or, for Thoughtworkers, the [Thoughtworks Knowledge Pack](https://github.com/tw-haiven/haiven-tw-knowledge-pack) to get started.
 
-[Find more documentation about knowledge packs here](docs/knowledge_packs.md).
+Find more documentation about knowledge packs and how to adapt them [here](docs/knowledge_packs.md).
 
 
 ### 3. Run locally
@@ -134,7 +144,7 @@ If you want to use Azure, GCP or AWS, you need to set the corresponding environm
 Prerequisites:
 - Python3
 - [Poetry](https://python-poetry.org/)
-- If you don't have OAuth integration and credentials set up, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
+- While you don't have OAuth integration and credentials set up yet, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
 
 Run:
 
@@ -165,8 +175,6 @@ Look at the [Community Knowledge Pack repository](https://github.com/tw-haiven/h
 
 Secrets should not be added to `app/config.yaml`. For that matter in `app/config.yaml`, if one of the values is considered a secret, you must use a placeholder for an environment variable using the following format: `${ENV_VAR_NAME}`, where `ENV_VAR_NAME` is the name of the environment variable. This value will be replaced on runtime with the value of the environment variable, which can be securely set at deployment time.
 
-> Note: Embeddings model cannot be changed after app initialization. The same embeddings model is used independentely of the LLM model selected.
-
 ##### Setup default models
 
 You can fix the models to be used by different use cases by setting the `chat`, `vision` and `embeddings` properties to a valid model `id` value, in the `default_models` section of the `app/config.yaml` file.
@@ -180,16 +188,13 @@ default_models:
   embeddings: text-embedding-ada-002
 ```
 
+<< TODO: Is this still correct? Isn't vision mandatory as well? >>
 Only embeddings is mandatory. When chat or vision are not set, the app will show a dropdown allowing the user to select the model to use.
 
-#### Deploy
+#### You want to deploy?
 
 How you deploy the container image is all up to your environment - you could use Google Cloud Run, or an existing Kubernetes cluster on AWS, or an equivalent service on Azure, or your own data center container infrastructure.
 
-This makes you responsible for the usual application security practices like secrets management, TLS, security monitoring and alerting, etc.
+This of course makes you responsible for the usual application security practices like secrets management, TLS, security monitoring and alerting, etc.
 
-### 5. Add custom interaction modes
-
-Because the application uses Gradio, a frontend framework that is meant for quick UI prototyping with machine learning models, it is quite easy to add additional tabs and UI elements to the application. Beyond the interaction modes available, you can think about what other more custom interactions would be helpful to your delivery team.
-
-The code shows one common example: Querying a database with natural language. You can adapt that to be connected to your own database, e.g. a database in a test environment, to be used by testers, new team members who are not familiar with the schema yet, or even business stakeholders.
+For Thoughtworkers: Our demo deployment is an example for deploying Haiven to Google Cloud, ask the Haiven team about access to that code.
