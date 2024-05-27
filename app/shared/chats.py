@@ -106,8 +106,10 @@ class StreamingChat(HaivenBaseChat):
             else:
                 yield chat_history
 
-    def start_with_prompt(self, prompt: str):
-        chat_history = [[prompt, ""]]
+    def start_with_prompt(
+        self, prompt: str, initial_display_message: str = "Let's get started!"
+    ):
+        chat_history = [[initial_display_message, ""]]
         for chunk in self.run(prompt):
             chat_history[-1][1] += chunk
             if self.stream_in_chunks:

@@ -217,7 +217,13 @@ def enable_chat(
 
             return {ui_message: "", ui_chatbot: []}
 
-        def start(prompt_text: str, user_identifier_state: str, request: gr.Request):
+        def start(
+            prompt_text: str,
+            user_identifier_state: str,
+            prompt_choice: str,
+            user_input: str,
+            request: gr.Request,
+        ):
             if prompt_text:
                 update_llm_config(request)
 
@@ -230,7 +236,15 @@ def enable_chat(
                     )
                 )
 
-                for chat_history_chunk in chat_session.start_with_prompt(prompt_text):
+                chosen_prompt_title = prompt_list.get(prompt_choice).metadata.get(
+                    "title", "Unnamed use case"
+                )
+
+                start_display_message = f"Execute the instructions for '{chosen_prompt_title}'.\n\n**My input:**\n\n{user_input}"
+
+                for chat_history_chunk in chat_session.start_with_prompt(
+                    prompt_text, start_display_message
+                ):
                     yield {
                         ui_message: "",
                         ui_chatbot: chat_history_chunk,
@@ -284,7 +298,7 @@ def enable_chat(
 
         ui_start_btn.click(
             start,
-            [ui_prompt, user_identifier_state],
+            [ui_prompt, user_identifier_state, ui_prompt_dropdown, ui_user_input],
             [ui_message, ui_chatbot, state_chat_session_key],
             scroll_to_output=True,
         )
