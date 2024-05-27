@@ -48,10 +48,10 @@
     classnames "^2.2.6"
     rc-util "^5.31.1"
 
-"@ant-design/pro-chat@^1.13.0":
-  version "1.13.7"
-  resolved "https://registry.yarnpkg.com/@ant-design/pro-chat/-/pro-chat-1.13.7.tgz#64f55ec078e654a0b47b89d102254bf3801a8c09"
-  integrity sha512-zmoWC8AUqaXNmvUwXs9mpKXIe8N2tiB36MkLl43tzzl8L3DZtmdEfW4gOa6vojLUV+Tq7/4lSV0e9Znf5otdPA==
+"@ant-design/pro-chat@^1.13.8":
+  version "1.13.8"
+  resolved "https://registry.yarnpkg.com/@ant-design/pro-chat/-/pro-chat-1.13.8.tgz#de58c6ebc7e6994f4ce78a6a1bae60b81c97745c"
+  integrity sha512-8EKAi0ZO+ul8HkhawHNR7bAdCUZFXG8z+FqH/b2eVTlFS7ueD1GS4U4GnAff78iV1X3pQk6RqsArZyrD0/H+Dw==
   dependencies:
     "@ant-design/icons" "^5.3.0"
     "@ant-design/pro-editor" latest
