@@ -17,7 +17,7 @@
     "antd": "5.17.3",
     "antd-style": "^3.6.1",
     "autoprefixer": "10.4.19",
-    "best-effort-json-parser": "^1.0.1",
+    "best-effort-json-parser": "^1.1.2",
     "d3-hierarchy": "^3.1.2",
     "dotenv": "^16.0.3",
     "eslint": "9.3.0",
