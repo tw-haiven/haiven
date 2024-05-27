@@ -2,7 +2,7 @@
 
 # Haiven team assistant
 
-[Thoughtworks](https://thoughtworks.com) is a global software consultancy working for a wide range of clients. We're using Haiven to offer our clients a **lean way to pilot the use of AI assistance for software delivery teams** while the market of products is still busy and evolving.
+[Thoughtworks](https://thoughtworks.com) is a global software consultancy working for a wide range of clients. We're using Haiven as an **accelerator** to offer our clients a **lean way to pilot the use of AI assistance for software delivery teams** while the market of products is still busy and evolving.
 
 ## What is it?
 
