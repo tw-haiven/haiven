@@ -172,11 +172,14 @@ If you want to integrate your own OAuth provider, check out the OAuth-related en
 Look at the [Community Knowledge Pack repository](https://github.com/tw-haiven/haiven-community-knowledge-pack) for an example of a `Dockerfile` that helps you bake your own knowledge pack into a Haiven image that you can then deploy to your own environment. When you do the deployment, remember to set the environment variables and secrets described in the `.env` template files in that runtime.
 
 ### Configure more models
+
 #### Setup models
 
 [`app/config.yaml`](app/config.yaml) is where the configuration for the models and embeddings is set. You can add or remove models from the configuration file. It is pre-populated with some working examples. Note that if you want to add a new type of embeddings, the code would also have to change to support that.
 
 Secrets should not be added to `app/config.yaml`. For that matter in `app/config.yaml`, if one of the values is considered a secret, you must use a placeholder for an environment variable using the following format: `${ENV_VAR_NAME}`, where `ENV_VAR_NAME` is the name of the environment variable. This value will be replaced on runtime with the value of the environment variable, which can be securely set at deployment time.
+
+**Note**: At the moment, the config file is embedded into the base container image. So if you need to change the config file, you will have to build and run the application from source, instead of from the base image.
 
 ##### Setup default models
 
@@ -187,12 +190,9 @@ Example:
 ```yaml
 default_models:
   chat: azure-gpt4
-  vision: google-gemini
+  vision: azure-gpt4-with-vision
   embeddings: text-embedding-ada-002
 ```
-
-<< TODO: Is this still correct? Isn't vision mandatory as well? >>
-Only embeddings is mandatory. When chat or vision are not set, the app will show a dropdown allowing the user to select the model to use.
 
 #### You want to deploy?
 
