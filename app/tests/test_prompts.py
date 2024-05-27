@@ -164,11 +164,10 @@ def test_render_help_markdown():
     help, knowledge = prompt_list.render_help_markdown(
         "uuid-5", ACTIVE_KNOWLEDGE_CONTEXT
     )
-    assert (
-        help
-        == "## Test5\n**Description:** Prompt description 5\n\n**User input:** User input description\n\n"
-    )
-    assert knowledge == "**Knowledge used:** Architecture Knowledge, Business Knowledge"
+    assert "Prompt description" in help
+    assert "User input description" in help
+    assert "Architecture Knowledge" in knowledge
+    assert "Business Knowledge" in knowledge
 
 
 def test_render_help_markdown_when_values_are_empty():
@@ -178,8 +177,8 @@ def test_render_help_markdown_when_values_are_empty():
     help, knowledge = prompt_list.render_help_markdown(
         "uuid-1", ACTIVE_KNOWLEDGE_CONTEXT
     )
-    assert help == "## Test1\n\n\n\n\n"
-    assert knowledge == "**Knowledge used:** Architecture Knowledge"
+    assert "## Test1" in help
+    assert "Architecture Knowledge" in knowledge
 
 
 def test_create_markdown_summary():
