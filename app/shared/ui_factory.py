@@ -62,6 +62,24 @@ class UIFactory:
                     app_level=True,
                 )
 
+    def __get_children(self, tab):
+        def recurse_children(children):
+            children_dict = {}
+            for child in children:
+                if isinstance(child, gr.Dropdown):
+                    print(child, child.label)
+                if hasattr(child, "children"):
+                    children_dict.update(recurse_children(child.children))
+                if (
+                    (isinstance(child, gr.Markdown) or isinstance(child, gr.Dropdown))
+                    and hasattr(child, "elem_id")
+                    and child.elem_id
+                ):
+                    children_dict[child.elem_id] = child
+            return children_dict
+
+        return recurse_children(tab.children)
+
     def create_ui(self, ui_type):
         match ui_type:
             case "coding":
@@ -160,18 +178,38 @@ class UIFactory:
                 with gr.Row():
                     gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
+                components_to_persist = self.__get_children(all_tabs)
+                chat_prompt_choice = components_to_persist.get("chat_prompt_choice")
+                brainstorming_prompt_choice = components_to_persist.get(
+                    "brainstorming_prompt_choice"
+                )
+                diagram_chat_prompt_choice = components_to_persist.get(
+                    "diagram_chat_prompt_choice"
+                )
+                knowledge_chat_prompt_choice = components_to_persist.get(
+                    "knowledge_chat_prompt_choice"
+                )
+
                 blocks.load(
                     self.event_handler.on_load_ui,
                     [
                         model_select,
                         tone_select,
                         knowledge_context_select,
+                        chat_prompt_choice,
+                        brainstorming_prompt_choice,
+                        diagram_chat_prompt_choice,
+                        knowledge_chat_prompt_choice,
                     ],
                     [
                         all_tabs,
                         model_select,
                         tone_select,
                         knowledge_context_select,
+                        chat_prompt_choice,
+                        brainstorming_prompt_choice,
+                        diagram_chat_prompt_choice,
+                        knowledge_chat_prompt_choice,
                         user_identifier_state,
                     ],
                 )
@@ -264,14 +302,38 @@ class UIFactory:
                 with gr.Row():
                     gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
+                components_to_persist = self.__get_children(all_tabs)
+                chat_prompt_choice = components_to_persist.get("chat_prompt_choice")
+                brainstorming_prompt_choice = components_to_persist.get(
+                    "brainstorming_prompt_choice"
+                )
+                diagram_chat_prompt_choice = components_to_persist.get(
+                    "diagram_chat_prompt_choice"
+                )
+                knowledge_chat_prompt_choice = components_to_persist.get(
+                    "knowledge_chat_prompt_choice"
+                )
+
                 blocks.load(
                     self.event_handler.on_load_ui,
-                    [model_select, tone_select, knowledge_context_select],
+                    [
+                        model_select,
+                        tone_select,
+                        knowledge_context_select,
+                        chat_prompt_choice,
+                        brainstorming_prompt_choice,
+                        diagram_chat_prompt_choice,
+                        knowledge_chat_prompt_choice,
+                    ],
                     [
                         all_tabs,
                         model_select,
                         tone_select,
                         knowledge_context_select,
+                        chat_prompt_choice,
+                        brainstorming_prompt_choice,
+                        diagram_chat_prompt_choice,
+                        knowledge_chat_prompt_choice,
                         user_identifier_state,
                     ],
                 )
@@ -363,14 +425,38 @@ class UIFactory:
                 with gr.Row():
                     gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
+                components_to_persist = self.__get_children(all_tabs)
+                chat_prompt_choice = components_to_persist.get("chat_prompt_choice")
+                brainstorming_prompt_choice = components_to_persist.get(
+                    "brainstorming_prompt_choice"
+                )
+                diagram_chat_prompt_choice = components_to_persist.get(
+                    "diagram_chat_prompt_choice"
+                )
+                knowledge_chat_prompt_choice = components_to_persist.get(
+                    "knowledge_chat_prompt_choice"
+                )
+
                 blocks.load(
                     self.event_handler.on_load_ui,
-                    [model_select, tone_select, knowledge_context_select],
+                    [
+                        model_select,
+                        tone_select,
+                        knowledge_context_select,
+                        chat_prompt_choice,
+                        brainstorming_prompt_choice,
+                        diagram_chat_prompt_choice,
+                        knowledge_chat_prompt_choice,
+                    ],
                     [
                         all_tabs,
                         model_select,
                         tone_select,
                         knowledge_context_select,
+                        chat_prompt_choice,
+                        brainstorming_prompt_choice,
+                        diagram_chat_prompt_choice,
+                        knowledge_chat_prompt_choice,
                         user_identifier_state,
                     ],
                 )
@@ -442,7 +528,7 @@ class UIFactory:
                     gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
                 blocks.load(
-                    self.event_handler.on_load_ui,
+                    self.event_handler.on_load_ui_knowledge,
                     [model_select, tone_select, knowledge_context_select],
                     [
                         all_tabs,
@@ -465,9 +551,9 @@ class UIFactory:
             )
             self.ui.ui_header(navigation=navigation)
 
-            with gr.Tab("About"):
+            with gr.Tab("About", id="about"):
                 self.ui.ui_show_about()
-            with gr.Tab("Data processing"):
+            with gr.Tab("Data processing", id="data_processing"):
                 self.ui.ui_show_data_processing()
 
             with gr.Row():
