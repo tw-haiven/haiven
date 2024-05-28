@@ -45,6 +45,8 @@ Haiven lets you codify your practices and knowledge and make it available to an 
 
 ## Quickest way to try it out
 
+*Disclaimer: As the majority of developers in Thoughtworks are using MacOS, all shell-related instructions are currently only build for and tested on MacOS.*
+
 Prerequisite:
 - Log into the GitHub Container Registry: `echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin` ([documentation about how to get a token and authorize yourself here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic))
 
@@ -66,7 +68,7 @@ docker run \
         -e AUTH_SWITCHED_OFF=true \
         -e TEAM_CONTENT_PATH=/app/teams \
         -p 8080:8080 \
-        ghcr.io/tw-haiven/haiven:main
+        ghcr.io/tw-haiven/haiven:v0.1
 ```
 
 ### With Ollama, locally
@@ -93,7 +95,7 @@ docker run \
         -e ENABLED_VISION_MODEL=llava:7b \
         -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
         -p 8080:8080 \
-        ghcr.io/tw-haiven/haiven:main
+        ghcr.io/tw-haiven/haiven:v0.1
 ```
 
 #### Ollama restrictions
