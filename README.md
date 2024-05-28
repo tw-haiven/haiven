@@ -61,7 +61,7 @@ cd haiven
 # Put the .env file into this new folder
 git clone git@github.com:tw-haiven/haiven-tw-knowledge-pack.git
 # The TW knowledge pack is private, you can use our sample pack if you don't have access
-# git clone git@github.com:tw-haiven/haiven-community-knowledge-pack.git
+# git clone git@github.com:tw-haiven/haiven-sample-knowledge-pack.git
 docker run \
         -v ./haiven-tw-knowledge-pack:/app/teams \
         --env-file .env \
@@ -83,7 +83,7 @@ mkdir haiven
 cd haiven
 git clone git@github.com:tw-haiven/haiven-tw-knowledge-pack.git
 # The TW knowledge pack is private, you can use our sample pack if you don't have access
-# git clone git@github.com:tw-haiven/haiven-community-knowledge-pack.git
+# git clone git@github.com:tw-haiven/haiven-sample-knowledge-pack.git
 # As long as the repo is private, you'll need to log in (see doc link above)
 echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 docker run \
@@ -132,7 +132,7 @@ There are 4 options:
 
 ### 2. Get (and adapt) a "knowledge pack"
 
-You can clone the [Community Knowledge Pack](https://github.com/tw-haiven/haiven-community-knowledge-pack) or, for Thoughtworkers, the [Thoughtworks Knowledge Pack](https://github.com/tw-haiven/haiven-tw-knowledge-pack) to get started.
+You can clone the [Sample Knowledge Pack](https://github.com/tw-haiven/haiven-sample-knowledge-pack) or, for Thoughtworkers, the [Thoughtworks Knowledge Pack](https://github.com/tw-haiven/haiven-tw-knowledge-pack) to get started.
 
 Find more documentation about knowledge packs and how to adapt them [here](docs/knowledge_packs.md).
 
@@ -171,7 +171,7 @@ If you want to integrate your own OAuth provider, check out the OAuth-related en
 
 #### Build an image with your knowledge pack
 
-Look at the [Community Knowledge Pack repository](https://github.com/tw-haiven/haiven-community-knowledge-pack) for an example of a `Dockerfile` that helps you bake your own knowledge pack into a Haiven image that you can then deploy to your own environment. When you do the deployment, remember to set the environment variables and secrets described in the `.env` template files in that runtime.
+Look at the [Sample Knowledge Pack repository](https://github.com/tw-haiven/haiven-sample-knowledge-pack) for an example of a `Dockerfile` that helps you bake your own knowledge pack into a Haiven image that you can then deploy to your own environment. When you do the deployment, remember to set the environment variables and secrets described in the `.env` template files in that runtime.
 
 ### Configure more models
 
