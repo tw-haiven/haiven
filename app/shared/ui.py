@@ -297,22 +297,15 @@ class UI:
         prompt_list_markdown = ""
         for prompt_list in prompt_lists_copy:
             prompt_list.filter(category_names)
-            prompt_list_markdown += f"\n#### {prompt_list.interaction_pattern_name}\n\n{prompt_list.render_prompts_summary_markdown()}\n"
-
-        videos_markdown = ""
-        if "videos" in category_metadata:
-            videos_markdown += "\n## Demo Videos\n\n"
-            videos_markdown += "\n".join(
-                [
-                    f"- [{item['title']}]({item['url']})"
-                    for item in category_metadata["videos"]
-                ]
-            )
-            videos_markdown += "\n\nFor more examples, check out the 'About' sections of the other task areas."
+            prompt_summary = prompt_list.render_prompts_summary_markdown()
+            if prompt_summary:
+                prompt_list_markdown += f"\n#### {prompt_list.interaction_pattern_name}\n\n{prompt_summary}\n"
 
         with gr.Tab("ABOUT", elem_id="about"):
             section_title = category_metadata["title"]
-            markdown = f"# {section_title}\n## Available prompts\n{prompt_list_markdown}\n{videos_markdown}"
+            markdown = (
+                f"# {section_title}\n## Available prompts\n{prompt_list_markdown}"
+            )
             gr.Markdown(markdown, line_breaks=True)
 
 

@@ -10,34 +10,12 @@ class NavigationManager:
                 {
                     "title": "Analysis",
                     "path": self.path.PATH_ANALYSIS,
-                    "videos": [
-                        {
-                            "title": "[Chat] Break down an epic",
-                            "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-copilot.mp4",
-                        },
-                        {
-                            "title": "[Brainstorming] Write a user story",
-                            "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-recording-story-brainstorming.mp4",
-                        },
-                    ],
+                    "videos": [],
                 },
                 {
                     "title": "Coding and Architecture",
                     "path": self.path.PATH_CODING,
-                    "videos": [
-                        {
-                            "title": "[Chat] Assist with Threat Modelling",
-                            "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_threat_modelling.mp4",
-                        },
-                        {
-                            "title": "[Brainstorming] Assist with an Architecture Decision Record",
-                            "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai_adr_brainstorming.mp4",
-                        },
-                        {
-                            "title": "[Diagrams] Discussing an architecture diagram",
-                            "url": "https://storage.cloud.google.com/genai-demo-large-files/teamai-diagram-discussion.mp4",
-                        },
-                    ],
+                    "videos": [],
                 },
                 {
                     "title": "Testing",
