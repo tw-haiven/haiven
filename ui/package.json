@@ -13,11 +13,11 @@
     "node": "22.x"
   },
   "dependencies": {
-    "@ant-design/pro-chat": "^1.13.0",
+    "@ant-design/pro-chat": "^1.13.8",
     "antd": "5.17.3",
     "antd-style": "^3.6.1",
     "autoprefixer": "10.4.19",
-    "best-effort-json-parser": "^1.0.1",
+    "best-effort-json-parser": "^1.1.2",
     "d3-hierarchy": "^3.1.2",
     "dotenv": "^16.0.3",
     "eslint": "9.3.0",
@@ -35,13 +35,13 @@
     "reactflow": "^11.7.0",
     "rehype-raw": "^7.0.0",
     "remark-breaks": "^4.0.0",
-    "replicate": "^0.29.4",
+    "replicate": "^0.30.0",
     "swr": "^2.2.5",
     "tailwindcss": "^3.4.3"
   },
   "devDependencies": {
     "@types/node": "^20.12.10",
-    "@types/react": "^18.3.1",
+    "@types/react": "^18.3.3",
     "prettier": "3.2.5",
     "typescript": "^5.4.5"
   }

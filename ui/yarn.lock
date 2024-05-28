@@ -48,10 +48,10 @@
     classnames "^2.2.6"
     rc-util "^5.31.1"
 
-"@ant-design/pro-chat@^1.13.0":
-  version "1.13.7"
-  resolved "https://registry.yarnpkg.com/@ant-design/pro-chat/-/pro-chat-1.13.7.tgz#64f55ec078e654a0b47b89d102254bf3801a8c09"
-  integrity sha512-zmoWC8AUqaXNmvUwXs9mpKXIe8N2tiB36MkLl43tzzl8L3DZtmdEfW4gOa6vojLUV+Tq7/4lSV0e9Znf5otdPA==
+"@ant-design/pro-chat@^1.13.8":
+  version "1.13.8"
+  resolved "https://registry.yarnpkg.com/@ant-design/pro-chat/-/pro-chat-1.13.8.tgz#de58c6ebc7e6994f4ce78a6a1bae60b81c97745c"
+  integrity sha512-8EKAi0ZO+ul8HkhawHNR7bAdCUZFXG8z+FqH/b2eVTlFS7ueD1GS4U4GnAff78iV1X3pQk6RqsArZyrD0/H+Dw==
   dependencies:
     "@ant-design/icons" "^5.3.0"
     "@ant-design/pro-editor" latest
@@ -1074,10 +1074,10 @@
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.12.tgz#12bb1e2be27293c1406acb6af1c3f3a1481d98c6"
   integrity sha512-5zvhXYtRNRluoE/jAp4GVsSduVUzNWKkOZrCDBWYtE7biZywwdC2AcEzg+cSMLFRfVgeAFqpfNabiPjxFddV1Q==
 
-"@types/react@^18.3.1":
-  version "18.3.2"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.3.2.tgz#462ae4904973bc212fa910424d901e3d137dbfcd"
-  integrity sha512-Btgg89dAnqD4vV7R3hlwOxgqobUQKgx3MmrQRi0yYbs/P0ym8XozIAlkqVilPqHQwXs4e9Tf63rrCgl58BcO4w==
+"@types/react@^18.3.3":
+  version "18.3.3"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.3.3.tgz#9679020895318b0915d7a3ab004d92d33375c45f"
+  integrity sha512-hti/R0pS0q1/xx+TsI73XIqk26eBsISZ2R0wUijXIngRK9R/e7Xw/cXVxQK7R5JjW+SV4zGcn5hXjudkN/pLIw==
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"
@@ -1495,10 +1495,10 @@ base64-js@^1.3.1:
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
-best-effort-json-parser@^1.0.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/best-effort-json-parser/-/best-effort-json-parser-1.1.1.tgz#510bf67771e3fb37d0b8cc2fe158f0069860cda8"
-  integrity sha512-d+PnZ3sikp/JSxWU9bL3/ljQd8OEOyrfw6e/+xhwXTUZcs2VzLap6RtcpX+9wFlxh8zbYlHxVpzUdRLsA7f3IA==
+best-effort-json-parser@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/best-effort-json-parser/-/best-effort-json-parser-1.1.2.tgz#869272c9de76fc7d336c4d9e3a8bbcdee3edda04"
+  integrity sha512-RD7tyk24pNCDwEKFACauR6Lqp5m6BHUrehwyhN/pA8V3QYWq8Y+hk9vHZvKiThZsdEFTaUqN49duVsamgCd8/g==
 
 binary-extensions@^2.0.0:
   version "2.3.0"
@@ -5450,10 +5450,10 @@ remark-rehype@^11.0.0:
     unified "^11.0.0"
     vfile "^6.0.0"
 
-replicate@^0.29.4:
-  version "0.29.4"
-  resolved "https://registry.yarnpkg.com/replicate/-/replicate-0.29.4.tgz#27bee748c9ac17f397f63a8929e5548376a411df"
-  integrity sha512-BizXBehB2Rjil3o2R9Vy9fd0k3w7aIoXtc/+vdOmitC2viW3pSMt0GwC4h+OmMpx9zot90C43wrssyMJ3rMScQ==
+replicate@^0.30.0:
+  version "0.30.0"
+  resolved "https://registry.yarnpkg.com/replicate/-/replicate-0.30.0.tgz#18a6f2ac4eb3c53d40d2f4af92bff7dd2069d3e7"
+  integrity sha512-HsUwM7dTnxc5fh4CFIvGoYKMJl377hCTVOrqq4ns1tu8LPTfOT1fuaMMBtJHYOATgMz7clN0lstGzwpZZqdUHQ==
   optionalDependencies:
     readable-stream ">=4.0.0"
 
