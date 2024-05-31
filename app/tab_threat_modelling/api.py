@@ -2,6 +2,7 @@
 from api.models.explore_request import ExploreRequest
 from fastapi import Request
 from fastapi.responses import StreamingResponse
+from shared.services.config_service import ConfigService
 from shared.chats import JSONChat, StreamingChat
 from shared.llm_config import LLMConfig
 
@@ -79,13 +80,17 @@ def get_explore_kickoff_prompt(originalInput, item, user_message):
 
 
 def enable_threat_modelling(app, chat_session_memory, chat_fn):
+    chat_model = ConfigService.get_default_guided_mode_model()
+
     @app.get("/api/threat-modelling")
     def threat_modelling(request: Request):
         dataFlow = request.query_params.get("dataFlow")
         assets = request.query_params.get("assets")
         userBase = request.query_params.get("userBase")
 
-        json_chat = JSONChat()  # LLMConfig("mock", 0.5))
+        json_chat = JSONChat(
+            llm_config=LLMConfig(chat_model, 0.5)
+        )  # LLMConfig("mock", 0.5))
         return StreamingResponse(
             json_chat.run(get_threat_modelling_prompt(dataFlow, assets, userBase)),
             media_type="text/event-stream",
@@ -99,7 +104,7 @@ def enable_threat_modelling(app, chat_session_memory, chat_fn):
     def chat(explore_request: ExploreRequest):
         chat_session_key_value, chat_session = chat_session_memory.get_or_create_chat(
             lambda: StreamingChat(
-                llm_config=LLMConfig("azure-gpt35", 0.5), stream_in_chunks=True
+                llm_config=LLMConfig(chat_model, 0.5), stream_in_chunks=True
             ),
             explore_request.chatSessionId,
             "chat",

@@ -2,6 +2,7 @@
 from api.models.explore_request import ExploreRequest
 from fastapi import Request
 from fastapi.responses import StreamingResponse
+from shared.services.config_service import ConfigService
 from shared.chats import JSONChat, StreamingChat
 from shared.llm_config import LLMConfig
 
@@ -78,11 +79,15 @@ def get_explore_kickoff_prompt(originalInput, item, user_message):
 
 
 def enable_requirements(app, chat_session_memory, chat_fn):
+    chat_model = ConfigService.get_default_guided_mode_model()
+
     @app.get("/api/requirements")
     def requirements(request: Request):
         input = request.query_params.get("input")
 
-        json_chat = JSONChat()  # LLMConfig("mock", 0.5))
+        json_chat = JSONChat(
+            llm_config=LLMConfig(chat_model, 0.5)
+        )  # LLMConfig("mock", 0.5))
         return StreamingResponse(
             json_chat.run(get_requirements_prompt(input)),
             media_type="text/event-stream",
@@ -96,7 +101,7 @@ def enable_requirements(app, chat_session_memory, chat_fn):
     def chat(explore_request: ExploreRequest):
         chat_session_key_value, chat_session = chat_session_memory.get_or_create_chat(
             lambda: StreamingChat(
-                llm_config=LLMConfig("azure-gpt35", 0.5), stream_in_chunks=True
+                llm_config=LLMConfig(chat_model, 0.5), stream_in_chunks=True
             ),
             explore_request.chatSessionId,
             "chat",

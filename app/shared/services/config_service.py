@@ -128,6 +128,26 @@ class ConfigService:
             return "Haiven"
         return application_name
 
+    @staticmethod
+    def get_default_guided_mode_model(path: str = "config.yaml") -> str:
+        """
+        Get the default chat model from the config file.
+
+        Args:
+            path (str): The path to the YAML file.
+
+        Returns:
+            str: The default chat model.
+        """
+        enabled_provider = ConfigService.load_enabled_providers(path)[0]
+        match enabled_provider:
+            case "azure":
+                return "azure-gpt4"
+            case "gcp":
+                return "google-gemini"
+            case "aws":
+                return "aws-claude-v3"
+
     def _load_yaml(path: str) -> dict:
         """
         Load YAML data from a config file.

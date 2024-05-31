@@ -202,7 +202,7 @@ class BobaApi:
         prompts_factory: PromptsFactory,
         content_manager: ContentManager,
         chat_session_memory: ServerChatSessionMemory,
-        provider: str,
+        model: str,
     ):
         self.content_manager = content_manager
         self.prompts_factory = prompts_factory
@@ -210,7 +210,7 @@ class BobaApi:
         self.prompt_list = self.prompts_factory.create_chat_prompt(
             self.content_manager.knowledge_base_markdown
         )
-        self.model = _get_model(provider)
+        self.model = model
         print(f"Using model: {self.model}")
 
     def prompt(self, prompt_id, user_input, chat_session):
@@ -363,13 +363,3 @@ class BobaApi:
                     "Content-Encoding": "none",
                 },
             )
-
-
-def _get_model(provider: str):
-    match provider:
-        case "azure":
-            return "azure-gpt4"
-        case "gcp":
-            return "google-gemini"
-        case "aws":
-            return "aws-claude-v3"

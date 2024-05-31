@@ -2,6 +2,7 @@
 from typing import List
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+from shared.services.config_service import ConfigService
 from shared.chats import JSONChat, ServerChatSessionMemory, StreamingChat
 from shared.llm_config import LLMConfig
 
@@ -93,11 +94,13 @@ Respond with the given/when/then scenarios in Markdown format, putting each part
 
 # at least 5, at most 10 thought/question/answer groups:
 def enable_story_validation(app, chat_session_memory: ServerChatSessionMemory):
+    chat_model = ConfigService.get_default_guided_mode_model()
+
     @app.post("/api/story-validation/questions")
     def story_validation(body: StoryValidationQuestions):
         chat_session_key_value, chat_session = chat_session_memory.get_or_create_chat(
             lambda: JSONChat(
-                llm_config=LLMConfig("azure-gpt4", 0.5), event_stream_standard=False
+                llm_config=LLMConfig(chat_model, 0.5), event_stream_standard=False
             ),
             None,
             "story-validation",
@@ -126,7 +129,7 @@ def enable_story_validation(app, chat_session_memory: ServerChatSessionMemory):
             )
         )
         new_chat = StreamingChat(
-            llm_config=LLMConfig("azure-gpt35", 0.5), stream_in_chunks=True
+            llm_config=LLMConfig(chat_model, 0.5), stream_in_chunks=True
         )
         new_chat.memory = json_chat_session.memory
 

@@ -9,14 +9,14 @@ from shared.services.config_service import ConfigService
 
 class App:
     def __init__(self, content_manager: ContentManager, ui_factory: UIFactory):
-        provider = ConfigService.load_enabled_providers()[0]
+        model = ConfigService.get_default_guided_mode_model()
         self.server = Server(
             ui_factory.chat_session_memory,
             BobaApi(
                 ui_factory.prompts_factory,
                 ui_factory.content_manager,
                 ui_factory.chat_session_memory,
-                provider,
+                model,
             ),
         ).create()
         self.content_manager = content_manager
