@@ -20,7 +20,7 @@
     "best-effort-json-parser": "^1.1.2",
     "d3-hierarchy": "^3.1.2",
     "dotenv": "^16.0.3",
-    "eslint": "9.3.0",
+    "eslint": "9.4.0",
     "eslint-config-next": "14.2.3",
     "google-search-results-nodejs": "^2.1.0",
     "hnswlib-node": "^3.0.0",
