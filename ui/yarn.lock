@@ -5450,10 +5450,10 @@ remark-rehype@^11.0.0:
     unified "^11.0.0"
     vfile "^6.0.0"
 
-replicate@^0.30.0:
-  version "0.30.0"
-  resolved "https://registry.yarnpkg.com/replicate/-/replicate-0.30.0.tgz#18a6f2ac4eb3c53d40d2f4af92bff7dd2069d3e7"
-  integrity sha512-HsUwM7dTnxc5fh4CFIvGoYKMJl377hCTVOrqq4ns1tu8LPTfOT1fuaMMBtJHYOATgMz7clN0lstGzwpZZqdUHQ==
+replicate@^0.30.1:
+  version "0.30.1"
+  resolved "https://registry.yarnpkg.com/replicate/-/replicate-0.30.1.tgz#766cd763cda8f3d91233d715e72dc0619f4c4f9e"
+  integrity sha512-9JZPia6p7UCNfye2kddb2AHcTf3ngyckzq4y5FZkuhhF06AuuOHKN1q6NRSp9iAch7Htmlhm+kRGc+EQbzY8Kw==
   optionalDependencies:
     readable-stream ">=4.0.0"
 
