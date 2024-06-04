@@ -284,6 +284,7 @@ class DocumentsChat(HaivenBaseChat):
     def run(self, message: str):
         self.log_run({"knowledge": self.knowledge})
         self.memory.append(HumanMessage(content=message))
+        self.chain.llm_chain.llm = LLMChatFactory.new_llm_chat(self.llm_config)
 
         if self.knowledge == "all":
             search_results = EmbeddingsService.similarity_search(
