@@ -33,7 +33,7 @@ uvicorn = "^0.30.1"
 langchain-openai = "^0.1.8"
 python-dotenv = "^1.0.1"
 toml = "^0.10.2"
-langchain-community = "^0.2.1"
+langchain-community = "^0.2.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.1"
