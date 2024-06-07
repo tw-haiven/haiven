@@ -494,16 +494,6 @@ class TestUIFactory(unittest.TestCase):
             knowledge_base_markdown, content_manager.knowledge_pack_definition
         )
         ui.create_llm_settings_ui.assert_called_once()
-        mock_enable_chat.assert_called_with(
-            knowledge_base_markdown,
-            chat_session_memory,
-            prompts_factory,
-            llm_config,
-            active_knowledge_context,
-            user_identifier_state,
-            ["prompting"],
-            knowledge_context_select,
-        )
 
         assert returned_blocks == blocks
 

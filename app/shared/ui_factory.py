@@ -412,30 +412,12 @@ class UIFactory:
                             )
 
                 with gr.Row(elem_classes="haiven-tabs-container"):
-                    category_filter = ["prompting"]
-
                     with gr.Tabs() as all_tabs:
                         user_identifier_state = gr.State()
                         with gr.Tab("Knowledge"):
                             self.ui.ui_show_knowledge(
                                 self.content_manager.knowledge_base_markdown,
                                 self.content_manager.knowledge_pack_definition,
-                            )
-                        # TODO: Change tab title to "Prompt development"? And move the LLM choice in there??!
-                        with gr.Tab("Prompt Development"):
-                            gr.Markdown(
-                                "Experimental feature to support prompt development - still in development",
-                                elem_classes="disclaimer",
-                            )
-                            enable_chat(
-                                self.content_manager.knowledge_base_markdown,
-                                self.chat_session_memory,
-                                self.prompts_factory,
-                                self.__llm_config,
-                                self.content_manager.active_knowledge_context,
-                                user_identifier_state,
-                                category_filter,
-                                knowledge_context_select,
                             )
 
                 with gr.Row():
