@@ -10,7 +10,7 @@ A **sandbox to lower the barrier to experiment** with the use of Generative AI a
 
 - Simple one-container deployment --> **easy to deploy** in your environment
 - Integratable with the 3 big cloud provider's model services (Azure OpenAI, Google Gemini, AWS Bedrock) --> choose your existing cloud provider of choice to alleviate at least some of the **data confidentiality concerns** that currently limit many enterprise's choice of product and tool usage
-- Separation of application and **"knowledge pack"** to plug in and change your own prompts and domain information --> **customize** to your team
+- Separation of application and **"knowledge pack"** to plug in and change your own prompts and domain information --> **customize** to your team, and potential to **reuse** what you develop in the knowledge pack in other AI tools
 
 ## What is it NOT?
 
