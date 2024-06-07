@@ -103,11 +103,13 @@ def enable_brainstorming(
                 prompt_list, context_selected, prompt_choice, user_input
             )
 
+            knowledge_reference_exists = knowledge is not None and knowledge != ""
+
             return [
                 prompt_choice,
                 rendered_prompt,
                 help,
-                knowledge,
+                gr.Markdown(knowledge, visible=knowledge_reference_exists),
             ]
         else:
             return [None, "", "", ""]
@@ -136,6 +138,7 @@ def enable_brainstorming(
                     ui_help_knowledge = gr.Markdown(
                         elem_classes=["prompt-help", "knowledge"],
                         elem_id="brainstorming_help_knowledge",
+                        visible=False,
                     )
                     ui_user_input = gr.Textbox(label="User input", lines=5)
 

@@ -77,6 +77,7 @@ def enable_image_chat(
             help, knowledge = prompt_list.render_help_markdown(
                 prompt_choice, context_selected
             )
+            knowledge_reference_exists = knowledge is not None and knowledge != ""
             return [
                 prompt_choice,
                 __render_prompt_with_warnings(
@@ -86,7 +87,7 @@ def enable_image_chat(
                     {"image_description": image_description},
                 ),
                 help,
-                knowledge,
+                gr.Markdown(knowledge, visible=knowledge_reference_exists),
             ]
         else:
             return [None, "", "", ""]
@@ -156,6 +157,7 @@ def enable_image_chat(
                     ui_help_knowledge = gr.Markdown(
                         elem_classes=["prompt-help", "knowledge"],
                         elem_id="diagram_chat_help_knowledge",
+                        visible=False,
                     )
 
                     ui_user_image_input = gr.Textbox(
