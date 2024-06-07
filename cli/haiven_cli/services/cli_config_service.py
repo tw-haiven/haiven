@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 
-DEFAULT_CLI_CONFIG_DIR = f"{Path.home()}/.teamai"
+DEFAULT_CLI_CONFIG_DIR = f"{Path.home()}/.haiven"
 CONFIG_PATH_KEY = "config_path"
 ENV_PATH_KEY = "env_path"
 
