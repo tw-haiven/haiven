@@ -276,6 +276,7 @@ def enable_chat(
             knowledge_choice: str,
             chat_history,
             chat_session_key_value,
+            message: str,
             request: gr.Request,
         ):
             chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)
@@ -290,9 +291,9 @@ def enable_chat(
             )
 
             for chat_history_chunk in chat_session.next_advice_from_knowledge(
-                chat_history, knowledge_choice, context_selected
+                chat_history, knowledge_choice, context_selected, message
             ):
-                yield {ui_chatbot: chat_history_chunk}
+                yield {ui_message: "", ui_chatbot: chat_history_chunk}
 
         state_chat_session_key = gr.State()
 
@@ -315,12 +316,8 @@ def enable_chat(
         )
         ui_get_knowledge_advice_button.click(
             chat_with_knowledge,
-            [
-                ui_knowledge_choice,
-                ui_chatbot,
-                state_chat_session_key,
-            ],
-            [ui_chatbot],
+            [ui_knowledge_choice, ui_chatbot, state_chat_session_key, ui_message],
+            [ui_message, ui_chatbot],
             scroll_to_output=True,
         )
         ui_clear_button.click(

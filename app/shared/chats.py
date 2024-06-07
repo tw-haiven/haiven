@@ -143,21 +143,31 @@ class StreamingChat(HaivenBaseChat):
         return summary.content
 
     def next_advice_from_knowledge(
-        self, chat_history, knowledge_document_key: str, knowledge_context: str
+        self,
+        chat_history,
+        knowledge_document_key: str,
+        knowledge_context: str,
+        message: str = None,
     ):
         # 1 summarise the conversation so far
         summary = self.summarise_conversation()
 
+        similarity_query = f"""
+            {summary}
+
+            {message or ""}
+        """
+
         if knowledge_document_key == "all":
             context_documents = EmbeddingsService.similarity_search(
-                summary, knowledge_context
+                similarity_query, knowledge_context
             )
         else:
             knwoeldge_document = EmbeddingsService.get_embedded_document(
                 knowledge_document_key
             )
             context_documents = EmbeddingsService.similarity_search_on_single_document(
-                query=summary,
+                query=similarity_query,
                 document_key=knwoeldge_document.key,
                 context=knwoeldge_document.context,
             )
@@ -178,6 +188,10 @@ class StreamingChat(HaivenBaseChat):
         )
 
         # 3 continue the conversation and get the advice
+        user_request = (
+            message
+            or "Based on what I'm trying to do as per the SUMMARY, what do you think is relevant to me in the CONTEXT?"
+        )
         prompt = f"""
         I have a SUMMARY of our conversation so far, and I would like some additional advice and context
         for that conversation, based on the CONTEXT I will provide to you.
@@ -189,12 +203,22 @@ class StreamingChat(HaivenBaseChat):
         {context_for_prompt}
 
         ----
-        What else can you tell me based on the conversation summary the knowledge context?
+        {user_request}
+        Based on what I'm trying to do as per the SUMMARY, what do you think is relevant to me in the CONTEXT?
+
+        {"In particular, I want to know:" if message else ""}
+
         Do not provide any advice that is out of the context provided.
         """
 
+        user_request = (
+            f"\n\nIn particular, I want to know: {message}" if message else ""
+        )
         chat_history += [
-            [f"Give me advice based on the content of '{knowledge_document_key}'", ""]
+            [
+                f"Give me advice based on the content of '{knowledge_document_key}'{user_request}",
+                "",
+            ]
         ]
         chat_history[-1][1] += sources_markdown
         yield chat_history
