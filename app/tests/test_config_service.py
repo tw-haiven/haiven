@@ -68,6 +68,11 @@ def setup_class(request):
           base_url: {request.cls.embedding_base_url}
           api_version: {request.cls.embedding_api_version}
           azure_deployment: {request.cls.embedding_deployment_name}
+    agent_info:
+      region_name: "test-region"
+      enabled_agent_ids : "abc,xyz"
+      enabled_agent_alias_ids : "123,456"
+    
     """
 
     config_path = "test-config.yaml"
@@ -140,6 +145,11 @@ class TestConfigService:
             provider in enabled_providers
             for provider in self.active_model_providers.split(",")
         )
+
+        enabled_agents = ConfigService.load_agent_info(self.config_path)
+        assert enabled_agents["region_name"] == "test-region"
+        assert enabled_agents["enabled_agent_ids"] == ["abc", "xyz"]
+        assert enabled_agents["enabled_agent_alias_ids"] == ["123", "456"]
 
     def test_config_loads_team_from_env_var_values(self):
         knowledge_pack_path = "folder/path"

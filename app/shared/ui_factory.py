@@ -1,5 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import gradio as gr
+from tab_agent_chat.ui import enable_agent_chat
 from shared.chats import ServerChatSessionMemory
 from shared.content_manager import ContentManager
 from shared.event_handler import EventHandler
@@ -13,6 +14,7 @@ from tab_plain_chat.ui import enable_plain_chat
 from tab_prompt_chat.ui import enable_chat
 from shared.user_context import user_context
 from datetime import datetime
+from shared.services.agents_service import AgentsService
 
 
 class UIFactory:
@@ -157,6 +159,10 @@ class UIFactory:
                             knowledge_context_select,
                         )
 
+                        agent_info = AgentsService.get_agent_info()
+                        if agent_info:
+                            enable_agent_chat(agent_info, user_identifier_state)
+
                 with gr.Row():
                     gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
@@ -261,6 +267,10 @@ class UIFactory:
                             knowledge_context_select,
                         )
 
+                        agent_info = AgentsService.get_agent_info()
+                        if agent_info:
+                            enable_agent_chat(agent_info, user_identifier_state)
+
                 with gr.Row():
                     gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
@@ -359,6 +369,10 @@ class UIFactory:
                             category_filter,
                             knowledge_context_select,
                         )
+
+                        agent_info = AgentsService.get_agent_info()
+                        if agent_info:
+                            enable_agent_chat(agent_info, user_identifier_state)
 
                 with gr.Row():
                     gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])

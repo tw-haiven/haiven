@@ -13,8 +13,16 @@ class TestUIFactory(unittest.TestCase):
     @patch("shared.ui_factory.enable_brainstorming")
     @patch("shared.ui_factory.enable_image_chat")
     @patch("shared.ui_factory.enable_knowledge_chat")
+    @patch("shared.ui_factory.enable_agent_chat")
+    @patch("shared.services.agents_service.ConfigService.load_agent_info")
+    @patch("shared.services.agents_service.ConfigService.load_enabled_providers")
+    @patch("boto3.client")
     def test_create_ui_coding(
         self,
+        mock_boto3_client,
+        mock_load_enabled_providers,
+        mock_load_agent_info,
+        mock_enable_agent_chat,
         mock_enable_knowledge_chat,
         mock_enable_image_chat,
         mock_enable_brainstorming,
@@ -24,6 +32,19 @@ class TestUIFactory(unittest.TestCase):
         mock_state,
     ):
         # Setup
+        mock_boto3_client.return_value.get_agent.return_value = {
+            "agent": {"description": "description", "agentName": "agentName"}
+        }
+        mock_boto3_client.return_value.get_agent_alias.return_value = {
+            "agentAlias": {"agentAliasName": "agentAliasName"}
+        }
+        mock_load_enabled_providers.return_value = ["aws", "gcp", "azure"]
+        mock_load_agent_info.return_value = {
+            "enabled_agent_ids": ["id1"],
+            "enabled_agent_alias_ids": ["alias_id1"],
+            "region_name": "us-west-2",
+        }
+
         ui = Mock()
         prompts_factory = MagicMock()
         navigation_manager = MagicMock()
@@ -79,6 +100,7 @@ class TestUIFactory(unittest.TestCase):
             "brainstorming_prompt_choice",
             "diagram_chat_prompt_choice",
             "knowledge_chat_prompt_choice",
+            "agent_choice",
         ]
         all_tabs.children = []
         for element_id in element_ids:
@@ -132,6 +154,19 @@ class TestUIFactory(unittest.TestCase):
             knowledge_context_select,
         )
 
+        mock_enable_agent_chat.assert_called_with(
+            [
+                {
+                    "agentId": "id1",
+                    "agentName": "agentName",
+                    "agentAliasId": "alias_id1",
+                    "agentAliasName": "agentAliasName",
+                    "description": "description",
+                }
+            ],
+            state,
+        )
+
         blocks.load.assert_called_with(
             event_handler.on_load_ui,
             [model_select, tone_select, knowledge_context_select],
@@ -154,8 +189,16 @@ class TestUIFactory(unittest.TestCase):
     @patch("shared.ui_factory.enable_brainstorming")
     @patch("shared.ui_factory.enable_image_chat")
     @patch("shared.ui_factory.enable_knowledge_chat")
+    @patch("shared.ui_factory.enable_agent_chat")
+    @patch("shared.services.agents_service.ConfigService.load_agent_info")
+    @patch("shared.services.agents_service.ConfigService.load_enabled_providers")
+    @patch("boto3.client")
     def test_create_ui_testing(
         self,
+        mock_boto3_client,
+        mock_load_enabled_providers,
+        mock_load_agent_info,
+        mock_enable_agent_chat,
         mock_enable_knowledge_chat,
         mock_enable_image_chat,
         mock_enable_brainstorming,
@@ -165,6 +208,19 @@ class TestUIFactory(unittest.TestCase):
         mock_state,
     ):
         # Setup
+        mock_boto3_client.return_value.get_agent.return_value = {
+            "agent": {"description": "description", "agentName": "agentName"}
+        }
+        mock_boto3_client.return_value.get_agent_alias.return_value = {
+            "agentAlias": {"agentAliasName": "agentAliasName"}
+        }
+        mock_load_enabled_providers.return_value = ["gcp", "azure"]
+        mock_load_agent_info.return_value = {
+            "enabled_agent_ids": ["id1"],
+            "enabled_agent_alias_ids": ["alias_id1"],
+            "region_name": "us-west-2",
+        }
+
         ui = Mock()
         prompts_factory = MagicMock()
         navigation_manager = MagicMock()
@@ -273,6 +329,9 @@ class TestUIFactory(unittest.TestCase):
             category_filter,
             knowledge_context_select,
         )
+
+        mock_enable_agent_chat.assert_not_called()
+
         blocks.load.assert_called_with(
             event_handler.on_load_ui,
             [model_select, tone_select, knowledge_context_select],
@@ -295,8 +354,16 @@ class TestUIFactory(unittest.TestCase):
     @patch("shared.ui_factory.enable_brainstorming")
     @patch("shared.ui_factory.enable_image_chat")
     @patch("shared.ui_factory.enable_knowledge_chat")
+    @patch("shared.ui_factory.enable_agent_chat")
+    @patch("shared.services.agents_service.ConfigService.load_agent_info")
+    @patch("shared.services.agents_service.ConfigService.load_enabled_providers")
+    @patch("boto3.client")
     def test_create_ui_analysts(
         self,
+        mock_boto3_client,
+        mock_load_enabled_providers,
+        mock_load_agent_info,
+        mock_enable_agent_chat,
         mock_enable_knowledge_chat,
         mock_enable_image_chat,
         mock_enable_brainstorming,
@@ -306,6 +373,19 @@ class TestUIFactory(unittest.TestCase):
         mock_state,
     ):
         # Setup
+        mock_boto3_client.return_value.get_agent.return_value = {
+            "agent": {"description": "description", "agentName": "agentName"}
+        }
+        mock_boto3_client.return_value.get_agent_alias.return_value = {
+            "agentAlias": {"agentAliasName": "agentAliasName"}
+        }
+        mock_load_enabled_providers.return_value = ["aws"]
+        mock_load_agent_info.return_value = {
+            "enabled_agent_ids": ["id1"],
+            "enabled_agent_alias_ids": ["alias_id1"],
+            "region_name": "us-west-2",
+        }
+
         ui = Mock()
         prompts_factory = MagicMock()
         navigation_manager = MagicMock()
@@ -413,6 +493,18 @@ class TestUIFactory(unittest.TestCase):
             state,
             category_filter,
             knowledge_context_select,
+        )
+        mock_enable_agent_chat.assert_called_with(
+            [
+                {
+                    "agentId": "id1",
+                    "agentName": "agentName",
+                    "agentAliasId": "alias_id1",
+                    "agentAliasName": "agentAliasName",
+                    "description": "description",
+                }
+            ],
+            state,
         )
         blocks.load.assert_called_with(
             event_handler.on_load_ui,

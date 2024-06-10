@@ -148,6 +148,21 @@ class ConfigService:
             case "aws":
                 return "aws-claude-v3"
 
+    @staticmethod
+    def load_agent_info(path: str = "config.yaml") -> dict:
+        """
+        Load the agent information from the config file.
+
+        Args:
+            path (str): The path to the YAML file.
+
+        Returns:
+            dict: The agent information.
+        """
+        data = ConfigService._load_yaml(path)
+        agent_info = data["agent_info"]
+        return agent_info
+
     def _load_yaml(path: str) -> dict:
         """
         Load YAML data from a config file.

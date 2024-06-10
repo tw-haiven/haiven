@@ -142,3 +142,8 @@ embeddings:
     config:
       base_url: ${OLLAMA_BASE_URL}
       model: llama2
+
+agent_info:
+  region_name: ${AWS_BEDROCK_REGION}
+  enabled_agent_ids : ${ENABLED_AGENT_IDS}
+  enabled_agent_alias_ids : ${ENABLED_AGENT_ALIAS_IDS}
