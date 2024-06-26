@@ -20,29 +20,29 @@
     "best-effort-json-parser": "^1.1.2",
     "d3-hierarchy": "^3.1.2",
     "dotenv": "^16.0.3",
-    "eslint": "9.4.0",
-    "eslint-config-next": "14.2.3",
+    "eslint": "9.5.0",
+    "eslint-config-next": "14.2.4",
     "google-search-results-nodejs": "^2.1.0",
     "hnswlib-node": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
-    "next": "^14.2.3",
+    "next": "^14.2.4",
     "partial-json-parser": "^1.2.2",
     "postcss": "8.4.38",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
     "react-markdown": "^9.0.1",
-    "reactflow": "^11.7.0",
+    "reactflow": "^11.11.4",
     "rehype-raw": "^7.0.0",
     "remark-breaks": "^4.0.0",
-    "replicate": "^0.30.1",
+    "replicate": "^0.30.2",
     "swr": "^2.2.5",
-    "tailwindcss": "^3.4.3"
+    "tailwindcss": "^3.4.4"
   },
   "devDependencies": {
-    "@types/node": "^20.14.1",
+    "@types/node": "^20.14.9",
     "@types/react": "^18.3.3",
-    "prettier": "3.3.0",
-    "typescript": "^5.4.5"
+    "prettier": "3.3.2",
+    "typescript": "^5.5.2"
   }
 }
