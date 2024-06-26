@@ -95,6 +95,15 @@ models:
       base_url: ${OLLAMA_BASE_URL}
       model: llama2
 
+  - id: ollama-local-llama3
+    name: Local - Ollama llama3
+    provider: ollama
+    features:
+      - text-generation
+    config:
+      base_url: ${OLLAMA_BASE_URL}
+      model: llama3:8b
+
   - id: ollama-local-mistral
     name: Local - Ollama Mistral
     provider: ollama
