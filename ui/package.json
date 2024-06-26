@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@ant-design/pro-chat": "^1.13.8",
-    "antd": "5.17.4",
+    "antd": "5.18.3",
     "antd-style": "^3.6.1",
     "autoprefixer": "10.4.19",
     "best-effort-json-parser": "^1.1.2",
