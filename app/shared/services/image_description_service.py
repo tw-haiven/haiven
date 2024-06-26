@@ -126,7 +126,7 @@ class ImageDescriptionService:
     def _describe_with_gcp(self, image: Image.Image, user_input: str) -> str:
         if self.model_instance is None:
             self.model_instance = GenerativeModel(
-                self.model_definition.config.get("model") + "-vision"
+                self.model_definition.config.get("model")
             )
 
         image = Part.from_data(self._get_image_bytes(image), mime_type="image/png")

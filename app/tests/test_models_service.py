@@ -23,7 +23,7 @@ class TestModelsService:
                 ),
                 Model(
                     id="3",
-                    name="gemini-pro",
+                    name="gemini-1.5-flash",
                     provider="gcp",
                     features=["chat-completion", "streaming"],
                 ),

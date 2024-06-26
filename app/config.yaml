@@ -52,7 +52,7 @@ models:
       - text-generation
       - image-to-text
     config:
-      model: gemini-pro
+      model: gemini-1.5-flash
 
   - id: aws-claude-v2
     name: Claude v2 on AWS
