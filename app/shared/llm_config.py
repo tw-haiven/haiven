@@ -87,8 +87,6 @@ class LLMChatFactory:
         match model.provider.lower():
             case "azure":
                 model_kwargs = {}
-                if stop is not None:
-                    model_kwargs["stop"] = [stop]
 
                 return AzureChatOpenAI(
                     openai_api_key=model.config.get("api_key"),
@@ -96,6 +94,7 @@ class LLMChatFactory:
                     azure_endpoint=model.config.get("azure_endpoint"),
                     api_version=model.config.get("api_version"),
                     temperature=llm_config.temperature,
+                    stop=[stop] if stop is not None else None,
                     model_kwargs=model_kwargs,
                 )
 
