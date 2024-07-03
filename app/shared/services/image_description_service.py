@@ -147,9 +147,9 @@ class ImageDescriptionService:
             if not api_key.strip():
                 return "Error: Missing Open AI Vision configuration. Please check your environment variables."
             self.model_instance = OpenAI(api_key=api_key)
-            
+
         response = self.model_instance.chat.completions.create(
-            model= self.model_definition.config.get("model_name"),
+            model=self.model_definition.config.get("model_name"),
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {
