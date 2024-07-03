@@ -5,7 +5,7 @@ from io import BytesIO
 
 import boto3
 from botocore.exceptions import ClientError
-from openai import AzureOpenAI
+from openai import AzureOpenAI, OpenAI
 from PIL import Image
 from shared.models.model import Model
 from shared.services.models_service import ModelsService
@@ -120,6 +120,8 @@ class ImageDescriptionService:
                 )
             case "ollama":
                 return self._describe_image_with_ollama(image_from_gradio, user_input)
+            case "openai":
+                return self._describe_image_with_openai(image_from_gradio, user_input)
             case _:
                 return "Provider not supported"
 
@@ -138,6 +140,39 @@ class ImageDescriptionService:
             ]
         )
         return model_response.text
+
+    def _describe_image_with_openai(self, image: Image.Image, user_input: str) -> str:
+        if self.model_instance is None:
+            api_key = self.model_definition.config.get("api_key")
+            if not api_key.strip():
+                return "Error: Missing Open AI Vision configuration. Please check your environment variables."
+            self.model_instance = OpenAI(api_key=api_key)
+            
+        response = self.model_instance.chat.completions.create(
+            model= self.model_definition.config.get("model_name"),
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": user_input,
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": "data:image/png;base64,"
+                                + self._encode_image_base64(image)
+                            },
+                        },
+                    ],
+                },
+            ],
+            max_tokens=2000,
+        )
+
+        return response.choices[0].message.content
 
     def _describe_image_with_azure(self, image: Image.Image, user_input: str) -> str:
         if self.model_instance is None:
