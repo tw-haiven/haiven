@@ -125,12 +125,12 @@ class LLMChatFactory:
             # OpenAI, mainly to make it easier for folks to run locally
             case "openai":
                 model_kwargs = {}
-                if stop is not None:
-                    model_kwargs["stop"] = [stop]
+
                 return ChatOpenAI(
                     api_key=model.config.get("api_key"),
                     model_name=model.config.get("model_name"),
                     temperature=llm_config.temperature,
+                    stop=[stop] if stop is not None else None,
                     model_kwargs=model_kwargs,
                 )
 

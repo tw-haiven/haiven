@@ -24,7 +24,7 @@ class KnowledgeBaseMarkdown:
         context_content = []
 
         for content in file_contents:
-            if content.metadata["key"]:
+            if content.metadata.get("key"):
                 context_content.append(
                     KnowledgeDocument(content.content, content.metadata)
                 )
