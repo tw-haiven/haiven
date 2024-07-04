@@ -45,6 +45,19 @@ models:
       azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4_VISION}
       api_key: ${AZURE_OPENAI_API_KEY}
 
+  - id: azure-gpt-4o
+    name: GPT-4o on Azure
+    provider: Azure
+    features:
+      - image-to-text
+      - text-generation
+      - stop-sequence
+    config:
+      azure_endpoint: ${AZURE_OPENAI_API_BASE}
+      api_version: ${AZURE_OPENAI_API_VERSION}
+      azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4o}
+      api_key: ${AZURE_OPENAI_API_KEY}
+
   - id: google-gemini
     name: Gemini on Google
     provider: GCP
