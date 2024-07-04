@@ -43,7 +43,7 @@ models:
       azure_endpoint: ${AZURE_OPENAI_API_BASE}
       api_version: ${AZURE_OPENAI_API_VERSION}
       azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4_VISION}
-      api_key: ${AZURE_AI_VISION_API_KEY}
+      api_key: ${AZURE_OPENAI_API_KEY}
 
   - id: azure-gpt-4o
     name: GPT-4o on Azure
@@ -56,7 +56,7 @@ models:
       azure_endpoint: ${AZURE_OPENAI_API_BASE}
       api_version: ${AZURE_OPENAI_API_VERSION}
       azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4o}
-      api_key: ${AZURE_AI_VISION_API_KEY}
+      api_key: ${AZURE_OPENAI_API_KEY}
 
   - id: google-gemini
     name: Gemini on Google
