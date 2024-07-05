@@ -175,3 +175,18 @@ embeddings:
     config:
       base_url: ${OLLAMA_BASE_URL}
       model: llama2
+
+  - id: ollama-mxbai-embed-large
+    name: Ollama Embeddings mxbai-embed-large (local)
+    provider: ollama
+    config:
+      base_url: ${OLLAMA_BASE_URL}
+      model: mxbai-embed-large
+
+  - id: ollama-nomic-embed-text
+    name: Ollama Embeddings nomic-embed-text (local)
+    provider: ollama
+    config:
+      base_url: ${OLLAMA_BASE_URL}
+      model: nomic-embed-text
+
