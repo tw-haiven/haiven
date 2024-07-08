@@ -18,9 +18,11 @@
   font-weight: bold;
   padding-left: 0.5em;
 }
+
 .disclaimer p {
   color: white !important;
 }
+
 .disclaimer a {
   color: white !important;
 }
@@ -57,6 +59,7 @@
 
 .haiven-content {
   padding: 0 3em;
+
   @media (prefers-color-scheme: dark) {
     background-color: var(--color-dark-blue);
   }
@@ -64,6 +67,7 @@
   @media (prefers-color-scheme: light) {
     background-color: white;
   }
+
   border: none;
 }
 
@@ -75,6 +79,7 @@
   @media (prefers-color-scheme: light) {
     background-color: white;
   }
+
   padding-top: 1em;
 }
 
@@ -102,6 +107,7 @@
   font-family: Bitter, "Noto Serif SC", serif;
   color: white !important;
 }
+
 .header-title h2 {
   color: var(--color-sapphire) !important;
   margin-top: -0.8em;
@@ -248,16 +254,21 @@
     background-color: var(--background-fill-secondary);
   }
 
-  .knowledge-context-list{
+  .knowledge-context-list {
     border: 1px solid var(--color-dark-blue) !important;
   }
 
-  .copyright_text{
+  .copyright_text {
     background-color: var(--background-fill-primary) !important;
   }
 
   .tabs .selected {
     background-color: var(--background-fill-secondary) !important;
+  }
+
+  .message-row.bubble.bot-row {
+    background-color: var(--block-background-fill) !important;
+    ;
   }
 }
 
@@ -265,7 +276,7 @@
   display: none !important;
 }
 
-.show-api + div {
+.show-api+div {
   display: none !important;
 }
 
@@ -349,4 +360,9 @@
 .mode-left {
   border-top-left-radius: 15px;
   border-bottom-left-radius: 15px;
+}
+
+.message-row.bubble.bot-row {
+  padding: 8px;
+  background-color: var(--background-fill-secondary)
 }
