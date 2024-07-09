@@ -62,7 +62,7 @@ graph TB
 Each team's knowledge pack needs to have the following folder structure:
 
 ```
-+ team_name
++ knowledge-pack
     + prompts
         + chat
             - prompt_1.md
@@ -70,21 +70,27 @@ Each team's knowledge pack needs to have the following folder structure:
             - prompt_2.md
         + brainstorming
             - prompt_3.md
-    + team_1
-        + knowledge
-            + pdfs
+    + contexts
+        + team_1
+            + embeddings
                 - pdf_1.kb
                     - index.faiss
                     - index.pkl
                 - pdf_1.md
-            + documents
                 - document_1.kb
                     - index.faiss
                     - index.pkl
                 - document_1.md
-            - business_context.md
+            - domain.md
             - architecture.md
             - another_knowledge_snippet.md
+        + context_2
+            + embeddings
+                ...
+            domain.md
+            architecture.md
+            ...
+            
 ```
 
 ### 1. Change "business_context" and "architecture" knowledge snippets
