@@ -13,7 +13,7 @@
     "node": "22.x"
   },
   "dependencies": {
-    "@ant-design/pro-chat": "^1.13.8",
+    "@ant-design/pro-chat": "^1.15.1",
     "antd": "5.17.4",
     "antd-style": "^3.6.1",
     "autoprefixer": "10.4.19",
