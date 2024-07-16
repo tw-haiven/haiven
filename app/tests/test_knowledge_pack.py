@@ -17,10 +17,15 @@ class TestKnowledgePack:
         knowledge_pack = KnowledgePack(self.test_knowledge_pack_path)
 
         assert len(knowledge_pack.contexts) == 2
-        assert knowledge_pack.contexts[0].name == "context_a"
-        assert knowledge_pack.contexts[0].path == "context_a"
-        assert knowledge_pack.contexts[1].name == "context_b"
-        assert knowledge_pack.contexts[1].path == "context_b"
+
+        # Create a dictionary to map context names to paths
+        context_dict = {
+            context.name: context.path for context in knowledge_pack.contexts
+        }
+
+        # Check that the contexts have the correct names and paths
+        assert context_dict.get("context_a") == "context_a"
+        assert context_dict.get("context_b") == "context_b"
 
     def test_auto_discovery_contexts_no_contexts_folder(self):
         knowledge_pack = KnowledgePack(
