@@ -53,38 +53,9 @@ def app_coverage():
 
 
 # builds local docker image
-def build_docker_image():
+def build_docker_base_image():
     command = """
-    cd app && \
     docker build -t haiven-base:local .
-    cd haiven-sample-knowledge-pack && \
-    docker build --build-arg REGISTRY_URL= --build-arg TAG=local -t haiven-demo:local .
-    """
-    subprocess.run(command, shell=True)
-
-
-# runs local docker image
-def run_docker_image():
-    command = """
-    docker inspect --type=image haiven-demo:local && \
-    cd app && \
-    docker run --env-file .env -e TEAM_CONTENT_PATH=teams -p 8080:8080 haiven-demo:local
-    """
-    subprocess.run(command, shell=True)
-
-
-def run_docker_prod_image():
-    command = """
-    cd app && \
-    docker run --env-file .env -e TEAM_CONTENT_PATH=teams -p 8080:8080 us-central1-docker.pkg.dev/haiven-7a96/haiven/haiven-demo:main
-    """
-    subprocess.run(command, shell=True)
-
-
-# retrieve secrets (requires gcloud to be logged in haiven-7a96)
-def get_secret():
-    command = f"""
-    gcloud secrets versions access latest --secret={sys.argv[1]}
     """
     subprocess.run(command, shell=True)
 
