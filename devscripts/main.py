@@ -57,7 +57,7 @@ def build_docker_image():
     command = """
     cd app && \
     docker build -t haiven-base:local .
-    cd demo-knowledge-pack && \
+    cd haiven-sample-knowledge-pack && \
     docker build --build-arg REGISTRY_URL= --build-arg TAG=local -t haiven-demo:local .
     """
     subprocess.run(command, shell=True)
