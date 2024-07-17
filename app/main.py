@@ -15,8 +15,15 @@ from shared.ui import UI
 from shared.ui_factory import UIFactory
 
 
+def backwards_compat_env_vars():
+    # temporary support of older env vars, for backwards compatibility
+    if os.environ.get("TEAM_CONTENT_PATH"):
+        os.environ["KNOWLEDGE_PACK_PATH"] = os.environ["TEAM_CONTENT_PATH"]
+
+
 def create_server():
     load_dotenv()
+    backwards_compat_env_vars()
     os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
     DEFAULT_CONFIG_PATH = "config.yaml"
 
