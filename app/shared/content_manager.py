@@ -24,7 +24,7 @@ class ContentManager:
 
         if not os.path.exists(knowledge_pack_path):
             raise KnowledgePackError(
-                f"Cannot find path to Knowledge Pack {knowledge_pack_path}"
+                f"Cannot find path to Knowledge Pack: `{knowledge_pack_path}`. Please check the `knowledge_pack_path` in your {config_path} file."
             )
 
         self._config_path = config_path
