@@ -1,10 +1,11 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+from tests.utils import get_test_data_path
 from shared.knowledge import KnowledgeBaseMarkdown
 from shared.prompts import PromptList
 
 
 ACTIVE_KNOWLEDGE_CONTEXT = "context_a"
-TEST_KNOWLEDGE_PACK_PATH = "tests/test_data/test_knowledge_pack"
+TEST_KNOWLEDGE_PACK_PATH = get_test_data_path() + "/test_knowledge_pack"
 
 
 def create_knowledge_base(knowledge_pack_path):

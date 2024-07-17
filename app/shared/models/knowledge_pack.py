@@ -3,6 +3,14 @@ import os
 from typing import List
 
 
+class KnowledgePackError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
+
 class KnowledgeContext:
     def __init__(self, name: str, path: str):
         self.name = name

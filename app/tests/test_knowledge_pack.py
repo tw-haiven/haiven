@@ -1,10 +1,11 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from unittest.mock import patch
+from tests.utils import get_test_data_path
 from shared.models.knowledge_pack import KnowledgePack
 
 
 class TestKnowledgePack:
-    test_knowledge_pack_path = "tests/test_data/test_knowledge_pack"
+    test_knowledge_pack_path = get_test_data_path() + "/test_knowledge_pack"
 
     def test_auto_discovery_contexts_called_on_init(self):
         with patch.object(

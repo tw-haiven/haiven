@@ -1,12 +1,17 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from unittest.mock import patch
 
+from tests.utils import get_test_data_path
+from shared.models.knowledge_pack import KnowledgePackError
 from shared.content_manager import ContentManager
 from shared.models.embedding_model import EmbeddingModel
 from shared.services.embeddings_service import EmbeddingsService
 
 
 class TestContentManager:
+    knowledge_pack_path = get_test_data_path() + "/test_knowledge_pack"
+    config_file_path = get_test_data_path() + "/test_config.yaml"
+
     @patch("shared.content_manager.Embeddings")
     @patch("shared.content_manager.EmbeddingsService")
     @patch("shared.content_manager.ConfigService")
@@ -18,21 +23,24 @@ class TestContentManager:
         mock_embeddings_service,
         mock_embeddings,
     ):
-        knowledge_pack_path = "/path/to/root"
-
         mock_config_service.load_embedding_model.return_value = {}
 
-        content_manager = ContentManager(knowledge_pack_path=knowledge_pack_path)
+        content_manager = ContentManager(
+            knowledge_pack_path=self.knowledge_pack_path,
+            config_path=self.config_file_path,
+        )
 
-        mock_config_service.load_embedding_model.assert_called_once_with("config.yaml")
+        mock_config_service.load_embedding_model.assert_called_once_with(
+            self.config_file_path
+        )
         mock_embeddings_service.initialize.assert_called_once()
         mock_embeddings_service.load_knowledge_base.assert_called_once_with(
-            knowledge_pack_path + "/embeddings"
+            self.knowledge_pack_path + "/embeddings"
         )
 
         mock_knowledge_base_markdown.assert_called_once()
         content_manager.knowledge_base_markdown.load_base_knowledge.assert_called_once_with(
-            knowledge_pack_path
+            self.knowledge_pack_path
         )
 
     @patch("shared.content_manager.ConfigService")
@@ -51,14 +59,41 @@ class TestContentManager:
             config={"model": "ollama-embeddings", "api_key": "api_key"},
         )
 
-        knowledge_pack_path = "tests/test_data/test_knowledge_pack"
-
         mock_config_service.load_embedding_model.return_value = embedding_model
 
         exception_raised = False
         try:
-            _ = ContentManager(knowledge_pack_path=knowledge_pack_path)
+            _ = ContentManager(
+                knowledge_pack_path=self.knowledge_pack_path,
+                config_path=self.config_file_path,
+            )
         except FileNotFoundError:
             exception_raised = True
 
         assert not exception_raised
+
+    def test_should_raise_error_when_config_file_not_found(self):
+        exception_raised = False
+        try:
+            _ = ContentManager(
+                knowledge_pack_path=self.knowledge_pack_path,
+                config_path="non/existing/path",
+            )
+        except KnowledgePackError as e:
+            assert "configuration" in e.message
+            exception_raised = True
+
+        assert exception_raised
+
+    def test_should_raise_error_when_knowledge_pack_not_found(self):
+        exception_raised = False
+        try:
+            _ = ContentManager(
+                knowledge_pack_path="non/existing/path",
+                config_path=self.config_file_path,
+            )
+        except KnowledgePackError as e:
+            assert "Pack" in e.message
+            exception_raised = True
+
+        assert exception_raised

@@ -1,9 +1,14 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+import os
 from shared.logger import HaivenLogger
 
 from shared.embeddings import Embeddings
 from shared.knowledge import KnowledgeBaseMarkdown
-from shared.models.knowledge_pack import KnowledgeContext, KnowledgePack
+from shared.models.knowledge_pack import (
+    KnowledgeContext,
+    KnowledgePack,
+    KnowledgePackError,
+)
 from shared.services.config_service import ConfigService
 from shared.services.embeddings_service import EmbeddingsService
 
@@ -14,6 +19,14 @@ class ContentManager:
     def __init__(
         self, knowledge_pack_path: str, config_path: str = DEFAULT_CONFIG_PATH
     ):
+        if not os.path.exists(config_path):
+            raise KnowledgePackError(f"Cannot find configuration file {config_path}")
+
+        if not os.path.exists(knowledge_pack_path):
+            raise KnowledgePackError(
+                f"Cannot find path to Knowledge Pack {knowledge_pack_path}"
+            )
+
         self._config_path = config_path
         self.knowledge_pack_definition = KnowledgePack(knowledge_pack_path)
 
@@ -32,12 +45,13 @@ class ContentManager:
                 self.knowledge_pack_definition.path
             )
         except FileNotFoundError as e:
+            # TODO: Should this be an analytics() log?
             HaivenLogger.get().analytics(
                 "KnowledgePackKnowledgeNotFound", {"error": str(e)}
             )
 
     def _load_base_embeddings(self):
-        embedding_model = ConfigService.load_embedding_model(DEFAULT_CONFIG_PATH)
+        embedding_model = ConfigService.load_embedding_model(self._config_path)
         base_embeddings_path = self.knowledge_pack_definition.path + "/embeddings"
         EmbeddingsService.initialize(Embeddings(embedding_model))
 
