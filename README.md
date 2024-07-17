@@ -52,7 +52,7 @@ Prerequisite:
 
 ### With Azure OpenAI
 
-- Create a `.env` file with the content of (app/.env.azure.template)[app/.env.azure.template]
+- Create a `.env` file with the content of [app/.env.azure.template](app/.env.azure.template)
 - Change the `AZURE_OPENAI_API_KEY` in that file to the API Key - (Thoughtworkers can ask the Haiven team for access to the "trial" Azure OpenAI API Key).
 
 ```
