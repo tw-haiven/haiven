@@ -21,7 +21,7 @@
     "d3-hierarchy": "^3.1.2",
     "dotenv": "^16.0.3",
     "eslint": "9.7.0",
-    "eslint-config-next": "14.2.4",
+    "eslint-config-next": "14.2.5",
     "google-search-results-nodejs": "^2.1.0",
     "hnswlib-node": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
