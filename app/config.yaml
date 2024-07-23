@@ -116,7 +116,7 @@ models:
     features:
       - text-generation
     config:
-      base_url: ${OLLAMA_BASE_URL}
+      base_url: ${OLLAMA_HOST}
       model: llama2
 
   - id: ollama-local-llama3
@@ -125,7 +125,7 @@ models:
     features:
       - text-generation
     config:
-      base_url: ${OLLAMA_BASE_URL}
+      base_url: ${OLLAMA_HOST}
       model: llama3:8b
 
   - id: ollama-local-mistral
@@ -134,7 +134,7 @@ models:
     features:
       - text-generation
     config:
-      base_url: ${OLLAMA_BASE_URL}
+      base_url: ${OLLAMA_HOST}
       model: mistral
 
   - id: ollama-local-llava
@@ -143,7 +143,7 @@ models:
     features:
       - text-generation
     config:
-      base_url: ${OLLAMA_BASE_URL}
+      base_url: ${OLLAMA_HOST}
       model: llava:7b
 
 embeddings:
@@ -173,20 +173,20 @@ embeddings:
     name: Ollama Embeddings (local)
     provider: ollama
     config:
-      base_url: ${OLLAMA_BASE_URL}
+      base_url: ${OLLAMA_HOST}
       model: llama2
 
   - id: ollama-mxbai-embed-large
     name: Ollama Embeddings mxbai-embed-large (local)
     provider: ollama
     config:
-      base_url: ${OLLAMA_BASE_URL}
+      base_url: ${OLLAMA_HOST}
       model: mxbai-embed-large
 
   - id: ollama-nomic-embed-text
     name: Ollama Embeddings nomic-embed-text (local)
     provider: ollama
     config:
-      base_url: ${OLLAMA_BASE_URL}
+      base_url: ${OLLAMA_HOST}
       model: nomic-embed-text
 
