@@ -95,7 +95,7 @@ docker run \
         -e ENABLED_VISION_MODEL=llava:7b \
         -e OLLAMA_HOST=http://host.docker.internal:11434 \
         -p 8080:8080 \
-        ghcr.io/tw-haiven/haiven:v0.2
+        ghcr.io/tw-haiven/haiven:v0.3
 ```
 
 #### Ollama restrictions
