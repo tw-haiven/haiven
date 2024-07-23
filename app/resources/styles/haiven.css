@@ -270,6 +270,12 @@
     background-color: var(--block-background-fill) !important;
     ;
   }
+
+
+  .message-row.bubble.bot-row {
+    padding: 8px;
+    border: 1px solid var(--border-color-accent-subdued) !important;
+  }
 }
 
 .show-api {
@@ -364,5 +370,5 @@
 
 .message-row.bubble.bot-row {
   padding: 8px;
-  background-color: var(--background-fill-secondary)
+  border: 1px solid var(--color-light-gray)
 }
