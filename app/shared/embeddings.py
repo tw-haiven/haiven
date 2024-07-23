@@ -25,7 +25,7 @@ class Embeddings:
             self.__embeddings_provider = self._load_aws_embeddings()
         elif self.embedding_model.provider.lower() == "ollama":
             self.__embeddings_provider = OllamaEmbeddings(
-                base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
+                base_url=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
                 model=self.embedding_model.config.get("model"),
             )
         else:

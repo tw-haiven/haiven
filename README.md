@@ -91,9 +91,9 @@ docker run \
         -e TEAM_CONTENT_PATH=/knowledge-pack \
         -e AUTH_SWITCHED_OFF=true \
         -e ENABLED_PROVIDERS=ollama \
-        -e ENABLED_EMBEDDINGS_MODEL=ollama \
+        -e ENABLED_EMBEDDINGS_MODEL=ollama-mxbai-embed-large \
         -e ENABLED_VISION_MODEL=llava:7b \
-        -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+        -e OLLAMA_HOST=http://host.docker.internal:11434 \
         -p 8080:8080 \
         ghcr.io/tw-haiven/haiven:v0.2
 ```
