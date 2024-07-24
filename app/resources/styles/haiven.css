@@ -276,6 +276,12 @@
     padding: 8px;
     border: 1px solid var(--border-color-accent-subdued) !important;
   }
+
+  .message-row.bubble.bot-row div {
+    border: none;
+    background-color: transparent;
+  }
+
 }
 
 .show-api {
@@ -371,4 +377,9 @@
 .message-row.bubble.bot-row {
   padding: 8px;
   border: 1px solid var(--color-light-gray)
+}
+
+.message-row.bubble.bot-row div {
+  border: none;
+  background-color: transparent;
 }
