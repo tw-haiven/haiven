@@ -282,7 +282,6 @@ class ImageDescriptionService:
         self, gradio_image: Image.Image, user_input: str
     ) -> str:
         res = ollama.chat(
-            base_url=self.model_definition.config.get("base_url"),
             model=self.model_definition.config.get("model"),
             messages=[
                 {

@@ -20,6 +20,9 @@ def backwards_compat_env_vars():
     if os.environ.get("TEAM_CONTENT_PATH"):
         os.environ["KNOWLEDGE_PACK_PATH"] = os.environ["TEAM_CONTENT_PATH"]
 
+    if os.environ.get("OLLAMA_BASE_URL"):
+        os.environ["OLLAMA_HOST"] = os.environ["OLLAMA_BASE_URL"]
+
 
 def create_server():
     load_dotenv()
