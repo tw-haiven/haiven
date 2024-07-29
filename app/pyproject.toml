@@ -32,8 +32,6 @@ typing-extensions = "^4.12.2"
 typing-inspect = "^0.9.0"
 uvicorn = "^0.30.3"
 python-dotenv = "^1.0.1"
-toml = "^0.10.2"
-setuptools = "<72.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.1"
