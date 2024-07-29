@@ -24,6 +24,8 @@ RUN apt-get update \
         build-essential \
         && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get install -y  --no-install-recommends python3-setuptools 
+
 # Install Poetry
 RUN pip install poetry
 
