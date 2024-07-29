@@ -37,6 +37,8 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
+      - name: Poetry Force Install setuptools
+        run: poetry add setuptools==71.1.0 && poetry update setuptools && poetry show setuptools
       - name: Install App dependencies
         run: |
           cd app
