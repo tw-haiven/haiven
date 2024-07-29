@@ -27,7 +27,7 @@ jobs:
         id: setup_python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10.12'
+          python-version: '3.11'
       - uses: pre-commit/action@v3.0.1
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -35,16 +35,6 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-setuptools
-      - name: Upgrade pip, setuptools, and wheel
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-      - name: Install ffmpy with pip
-        run: |
-          pip install --no-build-isolation ffmpy==0.3.2
       - name: Install App dependencies
         run: |
           cd app
