@@ -18,13 +18,15 @@ FROM python:3.11-slim as builder
 
 WORKDIR /app
 
+RUN apt-get install -y  --no-install-recommends python3-setuptools 
+
 # Install build dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install -y  --no-install-recommends python3-setuptools 
+
 
 # Install Poetry
 RUN pip install poetry
