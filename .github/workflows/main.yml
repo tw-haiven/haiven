@@ -22,6 +22,10 @@ jobs:
     permissions:
       contents: 'read'
     steps:
+      - name: Install Setuptools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-setuptools
       - uses: 'actions/checkout@v4.1.1'
       - name: Set up Python
         id: setup_python
