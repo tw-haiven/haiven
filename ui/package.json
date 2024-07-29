@@ -35,7 +35,7 @@
     "reactflow": "^11.11.4",
     "rehype-raw": "^7.0.0",
     "remark-breaks": "^4.0.0",
-    "replicate": "^0.30.2",
+    "replicate": "^0.32.0",
     "swr": "^2.2.5",
     "tailwindcss": "^3.4.4"
   },
