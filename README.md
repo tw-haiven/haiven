@@ -68,7 +68,7 @@ docker run \
         -e AUTH_SWITCHED_OFF=true \
         -e TEAM_CONTENT_PATH=/knowledge-pack \
         -p 8080:8080 \
-        ghcr.io/tw-haiven/haiven:v0.2
+        ghcr.io/tw-haiven/haiven:v0.3
 ```
 
 ### With Ollama, locally
