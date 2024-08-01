@@ -47,9 +47,6 @@ Haiven lets you codify your practices and knowledge and make it available to an 
 
 *Disclaimer: As the majority of developers in Thoughtworks are using MacOS, all shell-related instructions are currently only build for and tested on MacOS.*
 
-Prerequisite:
-- Log into the GitHub Container Registry: `echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin` ([documentation about how to get a token and authorize yourself here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic))
-
 ### With Azure OpenAI
 
 - Create a `.env` file with the content of [app/.env.azure.template](app/.env.azure.template)
