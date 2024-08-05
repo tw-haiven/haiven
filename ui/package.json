@@ -40,7 +40,7 @@
     "tailwindcss": "^3.4.4"
   },
   "devDependencies": {
-    "@types/node": "^20.14.9",
+    "@types/node": "^22.1.0",
     "@types/react": "^18.3.3",
     "prettier": "3.3.2",
     "typescript": "^5.5.2"
