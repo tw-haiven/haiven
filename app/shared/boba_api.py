@@ -222,7 +222,7 @@ class BobaApi:
             warnings=[],
         )
 
-        self.chat(rendered_prompt, chat_session)
+        return self.chat(rendered_prompt, chat_session)
 
     def chat(self, rendered_prompt, chat_session):
         for chunk in chat_session.start_with_prompt(rendered_prompt):
