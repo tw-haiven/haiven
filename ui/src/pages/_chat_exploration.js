@@ -1,9 +1,9 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import { useState, useEffect } from "react";
-import { ProChat, ProChatProvider, useProChat } from "@ant-design/pro-chat";
+import { useState, useRef } from "react";
+import { ProChatProvider } from "@ant-design/pro-chat";
 import { Button, Flex } from "antd";
-import { useTheme } from "antd-style";
 import { RiLightbulbLine } from "react-icons/ri";
+import ChatWidget from "../app/_chat";
 
 export default function ChatExploration({
   context,
@@ -11,14 +11,12 @@ export default function ChatExploration({
   scenarioQueries = [],
 }) {
   const item = context || {};
-  console.log("ITEM:", item);
-  const userProfile = user || {
-    name: "User",
-    avatar: "/boba/user-5-fill-dark-blue.svg",
-  };
-  const theme = useTheme();
+  // console.log("ITEM:", item);
+
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
+
+  const chatRef = useRef();
 
   function itemToString(item) {
     let result = "";
@@ -28,7 +26,7 @@ export default function ChatExploration({
     return result;
   }
 
-  const onSubmitMessage = async (messages) => {
+  const submitPromptToBackend = async (messages) => {
     const exploreUri = "/api/" + item.type + "/explore",
       itemSummary = itemToString(item);
 
@@ -70,9 +68,13 @@ export default function ChatExploration({
     }
   };
 
-  const PossibilityPanel = () => {
-    const proChat = useProChat();
+  const addMessageToChatWidget = async (prompt) => {
+    if (chatRef.current) {
+      chatRef.current.sendMessage(prompt);
+    }
+  };
 
+  const PossibilityPanel = () => {
     return (
       <Flex
         marginBottom="1em"
@@ -85,7 +87,7 @@ export default function ChatExploration({
             <Button
               key={i}
               onClick={() => {
-                proChat.sendMessage(text);
+                addMessageToChatWidget(text);
               }}
               className="suggestion"
             >
@@ -98,41 +100,14 @@ export default function ChatExploration({
     );
   };
 
-  const Chat = () => {
-    return (
-      <ProChat
-        style={{
-          height: "100%",
-          width: "100%",
-          backgroundColor: theme.colorBgContainer,
-          marginTop: "5px",
-        }}
-        showTitle
-        assistantMeta={{
-          avatar: "/boba/shining-fill-white.svg",
-          title: "Haiven",
-          backgroundColor: "#003d4f",
-        }}
-        userMeta={{
-          avatar: userProfile.avatar ?? userProfile.name,
-          title: userProfile.name,
-          backgroundColor: "#47a1ad",
-        }}
-        locale="en-US"
-        helloMessage={"What do you want to explore?"}
-        request={onSubmitMessage}
-      />
-    );
-  };
-
   return (
     <div className="chat-exploration">
       <div className="chat-exploration__header">
         <p>{item.summary}</p>
       </div>
+      <PossibilityPanel />
       <ProChatProvider>
-        <PossibilityPanel />
-        <Chat />
+        <ChatWidget onSubmitMessage={submitPromptToBackend} ref={chatRef} />
       </ProChatProvider>
     </div>
   );

@@ -31,6 +31,13 @@ html {
   height: 1em;
 }
 
+.prompt-chat-container {
+  /* display: flex;
+  flex-direction: column;
+  height: 100vh;
+  flex: 1; */
+}
+
 .prompt-choice {
   padding: 0.5em;
 }
