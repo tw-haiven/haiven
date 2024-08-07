@@ -148,6 +148,21 @@ class ConfigService:
             case "aws":
                 return "aws-claude-v3"
 
+    @staticmethod
+    def get_identity_providers(path: str = "config.yaml") -> str:
+        """
+        Get the identity provider from the config file.
+
+        Args:
+            path (str): The path to the YAML file.
+
+        Returns:
+            str: The identity provider.
+        """
+        data = ConfigService._load_yaml(path)
+        identity_provider = data["identity_providers"]
+        return identity_provider
+
     def _load_yaml(path: str) -> dict:
         """
         Load YAML data from a config file.

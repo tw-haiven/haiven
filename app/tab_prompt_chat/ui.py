@@ -312,7 +312,7 @@ def enable_chat(
                 user_identifier_state,
             ],
             outputs=[ui_message, ui_chatbot],
-            scroll_to_output=True,
+            scroll_to_output=True
         )
         ui_get_knowledge_advice_button.click(
             chat_with_knowledge,

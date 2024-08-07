@@ -10,45 +10,46 @@
     <noscript>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
     </noscript>
-
-    
 </head>
+
 <body class="layout--splash">
     <div class="masthead">
         <div class="masthead__inner-wrap">
             <div class="masthead__menu">
                 <nav id="site-nav" class="greedy-nav">
-                    <a class="site-logo"><img src="/static/thoughtworks_logo_grey.png"
-                            alt="Haiven"></a>
+                    <a class="site-logo"><img src="/static/thoughtworks_logo_grey.png" alt="Haiven"></a>
                     <a class="site-title">
                         Haiven
                     </a>
-    
+
                 </nav>
             </div>
         </div>
     </div>
-    <div class="initial-content">
+    <div  class="initial-content">
         <div id="main" role="main">
             <article>
-    
+
                 <section class="page__content" itemprop="text">
-                    
-                        <div>
-                            <h2>Authentication error</h2>
-                            
-                            <a href="/login">Login</a>
-                            {{ error }}
-                        </div>
-    
-                    
-    
+
+                    <div>
+                        <p>Authentication error</p>
+
+                        <a href="/">Login</a>
+
+                        {% if error %}
+                        {{ error }}
+                        {% endif %}
+                    </div>
+
+
+
                 </section>
             </article>
         </div>
-    
+
     </div>
-    
+
 </body>
 
 </html>

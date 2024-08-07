@@ -9,6 +9,20 @@ default_models:
   vision: ${ENABLED_VISION_MODEL}
   embeddings: ${ENABLED_EMBEDDINGS_MODEL}
 
+
+identity_providers:
+  - id: id-provider-1
+    name: Default Identity Provider
+    client_id: ${OAUTH_CLIENT_ID}
+    client_secret: ${OAUTH_CLIENT_SECRET}
+    configuration_url: ${OPENID_CONF_URL}
+
+  - id: id-provider-2
+    name: Secondary Identity Provider
+    client_id: ${AUTH0_OAUTH_CLIENT_ID}
+    client_secret: ${AUTH0_OAUTH_CLIENT_SECRET}
+    configuration_url: ${AUTH0_OPENID_CONF_URL}
+
 models:
   - id: azure-gpt35
     name: GPT-3.5 on Azure

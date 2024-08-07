@@ -49,7 +49,9 @@ class Server:
             json.dumps(user)
 
             template = jinja_env.get_template("index.html")
-            html = template.render(user=user)
+            identity_providers = ConfigService.get_identity_providers()
+            identity_providers = [{"name": provider["name"], "id": provider["id"]} for provider in identity_providers]            
+            html = template.render(user=user,identity_providers=identity_providers)
             return HTMLResponse(html)
 
         @app.get("/chat-session")
@@ -61,14 +63,16 @@ class Server:
             )
 
         @app.get(self.url.login())
-        async def login(request: Request):
+        async def login(request: Request, provider: str = None):
             redirect_uri = request.url_for("auth")
-            return await oauth.oauth.authorize_redirect(request, redirect_uri)
+            request.session["identity_provider"] = provider
+            return await oauth.create_client(provider).authorize_redirect(request, redirect_uri)
 
         @app.get(self.url.auth())
         async def auth(request: Request):
             try:
-                token = await oauth.oauth.authorize_access_token(request)
+                provider = request.session.pop("identity_provider")
+                token = await oauth.create_client(provider).authorize_access_token(request)
             except OAuthError as error:
                 return HTMLResponse(f"<h1>{error.error}</h1>")
             user = token.get("userinfo")
@@ -170,14 +174,16 @@ class Server:
 
         oauth = OAuth()
 
-        oauth.register(
-            name="oauth",
-            client_id=os.getenv("OAUTH_CLIENT_ID"),
-            client_secret=os.getenv("OAUTH_CLIENT_SECRET"),
-            server_metadata_url=os.getenv("OPENID_CONF_URL"),
-            client_kwargs={"scope": "openid email profile"},
-        )
-
+        available_identity_providers = ConfigService.get_identity_providers()        
+        for provider in available_identity_providers:
+            oauth.register(
+                    name=provider["id"],
+                    client_id=provider["client_id"],
+                    client_secret=provider["client_secret"],
+                    server_metadata_url=provider["configuration_url"],
+                    client_kwargs={"scope": "openid email profile"},
+            )
+ 
         origins = [
             "http://localhost:3000",  # Allow CORS from localhost:3000
         ]
