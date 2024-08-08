@@ -6,7 +6,12 @@ class MetadataService:
     def create_metadata(
         source_file_path: str, description: str, provider: str, output_dir: str
     ):
-        key = os.path.basename(os.path.normpath(f"{source_file_path.split('.')[-2]}"))
+        file_name_components = source_file_path.split(".")
+        if len(file_name_components) == 1:
+            name = source_file_path
+        else:
+            name = file_name_components[-2]
+        key = os.path.basename(os.path.normpath(f"{name}"))
         source = os.path.basename(os.path.normpath(source_file_path))
         title = key.replace("-", " ").replace("_", " ")
         return {

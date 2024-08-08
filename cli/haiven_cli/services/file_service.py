@@ -55,11 +55,31 @@ class FileService:
                 )
         return text, metadatas
 
-    def get_files_path_from_directory(self, source_dir: str):
+    def get_text_and_metadata_from_txts(self, txt_file_directory, authors="Unknown"):
+        text = []
+        metadatas = []
+        txt_files = self.get_files_path_from_directory(txt_file_directory, ".txt")
+        for txt_file in txt_files:
+            with open(txt_file, "r") as file:
+                text.append(file.read())
+            metadatas.append(
+                {
+                    "source": txt_file,
+                    "title": os.path.basename(txt_file),
+                    "authors": authors,
+                }
+            )
+        return text, metadatas
+
+    def get_files_path_from_directory(self, source_dir: str, file_extension=None):
         files = []
         for root, _, filenames in os.walk(source_dir):
             for filename in filenames:
-                files.append(os.path.join(root, filename))
+                if file_extension:
+                    if filename.endswith(file_extension):
+                        files.append(os.path.join(root, filename))
+                else:
+                    files.append(os.path.join(root, filename))
         return files
 
     def write_metadata_file(self, metadata: List[dict], output_path: str):

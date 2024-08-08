@@ -114,6 +114,41 @@ class App:
                 metadata, f"{output_dir}/{_format_file_name(file)}.md"
             )
 
+    def index_txts_directory(
+        self,
+        source_dir: str,
+        embedding_model: str,
+        config_path: str,
+        output_dir: str,
+        description: str,
+        authors: str,
+    ):
+        if not source_dir:
+            raise ValueError("please provide directory path for source_dir option")
+
+        embedding_models = self.config_service.load_embeddings(config_path)
+        model = _get_embedding(embedding_model, embedding_models)
+        if model is None:
+            current_models = _get_defined_embedding_models_ids(embedding_models)
+            raise ValueError(
+                f"embeddings are not defined in {config_path}\n{current_models}"
+            )
+
+        directory_name = os.path.basename(os.path.normpath(source_dir))
+
+        file_content, first_metadata = self._get_txt_files_text_and_metadata(
+            source_dir, authors
+        )
+
+        output_kb_dir = f"{output_dir}/{_format_file_name(directory_name)}.kb"
+        self.knowledge_service.index(file_content, first_metadata, model, output_kb_dir)
+        metadata = self.metadata_service.create_metadata(
+            directory_name, description, model.provider, output_dir
+        )
+        self.file_service.write_metadata_file(
+            metadata, f"{output_dir}/{_format_file_name(directory_name)}.md"
+        )
+
     def create_context_structure(self, context_name: str, parent_dir: str = "./"):
         if not context_name:
             raise ValueError("please provide context name for context_name option")
@@ -131,6 +166,13 @@ class App:
 
     def _get_csv_file_text_and_metadata(self, source_path: str):
         return self.file_service.get_text_and_metadata_from_csv(source_path)
+
+    def _get_txt_files_text_and_metadata(
+        self, directory_path: str, authors: str = "Unknown"
+    ):
+        return self.file_service.get_text_and_metadata_from_txts(
+            directory_path, authors
+        )
 
     def _get_pdf_file_text_and_metadata(
         self, source_path: str, pdf_source_link: str = None
@@ -159,6 +201,9 @@ def _get_defined_embedding_models_ids(embedding_models: List[EmbeddingModel]) ->
 
 def _format_file_name(file_path: str) -> str:
     split_file = file_path.split(".")
+    if len(split_file) == 1:
+        return os.path.basename(os.path.normpath(file_path))
+
     file_prefix = split_file[-2]
     formatted_file = os.path.basename(os.path.normpath(file_prefix))
     return formatted_file

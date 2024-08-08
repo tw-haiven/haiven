@@ -81,6 +81,31 @@ def index_all_files(
 
 
 @cli.command(no_args_is_help=True)
+def index_txt_files(
+    source_dir: str,
+    output_dir="new_knowledge_base",
+    embedding_model="openai",
+    description: str = "",
+    config_path: str = "",
+    authors: str = "Unknown",
+):
+    """Index all TXT files in a directory into one knowledge base in a given destination directory."""
+    cli_config_service = CliConfigService()
+    if cli_config_service.get_config_path() and config_path == "":
+        config_path = cli_config_service.get_config_path()
+
+    env_path_file = cli_config_service.get_env_path()
+
+    config_service = ConfigService(env_file_path=env_path_file)
+    app = create_app(config_service)
+    print("Indexing all files in " + source_dir)
+
+    app.index_txts_directory(
+        source_dir, embedding_model, config_path, output_dir, description, authors
+    )
+
+
+@cli.command(no_args_is_help=True)
 def create_context(
     context_name: str = "",
     kp_root: str = "",
