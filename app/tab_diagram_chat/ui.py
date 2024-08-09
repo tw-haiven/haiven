@@ -64,10 +64,6 @@ def enable_image_chat(
             request, "active_knowledge_context", app_level=True
         )
 
-        if context_selected is None:
-            gr.Warning("Please select a knowledge context first")
-            return [None, "", "", ""]
-
         if prompt_choice:
             user_context.set_value(request, "diagram_chat_prompt_choice", prompt_choice)
             chat_context.prompt = prompt_list.get(prompt_choice).metadata.get(
@@ -112,7 +108,7 @@ def enable_image_chat(
         )
         if show_warning and len(warnings) > 0:
             warnings = "\n".join(warnings)
-            gr.Warning(f"{warnings}")
+            gr.Info(f"{warnings}")
         return rendered_prompt
 
     def on_change_user_inputs(
@@ -121,10 +117,6 @@ def enable_image_chat(
         context_selected = user_context.get_value(
             request, "active_knowledge_context", app_level=True
         )
-
-        if context_selected is None:
-            gr.Warning("Please select a knowledge context first")
-            return ""
 
         if not prompt_choice:
             prompt_choice = None

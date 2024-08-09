@@ -5,7 +5,6 @@ from typing import List
 import frontmatter
 from langchain.prompts import PromptTemplate
 from shared.knowledge import KnowledgeBaseMarkdown
-from shared.logger import HaivenLogger
 
 
 class PromptList:
@@ -90,27 +89,32 @@ class PromptList:
     def create_and_render_template(
         self, active_knowledge_context, identifier, variables, warnings=None
     ):
-        knowledge_with_overwrites = {
-            **self.knowledge_base.get_knowledge_content_dict(active_knowledge_context),
-            **variables,
-        }
+        if active_knowledge_context:
+            knowledge_and_input = {
+                **self.knowledge_base.get_knowledge_content_dict(
+                    active_knowledge_context
+                ),
+                **variables,
+            }
+        else:
+            knowledge_and_input = {**variables}
 
         template = self.create_template(active_knowledge_context, identifier)
         template.get_input_schema()
         template.dict()
 
-        # check if input variables in template are present in the knowledge_with_overwrites
+        # make sure all input variables are present for template rendering (as it will otherwise fail)
         for key in template.input_variables:
-            if key not in knowledge_with_overwrites:
-                message = f"A requested context '{key}' was not found. Quality of the output for the selected prompt might be affected."
-                HaivenLogger.get().logger.warning(message)
-                if warnings is not None:
-                    warnings.append(message)
-                knowledge_with_overwrites[str(key)] = (
-                    f"No information was present for '{key}'."
+            if key not in knowledge_and_input:
+                knowledge_and_input[str(key)] = (
+                    "None provided, please try to help without this information."  # placeholder for the prompt
                 )
+                if key != "user_input":
+                    message = f"No context selected, no '{key}' added to the prompt."  # message shown to the user
+                    if warnings is not None:
+                        warnings.append(message)
 
-        rendered = template.format(**knowledge_with_overwrites)
+        rendered = template.format(**knowledge_and_input)
         return template, rendered
 
     def filter(self, filter_categories: List[str]):

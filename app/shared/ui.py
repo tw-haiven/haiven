@@ -241,6 +241,7 @@ class UI:
             (context.name.replace("_", " ").title(), context.path)
             for context in knowledge_pack.contexts
         ]
+        knowledge_context_choices.append(("None", None))
         knowledge_context_choices.sort(key=lambda x: x[0])
         knowledge_packs_selector = gr.Dropdown(
             knowledge_context_choices,

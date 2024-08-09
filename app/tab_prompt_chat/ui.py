@@ -60,7 +60,7 @@ def enable_chat(
         )
         if show_warning and len(warnings) > 0:
             warnings = "\n".join(warnings)
-            gr.Warning(f"{warnings}")
+            gr.Info(f"{warnings}")
         return rendered_prompt
 
     def update_llm_config(request: gr.Request):
@@ -84,10 +84,6 @@ def enable_chat(
         context_selected = user_context.get_value(
             request, "active_knowledge_context", app_level=True
         )
-
-        if context_selected is None:
-            gr.Warning("Please select a knowledge context first")
-            return [None, "", "", ""]
 
         if prompt_choice:
             user_context.set_value(request, "chat_prompt_choice", prompt_choice)
@@ -119,10 +115,6 @@ def enable_chat(
         context_selected = user_context.get_value(
             request, "active_knowledge_context", app_level=True
         )
-
-        if context_selected is None:
-            gr.Warning("Please select a knowledge context first")
-            return ""
 
         ui_prompt = __render_prompt_with_warnings(
             prompt_list, context_selected, prompt_choice, user_input, show_warning=False

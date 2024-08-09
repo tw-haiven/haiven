@@ -80,6 +80,8 @@ class KnowledgeBaseMarkdown:
         return all_keys
 
     def get_context_keys(self, context: str) -> list[str]:
+        if context is None:
+            return []
         all_keys = [
             knowledge_document.metadata["key"]
             for knowledge_document in self._knowledge[context]

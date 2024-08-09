@@ -108,6 +108,21 @@ def test_create_and_render_template():
     )
 
 
+def test_create_and_render_template_with_missing_variables():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+
+    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
+    _, rendered = prompt_list.create_and_render_template(
+        None,
+        "uuid-3",
+        {"user_input": "Some User Input"},
+    )
+    assert (
+        rendered
+        == "Content: Some User Input | Business: None provided, please try to help without this information."
+    )
+
+
 def test_create_and_render_template_overwrite_knowledge_base():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
 

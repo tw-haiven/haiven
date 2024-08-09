@@ -50,17 +50,15 @@ class UIFactory:
     def __knowledge_context_select_changed(
         self, knowledge_context_select, request: gr.Request
     ):
-        if not self.is_empty(knowledge_context_select):
-            knowledge_context = self.content_manager.on_context_selected(
-                knowledge_context_select
-            )
-            if knowledge_context is not None:
-                user_context.set_value(
-                    request,
-                    "active_knowledge_context",
-                    knowledge_context,
-                    app_level=True,
-                )
+        knowledge_context = self.content_manager.on_context_selected(
+            knowledge_context_select
+        )
+        user_context.set_value(
+            request,
+            "active_knowledge_context",
+            knowledge_context,
+            app_level=True,
+        )
 
     def create_ui(self, ui_type):
         match ui_type:

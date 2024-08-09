@@ -55,7 +55,7 @@ def enable_brainstorming(
 
         if show_warning and len(warnings) > 0:
             warnings = "\n".join(warnings)
-            gr.Warning(f"{warnings}")
+            gr.Info(f"{warnings}")
 
         return rendered_prompt
 
@@ -63,10 +63,6 @@ def enable_brainstorming(
         active_knowledge_context = user_context.get_value(
             request, "active_knowledge_context", app_level=True
         )
-
-        if active_knowledge_context is None:
-            gr.Warning("Please select a knowledge context first")
-            return ""
 
         ui_prompt = __render_prompt_with_warnings(
             prompt_list,
@@ -83,10 +79,6 @@ def enable_brainstorming(
         context_selected = user_context.get_value(
             request, "active_knowledge_context", app_level=True
         )
-
-        if context_selected is None:
-            gr.Warning("Please select a knowledge context first")
-            return [None, "", "", ""]
 
         if prompt_choice:
             user_context.set_value(
