@@ -7,11 +7,13 @@ const { TextArea } = Input;
 import ChatWidget from "../app/_chat";
 import Clipboard from "../app/_clipboard";
 import ClipboardButton from "../app/_clipboard_button";
+import { getPrompts, getContexts } from "../app/_boba_api";
 
 const PromptChat = () => {
   const chatRef = useRef();
 
   const [prompts, setPrompts] = useState([]);
+  const [contexts, setContexts] = useState([]);
   const [promptInput, setPromptInput] = useState("");
   const [selectedPrompt, setPromptSelection] = useState("");
   const [showChat, setShowChat] = useState(false);
@@ -67,21 +69,12 @@ const PromptChat = () => {
   }
 
   useEffect(() => {
-    fetch("/api/prompts", {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((response) => {
-      response.json().then((data) => {
-        const formattedPrompts = data.map((item) => ({
-          ...item,
-          value: item.identifier,
-          label: item.title,
-        }));
-        setPrompts(formattedPrompts);
+    getPrompts(setPrompts);
+    getContexts((data) => {
+      const contextTitles = data.map((context) => {
+        return context.context;
       });
+      setContexts(contextTitles);
     });
   }, []);
 
@@ -112,6 +105,14 @@ const PromptChat = () => {
               ></Select>
             </div>
 
+            {contexts && (
+              <div className="context-list">
+                <b>Available Contexts:</b> <br />
+                {contexts.join(", ")}
+                <br />
+              </div>
+            )}
+
             {selectedPrompt && (
               <div className="user-input">
                 <p>
@@ -139,10 +140,10 @@ const PromptChat = () => {
                 }}
               />
             </div>
+            <Button type="primary" onClick={addMessageToChatWidget}>
+              Go
+            </Button>
           </div>
-          <Button type="primary" onClick={addMessageToChatWidget}>
-            Go
-          </Button>
         </div>
 
         <ProChatProvider>

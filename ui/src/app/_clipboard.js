@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 
 import { Collapse, Drawer } from "antd";
 import ReactMarkdown from "react-markdown";
+import { getContexts } from "../app/_boba_api";
 
 export default function Clipboard({ toggleClipboardDrawer, isOpen }) {
   const [snippets, setSnippets] = useState([]);
@@ -18,50 +19,42 @@ export default function Clipboard({ toggleClipboardDrawer, isOpen }) {
   };
 
   useEffect(() => {
-    fetch("/api/knowledge/snippets", {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((response) => {
-      response.json().then((data) => {
-        const renderContexts = data.map((context, index) => {
-          const snippetDisplay = Object.keys(context.snippets).map((key) => {
-            const snippet = {
-              title: key,
-              content: context.snippets[key],
-              preview: snippetPreview(context.snippets[key]),
-              numCharacters: context.snippets[key].length,
-              tokenEstimation: context.snippets[key].length / 4,
-            };
-            return (
-              <div>
-                <p>
-                  <b>{snippet.title}</b>
-                  &nbsp;({snippet.numCharacters} characters / ~={" "}
-                  {snippet.tokenEstimation} tokens)
-                </p>
-                <div
-                  className="snippet"
-                  key={index}
-                  size="small"
-                  onClick={() => copySnippet(snippet)}
-                  title="Click to copy"
-                >
-                  <ReactMarkdown>{snippet.preview}</ReactMarkdown>
-                </div>
-              </div>
-            );
-          });
-          return {
-            key: context.context,
-            label: "Context: " + context.context,
-            children: snippetDisplay,
+    getContexts((data) => {
+      const renderContexts = data.map((context, index) => {
+        const snippetDisplay = Object.keys(context.snippets).map((key) => {
+          const snippet = {
+            title: key,
+            content: context.snippets[key],
+            preview: snippetPreview(context.snippets[key]),
+            numCharacters: context.snippets[key].length,
+            tokenEstimation: context.snippets[key].length / 4,
           };
+          return (
+            <div>
+              <p>
+                <b>{snippet.title}</b>
+                &nbsp;({snippet.numCharacters} characters / ~={" "}
+                {snippet.tokenEstimation} tokens)
+              </p>
+              <div
+                className="snippet"
+                key={index}
+                size="small"
+                onClick={() => copySnippet(snippet)}
+                title="Click to copy"
+              >
+                <ReactMarkdown>{snippet.preview}</ReactMarkdown>
+              </div>
+            </div>
+          );
         });
-        setSnippets(renderContexts);
+        return {
+          key: context.context,
+          label: "Context: " + context.context,
+          children: snippetDisplay,
+        };
       });
+      setSnippets(renderContexts);
     });
   }, []);
 
