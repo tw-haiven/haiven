@@ -6,9 +6,8 @@ import { Alert, Drawer, Card, Space, Spin, Button, Radio, Input } from "antd";
 const { TextArea } = Input;
 import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import ChatExploration from "./_chat_exploration";
-import Clipboard from "./_clipboard";
 import { parse } from "best-effort-json-parser";
-import { RiStackLine, RiGridLine, RiClipboardLine } from "react-icons/ri";
+import { RiStackLine, RiGridLine } from "react-icons/ri";
 
 let ctrl;
 
@@ -23,7 +22,6 @@ const Home = () => {
   const [explorationDrawerTitle, setExplorationDrawerTitle] =
     useState("Explore scenario");
   const [explorationDrawerHeader, setExplorationDrawerHeader] = useState("");
-  const [clipboardDrawerOpen, setClipboardDrawerOpen] = useState(false);
   const [chatContext, setChatContext] = useState({});
   const [savedIdeas, setSavedIdeas] = useState([]);
   const [currentSSE, setCurrentSSE] = useState(null);
@@ -147,32 +145,12 @@ const Home = () => {
           ]}
         />
       </Drawer>
-      <Drawer
-        title="Clipboard"
-        mask={false}
-        open={clipboardDrawerOpen}
-        destroyOnClose={true}
-        onClose={() => setClipboardDrawerOpen(false)}
-        size={"large"}
-      >
-        <Clipboard />
-      </Drawer>
       <div id="canvas">
         <div id="prompt-center">
           <b style={{ fontSize: 20, display: "inline-block" }}>
             Threat Modelling
           </b>
           &nbsp;
-          {/* <Button
-            onClick={() => setClipboardDrawerOpen(true)}
-            className="btn-clipboard"
-          ><RiClipboardLine
-          style={{
-            display: "inline-block",
-            verticalAlign: "middle",
-            height: 14,
-          }}
-        /></Button> */}
           <Radio.Group
             className="display-mode"
             onChange={onSelectDisplayMode}

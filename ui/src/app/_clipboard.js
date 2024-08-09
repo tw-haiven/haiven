@@ -1,10 +1,10 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { useState, useEffect } from "react";
 
-import { Collapse } from "antd";
+import { Collapse, Drawer } from "antd";
 import ReactMarkdown from "react-markdown";
 
-export default function Clipboard() {
+export default function Clipboard({ toggleClipboardDrawer, isOpen }) {
   const [snippets, setSnippets] = useState([]);
 
   const snippetPreview = (snippetContent) => {
@@ -70,15 +70,24 @@ export default function Clipboard() {
   };
 
   return (
-    <div className="clipboard">
-      <div className="clipboard-contents">
-        <div>Click on a snippet to copy it to your clipboard.</div>
-        <Collapse
-          accordion
-          items={snippets}
-          defaultActiveKey="demo_crm"
-        ></Collapse>
+    <Drawer
+      title="Clipboard"
+      mask={false}
+      open={isOpen}
+      destroyOnClose={true}
+      onClose={() => toggleClipboardDrawer(false)}
+      size={"large"}
+    >
+      <div className="clipboard">
+        <div className="clipboard-contents">
+          <div>Click on a snippet to copy it to your clipboard.</div>
+          <Collapse
+            accordion
+            items={snippets}
+            defaultActiveKey="demo_crm"
+          ></Collapse>
+        </div>
       </div>
-    </div>
+    </Drawer>
   );
 }

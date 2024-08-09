@@ -2,9 +2,11 @@
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
-import { Input, Select, Space, Button } from "antd";
+import { Input, Select, Button } from "antd";
 const { TextArea } = Input;
 import ChatWidget from "../app/_chat";
+import Clipboard from "../app/_clipboard";
+import ClipboardButton from "../app/_clipboard_button";
 
 const PromptChat = () => {
   const chatRef = useRef();
@@ -15,6 +17,7 @@ const PromptChat = () => {
   const [showChat, setShowChat] = useState(false);
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
+  const [clipboardDrawerOpen, setClipboardDrawerOpen] = useState(false);
 
   useEffect(() => setShowChat(false), []);
 
@@ -89,56 +92,66 @@ const PromptChat = () => {
   };
 
   return (
-    <div className="prompt-chat-container">
-      <div id="prompt-center">
-        <h2>Prompting Center</h2>
-        What do you want to do?{" "}
-        <Select
-          onChange={handlePromptChange}
-          style={{ width: 300 }}
-          options={prompts}
-        ></Select>
-        <div>
-          {selectedPrompt && (
-            <div>
-              <p>
-                <b>Description: </b>
-                {selectedPrompt.help_prompt_description}
-              </p>
-              <p>
-                <b>User input: </b>
-                {selectedPrompt.help_user_input}
-              </p>
-              <p>
-                <b>Sample input: </b>
-                {selectedPrompt.help_sample_input}
-              </p>
-            </div>
-          )}
-        </div>
-        <br />
-        <br />
-        <Space.Compact style={{ width: "100%" }}>
+    <>
+      <Clipboard
+        toggleClipboardDrawer={setClipboardDrawerOpen}
+        isOpen={clipboardDrawerOpen}
+      />
+
+      <div className="prompt-chat-container">
+        <div id="prompt-center">
+          <ClipboardButton toggleClipboardDrawer={setClipboardDrawerOpen} />
+          <h2>Prompting Center</h2>
+          What do you want to do?{" "}
+          <Select
+            onChange={handlePromptChange}
+            style={{ width: 300 }}
+            options={prompts}
+          ></Select>
+          <div>
+            {selectedPrompt && (
+              <div>
+                <p>
+                  <b>Description: </b>
+                  {selectedPrompt.help_prompt_description}
+                </p>
+                <p>
+                  <b>User input: </b>
+                  {selectedPrompt.help_user_input}
+                </p>
+                <p>
+                  <b>Sample input: </b>
+                  {selectedPrompt.help_sample_input}
+                </p>
+              </div>
+            )}
+          </div>
+          <br />
+          <br />
           Your user input:{" "}
           <TextArea
             value={promptInput}
+            rows={4}
             onChange={(e, v) => {
               setPromptInput(e.target.value);
             }}
           />
+          <br />
+          <br />
           <Button type="primary" onClick={addMessageToChatWidget}>
             Go
           </Button>
-        </Space.Compact>
+        </div>
+
+        <ProChatProvider>
+          <ChatWidget
+            onSubmitMessage={submitPromptToBackend}
+            ref={chatRef}
+            visible={showChat}
+          />
+        </ProChatProvider>
       </div>
-      <ProChatProvider>
-        <ChatWidget
-          onSubmitMessage={submitPromptToBackend}
-          ref={chatRef}
-          visible={showChat}
-        />
-      </ProChatProvider>
-    </div>
+    </>
   );
 };
 
