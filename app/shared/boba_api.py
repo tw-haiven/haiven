@@ -215,7 +215,7 @@ class BobaApi:
 
     def prompt(self, prompt_id, user_input, chat_session):
         rendered_prompt = self.prompt_list.render_prompt(
-            active_knowledge_context="demo_crm",
+            active_knowledge_context=None,
             prompt_choice=prompt_id,
             user_input=user_input,
             additional_vars={},
