@@ -85,7 +85,11 @@ class UI:
     ):
         with gr.Row():
             with gr.Column(scale=2, elem_classes="knowledge-column"):
-                gr.Markdown("## Context knowledge")
+                gr.Markdown("""## Prompt snippets
+                            These text snippets are getting pulled into your prompts automatically when you have chosen a context.
+                            This way, you don't have to repeat to the AI over and over again what the domain or technical context is.
+                            Which of the snippets get pulled in depends on the definition of the prompt.
+                            """)
                 for context_key in [
                     context.name for context in knwoledge_pack_definition.contexts
                 ]:
@@ -110,7 +114,10 @@ class UI:
                                 "No knowledge found for this context", show_label=False
                             )
             with gr.Column(scale=2, elem_classes="knowledge-column"):
-                gr.Markdown("## Documents")
+                gr.Markdown("""## Documents
+                            You can address these documents while you are chatting (see button "Get input from team knowledge"),
+                            and you can also ask them questions directly on the "Knowledge chat" tab.
+                            """)
                 context_content = EmbeddingsService.get_embedded_documents()
                 with gr.Accordion(
                     label="Common documents",
@@ -119,14 +126,17 @@ class UI:
                 ):
                     if context_content and len(context_content) > 0:
                         for embbedding_document in context_content:
-                            gr.Markdown(f"""
+                            gr.Markdown(
+                                f"""
     ### {embbedding_document.title}
 
     **File:** {DocumentsUtils.get_source_title_link(vars(embbedding_document))}
 
     **Description:** {embbedding_document.description}
 
-                    """)
+                    """,
+                                elem_classes="knowledge-document-info",
+                            )
                     else:
                         gr.Textbox(
                             "No knowledge found for this context", show_label=False
@@ -156,15 +166,6 @@ class UI:
                             gr.Textbox(
                                 "No knowledge found for this context", show_label=False
                             )
-
-            with gr.Column(scale=1, elem_classes="user-help-col"):
-                gr.Markdown("""
-                "Team Knowledge" is maintained at a central place, and can be pulled into the prompts across the application.
-
-                **Benefits:**
-                - Users don't have to repeat over and over again for the AI what the domain or technical context is
-                - Team members can benefit from the knowledge of others, in particular when they are new to the team or less experienced
-                    """)
 
     def ui_show_about(self):
         gr.Markdown(
