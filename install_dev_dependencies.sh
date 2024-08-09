@@ -23,7 +23,7 @@ printf "\nInstalling Haiven CLI..."
 poetry run cli-init
 poetry run cli-build
 WHL_PATH=$(cat haiven_wheel_path.txt)
-pipx install "$WHL_PATH"
+pipx install "$WHL_PATH" --force
 CLI_EXEC_PATH=$(which "haiven-cli")
 rm haiven_wheel_path.txt
 haiven-cli --install-completion --show-completion
