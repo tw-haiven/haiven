@@ -156,8 +156,8 @@ const Home = () => {
           </Radio.Group>
           <br />
           <br /> */}
-          <div className="scenario-inputs">
-            <div className="scenario-input">
+          <div className="user-inputs">
+            <div className="user-input">
               <label>High level requirements</label>
               <TextArea
                 placeholder="Describe the high level requirements to break down"

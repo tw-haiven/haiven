@@ -102,21 +102,24 @@ const PromptChat = () => {
         <div id="prompt-center">
           <ClipboardButton toggleClipboardDrawer={setClipboardDrawerOpen} />
           <h2>Prompting Center</h2>
-          What do you want to do?{" "}
-          <Select
-            onChange={handlePromptChange}
-            style={{ width: 300 }}
-            options={prompts}
-          ></Select>
-          <div>
+          <div className="user-inputs">
+            <div className="user-input">
+              <label> What do you want to do?</label>
+              <Select
+                onChange={handlePromptChange}
+                style={{ width: 300 }}
+                options={prompts}
+              ></Select>
+            </div>
+
             {selectedPrompt && (
-              <div>
+              <div className="user-input">
                 <p>
                   <b>Description: </b>
                   {selectedPrompt.help_prompt_description}
                 </p>
                 <p>
-                  <b>User input: </b>
+                  <b>Your input: </b>
                   {selectedPrompt.help_user_input}
                 </p>
                 <p>
@@ -125,19 +128,18 @@ const PromptChat = () => {
                 </p>
               </div>
             )}
+
+            <div className="user-input">
+              <label>Your input:</label>
+              <TextArea
+                value={promptInput}
+                rows={4}
+                onChange={(e, v) => {
+                  setPromptInput(e.target.value);
+                }}
+              />
+            </div>
           </div>
-          <br />
-          <br />
-          Your user input:{" "}
-          <TextArea
-            value={promptInput}
-            rows={4}
-            onChange={(e, v) => {
-              setPromptInput(e.target.value);
-            }}
-          />
-          <br />
-          <br />
           <Button type="primary" onClick={addMessageToChatWidget}>
             Go
           </Button>

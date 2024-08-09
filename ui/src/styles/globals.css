@@ -113,15 +113,15 @@ body {
   font-weight: bold;
 }
 
-.scenario-input {
+.user-input {
   padding-bottom: 0.5em;
 }
 
-.scenario-input label {
+.user-input label {
   margin-right: 0.3em;
 }
 
-.scenario-input textarea, .scenario-input input {
+.user-input textarea, .user-input input {
   max-width: 600px;
   display: block;
 }

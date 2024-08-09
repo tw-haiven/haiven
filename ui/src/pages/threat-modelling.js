@@ -166,8 +166,8 @@ const Home = () => {
           </Radio.Group>
           <br />
           <br />
-          <div className="scenario-inputs">
-            <div className="scenario-input">
+          <div className="user-inputs">
+            <div className="user-input">
               <label>Users</label>{" "}
               <Input
                 placeholder="Describe the user base, e.g. if it's B2C, B2B, internal, ..."
@@ -177,7 +177,7 @@ const Home = () => {
                 }}
               />
             </div>
-            <div className="scenario-input">
+            <div className="user-input">
               <label>Assets</label>{" "}
               <Input
                 placeholder="Describe any important assets that need to be protected"
@@ -187,7 +187,7 @@ const Home = () => {
                 }}
               />
             </div>
-            <div className="scenario-input">
+            <div className="user-input">
               <label>Data flow</label>
               <TextArea
                 placeholder="Describe how data flows through your system"

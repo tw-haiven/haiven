@@ -161,8 +161,8 @@ const Home = () => {
         <div id="prompt-center">
           <h2>Validate and refine a user story</h2>
           <h3>Step 1: Discover gaps in your story</h3>
-          <div className="scenario-inputs">
-            <div className="scenario-input">
+          <div className="user-inputs">
+            <div className="user-input">
               <label>High level requirements</label>
               <TextArea
                 placeholder="What do you have so far?"
