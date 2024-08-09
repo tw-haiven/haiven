@@ -178,7 +178,8 @@ Look at the [Sample Knowledge Pack repository](https://github.com/tw-haiven/haiv
 
 Secrets should not be added to `app/config.yaml`. For that matter in `app/config.yaml`, if one of the values is considered a secret, you must use a placeholder for an environment variable using the following format: `${ENV_VAR_NAME}`, where `ENV_VAR_NAME` is the name of the environment variable. This value will be replaced on runtime with the value of the environment variable, which can be securely set at deployment time.
 
-**Note**: At the moment, the config file is embedded into the base container image. So if you need to change the config file, you will have to build and run the application from source, instead of from the base image.
+The base container image includes the default `app/config.yaml` file. You can override this by providing a different `config.yaml` when building an image for your knowledge pack. The `Dockerfile` in the [Sample Knowledge Pack repository](https://github.com/tw-haiven/haiven-sample-knowledge-pack) includes instructions to replace the default `config.yaml` with the one from the `config_override` folder. If no file is found in `config_override`, the default configuration is used.
+
 
 ##### Setup default models
 
