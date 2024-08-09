@@ -14,6 +14,8 @@ on:
       - 'README.md'
       - '.gitignore'
   workflow_dispatch: # allows for manual invocation
+  repository_dispatch:
+    types: [knowledge-base-updated]
 
 jobs:
 
