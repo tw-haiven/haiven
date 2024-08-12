@@ -181,6 +181,7 @@ class PromptRequestBody(BaseModel):
     promptid: str
     userinput: str
     chatSessionId: str = None
+    context: str = None
 
 
 class ExploreScenarioRequestBody(BaseModel):
@@ -213,9 +214,9 @@ class BobaApi:
         self.model = model
         print(f"Using model: {self.model}")
 
-    def prompt(self, prompt_id, user_input, chat_session):
+    def prompt(self, prompt_id, user_input, chat_session, context=None):
         rendered_prompt = self.prompt_list.render_prompt(
-            active_knowledge_context=None,
+            active_knowledge_context=context,
             prompt_choice=prompt_id,
             user_input=user_input,
             additional_vars={},
@@ -301,7 +302,12 @@ class BobaApi:
             )
 
             return StreamingResponse(
-                self.prompt(prompt_data.promptid, prompt_data.userinput, chat_session),
+                self.prompt(
+                    prompt_data.promptid,
+                    prompt_data.userinput,
+                    chat_session,
+                    prompt_data.context,
+                ),
                 media_type="text/event-stream",
                 headers={
                     "Connection": "keep-alive",

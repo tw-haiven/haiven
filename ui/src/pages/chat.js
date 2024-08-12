@@ -2,7 +2,7 @@
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
-import { Input, Select, Button } from "antd";
+import { Input, Select, Button, Checkbox, Radio } from "antd";
 const { TextArea } = Input;
 import ChatWidget from "../app/_chat";
 import Clipboard from "../app/_clipboard";
@@ -14,6 +14,7 @@ const PromptChat = () => {
 
   const [prompts, setPrompts] = useState([]);
   const [contexts, setContexts] = useState([]);
+  const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
   const [selectedPrompt, setPromptSelection] = useState("");
   const [showChat, setShowChat] = useState(false);
@@ -36,6 +37,7 @@ const PromptChat = () => {
           userinput: lastMessage?.content,
           promptid: selectedPrompt.identifier,
           chatSessionId: chatSessionId,
+          context: selectedContext,
         }),
       });
       setPromptStarted(true);
@@ -68,13 +70,29 @@ const PromptChat = () => {
     setPromptSelection(selectedPrompt);
   }
 
+  const handleContextChange = ({ target: { value } }) => {
+    console.log("Context radio checked", value);
+    setSelectedContext(value);
+  };
+
   useEffect(() => {
     getPrompts(setPrompts);
     getContexts((data) => {
-      const contextTitles = data.map((context) => {
-        return context.context;
+      const labelValuePairs = data.map((context) => {
+        if (context.context === "base") {
+          console.log("context is base!");
+          return {
+            label: "none",
+            value: "base",
+          };
+        } else {
+          return {
+            label: context.context,
+            value: context.context,
+          };
+        }
       });
-      setContexts(contextTitles);
+      setContexts(labelValuePairs);
     });
   }, []);
 
@@ -97,21 +115,13 @@ const PromptChat = () => {
           <h2>Prompting Center</h2>
           <div className="user-inputs">
             <div className="user-input">
-              <label> What do you want to do?</label>
+              <label>What do you want to do?</label>
               <Select
                 onChange={handlePromptChange}
                 style={{ width: 300 }}
                 options={prompts}
               ></Select>
             </div>
-
-            {contexts && (
-              <div className="context-list">
-                <b>Available Contexts:</b> <br />
-                {contexts.join(", ")}
-                <br />
-              </div>
-            )}
 
             {selectedPrompt && (
               <div className="user-input">
@@ -127,6 +137,19 @@ const PromptChat = () => {
                   <b>Sample input: </b>
                   {selectedPrompt.help_sample_input}
                 </p>
+              </div>
+            )}
+
+            {contexts && (
+              <div className="context-list">
+                <b>Add a context</b> <br />
+                <Radio.Group
+                  optionType="button"
+                  buttonStyle="solid"
+                  options={contexts}
+                  defaultValue="base"
+                  onChange={handleContextChange}
+                />
               </div>
             )}
 
