@@ -63,7 +63,7 @@ docker run \
         -v ./haiven-tw-knowledge-pack:/knowledge-pack \
         --env-file .env \
         -e AUTH_SWITCHED_OFF=true \
-        -e TEAM_CONTENT_PATH=/knowledge-pack \
+        -e KNOWLEDGE_PACK_PATH=/knowledge-pack \
         -p 8080:8080 \
         ghcr.io/tw-haiven/haiven:v0.3
 ```
@@ -85,7 +85,7 @@ git clone git@github.com:tw-haiven/haiven-tw-knowledge-pack.git
 echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 docker run \
         -v ./haiven-tw-knowledge-pack:/knowledge-pack \
-        -e TEAM_CONTENT_PATH=/knowledge-pack \
+        -e KNOWLEDGE_PACK_PATH=/knowledge-pack \
         -e AUTH_SWITCHED_OFF=true \
         -e ENABLED_PROVIDERS=ollama \
         -e ENABLED_EMBEDDINGS_MODEL=ollama-mxbai-embed-large \
