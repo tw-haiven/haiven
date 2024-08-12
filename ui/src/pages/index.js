@@ -1,7 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 export default function Landing() {
   return (
-    <div class="landing-page">
+    <div className="landing-page">
       <h3>Welcome to Haiven's "Guided mode"!</h3>
       <p>
         In this mode, you have a bit less flexibility than in the "Chat mode",
