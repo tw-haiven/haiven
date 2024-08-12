@@ -56,7 +56,7 @@ class TestUIFactory(unittest.TestCase):
         mock_tabs.return_value = tabs
         category_filter = ["coding", "architecture"]
         all_prompts = MagicMock()
-        prompts_factory.create_all_prompts.return_value = all_prompts
+        prompts_factory.create_all_prompts_for_user_choice.return_value = all_prompts
         theme = MagicMock()
         css = MagicMock()
         ui.styling.return_value = (theme, css)
@@ -91,7 +91,9 @@ class TestUIFactory(unittest.TestCase):
         mock_blocks.assert_called_with(theme=theme, css=css, title="Haiven")
         navigation_manager.get_coding_navigation.assert_called_once()
         ui.ui_header.assert_called_with(navigation=navigation)
-        prompts_factory.create_all_prompts.assert_called_with(knowledge_base_markdown)
+        prompts_factory.create_all_prompts_for_user_choice.assert_called_with(
+            knowledge_base_markdown
+        )
         ui.create_about_tab_for_task_area.assert_called_with(
             category_filter, category_metadata, all_prompts
         )
@@ -197,7 +199,7 @@ class TestUIFactory(unittest.TestCase):
         mock_tabs.return_value = tabs
         category_filter = ["testing"]
         all_prompts = MagicMock()
-        prompts_factory.create_all_prompts.return_value = all_prompts
+        prompts_factory.create_all_prompts_for_user_choice.return_value = all_prompts
         theme = MagicMock()
         css = MagicMock()
         ui.styling.return_value = (theme, css)
@@ -233,7 +235,9 @@ class TestUIFactory(unittest.TestCase):
         mock_blocks.assert_called_with(theme=theme, css=css, title="Haiven")
         navigation_manager.get_testing_navigation.assert_called_once()
         ui.ui_header.assert_called_with(navigation=navigation)
-        prompts_factory.create_all_prompts.assert_called_with(knowledge_base_markdown)
+        prompts_factory.create_all_prompts_for_user_choice.assert_called_with(
+            knowledge_base_markdown
+        )
         ui.create_about_tab_for_task_area.assert_called_with(
             category_filter, category_metadata, all_prompts
         )
@@ -338,7 +342,7 @@ class TestUIFactory(unittest.TestCase):
         mock_tabs.return_value = tabs
         category_filter = ["analysis"]
         all_prompts = MagicMock()
-        prompts_factory.create_all_prompts.return_value = all_prompts
+        prompts_factory.create_all_prompts_for_user_choice.return_value = all_prompts
         theme = MagicMock()
         css = MagicMock()
         ui.styling.return_value = (theme, css)
@@ -374,7 +378,9 @@ class TestUIFactory(unittest.TestCase):
         mock_blocks.assert_called_with(theme=theme, css=css, title="Haiven")
         navigation_manager.get_analysis_navigation.assert_called_once()
         ui.ui_header.assert_called_with(navigation=navigation)
-        prompts_factory.create_all_prompts.assert_called_with(knowledge_base_markdown)
+        prompts_factory.create_all_prompts_for_user_choice.assert_called_with(
+            knowledge_base_markdown
+        )
         ui.create_about_tab_for_task_area.assert_called_with(
             category_filter, category_metadata, all_prompts
         )
