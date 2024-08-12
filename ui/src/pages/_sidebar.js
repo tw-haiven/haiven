@@ -1,5 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { Menu } from "antd";
+import Link from "next/link";
 import { useRouter } from "next/router";
 
 import {
@@ -31,12 +32,12 @@ const Sidebar = () => {
       children: [
         {
           key: "creative-matrix",
-          label: <a href="/creative-matrix">Creative Matrix</a>,
+          label: <Link href="/creative-matrix">Creative Matrix</Link>,
           icon: <RiGridLine />,
         },
         {
           key: "scenarios",
-          label: <a href="/scenarios">Scenario design</a>,
+          label: <Link href="/scenarios">Scenario design</Link>,
           icon: <RiAedElectrodesLine />,
         },
       ],
@@ -48,17 +49,17 @@ const Sidebar = () => {
       children: [
         {
           key: "requirements",
-          label: <a href="/requirements">Breakdown</a>,
+          label: <Link href="/requirements">Breakdown</Link>,
           icon: <RiOrganizationChart />,
         },
         {
           key: "story-validation",
-          label: <a href="/story-validation">Story validation</a>,
+          label: <Link href="/story-validation">Story validation</Link>,
           icon: <RiApps2AddLine />,
         },
         {
           key: "threat-modelling",
-          label: <a href="/threat-modelling">Threat modelling</a>,
+          label: <Link href="/threat-modelling">Threat modelling</Link>,
           icon: <RiKey2Fill />,
         },
       ],
