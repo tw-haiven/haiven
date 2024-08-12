@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 
 import pytest
 from langchain.docstore.document import Document
-from shared.models.embedding_model import EmbeddingModel
-from shared.services.embeddings_service import EmbeddingsService
+from shared.embeddings.embedding_model import EmbeddingModel
+from shared.embeddings.embeddings_service import EmbeddingsService
 
 
 class TestsEmbeddingsService:

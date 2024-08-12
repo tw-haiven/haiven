@@ -6,9 +6,9 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from pydantic import BaseModel
 from shared.logger import HaivenLogger
-from shared.models.model import Model
-from shared.services.models_service import ModelsService
-from shared.aws_chat import AWSChat
+from shared.llms.model import Model
+from shared.llms.models_service import ModelsService
+from shared.llms.aws_chat import AWSChat
 
 
 class LLMConfig:

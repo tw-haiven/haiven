@@ -4,9 +4,9 @@ from typing import List
 
 import yaml
 from dotenv import load_dotenv
-from shared.models.default_models import DefaultModels
-from shared.models.embedding_model import EmbeddingModel
-from shared.models.model import Model
+from shared.llms.default_models import DefaultModels
+from shared.embeddings.embedding_model import EmbeddingModel
+from shared.llms.model import Model
 
 
 class ConfigService:

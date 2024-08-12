@@ -2,8 +2,8 @@
 import copy
 from typing import List
 
-from shared.services.config_service import ConfigService
-from shared.models.model import Model
+from shared.config_service import ConfigService
+from shared.llms.model import Model
 
 
 class ModelsService:

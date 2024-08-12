@@ -1,27 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from typing import List
-from pypdf import PdfReader
 from langchain.docstore.document import Document
-
-
-def get_text_and_metadata_from_pdf(pdf_file):
-    if pdf_file:
-        text = []
-        metadatas = []
-        pdf_reader = PdfReader(pdf_file)
-        page_number = 1
-        for page in pdf_reader.pages:
-            text.append(page.extract_text())
-            metadatas.append(
-                {
-                    "page": page_number,
-                    "source": pdf_file.name,
-                    "title": pdf_reader.metadata.title,
-                    "author": pdf_reader.metadata.author,
-                }
-            )
-            page_number += 1
-    return text, metadatas
 
 
 class DocumentsUtils:

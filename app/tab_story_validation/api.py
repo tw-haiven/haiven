@@ -2,9 +2,9 @@
 from typing import List
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from shared.services.config_service import ConfigService
-from shared.chats import JSONChat, ServerChatSessionMemory, StreamingChat
-from shared.llm_config import LLMConfig
+from shared.config_service import ConfigService
+from shared.llms.chats import JSONChat, ServerChatSessionMemory, StreamingChat
+from shared.llms.llm_config import LLMConfig
 
 
 class StoryValidationQuestions(BaseModel):

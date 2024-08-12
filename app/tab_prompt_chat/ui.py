@@ -3,14 +3,14 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
-from shared.chats import ServerChatSessionMemory, StreamingChat
-from shared.knowledge import KnowledgeBaseMarkdown
-from shared.llm_config import LLMConfig
-from shared.models.chat_context import ChatContext
-from shared.prompts import PromptList
-from shared.prompts_factory import PromptsFactory
-from shared.services.embeddings_service import EmbeddingsService
-from shared.user_context import user_context
+from shared.llms.chats import ServerChatSessionMemory, StreamingChat
+from shared.knowledge.knowledge import KnowledgeBaseMarkdown
+from shared.llms.llm_config import LLMConfig
+from shared.ui.chat_context import ChatContext
+from shared.prompts.prompts import PromptList
+from shared.prompts.prompts_factory import PromptsFactory
+from shared.embeddings.embeddings_service import EmbeddingsService
+from shared.ui.user_context import user_context
 from shared.user_feedback import UserFeedback
 
 

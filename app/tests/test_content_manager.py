@@ -2,10 +2,10 @@
 from unittest.mock import patch
 
 from tests.utils import get_test_data_path
-from shared.models.knowledge_pack import KnowledgePackError
+from shared.knowledge.knowledge_pack import KnowledgePackError
 from shared.content_manager import ContentManager
-from shared.models.embedding_model import EmbeddingModel
-from shared.services.embeddings_service import EmbeddingsService
+from shared.embeddings.embedding_model import EmbeddingModel
+from shared.embeddings.embeddings_service import EmbeddingsService
 
 
 class TestContentManager:

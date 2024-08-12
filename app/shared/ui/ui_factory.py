@@ -1,17 +1,17 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import gradio as gr
-from shared.chats import ServerChatSessionMemory
+from shared.llms.chats import ServerChatSessionMemory
 from shared.content_manager import ContentManager
-from shared.event_handler import EventHandler
-from shared.navigation import NavigationManager
-from shared.prompts_factory import PromptsFactory
-from shared.ui import UI
+from shared.ui.event_handler import EventHandler
+from shared.ui.navigation import NavigationManager
+from shared.prompts.prompts_factory import PromptsFactory
+from shared.ui.ui import UI
 from tab_brainstorming.ui import enable_brainstorming
 from tab_diagram_chat.ui import enable_image_chat
 from tab_knowledge_chat.ui import enable_knowledge_chat
 from tab_plain_chat.ui import enable_plain_chat
 from tab_prompt_chat.ui import enable_chat
-from shared.user_context import user_context
+from shared.ui.user_context import user_context
 from datetime import datetime
 
 

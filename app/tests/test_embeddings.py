@@ -2,8 +2,8 @@
 from unittest import mock
 
 import pytest
-from shared.embeddings import Embeddings
-from shared.models.embedding_model import EmbeddingModel
+from shared.embeddings.embeddings import Embeddings
+from shared.embeddings.embedding_model import EmbeddingModel
 
 
 class TestEmbeddings:
@@ -165,10 +165,10 @@ class TestEmbeddings:
             str(e.value) == "aws_region config is not set for the given embedding model"
         )
 
-    @mock.patch("shared.embeddings.FAISS.load_local")
-    @mock.patch("shared.embeddings.FAISS.from_documents")
-    @mock.patch("shared.embeddings.RecursiveCharacterTextSplitter")
-    @mock.patch("shared.embeddings.OpenAIEmbeddings")
+    @mock.patch("shared.embeddings.embeddings.FAISS.load_local")
+    @mock.patch("shared.embeddings.embeddings.FAISS.from_documents")
+    @mock.patch("shared.embeddings.embeddings.RecursiveCharacterTextSplitter")
+    @mock.patch("shared.embeddings.embeddings.OpenAIEmbeddings")
     def test_generate_openai_provider_embeddings(
         self,
         openai_embeddings_mock,
@@ -221,9 +221,9 @@ class TestEmbeddings:
             allow_dangerous_deserialization=True,
         )
 
-    @mock.patch("shared.embeddings.FAISS.from_documents")
-    @mock.patch("shared.embeddings.RecursiveCharacterTextSplitter")
-    @mock.patch("shared.embeddings.AzureOpenAIEmbeddings")
+    @mock.patch("shared.embeddings.embeddings.FAISS.from_documents")
+    @mock.patch("shared.embeddings.embeddings.RecursiveCharacterTextSplitter")
+    @mock.patch("shared.embeddings.embeddings.AzureOpenAIEmbeddings")
     def test_generate_azure_provider_embeddings(
         self, azure_openai_embeddings_mock, text_splitter_mock, from_documents_mock
     ):
@@ -274,10 +274,10 @@ class TestEmbeddings:
             text_splitter_mock().create_documents(), azure_openai_embeddings_mock()
         )
 
-    @mock.patch("shared.embeddings.FAISS.load_local")
-    @mock.patch("shared.embeddings.FAISS.from_documents")
-    @mock.patch("shared.embeddings.RecursiveCharacterTextSplitter")
-    @mock.patch("shared.embeddings.BedrockEmbeddings")
+    @mock.patch("shared.embeddings.embeddings.FAISS.load_local")
+    @mock.patch("shared.embeddings.embeddings.FAISS.from_documents")
+    @mock.patch("shared.embeddings.embeddings.RecursiveCharacterTextSplitter")
+    @mock.patch("shared.embeddings.embeddings.BedrockEmbeddings")
     def test_generate_aws_provider_embeddings(
         self,
         bedrock_embeddings_mock,

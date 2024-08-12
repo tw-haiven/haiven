@@ -3,7 +3,7 @@ import os
 
 import frontmatter
 
-from shared.models.knowledge_document import KnowledgeDocument
+from shared.knowledge.knowledge_document import KnowledgeDocument
 
 
 class KnowledgeBaseMarkdown:

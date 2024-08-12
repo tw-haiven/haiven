@@ -2,15 +2,15 @@
 import os
 from shared.logger import HaivenLogger
 
-from shared.embeddings import Embeddings
-from shared.knowledge import KnowledgeBaseMarkdown
-from shared.models.knowledge_pack import (
+from shared.embeddings.embeddings import Embeddings
+from shared.knowledge.knowledge import KnowledgeBaseMarkdown
+from shared.knowledge.knowledge_pack import (
     KnowledgeContext,
     KnowledgePack,
     KnowledgePackError,
 )
-from shared.services.config_service import ConfigService
-from shared.services.embeddings_service import EmbeddingsService
+from shared.config_service import ConfigService
+from shared.embeddings.embeddings_service import EmbeddingsService
 
 DEFAULT_CONFIG_PATH = "config.yaml"
 

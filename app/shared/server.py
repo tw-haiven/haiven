@@ -3,9 +3,9 @@ import json
 
 from fastapi.responses import FileResponse
 
-from shared.boba_api import BobaApi
-from shared.services.config_service import ConfigService
-from shared.chats import ServerChatSessionMemory
+from api.boba_api import BobaApi
+from shared.config_service import ConfigService
+from shared.llms.chats import ServerChatSessionMemory
 from shared.logger import HaivenLogger
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -17,7 +17,7 @@ from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.base_client import OAuthError
 from jinja2 import Environment, FileSystemLoader
-from shared.url import Url
+from shared.ui.url import Url
 import time
 import os
 

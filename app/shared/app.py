@@ -1,10 +1,10 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import gradio as gr
-from shared.boba_api import BobaApi
+from api.boba_api import BobaApi
 from shared.content_manager import ContentManager
 from shared.server import Server
-from shared.ui_factory import UIFactory
-from shared.services.config_service import ConfigService
+from shared.ui.ui_factory import UIFactory
+from shared.config_service import ConfigService
 
 
 class App:

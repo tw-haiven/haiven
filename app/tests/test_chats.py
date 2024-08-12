@@ -2,8 +2,8 @@
 import os
 
 from langchain.docstore.document import Document
-from shared.chats import DocumentsChat, ServerChatSessionMemory
-from shared.llm_config import LLMConfig
+from shared.llms.chats import DocumentsChat, ServerChatSessionMemory
+from shared.llms.llm_config import LLMConfig
 from unittest.mock import MagicMock
 
 
@@ -16,7 +16,7 @@ def test_documents_chat(mocker):
     knowledge_base_mock.retriever = mocker.Mock()
     chat_model_mock = mocker.Mock()
     mocker.patch(
-        "shared.llm_config.LLMChatFactory.new_llm_chat",
+        "shared.llms.llm_config.LLMChatFactory.new_llm_chat",
         return_value=chat_model_mock,
     )
 
@@ -27,13 +27,15 @@ def test_documents_chat(mocker):
         )
     ]
     mocker.patch(
-        "shared.services.embeddings_service.EmbeddingsService.similarity_search_on_single_document",
+        "shared.embeddings.embeddings_service.EmbeddingsService.similarity_search_on_single_document",
         return_value=[document for document in documents],
     )
 
     chain_mock = mocker.Mock()
     chain_mock.return_value = {"output_text": "Paris", "source_documents": documents}
-    mocker.patch("shared.chats.DocumentsChat.create_chain", return_value=chain_mock)
+    mocker.patch(
+        "shared.llms.chats.DocumentsChat.create_chain", return_value=chain_mock
+    )
 
     service = "azure-gpt35"
     default_tone = "more precise (0.2)"

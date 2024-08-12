@@ -6,7 +6,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import BedrockEmbeddings, OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
-from shared.models.embedding_model import EmbeddingModel
+from shared.embeddings.embedding_model import EmbeddingModel
 
 
 class Embeddings:

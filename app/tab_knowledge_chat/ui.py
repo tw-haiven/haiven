@@ -1,16 +1,15 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import os
 from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
-from shared.documents_utils import DocumentsUtils, get_text_and_metadata_from_pdf
-from shared.services.embeddings_service import EmbeddingsService
-from shared.llm_config import LLMConfig
-from shared.chats import DocumentsChat, ServerChatSessionMemory
-from shared.models.chat_context import ChatContext
+from shared.embeddings.documents_utils import DocumentsUtils
+from shared.embeddings.embeddings_service import EmbeddingsService
+from shared.llms.llm_config import LLMConfig
+from shared.llms.chats import DocumentsChat, ServerChatSessionMemory
+from shared.ui.chat_context import ChatContext
 from shared.user_feedback import UserFeedback
-from shared.user_context import user_context
+from shared.ui.user_context import user_context
 
 
 def enable_knowledge_chat(
@@ -69,39 +68,6 @@ def enable_knowledge_chat(
                     ui_chatbot = gr.Chatbot(
                         label="Answer", height=550, show_copy_button=True, likeable=True
                     )
-
-        def load_pdf(file):
-            chat_context.prompt = "Knowledge chat - Upload"
-            with open(file, "rb") as pdf_file:
-                text, metadata = get_text_and_metadata_from_pdf(pdf_file)
-                documents = (text, metadata)
-                EmbeddingsService.generate_base_document_from_text(
-                    document_key=pdf_file.name,
-                    document_metadata={
-                        "title": metadata[0].title,
-                        "source": metadata[0].source,
-                        "author": metadata[0].author,
-                        "sample_question": "",  # LLM can potentially generate this
-                        "description": "",  # LLM can potentially generate this
-                    },
-                    content=documents,
-                )
-
-            udated_dd = gr.update(
-                choices=[
-                    (embedding.title, embedding.key)
-                    for embedding in EmbeddingsService.get_embedded_documents()
-                ]
-            )
-
-            info_text = "{} is loaded.".format(os.path.basename(file.name))
-            return {
-                ui_loaded_file_label: info_text,
-                # clear question and answer
-                ui_question: "",
-                ui_chatbot: [],
-                ui_knowledge_choice: udated_dd,
-            }
 
         def load_knowledge(
             knowledge_document_selected: str,

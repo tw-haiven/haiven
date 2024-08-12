@@ -4,15 +4,15 @@ import os
 import uvicorn
 from dotenv import load_dotenv
 from shared.app import App
-from shared.chats import ServerChatSessionMemory
+from shared.llms.chats import ServerChatSessionMemory
 from shared.content_manager import ContentManager
-from shared.event_handler import EventHandler
+from shared.ui.event_handler import EventHandler
 from shared.logger import HaivenLogger
-from shared.navigation import NavigationManager
-from shared.prompts_factory import PromptsFactory
-from shared.services.config_service import ConfigService
-from shared.ui import UI
-from shared.ui_factory import UIFactory
+from shared.ui.navigation import NavigationManager
+from shared.prompts.prompts_factory import PromptsFactory
+from shared.config_service import ConfigService
+from shared.ui.ui import UI
+from shared.ui.ui_factory import UIFactory
 
 
 def backwards_compat_env_vars():

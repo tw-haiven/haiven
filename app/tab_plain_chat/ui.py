@@ -1,9 +1,9 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import gradio as gr
 from dotenv import load_dotenv
-from shared.chats import ServerChatSessionMemory, StreamingChat
-from shared.models.chat_context import ChatContext
-from shared.ui import UI
+from shared.llms.chats import ServerChatSessionMemory, StreamingChat
+from shared.ui.chat_context import ChatContext
+from shared.ui.ui import UI
 from shared.user_feedback import UserFeedback
 
 

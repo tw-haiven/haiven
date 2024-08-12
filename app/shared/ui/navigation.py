@@ -1,5 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-from shared.url import Url
+from shared.ui.url import Url
 
 
 class NavigationManager:

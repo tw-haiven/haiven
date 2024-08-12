@@ -7,9 +7,9 @@ import boto3
 from botocore.exceptions import ClientError
 from openai import AzureOpenAI, OpenAI
 from PIL import Image
-from shared.models.model import Model
-from shared.services.models_service import ModelsService
-from shared.services.config_service import ConfigService
+from shared.llms.model import Model
+from shared.llms.models_service import ModelsService
+from shared.config_service import ConfigService
 from vertexai.preview.generative_models import GenerativeModel, Part
 import ollama
 

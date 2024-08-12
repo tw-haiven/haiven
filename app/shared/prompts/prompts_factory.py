@@ -1,6 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-from shared.knowledge import KnowledgeBaseMarkdown
-from shared.prompts import PromptList
+from shared.knowledge.knowledge import KnowledgeBaseMarkdown
+from shared.prompts.prompts import PromptList
 
 
 class PromptsFactory:

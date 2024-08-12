@@ -2,9 +2,9 @@
 from api.models.explore_request import ExploreRequest
 from fastapi import Request
 from fastapi.responses import StreamingResponse
-from shared.services.config_service import ConfigService
-from shared.chats import JSONChat, StreamingChat
-from shared.llm_config import LLMConfig
+from shared.config_service import ConfigService
+from shared.llms.chats import JSONChat, StreamingChat
+from shared.llms.llm_config import LLMConfig
 
 
 def get_threat_modelling_prompt(dataFlow, assets, userBase):

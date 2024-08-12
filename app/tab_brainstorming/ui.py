@@ -1,13 +1,13 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import gradio as gr
-from shared.prompts import PromptList
-from shared.llm_config import LLMConfig
-from shared.prompts_factory import PromptsFactory
-from shared.chats import Q_A_Chat, ServerChatSessionMemory
-from shared.knowledge import KnowledgeBaseMarkdown
-from shared.models.chat_context import ChatContext
+from shared.prompts.prompts import PromptList
+from shared.llms.llm_config import LLMConfig
+from shared.prompts.prompts_factory import PromptsFactory
+from shared.llms.chats import Q_A_Chat, ServerChatSessionMemory
+from shared.knowledge.knowledge import KnowledgeBaseMarkdown
+from shared.ui.chat_context import ChatContext
 from shared.user_feedback import UserFeedback
-from shared.user_context import user_context
+from shared.ui.user_context import user_context
 
 
 def enable_brainstorming(

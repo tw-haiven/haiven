@@ -4,7 +4,7 @@ from typing import List
 
 import frontmatter
 from langchain.prompts import PromptTemplate
-from shared.knowledge import KnowledgeBaseMarkdown
+from shared.knowledge.knowledge import KnowledgeBaseMarkdown
 
 
 class PromptList:

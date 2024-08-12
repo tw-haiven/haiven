@@ -3,14 +3,14 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
-from shared.documents_utils import DocumentsUtils
-from shared.knowledge import KnowledgeBaseMarkdown
-from shared.llm_config import LLMConfig
-from shared.models.knowledge_pack import KnowledgePack
-from shared.prompts import PromptList
-from shared.services.config_service import ConfigService
-from shared.services.embeddings_service import EmbeddingsService
-from shared.services.models_service import ModelsService
+from shared.embeddings.documents_utils import DocumentsUtils
+from shared.knowledge.knowledge import KnowledgeBaseMarkdown
+from shared.llms.llm_config import LLMConfig
+from shared.knowledge.knowledge_pack import KnowledgePack
+from shared.prompts.prompts import PromptList
+from shared.config_service import ConfigService
+from shared.embeddings.embeddings_service import EmbeddingsService
+from shared.llms.models_service import ModelsService
 
 
 class UI:

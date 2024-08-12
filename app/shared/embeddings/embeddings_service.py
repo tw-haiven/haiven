@@ -6,10 +6,10 @@ from typing import List, Tuple
 import frontmatter
 from langchain.docstore.document import Document
 from langchain_community.vectorstores import FAISS
-from shared.embeddings import Embeddings
-from shared.models.document_embedding import DocumentEmbedding
-from shared.services.config_service import ConfigService
-from shared.services.in_memory_embeddings_db_service import InMemoryEmbeddingsDB
+from shared.embeddings.embeddings import Embeddings
+from shared.embeddings.document_embedding import DocumentEmbedding
+from shared.config_service import ConfigService
+from shared.embeddings.in_memory_embeddings_db_service import InMemoryEmbeddingsDB
 
 
 class EmbeddingsService:

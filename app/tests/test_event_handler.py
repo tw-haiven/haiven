@@ -1,5 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-from shared.event_handler import EventHandler
+from shared.ui.event_handler import EventHandler
 from unittest.mock import MagicMock, patch, PropertyMock
 
 
@@ -26,7 +26,7 @@ class TestEventHandler:
         # Assert
         logger.analytics.assert_called_with(f"User {sub} loaded UI at {url}")
 
-    @patch("shared.event_handler.gr.Tabs")
+    @patch("shared.ui.event_handler.gr.Tabs")
     def test_on_ui_load_with_tab_deeplink(self, mock_tabs):
         # Setup
         url = "http://localhost:7860/teamai?tab=analysis"
@@ -55,7 +55,7 @@ class TestEventHandler:
         assert returned_tabs == tab_selection
         assert user_state == sub
 
-    @patch("shared.event_handler.gr.Tabs")
+    @patch("shared.ui.event_handler.gr.Tabs")
     def test_on_ui_load_with_tab_deeplink_with_tab_in_query_params(self, mock_tabs):
         # Setup
         request = MagicMock()

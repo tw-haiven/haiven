@@ -6,16 +6,16 @@ from api.models.explore_request import ExploreRequest
 from tab_story_validation.api import enable_story_validation
 from tab_requirements.api import enable_requirements
 from tab_threat_modelling.api import enable_threat_modelling
-from shared.chats import (
+from shared.llms.chats import (
     JSONChat,
     ServerChatSessionMemory,
     StreamingChat,
 )
 from shared.content_manager import ContentManager
-from shared.models.model import Model
-from shared.prompts_factory import PromptsFactory
-from shared.services.config_service import ConfigService
-from shared.llm_config import LLMConfig
+from shared.llms.model import Model
+from shared.prompts.prompts_factory import PromptsFactory
+from shared.config_service import ConfigService
+from shared.llms.llm_config import LLMConfig
 
 from pydantic import BaseModel
 

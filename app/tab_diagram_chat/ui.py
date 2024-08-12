@@ -3,18 +3,18 @@ from typing import List
 import gradio as gr
 from dotenv import load_dotenv
 
-from shared.services.embeddings_service import EmbeddingsService
-from shared.llm_config import LLMConfig
-from shared.prompts import PromptList
-from shared.prompts_factory import PromptsFactory
-from shared.chats import ServerChatSessionMemory, StreamingChat
-from shared.knowledge import KnowledgeBaseMarkdown
-from shared.models.chat_context import ChatContext
-from shared.services.config_service import ConfigService
-from shared.services.image_description_service import ImageDescriptionService
-from shared.services.models_service import ModelsService
+from shared.embeddings.embeddings_service import EmbeddingsService
+from shared.llms.llm_config import LLMConfig
+from shared.prompts.prompts import PromptList
+from shared.prompts.prompts_factory import PromptsFactory
+from shared.llms.chats import ServerChatSessionMemory, StreamingChat
+from shared.knowledge.knowledge import KnowledgeBaseMarkdown
+from shared.ui.chat_context import ChatContext
+from shared.config_service import ConfigService
+from shared.llms.image_description_service import ImageDescriptionService
+from shared.llms.models_service import ModelsService
 from shared.user_feedback import UserFeedback
-from shared.user_context import user_context
+from shared.ui.user_context import user_context
 
 
 def enable_image_chat(

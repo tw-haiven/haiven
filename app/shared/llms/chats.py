@@ -7,10 +7,10 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
-from shared.documents_utils import DocumentsUtils
-from shared.llm_config import LLMChatFactory, LLMConfig
+from shared.embeddings.documents_utils import DocumentsUtils
+from shared.llms.llm_config import LLMChatFactory, LLMConfig
 from shared.logger import HaivenLogger
-from shared.services.embeddings_service import EmbeddingsService
+from shared.embeddings.embeddings_service import EmbeddingsService
 
 
 class HaivenBaseChat:
