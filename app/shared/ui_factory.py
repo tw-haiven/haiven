@@ -114,7 +114,7 @@ class UIFactory:
                         self.ui.create_about_tab_for_task_area(
                             category_filter,
                             category_metadata,
-                            self.prompts_factory.create_all_prompts(
+                            self.prompts_factory.create_all_prompts_for_user_choice(
                                 self.content_manager.knowledge_base_markdown
                             ),
                         )
@@ -218,7 +218,7 @@ class UIFactory:
                         self.ui.create_about_tab_for_task_area(
                             category_filter,
                             category_metadata,
-                            self.prompts_factory.create_all_prompts(
+                            self.prompts_factory.create_all_prompts_for_user_choice(
                                 self.content_manager.knowledge_base_markdown,
                             ),
                         )
@@ -317,7 +317,7 @@ class UIFactory:
                         self.ui.create_about_tab_for_task_area(
                             category_filter,
                             category_metadata,
-                            self.prompts_factory.create_all_prompts(
+                            self.prompts_factory.create_all_prompts_for_user_choice(
                                 self.content_manager.knowledge_base_markdown
                             ),
                         )

@@ -19,7 +19,7 @@ def enable_brainstorming(
     prompt_categories=None,
 ):
     tab_id = "brainstorming"
-    prompt_list = prompts_factory.create_brainstorming_prompt(knowledge_base)
+    prompt_list = prompts_factory.create_brainstorming_prompt_list(knowledge_base)
     interaction_pattern_name = prompt_list.interaction_pattern_name
 
     chat_context = ChatContext(

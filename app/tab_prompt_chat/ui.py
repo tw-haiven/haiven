@@ -26,7 +26,7 @@ def enable_chat(
 ):
     load_dotenv()
     tab_id = "chat"
-    prompt_list = prompts_factory.create_chat_prompt(knowledge_base)
+    prompt_list = prompts_factory.create_chat_prompt_list(knowledge_base)
     interaction_pattern_name = prompt_list.interaction_pattern_name
     prompt_list.filter(prompt_categories)
 

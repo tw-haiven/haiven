@@ -29,7 +29,7 @@ def enable_image_chat(
 ):
     load_dotenv()
     tab_id = "diagrams"
-    prompt_list = prompts_factory.create_diagrams_prompt(
+    prompt_list = prompts_factory.create_diagrams_prompt_list(
         knowledge_base, variables=["image_description"]
     )
     interaction_pattern_name = prompt_list.interaction_pattern_name

@@ -28,6 +28,7 @@ class PromptList:
                 "dir": root_dir + "/prompts/chat",
                 "title": "Chat",
             },
+            "guided": {"dir": root_dir + "/", "title": "Guided"},
         }
 
         self.interaction_pattern_name = data_sources[interaction_type]["title"]

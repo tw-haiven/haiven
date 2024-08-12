@@ -22,7 +22,7 @@ class TestPromptsFactory:
         knowledge_base_markdown = MagicMock()
         prompts_parent_dir = "test_prompts_parent_dir"
 
-        prompts = PromptsFactory(prompts_parent_dir).create_all_prompts(
+        prompts = PromptsFactory(prompts_parent_dir).create_all_prompts_for_user_choice(
             knowledge_base_markdown
         )
 
@@ -48,7 +48,7 @@ class TestPromptsFactory:
         knowledge_base_markdown = MagicMock()
         prompts_parent_dir = "test_prompts_parent_dir"
 
-        prompt = PromptsFactory(prompts_parent_dir).create_brainstorming_prompt(
+        prompt = PromptsFactory(prompts_parent_dir).create_brainstorming_prompt_list(
             knowledge_base_markdown
         )
 
@@ -64,7 +64,7 @@ class TestPromptsFactory:
         knowledge_base_markdown = MagicMock()
         prompts_parent_dir = "test_prompts_parent_dir"
 
-        prompt = PromptsFactory(prompts_parent_dir).create_chat_prompt(
+        prompt = PromptsFactory(prompts_parent_dir).create_chat_prompt_list(
             knowledge_base_markdown
         )
 
@@ -81,7 +81,7 @@ class TestPromptsFactory:
         variables = ["image_description"]
         prompts_parent_dir = "test_prompts_parent_dir"
 
-        prompt = PromptsFactory(prompts_parent_dir).create_diagrams_prompt(
+        prompt = PromptsFactory(prompts_parent_dir).create_diagrams_prompt_list(
             knowledge_base_documents, variables
         )
 
