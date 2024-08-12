@@ -1,10 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import { Menu, MenuItem } from "antd";
-import Link from "next/link";
+import { Menu } from "antd";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-
-const { SubMenu } = Menu;
 
 import {
   RiApps2AddLine,
@@ -16,7 +12,7 @@ import {
   RiDashboardHorizontalLine,
 } from "react-icons/ri";
 
-const Sidebar = ({ selectedKey = "scenarios" }) => {
+const Sidebar = () => {
   const pathToKey = {
     "/scenarios": "scenarios",
     "/creative-matrix": "creative-matrix",
