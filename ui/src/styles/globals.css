@@ -59,6 +59,44 @@ body {
   font-size: 13px;
 }
 
+.prompt-center-section {
+  display: flex;
+  flex-direction: row;
+  padding: 1em 0;
+  border-top: 1px solid var(--color-dark-blue)
+}
+
+.section-header {
+  display: flex;
+  flex: 1;
+  font-weight: bold;
+}
+
+.section-header .tooltip-help {
+  margin-left: 0.5em;
+  fill: var(--color-sapphire)
+}
+
+.section-inputs {
+  display: flex;
+  flex: 4;
+  flex-direction: column;
+}
+
+.user-input {
+  padding-bottom: 0.5em;
+}
+
+.user-input label {
+  margin-right: 0.3em;
+  font-weight: bold;
+}
+
+.user-input textarea, .user-input input {
+  max-width: 600px;
+  display: block;
+}
+
 .login-button {
   top: -0.7em;
 }
@@ -111,19 +149,6 @@ body {
 
 .scenario .card-prop-name {
   font-weight: bold;
-}
-
-.user-input {
-  padding-bottom: 0.5em;
-}
-
-.user-input label {
-  margin-right: 0.3em;
-}
-
-.user-input textarea, .user-input input {
-  max-width: 600px;
-  display: block;
 }
 
 .generated-text-results {

@@ -2,7 +2,9 @@
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
-import { Input, Select, Button, Checkbox, Radio } from "antd";
+import { Input, Select, Button, Tooltip, Radio } from "antd";
+import { RiQuestionLine } from "react-icons/ri";
+
 const { TextArea } = Input;
 import ChatWidget from "../app/_chat";
 import Clipboard from "../app/_clipboard";
@@ -27,18 +29,21 @@ const PromptChat = () => {
   const submitPromptToBackend = async (messages) => {
     if (promptStarted !== true) {
       const lastMessage = messages[messages.length - 1];
+      const requestData = {
+        userinput: lastMessage?.content,
+        promptid: selectedPrompt.identifier,
+        chatSessionId: chatSessionId,
+      };
+      if (selectedContext !== "base") {
+        requestData.context = selectedContext;
+      }
       const response = await fetch("/api/prompt", {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          userinput: lastMessage?.content,
-          promptid: selectedPrompt.identifier,
-          chatSessionId: chatSessionId,
-          context: selectedContext,
-        }),
+        body: JSON.stringify(requestData),
       });
       setPromptStarted(true);
       setChatSessionId(response.headers.get("X-Chat-ID"));
@@ -114,58 +119,87 @@ const PromptChat = () => {
           <ClipboardButton toggleClipboardDrawer={setClipboardDrawerOpen} />
           <h2>Prompting Center</h2>
           <div className="user-inputs">
-            <div className="user-input">
-              <label>What do you want to do?</label>
-              <Select
-                onChange={handlePromptChange}
-                style={{ width: 300 }}
-                options={prompts}
-              ></Select>
+            <div className="prompt-center-section">
+              <div className="section-header">
+                What do you want to do?
+                <Tooltip
+                  className="tooltip-help"
+                  title="Choose a task from the dropdown to get more info about what each of them can do"
+                >
+                  <RiQuestionLine />
+                </Tooltip>
+              </div>
+
+              <div className="section-inputs">
+                <div className="user-input">
+                  <Select
+                    onChange={handlePromptChange}
+                    style={{ width: 300 }}
+                    options={prompts}
+                  ></Select>
+                </div>
+
+                {selectedPrompt && (
+                  <div className="user-input">
+                    <p>
+                      <b>Description: </b>
+                      {selectedPrompt.help_prompt_description}
+                    </p>
+                    <p>
+                      <b>Your input: </b>
+                      {selectedPrompt.help_user_input}
+                    </p>
+                    <p>
+                      <b>Sample input: </b>
+                      {selectedPrompt.help_sample_input}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {selectedPrompt && (
-              <div className="user-input">
-                <p>
-                  <b>Description: </b>
-                  {selectedPrompt.help_prompt_description}
-                </p>
-                <p>
-                  <b>Your input: </b>
-                  {selectedPrompt.help_user_input}
-                </p>
-                <p>
-                  <b>Sample input: </b>
-                  {selectedPrompt.help_sample_input}
-                </p>
+            <div className="prompt-center-section">
+              <div className="section-header">
+                Add your input
+                <Tooltip
+                  className="tooltip-help"
+                  title="Provide the input based on the description of the chosen task. Optionally, you can choose to add one of the available contexts from your knowledge pack."
+                >
+                  <RiQuestionLine />
+                </Tooltip>
               </div>
-            )}
 
-            {contexts && (
-              <div className="context-list">
-                <b>Add a context</b> <br />
-                <Radio.Group
-                  optionType="button"
-                  buttonStyle="solid"
-                  options={contexts}
-                  defaultValue="base"
-                  onChange={handleContextChange}
-                />
+              <div className="section-inputs">
+                <div className="user-input">
+                  <label>Your input:</label>
+                  <TextArea
+                    value={promptInput}
+                    rows={4}
+                    onChange={(e, v) => {
+                      setPromptInput(e.target.value);
+                    }}
+                  />
+                </div>
+
+                {contexts && (
+                  <div className="context-list">
+                    <b>Add a context</b> <br />
+                    <Radio.Group
+                      optionType="button"
+                      buttonStyle="solid"
+                      options={contexts}
+                      defaultValue="base"
+                      onChange={handleContextChange}
+                    />
+                  </div>
+                )}
               </div>
-            )}
-
-            <div className="user-input">
-              <label>Your input:</label>
-              <TextArea
-                value={promptInput}
-                rows={4}
-                onChange={(e, v) => {
-                  setPromptInput(e.target.value);
-                }}
-              />
             </div>
-            <Button type="primary" onClick={addMessageToChatWidget}>
-              Go
-            </Button>
+            <div className="prompt-center-section">
+              <Button type="primary" onClick={addMessageToChatWidget}>
+                Go
+              </Button>
+            </div>
           </div>
         </div>
 
