@@ -1,6 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import unittest
-from shared.ui.url import Url
+from ui.url import Url
 
 
 class TestPath(unittest.TestCase):

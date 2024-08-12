@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from unittest.mock import patch
 from tests.utils import get_test_data_path
-from shared.knowledge.knowledge_pack import KnowledgePack
+from knowledge.knowledge_pack import KnowledgePack
 
 
 class TestKnowledgePack:

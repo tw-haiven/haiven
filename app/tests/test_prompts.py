@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from tests.utils import get_test_data_path
-from shared.knowledge.knowledge import KnowledgeBaseMarkdown
-from shared.prompts.prompts import PromptList
+from knowledge.knowledge import KnowledgeBaseMarkdown
+from prompts.prompts import PromptList
 
 
 ACTIVE_KNOWLEDGE_CONTEXT = "context_a"

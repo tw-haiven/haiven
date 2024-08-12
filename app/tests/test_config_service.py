@@ -3,10 +3,10 @@ import os
 from typing import List
 
 import pytest
-from shared.llms.default_models import DefaultModels
-from shared.embeddings.embedding_model import EmbeddingModel
-from shared.llms.model import Model
-from shared.config_service import ConfigService
+from llms.default_models import DefaultModels
+from embeddings.embedding_model import EmbeddingModel
+from llms.model import Model
+from config_service import ConfigService
 
 
 @pytest.fixture(scope="class")

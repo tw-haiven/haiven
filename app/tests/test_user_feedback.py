@@ -1,13 +1,13 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from unittest import mock
-from shared.user_feedback import UserFeedback
-from shared.ui.chat_context import (
+from user_feedback import UserFeedback
+from ui.chat_context import (
     ChatContext,
 )  # Assuming you have a ChatContext class
 
 
 class TestUserFeedback:
-    @mock.patch("shared.user_feedback.HaivenLogger.analytics")
+    @mock.patch("user_feedback.HaivenLogger.analytics")
     def test_on_message_voted(self, haiven_logger_analytics_mock):
         # Arrange
         haiven_logger_analytics_mock.return_value = None

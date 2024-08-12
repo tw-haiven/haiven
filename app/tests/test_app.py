@@ -1,10 +1,10 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from unittest.mock import call, patch, MagicMock
-from shared.app import App
+from app import App
 
 
 class TestApp:
-    @patch("shared.app.Server")
+    @patch("app.Server")
     def test_init(self, mock_server):
         # Mock the dependencies
         server = MagicMock()
@@ -21,8 +21,8 @@ class TestApp:
         assert app.server == server
         assert app.content_manager == content_manager
 
-    @patch("shared.app.gr.mount_gradio_app")
-    @patch("shared.app.Server")
+    @patch("app.gr.mount_gradio_app")
+    @patch("app.Server")
     def test_launch_via_fastapi_wrapper(self, mock_server, mock_mount_gradio_app):
         # Mock the dependencies
         server = MagicMock()

@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import pytest
-from shared.llms.models_service import ModelsService
-from shared.llms.model import Model
+from llms.models_service import ModelsService
+from llms.model import Model
 
 
 class TestModelsService:
@@ -10,7 +10,7 @@ class TestModelsService:
         ModelsService.reset_instance()
 
         mocker.patch(
-            "shared.llms.models_service.ConfigService.load_models",
+            "llms.models_service.ConfigService.load_models",
             return_value=[
                 Model(
                     id="1",

@@ -2,8 +2,8 @@
 import os
 
 import pytest
-from shared.knowledge.knowledge import KnowledgeBaseMarkdown
-from shared.prompts.prompts import PromptList
+from knowledge.knowledge import KnowledgeBaseMarkdown
+from prompts.prompts import PromptList
 
 
 @pytest.mark.skip(

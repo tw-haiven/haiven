@@ -1,10 +1,10 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from unittest.mock import call, patch, MagicMock
-from shared.prompts.prompts_factory import PromptsFactory
+from prompts.prompts_factory import PromptsFactory
 
 
 class TestPromptsFactory:
-    @patch("shared.prompts.prompts_factory.PromptList")
+    @patch("prompts.prompts_factory.PromptList")
     def test_create_all_prompts(self, prompt_list_mock):
         chat_prompt = MagicMock(name="chat_prompt")
         brainstorming_prompt = MagicMock(name="brainstorming_prompt")
@@ -41,7 +41,7 @@ class TestPromptsFactory:
             ]
         )
 
-    @patch("shared.prompts.prompts_factory.PromptList")
+    @patch("prompts.prompts_factory.PromptList")
     def test_create_brainstorming_prompt(self, prompt_list_mock):
         brainstorming_prompt = MagicMock(name="brainstorming_prompt")
         prompt_list_mock.return_value = brainstorming_prompt
@@ -57,7 +57,7 @@ class TestPromptsFactory:
             "brainstorming", knowledge_base_markdown, root_dir=prompts_parent_dir
         )
 
-    @patch("shared.prompts.prompts_factory.PromptList")
+    @patch("prompts.prompts_factory.PromptList")
     def test_create_chat_prompt(self, prompt_list_mock):
         chat_prompt = MagicMock(name="chat_prompt")
         prompt_list_mock.return_value = chat_prompt
@@ -73,7 +73,7 @@ class TestPromptsFactory:
             "chat", knowledge_base_markdown, root_dir=prompts_parent_dir
         )
 
-    @patch("shared.prompts.prompts_factory.PromptList")
+    @patch("prompts.prompts_factory.PromptList")
     def test_create_diagrams_prompt(self, prompt_list_mock):
         diagrams_prompt = MagicMock(name="diagrams_prompt")
         prompt_list_mock.return_value = diagrams_prompt

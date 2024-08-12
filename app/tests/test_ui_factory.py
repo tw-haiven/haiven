@@ -1,18 +1,18 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import unittest
 from unittest.mock import patch, Mock, MagicMock, PropertyMock
-from shared.ui.ui_factory import UIFactory
+from ui.ui_factory import UIFactory
 import gradio as gr
 
 
 class TestUIFactory(unittest.TestCase):
-    @patch("shared.ui.ui_factory.gr.State")
-    @patch("shared.ui.ui_factory.gr.Blocks")
-    @patch("shared.ui.ui_factory.gr.Tabs")
-    @patch("shared.ui.ui_factory.enable_chat")
-    @patch("shared.ui.ui_factory.enable_brainstorming")
-    @patch("shared.ui.ui_factory.enable_image_chat")
-    @patch("shared.ui.ui_factory.enable_knowledge_chat")
+    @patch("ui.ui_factory.gr.State")
+    @patch("ui.ui_factory.gr.Blocks")
+    @patch("ui.ui_factory.gr.Tabs")
+    @patch("ui.ui_factory.enable_chat")
+    @patch("ui.ui_factory.enable_brainstorming")
+    @patch("ui.ui_factory.enable_image_chat")
+    @patch("ui.ui_factory.enable_knowledge_chat")
     def test_create_ui_coding(
         self,
         mock_enable_knowledge_chat,
@@ -149,13 +149,13 @@ class TestUIFactory(unittest.TestCase):
 
         assert returned_blocks == blocks
 
-    @patch("shared.ui.ui_factory.gr.State")
-    @patch("shared.ui.ui_factory.gr.Blocks")
-    @patch("shared.ui.ui_factory.gr.Tabs")
-    @patch("shared.ui.ui_factory.enable_chat")
-    @patch("shared.ui.ui_factory.enable_brainstorming")
-    @patch("shared.ui.ui_factory.enable_image_chat")
-    @patch("shared.ui.ui_factory.enable_knowledge_chat")
+    @patch("ui.ui_factory.gr.State")
+    @patch("ui.ui_factory.gr.Blocks")
+    @patch("ui.ui_factory.gr.Tabs")
+    @patch("ui.ui_factory.enable_chat")
+    @patch("ui.ui_factory.enable_brainstorming")
+    @patch("ui.ui_factory.enable_image_chat")
+    @patch("ui.ui_factory.enable_knowledge_chat")
     def test_create_ui_testing(
         self,
         mock_enable_knowledge_chat,
@@ -292,13 +292,13 @@ class TestUIFactory(unittest.TestCase):
 
         assert returned_blocks == blocks
 
-    @patch("shared.ui.ui_factory.gr.State")
-    @patch("shared.ui.ui_factory.gr.Blocks")
-    @patch("shared.ui.ui_factory.gr.Tabs")
-    @patch("shared.ui.ui_factory.enable_chat")
-    @patch("shared.ui.ui_factory.enable_brainstorming")
-    @patch("shared.ui.ui_factory.enable_image_chat")
-    @patch("shared.ui.ui_factory.enable_knowledge_chat")
+    @patch("ui.ui_factory.gr.State")
+    @patch("ui.ui_factory.gr.Blocks")
+    @patch("ui.ui_factory.gr.Tabs")
+    @patch("ui.ui_factory.enable_chat")
+    @patch("ui.ui_factory.enable_brainstorming")
+    @patch("ui.ui_factory.enable_image_chat")
+    @patch("ui.ui_factory.enable_knowledge_chat")
     def test_create_ui_analysts(
         self,
         mock_enable_knowledge_chat,
@@ -435,9 +435,9 @@ class TestUIFactory(unittest.TestCase):
 
         assert returned_blocks == blocks
 
-    @patch("shared.ui.ui_factory.enable_chat")
-    @patch("shared.ui.ui_factory.gr.State")
-    @patch("shared.ui.ui_factory.gr.Blocks")
+    @patch("ui.ui_factory.enable_chat")
+    @patch("ui.ui_factory.gr.State")
+    @patch("ui.ui_factory.gr.Blocks")
     def test_create_ui_knowledge(self, mock_blocks, mock_state, mock_enable_chat):
         # Setup
         model_select = MagicMock()
@@ -503,7 +503,7 @@ class TestUIFactory(unittest.TestCase):
 
         assert returned_blocks == blocks
 
-    @patch("shared.ui.ui_factory.gr.Blocks")
+    @patch("ui.ui_factory.gr.Blocks")
     def test_create_ui_about(self, mock_blocks):
         # Setup
         ui = Mock()
@@ -551,10 +551,10 @@ class TestUIFactory(unittest.TestCase):
 
         assert returned_blocks == blocks
 
-    @patch("shared.ui.ui_factory.gr.Blocks")
-    @patch("shared.ui.ui_factory.gr.Row")
-    @patch("shared.ui.ui_factory.gr.State")
-    @patch("shared.ui.ui_factory.enable_plain_chat")
+    @patch("ui.ui_factory.gr.Blocks")
+    @patch("ui.ui_factory.gr.Row")
+    @patch("ui.ui_factory.gr.State")
+    @patch("ui.ui_factory.enable_plain_chat")
     def test_create_plain_chat(
         self, mock_enable_plain_chat, mock_state, mock_row, mock_blocks
     ):

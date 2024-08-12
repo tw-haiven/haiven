@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from unittest import mock
-from shared.llms.model import Model
-from shared.ui.ui import _get_valid_tone_values, _get_default_temperature, _get_services
+from llms.model import Model
+from ui.ui import _get_valid_tone_values, _get_default_temperature, _get_services
 
 
 def test_get_valid_tone_values():
@@ -24,8 +24,8 @@ def test_get_default_tone():
     ), f"Expected default tone does not match. Expected: {expected_default_tone}, Got: {actual_default_tone}"
 
 
-@mock.patch("shared.llms.models_service.ModelsService.get_models")
-@mock.patch("shared.config_service.ConfigService.load_enabled_providers")
+@mock.patch("llms.models_service.ModelsService.get_models")
+@mock.patch("config_service.ConfigService.load_enabled_providers")
 def test_get_services(load_enabled_providers, models_service_get_models_mock):
     # given an LLMConfig object initialised with a config file containing azure services
     first_model_id = "azure-gpt35"

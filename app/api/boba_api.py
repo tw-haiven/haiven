@@ -3,19 +3,19 @@ from typing import List
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from api.models.explore_request import ExploreRequest
-from tab_story_validation.api import enable_story_validation
-from tab_requirements.api import enable_requirements
-from tab_threat_modelling.api import enable_threat_modelling
-from shared.llms.chats import (
+from api.api_story_validation import enable_story_validation
+from api.api_requirements import enable_requirements
+from api.api_threat_modelling import enable_threat_modelling
+from llms.chats import (
     JSONChat,
     ServerChatSessionMemory,
     StreamingChat,
 )
-from shared.content_manager import ContentManager
-from shared.llms.model import Model
-from shared.prompts.prompts_factory import PromptsFactory
-from shared.config_service import ConfigService
-from shared.llms.llm_config import LLMConfig
+from content_manager import ContentManager
+from llms.model import Model
+from prompts.prompts_factory import PromptsFactory
+from config_service import ConfigService
+from llms.llm_config import LLMConfig
 
 from pydantic import BaseModel
 

@@ -2,20 +2,20 @@
 from unittest.mock import patch
 
 from tests.utils import get_test_data_path
-from shared.knowledge.knowledge_pack import KnowledgePackError
-from shared.content_manager import ContentManager
-from shared.embeddings.embedding_model import EmbeddingModel
-from shared.embeddings.embeddings_service import EmbeddingsService
+from knowledge.knowledge_pack import KnowledgePackError
+from content_manager import ContentManager
+from embeddings.embedding_model import EmbeddingModel
+from embeddings.embeddings_service import EmbeddingsService
 
 
 class TestContentManager:
     knowledge_pack_path = get_test_data_path() + "/test_knowledge_pack"
     config_file_path = get_test_data_path() + "/test_config.yaml"
 
-    @patch("shared.content_manager.Embeddings")
-    @patch("shared.content_manager.EmbeddingsService")
-    @patch("shared.content_manager.ConfigService")
-    @patch("shared.content_manager.KnowledgeBaseMarkdown")
+    @patch("content_manager.Embeddings")
+    @patch("content_manager.EmbeddingsService")
+    @patch("content_manager.ConfigService")
+    @patch("content_manager.KnowledgeBaseMarkdown")
     def test_init(
         self,
         mock_knowledge_base_markdown,
@@ -43,8 +43,8 @@ class TestContentManager:
             self.knowledge_pack_path
         )
 
-    @patch("shared.content_manager.ConfigService")
-    @patch("shared.content_manager.KnowledgeBaseMarkdown")
+    @patch("content_manager.ConfigService")
+    @patch("content_manager.KnowledgeBaseMarkdown")
     def test_load_context_knowledge_with_empty_embeddings_should_not_fail(
         self,
         mock_knowledge_base,

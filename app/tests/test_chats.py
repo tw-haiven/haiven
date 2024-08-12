@@ -2,21 +2,21 @@
 import os
 
 from langchain.docstore.document import Document
-from shared.llms.chats import DocumentsChat, ServerChatSessionMemory
-from shared.llms.llm_config import LLMConfig
+from llms.chats import DocumentsChat, ServerChatSessionMemory
+from llms.llm_config import LLMConfig
 from unittest.mock import MagicMock
 
 
 def test_documents_chat(mocker):
     os.environ["USE_AZURE"] = "true"
 
-    mocker.patch("shared.logger.HaivenLogger.get", return_value=mocker.Mock())
+    mocker.patch("logger.HaivenLogger.get", return_value=mocker.Mock())
 
     knowledge_base_mock = mocker.Mock()
     knowledge_base_mock.retriever = mocker.Mock()
     chat_model_mock = mocker.Mock()
     mocker.patch(
-        "shared.llms.llm_config.LLMChatFactory.new_llm_chat",
+        "llms.llm_config.LLMChatFactory.new_llm_chat",
         return_value=chat_model_mock,
     )
 
@@ -27,15 +27,13 @@ def test_documents_chat(mocker):
         )
     ]
     mocker.patch(
-        "shared.embeddings.embeddings_service.EmbeddingsService.similarity_search_on_single_document",
+        "embeddings.embeddings_service.EmbeddingsService.similarity_search_on_single_document",
         return_value=[document for document in documents],
     )
 
     chain_mock = mocker.Mock()
     chain_mock.return_value = {"output_text": "Paris", "source_documents": documents}
-    mocker.patch(
-        "shared.llms.chats.DocumentsChat.create_chain", return_value=chain_mock
-    )
+    mocker.patch("llms.chats.DocumentsChat.create_chain", return_value=chain_mock)
 
     service = "azure-gpt35"
     default_tone = "more precise (0.2)"
