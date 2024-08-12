@@ -101,6 +101,14 @@ const PromptChat = () => {
     });
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const prompt = params.get("prompt");
+    if (prompt) {
+      handlePromptChange(prompt);
+    }
+  }, [prompts]);
+
   const addMessageToChatWidget = async () => {
     if (chatRef.current) {
       chatRef.current.sendMessage(promptInput);
@@ -109,14 +117,15 @@ const PromptChat = () => {
 
   return (
     <>
-      <Clipboard
+      {/* <Clipboard
         toggleClipboardDrawer={setClipboardDrawerOpen}
         isOpen={clipboardDrawerOpen}
-      />
+        contexts={contexts}
+      /> */}
 
       <div className="prompt-chat-container">
         <div id="prompt-center">
-          <ClipboardButton toggleClipboardDrawer={setClipboardDrawerOpen} />
+          {/* <ClipboardButton toggleClipboardDrawer={setClipboardDrawerOpen} /> */}
           <h2>Prompting Center</h2>
           <div className="user-inputs">
             <div className="prompt-center-section">
@@ -136,6 +145,7 @@ const PromptChat = () => {
                     onChange={handlePromptChange}
                     style={{ width: 300 }}
                     options={prompts}
+                    value={selectedPrompt?.identifier}
                   ></Select>
                 </div>
 

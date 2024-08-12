@@ -1,11 +1,17 @@
 :root {
-  --color-flamingo: #f2617aff;
   --color-light-gray: #edf1f3;
+
+  --color-flamingo: #f2617aff;
   --color-dark-blue: #003d4f;
-  --color-sapphire: #47a1ad;
+  --color-sapphire: #47a1ad;  
+  --color-amethyst-purple: #634F7D;
+  --color-jade-green: #6B9E78;
+  --color-turmeric-yellow: #CC850A;
+  --color-dark-gray: #666666ff;
+
   --color-sapphire-light: #47a1ad80;
+  
   --standard-left-padding: 1.5em;
-  --color-sapphire-light: #47a1ad80;
 }
 
 html {
@@ -136,18 +142,18 @@ body {
   }
 }
 
-.scenario .ant-card-head-title {
+.scenario-card-content .ant-card-head-title {
   font-weight: bold;
   white-space: normal;
   min-height: 55px;
   display: contents;
 }
 
-.scenario .card-prop {
+.scenario-card-content .card-prop {
   margin: 5px 0;
 }
 
-.scenario .card-prop-name {
+.scenario-card-content .card-prop-name {
   font-weight: bold;
 }
 
@@ -540,24 +546,31 @@ textarea.answer-overwrite {
 
 
 /* DASHBOARD - not used at the moment, hidden experiment */
-.dashboard .index-tile {
-  background-color: var(--color-sapphire-light);
-  width: 160px;
-  height: 160px;
-  padding: 1em;
-  margin: 1em;
+.dashboard {
+  padding: 2em;
 }
 
-.dashboard .index-tile h3 {
-  padding: 0;
-  margin: 0;
-  font-size: 100%;
+.dashboard-tile {
+  width: 300px;
+  max-height: 300px;
+  min-height: 300px;
+  padding-top: 0.5em;
 }
 
-.dashboard .index-tile p {
-  margin: 0;
-  font-size: 80%;
+.dashboard-tile .ant-card-body {
+  max-height: 180px;
+  overflow: hidden;
 }
+
+.dashboard-tile .tile-tags {
+  margin-right: -1.5em;
+}
+
+.dashboard-tile .tile-tags span {
+  float: right;
+  margin: 0.2em;
+}
+
 
 .header {
   background-color: var(--color-dark-blue);
