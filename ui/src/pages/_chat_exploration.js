@@ -107,7 +107,14 @@ export default function ChatExploration({
       </div>
       <PossibilityPanel />
       <ProChatProvider>
-        <ChatWidget onSubmitMessage={submitPromptToBackend} ref={chatRef} />
+        <ChatWidget
+          onSubmitMessage={submitPromptToBackend}
+          ref={chatRef}
+          visible={true}
+          helloMessage={
+            "Chat with me! Click on one of the suggested questions, or type your own below."
+          }
+        />
       </ProChatProvider>
     </div>
   );
