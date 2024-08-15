@@ -597,7 +597,9 @@ class TestUIFactory(unittest.TestCase):
         ui.styling.assert_called_once()
         mock_blocks.assert_called_with(theme=theme, css=css, title="Haiven")
         ui.ui_header.assert_called_once()
-        blocks.load.assert_called_with(event_handler.on_ui_load, None, outputs=[state])
+        blocks.load.assert_called_with(
+            event_handler.on_load_plain_chat_ui, None, outputs=[state]
+        )
         mock_enable_plain_chat.assert_called_with(chat_session_memory, state)
         blocks.queue.assert_called_once()
 

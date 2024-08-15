@@ -11,21 +11,11 @@ class EventHandler:
     def get_user(self, request: gr.Request):
         return request.request.session.get("user", {}).get("sub", "guest")
 
-    def on_ui_load(self, request: gr.Request):
+    def on_load_plain_chat_ui(self, request: gr.Request):
         self.logger_factory.get().analytics(
             f"User {self.get_user(request)} loaded UI at {request.url}"
         )
         return self.get_user(request)
-
-    def on_ui_load_with_tab_deeplink(self, request: gr.Request):
-        self.logger_factory.get().analytics(
-            f"User {self.get_user(request)} loaded UI at {request.url}"
-        )
-
-        if "tab" in request.query_params:
-            return gr.Tabs(selected=request.query_params["tab"])
-
-        return gr.Tabs(), self.get_user(request)
 
     def on_load_ui(
         self,
@@ -34,6 +24,11 @@ class EventHandler:
         knowledge_context_select,
         request: gr.Request,
     ):
+        self.logger_factory.get().analytics(
+            "Chat mode UI loaded",
+            {"user": self.get_user(request), "url": str(request.url)},
+        )
+
         if user_context.get_value(request, "llm_model", app_level=True) is not None:
             model_selected = user_context.get_value(
                 request, "llm_model", app_level=True
@@ -51,9 +46,6 @@ class EventHandler:
             )
 
         if user_context.get_active_path(request) != "unknown":
-            self.logger_factory.get().analytics(
-                f"User {self.get_user(request)} loaded UI at {request.url}"
-            )
             selected_tab = user_context.get_value(request, "selected_tab")
 
             if "tab" in request.query_params:

@@ -471,7 +471,9 @@ class UIFactory:
                 gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
 
             blocks.load(
-                self.event_handler.on_ui_load, None, outputs=[user_identifier_state]
+                self.event_handler.on_load_plain_chat_ui,
+                None,
+                outputs=[user_identifier_state],
             )
 
         blocks.queue()
