@@ -398,9 +398,3 @@ class TestApi(unittest.TestCase):
             },
             warnings=ANY,
         )
-
-
-#         Differing items:
-# E         {'additional_vars': {'columns': ['For C, For D'], 'idea_qualifiers': 'utopian', 'num_ideas': 3, 'prompt': 'give me use cases for the future of gardening', ...}} !=
-#           {'additional_vars': {'columns': ['For C', 'For D'], 'idea_qualifiers': 'utopian', 'num_ideas': 3, 'prompt': 'give me use cases for the future of gardening', ...}}
-# E         Use -v to get more diff

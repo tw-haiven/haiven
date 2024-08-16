@@ -8,7 +8,6 @@ from api.api_requirements import ApiRequirementsBreakdown
 from api.api_story_validation import ApiStoryValidation
 from api.api_creative_matrix import ApiCreativeMatrix
 from llms.chats import (
-    JSONChat,
     ServerChatSessionMemory,
     StreamingChat,
 )
@@ -26,19 +25,6 @@ class PromptRequestBody(BaseModel):
     userinput: str
     chatSessionId: str = None
     context: str = None
-
-
-class ExploreScenarioRequestBody(BaseModel):
-    context: str
-    input: str
-
-
-class ScenarioQuestionRequestBody(BaseModel):
-    context: str
-
-
-class ScenarioQuestionResponse(BaseModel):
-    questions: List[str]
 
 
 class BobaApi:
@@ -74,17 +60,6 @@ class BobaApi:
 
         return self.chat(rendered_prompt, chat_session)
 
-    def prompt_guided_json(self, prompt_id, variables):
-        rendered_prompt = self.prompts_guided.render_prompt(
-            active_knowledge_context=None,
-            prompt_choice=prompt_id,
-            user_input="",
-            additional_vars=variables,
-            warnings=[],
-        )
-        chat = JSONChat(llm_config=LLMConfig(self.model, 0.2))
-        return chat.run(rendered_prompt)
-
     def chat(self, rendered_prompt, chat_session):
         for chunk in chat_session.start_with_prompt(rendered_prompt):
             yield chunk
@@ -117,6 +92,35 @@ class BobaApi:
 
             return JSONResponse(response_data)
 
+        @app.post("/api/prompt")
+        def chat(prompt_data: PromptRequestBody):
+            chat_session_key_value, chat_session = (
+                self.chat_session_memory.get_or_create_chat(
+                    lambda: StreamingChat(
+                        llm_config=LLMConfig(self.model, 0.5), stream_in_chunks=True
+                    ),
+                    prompt_data.chatSessionId,
+                    "chat",
+                    # TODO: Pass user identifier from session
+                )
+            )
+
+            return StreamingResponse(
+                self.prompt(
+                    prompt_data.promptid,
+                    prompt_data.userinput,
+                    chat_session,
+                    prompt_data.context,
+                ),
+                media_type="text/event-stream",
+                headers={
+                    "Connection": "keep-alive",
+                    "Content-Encoding": "none",
+                    "Access-Control-Expose-Headers": "X-Chat-ID",
+                    "X-Chat-ID": chat_session_key_value,
+                },
+            )
+
         ApiThreatModelling(
             app,
             self.chat_session_memory,
@@ -147,32 +151,3 @@ class BobaApi:
             ConfigService.get_default_guided_mode_model(),
             self.prompts_guided,
         )
-
-        @app.post("/api/prompt")
-        def chat(prompt_data: PromptRequestBody):
-            chat_session_key_value, chat_session = (
-                self.chat_session_memory.get_or_create_chat(
-                    lambda: StreamingChat(
-                        llm_config=LLMConfig(self.model, 0.5), stream_in_chunks=True
-                    ),
-                    prompt_data.chatSessionId,
-                    "chat",
-                    # TODO: Pass user identifier from session
-                )
-            )
-
-            return StreamingResponse(
-                self.prompt(
-                    prompt_data.promptid,
-                    prompt_data.userinput,
-                    chat_session,
-                    prompt_data.context,
-                ),
-                media_type="text/event-stream",
-                headers={
-                    "Connection": "keep-alive",
-                    "Content-Encoding": "none",
-                    "Access-Control-Expose-Headers": "X-Chat-ID",
-                    "X-Chat-ID": chat_session_key_value,
-                },
-            )
