@@ -4,8 +4,8 @@ from unittest.mock import patch, ANY
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
 
-from api.api_scenarios import enable_scenarios
 from api.api_story_validation import enable_story_validation
+from api.api_scenarios import ApiScenarios
 
 
 class TestApi(unittest.TestCase):
@@ -29,7 +29,7 @@ class TestApi(unittest.TestCase):
             mock_json_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt"
-        enable_scenarios(
+        ApiScenarios(
             self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
         )
 
@@ -76,7 +76,7 @@ class TestApi(unittest.TestCase):
             mock_streaming_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt"
-        enable_scenarios(
+        ApiScenarios(
             self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
         )
 

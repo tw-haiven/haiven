@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from api.api_story_validation import enable_story_validation
 from api.api_requirements import enable_requirements
 from api.api_threat_modelling import enable_threat_modelling
-from api.api_scenarios import enable_scenarios
+from api.api_scenarios import ApiScenarios
 from llms.chats import (
     JSONChat,
     ServerChatSessionMemory,
@@ -121,7 +121,7 @@ class BobaApi:
         enable_story_validation(
             app, self.chat_session_memory, ConfigService.get_default_guided_mode_model()
         )
-        enable_scenarios(
+        ApiScenarios(
             app,
             self.chat_session_memory,
             ConfigService.get_default_guided_mode_model(),
