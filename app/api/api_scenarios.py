@@ -47,7 +47,7 @@ class ApiScenarios(HaivenBaseApi):
                 prompt, explore_request.chatSessionId, "scenarios-explore"
             )
 
-    def explore_scenario_prompt(original_input, item, user_message):
+    def explore_scenario_prompt(self, original_input, item, user_message):
         return f"""
             You are a prospector, I am exploring the following context:
             {original_input}

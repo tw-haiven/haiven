@@ -89,7 +89,7 @@ class TestApi(unittest.TestCase):
                 "userMessage": "some user question",
                 "item": "some scenario item",
                 "originalInput": "some original prompt",
-                "chatSessionId": "some session id",
+                "chatSessionId": None,
             },
         )
 
