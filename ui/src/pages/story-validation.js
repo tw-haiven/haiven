@@ -40,20 +40,12 @@ const Home = () => {
     let output = [];
 
     fetchSSE2(
-      () => {
-        const response = fetch(uri, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            input: promptInput,
-          }),
-          signal: ctrl.signal,
-        });
-
-        return response;
+      uri,
+      {
+        body: JSON.stringify({
+          input: promptInput,
+        }),
+        signal: ctrl.signal,
       },
       {
         json: true,
@@ -101,23 +93,14 @@ const Home = () => {
     let ms = "";
 
     fetchSSE2(
-      () => {
-        console.log(promptInput);
-        const response = fetch(uri, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            input: promptInput,
-            chat_session_id: chatSessionId,
-            answers: questions,
-          }),
-          signal: ctrl.signal,
-        });
-
-        return response;
+      uri,
+      {
+        body: JSON.stringify({
+          input: promptInput,
+          chat_session_id: chatSessionId,
+          answers: questions,
+        }),
+        signal: ctrl.signal,
       },
       {
         onErrorHandle: () => {

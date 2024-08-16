@@ -28,9 +28,15 @@ const isAbortError = (error) => {
   );
 };
 
-export const fetchSSE2 = async (fetchFn, options) => {
+export const fetchSSE2 = async (uri, fetchOptions, options) => {
   options = options || {};
-  const response = await fetchFn();
+
+  fetchOptions.credentials = fetchOptions.credentials || "include";
+  fetchOptions.headers = fetchOptions.headers || {
+    "Content-Type": "application/json",
+  };
+  fetchOptions.method = fetchOptions.method || "POST";
+  const response = await fetch(uri, fetchOptions);
 
   if (!response.ok) {
     // TODO: need a message error custom parser
