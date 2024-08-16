@@ -1,6 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from fastapi import Request
 from fastapi.responses import StreamingResponse
+from api.api_utils import streaming_headers, streaming_media_type
 from llms.chats import JSONChat, StreamingChat, ServerChatSessionMemory
 from llms.llm_config import LLMConfig
 from prompts.prompts import PromptList
@@ -71,13 +72,8 @@ def enable_scenarios(
 
         return StreamingResponse(
             chat_session.run(prompt),
-            media_type="text/event-stream",
-            headers={
-                "Connection": "keep-alive",
-                "Content-Encoding": "none",
-                "Access-Control-Expose-Headers": "X-Chat-ID",
-                "X-Chat-ID": chat_session_key_value,
-            },
+            media_type=streaming_media_type(),
+            headers=streaming_headers(chat_session_key_value),
         )
 
     @app.post("/api/scenario/explore")
@@ -101,11 +97,6 @@ def enable_scenarios(
 
         return StreamingResponse(
             chat_with_yield(chat_session, prompt),
-            media_type="text/event-stream",
-            headers={
-                "Connection": "keep-alive",
-                "Content-Encoding": "none",
-                "Access-Control-Expose-Headers": "X-Chat-ID",
-                "X-Chat-ID": chat_session_key_value,
-            },
+            media_type=streaming_media_type(),
+            headers=streaming_headers(chat_session_key_value),
         )

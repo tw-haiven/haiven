@@ -1,6 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, ANY
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
 
@@ -34,12 +34,32 @@ class TestApi(unittest.TestCase):
         )
 
         # Make the request to the endpoint
-        response = self.client.get("/api/make-scenario")
+        input = "someinput"
+        num_scenarios = "3"
+        time_horizon = "5"
+        optimism = "optimistic"
+        realism = "futuristic sci-fi"
+        response = self.client.get(
+            f"/api/make-scenario?input={input}&num_scenarios={num_scenarios}&time_horizon={time_horizon}&optimism={optimism}&realism={realism}&detail=true"
+        )
 
         # Assert the response
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
+        mock_prompt_list.render_prompt.assert_called_with(
+            active_knowledge_context=ANY,
+            prompt_choice="guided-scenarios-detailed",
+            user_input=ANY,
+            additional_vars={
+                "input": input,
+                "num_scenarios": num_scenarios,
+                "time_horizon": time_horizon,
+                "optimism": optimism,
+                "realism": realism,
+            },
+            warnings=ANY,
+        )
 
     @patch("llms.chats.StreamingChat")
     @patch("llms.chats.ServerChatSessionMemory")
