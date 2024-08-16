@@ -1,6 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
-import { fetchSSE2 } from "../app/_fetch_sse";
+import { fetchSSE } from "../app/_fetch_sse";
 import { Alert, Button, Card, Input, Space, Spin } from "antd";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
@@ -38,7 +38,7 @@ const Home = () => {
     let ms = "";
     let output = [];
 
-    fetchSSE2(
+    fetchSSE(
       uri,
       {
         body: JSON.stringify({
@@ -87,7 +87,7 @@ const Home = () => {
 
     let ms = "";
 
-    fetchSSE2(
+    fetchSSE(
       uri,
       {
         body: JSON.stringify({

@@ -7,7 +7,7 @@ import {
   AiOutlinePicture,
   AiOutlineRocket,
 } from "react-icons/ai";
-import { fetchSSE2 } from "../app/_fetch_sse";
+import { fetchSSE } from "../app/_fetch_sse";
 let ctrl;
 
 const CreativeMatrix = () => {
@@ -135,7 +135,7 @@ const CreativeMatrix = () => {
     let isLoadingXhr = true;
     let output = [];
     try {
-      fetchSSE2(
+      fetchSSE(
         uri,
         { method: "GET", signal: ctrl.signal },
         {

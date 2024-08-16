@@ -8,10 +8,17 @@ export const getMessageError = async (response) => {
   return chatMessageError;
 };
 
+const isAbortError = (error) => {
+  return (
+    error.name === "AbortError" &&
+    error.message.includes("BodyStreamBuffer was aborted")
+  );
+};
+
 /*
- Attempt to implement a fetch SSE variant that is more flexible in terms
+ Implementation of event stream client that is more flexible in terms
  of taking different HTTP methods, headers etc - basically the full power of fetch()
- Original code copied from https://github.com/ant-design/pro-chat
+ Original code based on a copy from https://github.com/ant-design/pro-chat
  https://github.com/ant-design/pro-chat/blob/371bc6580d684575d84a89ee5e149f751334c456/src/ProChat/utils/fetch.ts
 
  options:
@@ -20,15 +27,7 @@ export const getMessageError = async (response) => {
    onFinish?: (text: string)
    json?: boolean; if true, will process '{ "data": "some partial token of a JSON string" }' chunks and pass on as JSON object
 */
-
-const isAbortError = (error) => {
-  return (
-    error.name === "AbortError" &&
-    error.message.includes("BodyStreamBuffer was aborted")
-  );
-};
-
-export const fetchSSE2 = async (uri, fetchOptions, options) => {
+export const fetchSSE = async (uri, fetchOptions, options) => {
   options = options || {};
 
   fetchOptions.credentials = fetchOptions.credentials || "include";
@@ -97,31 +96,3 @@ export const fetchSSE2 = async (uri, fetchOptions, options) => {
     }
   }
 };
-
-export function fetchSSE(options) {
-  const { url, onData, onStop } = options;
-  try {
-    const sse = new EventSource(url, { withCredentials: true });
-    sse.onmessage = (event) => {
-      // if(!isLoadingXhr) {
-      //   console.log("is loading xhr", isLoadingXhr);
-      //   return;
-      // }
-      if (event.data == "[DONE]") {
-        onStop();
-        sse.close();
-        return;
-      }
-      onData(event, sse);
-    };
-    sse.onerror = (error) => {
-      console.log("error", error);
-      onStop();
-    };
-    sse.onopen = (event) => {};
-    return sse;
-  } catch (error) {
-    console.log("error", error);
-    onStop();
-  }
-}

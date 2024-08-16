@@ -1,7 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { fetchSSE2 } from "../app/_fetch_sse";
+import { fetchSSE } from "../app/_fetch_sse";
 import { Alert, Button, Card, Drawer, Input, Space, Spin, Radio } from "antd";
 const { TextArea } = Input;
 import ChatExploration from "./_chat_exploration";
@@ -49,7 +49,7 @@ const Home = () => {
     let ms = "";
     let output = [];
 
-    fetchSSE2(
+    fetchSSE(
       uri,
       { method: "GET", signal: ctrl.signal },
       {
