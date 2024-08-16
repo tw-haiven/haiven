@@ -20,6 +20,14 @@ export const getMessageError = async (response) => {
    onFinish?: (text: string)
    json?: boolean; if true, will process '{ "data": "some partial token of a JSON string" }' chunks and pass on as JSON object
 */
+
+const isAbortError = (error) => {
+  return (
+    error.name === "AbortError" &&
+    error.message.includes("BodyStreamBuffer was aborted")
+  );
+};
+
 export const fetchSSE2 = async (fetchFn, options) => {
   options = options || {};
   const response = await fetchFn();
@@ -32,8 +40,6 @@ export const fetchSSE2 = async (fetchFn, options) => {
     return;
   }
 
-  const returnRes = response.clone();
-
   const data = response.body;
 
   if (!data) return;
@@ -43,42 +49,47 @@ export const fetchSSE2 = async (fetchFn, options) => {
 
   let done = false;
 
-  while (!done) {
-    const { value, done: doneReading } = await reader.read();
-    done = doneReading;
-    const chunkValue = decoder.decode(value, { stream: !doneReading });
+  try {
+    while (!done) {
+      const { value, done: doneReading } = await reader.read();
+      done = doneReading;
+      const chunkValue = decoder.decode(value, { stream: !doneReading });
 
-    // console.log("reading", chunkValue);
+      // console.log("reading", chunkValue);
 
-    if (options.json === true) {
-      // - expectation from backend: '{ "data": "some partial token of a JSON string" }'
-      // - chunkValue is sometimes multiple messages
-      // - make an assumption about API endpoints' message delimiters (\n\n)
-      // - Split into multiple "messages" with JSON data tokens
-      if (chunkValue !== "") {
-        // LEARNING: Sending on just the JSON chunk directly, without {data: ...} wrapper, doesn't work, messes up character escaping
-        // LEARNING: Using "data: " in front of the {data: ...} wrapper also breaks things, "Unexpected non-whitespace character" for the trailing line breaks?
-        // LEARNING: Removing the trailing double line break from the API response a) doesn't seem to be the standard, EventStream tab doesn't show anything, and b) again seems to break the JSON.parse
+      if (options.json === true) {
+        // - expectation from backend: '{ "data": "some partial token of a JSON string" }'
+        // - chunkValue is sometimes multiple messages
+        // - make an assumption about API endpoints' message delimiters (\n\n)
+        // - Split into multiple "messages" with JSON data tokens
+        if (chunkValue !== "") {
+          // LEARNING: Sending on just the JSON chunk directly, without {data: ...} wrapper, doesn't work, messes up character escaping
+          // LEARNING: Using "data: " in front of the {data: ...} wrapper also breaks things, "Unexpected non-whitespace character" for the trailing line breaks?
+          // LEARNING: Removing the trailing double line break from the API response a) doesn't seem to be the standard, EventStream tab doesn't show anything, and b) again seems to break the JSON.parse
 
-        const SPLIT_DELIMITER = "|SPLIT|";
-        const chunkable = chunkValue.replace(
-          /}\n\n{/g,
-          "}" + SPLIT_DELIMITER + "{",
-        );
-        const chunks = chunkable.split(SPLIT_DELIMITER);
-        chunks.forEach((value) => {
-          const data = JSON.parse(value);
-          options.onMessageHandle?.(data, returnRes);
-        });
+          const SPLIT_DELIMITER = "|SPLIT|";
+          const chunkable = chunkValue.replace(
+            /}\n\n{/g,
+            "}" + SPLIT_DELIMITER + "{",
+          );
+          const chunks = chunkable.split(SPLIT_DELIMITER);
+          chunks.forEach((value) => {
+            const data = JSON.parse(value);
+            options.onMessageHandle?.(data, response);
+          });
+        }
+      } else {
+        options.onMessageHandle?.(chunkValue, response);
       }
-    } else {
-      options.onMessageHandle?.(chunkValue, returnRes);
+    }
+
+    options.onFinish?.("finish");
+  } catch (error) {
+    if (!isAbortError(error)) {
+      console.log("error", error);
+      options.onErrorHandle?.(error);
     }
   }
-
-  options.onFinish?.("finish");
-
-  return returnRes;
 };
 
 export function fetchSSE(options) {

@@ -1,6 +1,5 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
-import { useRouter } from "next/router";
 import { fetchSSE2 } from "../app/_fetch_sse";
 import { Alert, Button, Card, Input, Space, Spin } from "antd";
 const { TextArea } = Input;
@@ -8,31 +7,31 @@ import { parse } from "best-effort-json-parser";
 import ReactMarkdown from "react-markdown";
 import { RiFileCopyLine } from "react-icons/ri";
 
-let ctrl;
-
 const Home = () => {
   const [questions, setQuestions] = useState([]);
   const [storyScenarios, setStoryScenarios] = useState();
   const [isLoading, setLoading] = useState(false);
   const [promptInput, setPromptInput] = useState("");
-  const [currentSSE, setCurrentSSE] = useState(null);
   const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
-  const router = useRouter();
+  const [currentAbortController, setCurrentAbortController] = useState();
 
-  function abortLoad() {
-    ctrl && ctrl.abort();
+  function abortLoad(abortController) {
     setLoading(false);
-    if (currentSSE && currentSSE.readyState == 1) {
-      currentSSE.close();
-      setCurrentSSE(null);
-    }
+    abortController && abortController.abort("User aborted");
   }
 
-  const onSubmitPrompt = (event) => {
+  function abortCurrentLoad() {
+    setLoading(false);
+    currentAbortController && currentAbortController.abort("User aborted");
+  }
+
+  const onSubmitPrompt = () => {
     setModelOutputFailed(false);
-    abortLoad();
-    ctrl = new AbortController();
+    abortCurrentLoad();
+
+    const ctrl = new AbortController();
+    setCurrentAbortController(ctrl);
     setLoading(true);
 
     const uri = "/api/story-validation/questions";
@@ -51,6 +50,7 @@ const Home = () => {
           body: JSON.stringify({
             input: promptInput,
           }),
+          signal: ctrl.signal,
         });
 
         return response;
@@ -58,8 +58,7 @@ const Home = () => {
       {
         json: true,
         onErrorHandle: () => {
-          setLoading(false);
-          abortLoad();
+          abortLoad(ctrl);
         },
         onMessageHandle: (data, response) => {
           if (!chatSessionId) {
@@ -84,24 +83,18 @@ const Home = () => {
             console.log("error", error, "data received", "'" + data + "'");
           }
         },
-        onAbort: () => {
-          setLoading(false);
-          abortLoad();
-        },
         onFinish: () => {
           setLoading(false);
-          abortLoad();
         },
       },
     );
   };
 
-  const onGenerateScenarios = (event) => {
-    abortLoad();
-    ctrl = new AbortController();
+  const onGenerateScenarios = () => {
+    abortCurrentLoad();
+    const ctrl = new AbortController();
+    setCurrentAbortController(ctrl);
     setLoading(true);
-
-    console.log(questions);
 
     const uri = "/api/story-validation/scenarios";
 
@@ -121,14 +114,14 @@ const Home = () => {
             chat_session_id: chatSessionId,
             answers: questions,
           }),
+          signal: ctrl.signal,
         });
 
         return response;
       },
       {
         onErrorHandle: () => {
-          setLoading(false);
-          abortLoad();
+          abortLoad(ctrl);
         },
         onMessageHandle: (data) => {
           try {
@@ -139,13 +132,8 @@ const Home = () => {
             console.log("error", error, "data received", "'" + data + "'");
           }
         },
-        onAbort: () => {
-          setLoading(false);
-          abortLoad();
-        },
         onFinish: () => {
           setLoading(false);
-          abortLoad();
         },
       },
     );
@@ -194,7 +182,7 @@ const Home = () => {
                 &nbsp;
               </div>
 
-              <Button type="primary" danger onClick={abortLoad}>
+              <Button type="primary" danger onClick={abortCurrentLoad}>
                 Stop
               </Button>
             </div>
