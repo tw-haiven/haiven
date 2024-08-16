@@ -44,7 +44,7 @@ class ApiScenarios(HaivenBaseApi):
                 )
 
             return self.stream_text_chat(
-                prompt, explore_request.chatSessionId, "scenarios-explore"
+                prompt, "scenarios-explore", explore_request.chatSessionId
             )
 
     def explore_scenario_prompt(self, original_input, item, user_message):

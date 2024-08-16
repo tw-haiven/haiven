@@ -58,5 +58,5 @@ class ApiRequirementsBreakdown(HaivenBaseApi):
                 )
 
             return self.stream_text_chat(
-                prompt, explore_request.chatSessionId, "requirements-breakdown-explore"
+                prompt, "requirements-breakdown-explore", explore_request.chatSessionId
             )

@@ -23,7 +23,10 @@ class TestApi(unittest.TestCase):
     @patch("llms.chats.ServerChatSessionMemory")
     @patch("prompts.prompts.PromptList")
     def test_scenarios(
-        self, mock_json_chat, mock_chat_session_memory, mock_prompt_list
+        self,
+        mock_prompt_list,
+        mock_chat_session_memory,
+        mock_json_chat,
     ):
         mock_json_chat.run.return_value = "some response from the model"
         mock_chat_session_memory.get_or_create_chat.return_value = (
@@ -67,7 +70,10 @@ class TestApi(unittest.TestCase):
     @patch("llms.chats.ServerChatSessionMemory")
     @patch("prompts.prompts.PromptList")
     def test_scenarios_explore(
-        self, mock_streaming_chat, mock_chat_session_memory, mock_prompt_list
+        self,
+        mock_prompt_list,
+        mock_chat_session_memory,
+        mock_streaming_chat,
     ):
         mock_streaming_chat.start_with_prompt.return_value = (
             "some response from the model"
@@ -98,11 +104,15 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
 
+        args, kwargs = mock_chat_session_memory.get_or_create_chat.call_args
+        assert kwargs["chat_category"] == "scenarios-explore"
+        assert kwargs["chat_session_key_value"] is None
+
     @patch("llms.chats.JSONChat")
     @patch("llms.chats.ServerChatSessionMemory")
     @patch("prompts.prompts.PromptList")
     def test_threat_modelling(
-        self, mock_json_chat, mock_chat_session_memory, mock_prompt_list
+        self, mock_prompt_list, mock_chat_session_memory, mock_json_chat
     ):
         mock_json_chat.run.return_value = "some response from the model"
         mock_chat_session_memory.get_or_create_chat.return_value = (
@@ -142,7 +152,7 @@ class TestApi(unittest.TestCase):
     @patch("llms.chats.ServerChatSessionMemory")
     @patch("prompts.prompts.PromptList")
     def test_threat_modelling_explore(
-        self, mock_streaming_chat, mock_chat_session_memory, mock_prompt_list
+        self, mock_prompt_list, mock_chat_session_memory, mock_streaming_chat
     ):
         mock_streaming_chat.start_with_prompt.return_value = (
             "some response from the model"
@@ -164,7 +174,7 @@ class TestApi(unittest.TestCase):
                 "userMessage": "some user question",
                 "item": "some scenario item",
                 "originalInput": "some original prompt",
-                "chatSessionId": "some session id",
+                "chatSessionId": None,
             },
         )
 
@@ -173,11 +183,18 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
 
+        args, kwargs = mock_chat_session_memory.get_or_create_chat.call_args
+        assert kwargs["chat_category"] == "threat-modelling-explore"
+        assert kwargs["chat_session_key_value"] is None
+
     @patch("llms.chats.JSONChat")
     @patch("llms.chats.ServerChatSessionMemory")
     @patch("prompts.prompts.PromptList")
     def test_requirements(
-        self, mock_json_chat, mock_chat_session_memory, mock_prompt_list
+        self,
+        mock_prompt_list,
+        mock_chat_session_memory,
+        mock_json_chat,
     ):
         mock_json_chat.run.return_value = "some response from the model"
         mock_chat_session_memory.get_or_create_chat.return_value = (
@@ -209,7 +226,10 @@ class TestApi(unittest.TestCase):
     @patch("llms.chats.ServerChatSessionMemory")
     @patch("prompts.prompts.PromptList")
     def test_requirements_explore(
-        self, mock_streaming_chat, mock_chat_session_memory, mock_prompt_list
+        self,
+        mock_prompt_list,
+        mock_chat_session_memory,
+        mock_streaming_chat,
     ):
         mock_streaming_chat.start_with_prompt.return_value = (
             "some response from the model"
@@ -240,11 +260,18 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
 
+        args, kwargs = mock_chat_session_memory.get_or_create_chat.call_args
+        assert kwargs["chat_category"] == "requirements-breakdown-explore"
+        assert kwargs["chat_session_key_value"] == "some session id"
+
     @patch("llms.chats.JSONChat")
     @patch("llms.chats.ServerChatSessionMemory")
     @patch("prompts.prompts.PromptList")
-    def test_post_story_validation(
-        self, mock_json_chat, mock_chat_session_memory, mock_prompt_list
+    def test_story_validation(
+        self,
+        mock_prompt_list,
+        mock_chat_session_memory,
+        mock_json_chat,
     ):
         mock_json_chat.run.return_value = "some response from the model"
         mock_chat_session_memory.get_or_create_chat.return_value = (

@@ -13,7 +13,6 @@ const Home = () => {
   const [isLoading, setLoading] = useState(false);
   const [promptInput, setPromptInput] = useState("");
   const [modelOutputFailed, setModelOutputFailed] = useState(false);
-  const [chatSessionId, setChatSessionId] = useState();
   const [currentAbortController, setCurrentAbortController] = useState();
 
   function abortLoad(abortController) {
@@ -56,9 +55,6 @@ const Home = () => {
           setLoading(false);
         },
         onMessageHandle: (data, response) => {
-          if (!chatSessionId) {
-            setChatSessionId(response.headers.get("X-Chat-ID"));
-          }
           try {
             ms += data.data;
 
@@ -96,7 +92,6 @@ const Home = () => {
       {
         body: JSON.stringify({
           input: promptInput,
-          chat_session_id: chatSessionId,
           answers: questions,
         }),
         signal: ctrl.signal,

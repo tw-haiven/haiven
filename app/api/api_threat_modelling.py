@@ -60,5 +60,5 @@ class ApiThreatModelling(HaivenBaseApi):
                 )
 
             return self.stream_text_chat(
-                prompt, explore_request.chatSessionId, "threat-modelling-explore"
+                prompt, "threat-modelling-explore", explore_request.chatSessionId
             )
