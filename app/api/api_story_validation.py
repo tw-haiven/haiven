@@ -2,7 +2,6 @@
 from typing import List
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from config_service import ConfigService
 from llms.chats import JSONChat, ServerChatSessionMemory, StreamingChat
 from llms.llm_config import LLMConfig
 
@@ -51,7 +50,7 @@ You will respond with only a valid JSON array of question-answer objects. Each o
     """
 
 
-def get_scenario_generation_prompt(validationScenarios: StoryValidationScenarios):
+def get_story_generation_prompt(validationScenarios: StoryValidationScenarios):
     refined_input = [
         f"**Your question:** {qa.question}\n**My REVISED ANSWER:** {qa.answer}"
         for qa in validationScenarios.answers
@@ -93,14 +92,14 @@ Respond with the given/when/then scenarios in Markdown format, putting each part
 
 
 # at least 5, at most 10 thought/question/answer groups:
-def enable_story_validation(app, chat_session_memory: ServerChatSessionMemory):
-    chat_model = ConfigService.get_default_guided_mode_model()
-
+def enable_story_validation(
+    app, chat_session_memory: ServerChatSessionMemory, model_key: str
+):
     @app.post("/api/story-validation/questions")
     def story_validation(body: StoryValidationQuestions):
         chat_session_key_value, chat_session = chat_session_memory.get_or_create_chat(
             lambda: JSONChat(
-                llm_config=LLMConfig(chat_model, 0.5), event_stream_standard=False
+                llm_config=LLMConfig(model_key, 0.5), event_stream_standard=False
             ),
             None,
             "story-validation",
@@ -129,12 +128,12 @@ def enable_story_validation(app, chat_session_memory: ServerChatSessionMemory):
             )
         )
         new_chat = StreamingChat(
-            llm_config=LLMConfig(chat_model, 0.5), stream_in_chunks=True
+            llm_config=LLMConfig(model_key, 0.5), stream_in_chunks=True
         )
         new_chat.memory = json_chat_session.memory
 
         return StreamingResponse(
-            new_chat.next(get_scenario_generation_prompt(body), []),
+            new_chat.next(get_story_generation_prompt(body), []),
             media_type="text/event-stream",
             headers={
                 "Connection": "keep-alive",

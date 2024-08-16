@@ -2,10 +2,10 @@
 from typing import List
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
-from api.models.explore_request import ExploreRequest
 from api.api_story_validation import enable_story_validation
 from api.api_requirements import enable_requirements
 from api.api_threat_modelling import enable_threat_modelling
+from api.api_scenarios import enable_scenarios
 from llms.chats import (
     JSONChat,
     ServerChatSessionMemory,
@@ -18,23 +18,6 @@ from config_service import ConfigService
 from llms.llm_config import LLMConfig
 
 from pydantic import BaseModel
-
-
-def explore_scenario_prompt(original_input, item, user_message):
-    return f"""
-    You are a prospector, I am exploring the following context:
-    {original_input}
-
-    ...and the following scenario:
-    {item}
-
-    You are able to give me a concise elaboration of the scenario described in the
-    context, here is my request for exploration:
-
-    {user_message}
-
-    Please respond in 3-5 sentences.
-    """
 
 
 class PromptRequestBody(BaseModel):
@@ -133,57 +116,17 @@ class BobaApi:
 
             return JSONResponse(response_data)
 
-        @app.get("/api/make-scenario")
-        def make_scenario(request: Request):
-            variables = {
-                "input": request.query_params.get(
-                    "input", "productization of consulting"
-                ),
-                "num_scenarios": request.query_params.get("num_scenarios", 5),
-                "time_horizon": request.query_params.get("time_horizon", "5-year"),
-                "optimism": request.query_params.get("optimism", "optimistic"),
-                "realism": request.query_params.get("realism", "futuristic sci-fi"),
-            }
-            detailed = request.query_params.get("detail") == "true"
-
-            prompt = self.prompts_guided.render_prompt(
-                active_knowledge_context=None,
-                prompt_choice="guided-scenarios-detailed"
-                if detailed
-                else "guided-scenarios",
-                user_input="",
-                additional_vars=variables,
-                warnings=[],
-            )
-
-            chat_session_key_value, chat_session = (
-                self.chat_session_memory.get_or_create_chat(
-                    lambda: JSONChat(
-                        llm_config=LLMConfig(
-                            ConfigService.get_default_guided_mode_model(), 0.5
-                        ),
-                        event_stream_standard=False,
-                    ),
-                    None,
-                    "scenarios",
-                    # TODO: Pass user identifier from session
-                )
-            )
-
-            return StreamingResponse(
-                chat_session.run(prompt),
-                media_type="text/event-stream",
-                headers={
-                    "Connection": "keep-alive",
-                    "Content-Encoding": "none",
-                    "Access-Control-Expose-Headers": "X-Chat-ID",
-                    "X-Chat-ID": chat_session_key_value,
-                },
-            )
-
         enable_threat_modelling(app, self.chat_session_memory, self.chat)
         enable_requirements(app, self.chat_session_memory, self.chat)
-        enable_story_validation(app, self.chat_session_memory)
+        enable_story_validation(
+            app, self.chat_session_memory, ConfigService.get_default_guided_mode_model()
+        )
+        enable_scenarios(
+            app,
+            self.chat_session_memory,
+            ConfigService.get_default_guided_mode_model(),
+            self.prompts_guided,
+        )
 
         @app.post("/api/prompt")
         def chat(prompt_data: PromptRequestBody):
@@ -205,38 +148,6 @@ class BobaApi:
                     chat_session,
                     prompt_data.context,
                 ),
-                media_type="text/event-stream",
-                headers={
-                    "Connection": "keep-alive",
-                    "Content-Encoding": "none",
-                    "Access-Control-Expose-Headers": "X-Chat-ID",
-                    "X-Chat-ID": chat_session_key_value,
-                },
-            )
-
-        @app.post("/api/scenario/explore")
-        def explore_scenario(explore_request: ExploreRequest):
-            chat_session_key_value, chat_session = (
-                self.chat_session_memory.get_or_create_chat(
-                    lambda: StreamingChat(
-                        llm_config=LLMConfig(self.model, 0.5), stream_in_chunks=True
-                    ),
-                    explore_request.chatSessionId,
-                    "chat",
-                    # TODO: Pass user identifier from session
-                )
-            )
-
-            prompt = explore_request.userMessage
-            if explore_request.chatSessionId is None:
-                prompt = explore_scenario_prompt(
-                    explore_request.originalInput,
-                    explore_request.item,
-                    explore_request.userMessage,
-                )
-
-            return StreamingResponse(
-                self.chat(prompt, chat_session),
                 media_type="text/event-stream",
                 headers={
                     "Connection": "keep-alive",
