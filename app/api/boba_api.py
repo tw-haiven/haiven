@@ -6,6 +6,7 @@ from api.api_threat_modelling import ApiThreatModelling
 from api.api_scenarios import ApiScenarios
 from api.api_requirements import ApiRequirementsBreakdown
 from api.api_story_validation import ApiStoryValidation
+from api.api_creative_matrix import ApiCreativeMatrix
 from llms.chats import (
     JSONChat,
     ServerChatSessionMemory,
@@ -140,6 +141,12 @@ class BobaApi:
             ConfigService.get_default_guided_mode_model(),
             self.prompts_guided,
         )
+        ApiCreativeMatrix(
+            app,
+            self.chat_session_memory,
+            ConfigService.get_default_guided_mode_model(),
+            self.prompts_guided,
+        )
 
         @app.post("/api/prompt")
         def chat(prompt_data: PromptRequestBody):
@@ -168,20 +175,4 @@ class BobaApi:
                     "Access-Control-Expose-Headers": "X-Chat-ID",
                     "X-Chat-ID": chat_session_key_value,
                 },
-            )
-
-        @app.get("/api/creative-matrix")
-        async def creative_matrix(request: Request):
-            variables = {
-                "rows": request.query_params.getlist("rows"),
-                "columns": request.query_params.getlist("columns"),
-                "prompt": request.query_params.get("prompt"),
-                "idea_qualifiers": request.query_params.get("idea_qualifiers", None),
-                "num_ideas": int(request.query_params.get("num_ideas", 3)),
-            }
-
-            return StreamingResponse(
-                self.prompt_guided_json("guided-creative-matrix", variables),
-                media_type="text/event-stream",
-                headers={"Connection": "keep-alive", "Content-Encoding": "none"},
             )

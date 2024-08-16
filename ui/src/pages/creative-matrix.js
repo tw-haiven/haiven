@@ -1,14 +1,13 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
 import { Alert, Input, Button, Spin, Select, Space, Popover } from "antd";
-const { Search } = Input;
 import { parse } from "best-effort-json-parser";
 import {
   AiOutlineBorderInner,
   AiOutlinePicture,
   AiOutlineRocket,
 } from "react-icons/ai";
-import { fetchSSE } from "../app/_fetch_sse";
+import { fetchSSE2 } from "../app/_fetch_sse";
 let ctrl;
 
 const CreativeMatrix = () => {
@@ -112,10 +111,6 @@ const CreativeMatrix = () => {
   function abortLoad() {
     ctrl && ctrl.abort();
     setLoading(false);
-    if (currentSSE && currentSSE.readyState == 1) {
-      currentSSE.close();
-      setCurrentSSE(null);
-    }
   }
 
   const onGenerateMatrix = () => {
@@ -140,36 +135,33 @@ const CreativeMatrix = () => {
     let isLoadingXhr = true;
     let output = [];
     try {
-      let sse = fetchSSE({
-        url: uri,
-        onData: (event) => {
-          if (!isLoadingXhr) {
-            console.log("is loading xhr", isLoadingXhr);
-            return;
-          }
-          if (event.data == "[DONE]") {
+      fetchSSE2(
+        uri,
+        { method: "GET", signal: ctrl.signal },
+        {
+          json: true,
+          onErrorHandle: () => {
+            abortLoad(ctrl);
+          },
+          onFinish: () => {
             setLoading(false);
-            isLoadingXhr = false;
-            abortLoad();
-            return;
-          }
-          const data = JSON.parse(event.data);
-          ms += data.data;
-          try {
-            output = parse(ms || "[]");
-          } catch (error) {
-            setModelOutputFailed(true);
-            console.log("error", error);
-          }
-          setMatrix(output);
+          },
+          onMessageHandle: (data) => {
+            if (!isLoadingXhr) {
+              console.log("is loading xhr", isLoadingXhr);
+              return;
+            }
+            ms += data.data;
+            try {
+              output = parse(ms || "[]");
+            } catch (error) {
+              setModelOutputFailed(true);
+              console.log("error", error);
+            }
+            setMatrix(output);
+          },
         },
-        onStop: (error) => {
-          console.log("error", error);
-          setLoading(false);
-          abortLoad();
-        },
-      });
-      setCurrentSSE(sse);
+      );
     } catch (error) {
       console.log("error", error);
       setLoading(false);

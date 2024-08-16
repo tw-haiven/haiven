@@ -8,6 +8,7 @@ from api.api_scenarios import ApiScenarios
 from api.api_threat_modelling import ApiThreatModelling
 from api.api_requirements import ApiRequirementsBreakdown
 from api.api_story_validation import ApiStoryValidation
+from api.api_creative_matrix import ApiCreativeMatrix
 
 
 class TestApi(unittest.TestCase):
@@ -350,3 +351,56 @@ class TestApi(unittest.TestCase):
         args, kwargs = mock_chat_session_memory.get_or_create_chat.call_args
         assert kwargs["chat_category"] == "story-validation-generate"
         assert kwargs["chat_session_key_value"] is None
+
+    @patch("llms.chats.JSONChat")
+    @patch("llms.chats.ServerChatSessionMemory")
+    @patch("prompts.prompts.PromptList")
+    def test_creative_matrix(
+        self,
+        mock_prompt_list,
+        mock_chat_session_memory,
+        mock_json_chat,
+    ):
+        mock_json_chat.run.return_value = "some response from the model"
+        mock_chat_session_memory.get_or_create_chat.return_value = (
+            "some_key",
+            mock_json_chat,
+        )
+        mock_prompt_list.render_prompt.return_value = "some prompt"
+        ApiCreativeMatrix(
+            self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
+        )
+
+        # Make the request to the endpoint
+        rows = "For A, For B"
+        columns = "For C, For D"
+        prompt = "give me use cases for the future of gardening"
+        idea_qualifiers = "utopian"
+        num_ideas = "3"
+        response = self.client.get(
+            f"/api/creative-matrix?rows={rows}&columns={columns}&prompt={prompt}&idea_qualifiers={idea_qualifiers}&num_ideas={num_ideas}"
+        )
+
+        # Assert the response
+        assert response.status_code == 200
+        streamed_content = response.content.decode("utf-8")
+        assert streamed_content == "some response from the model"
+        mock_prompt_list.render_prompt.assert_called_with(
+            active_knowledge_context=ANY,
+            prompt_choice="guided-creative-matrix",
+            user_input=ANY,
+            additional_vars={
+                "rows": rows,
+                "columns": columns,
+                "prompt": prompt,
+                "idea_qualifiers": idea_qualifiers,
+                "num_ideas": num_ideas,
+            },
+            warnings=ANY,
+        )
+
+
+#         Differing items:
+# E         {'additional_vars': {'columns': ['For C, For D'], 'idea_qualifiers': 'utopian', 'num_ideas': 3, 'prompt': 'give me use cases for the future of gardening', ...}} !=
+#           {'additional_vars': {'columns': ['For C', 'For D'], 'idea_qualifiers': 'utopian', 'num_ideas': 3, 'prompt': 'give me use cases for the future of gardening', ...}}
+# E         Use -v to get more diff
