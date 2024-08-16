@@ -1,10 +1,9 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { fetchSSE } from "../app/_fetch_sse";
+import { fetchSSE2 } from "../app/_fetch_sse";
 import { Alert, Button, Card, Drawer, Input, Space, Spin, Radio } from "antd";
 const { TextArea } = Input;
-import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 
@@ -13,23 +12,17 @@ let ctrl;
 const Home = () => {
   const [scenarios, setScenarios] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const [displayMode, setDisplayMode] = useState("grid");
   const [promptInput, setPromptInput] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("Explore requirement");
   const [drawerHeader, setDrawerHeader] = useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
-  const [currentSSE, setCurrentSSE] = useState(null);
   const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const router = useRouter();
 
   function abortLoad() {
     ctrl && ctrl.abort();
     setLoading(false);
-    if (currentSSE && currentSSE.readyState == 1) {
-      currentSSE.close();
-      setCurrentSSE(null);
-    }
   }
 
   const onExplore = (id) => {
@@ -44,10 +37,6 @@ const Home = () => {
     setDrawerOpen(true);
   };
 
-  const onSelectDisplayMode = (event) => {
-    setDisplayMode(event.target.value);
-  };
-
   const onSubmitPrompt = (event) => {
     setModelOutputFailed(false);
     abortLoad();
@@ -60,29 +49,33 @@ const Home = () => {
     let ms = "";
     let output = [];
 
-    let sse = fetchSSE({
-      url: uri,
-      onData: (event, sse) => {
-        const data = JSON.parse(event.data);
-        ms += data.data;
-        try {
-          output = parse(ms || "[]");
-        } catch (error) {
-          console.log("error", error);
-        }
-        if (Array.isArray(output)) {
-          setScenarios(output);
-        } else {
-          setModelOutputFailed(true);
-          console.log("response is not parseable into an array");
-        }
+    fetchSSE2(
+      uri,
+      { method: "GET", signal: ctrl.signal },
+      {
+        json: true,
+        onErrorHandle: () => {
+          abortLoad(ctrl);
+        },
+        onFinish: () => {
+          setLoading(false);
+        },
+        onMessageHandle: (data) => {
+          ms += data.data;
+          try {
+            output = parse(ms || "[]");
+          } catch (error) {
+            console.log("error", error);
+          }
+          if (Array.isArray(output)) {
+            setScenarios(output);
+          } else {
+            setModelOutputFailed(true);
+            console.log("response is not parseable into an array");
+          }
+        },
       },
-      onStop: () => {
-        setLoading(false);
-        abortLoad();
-      },
-    });
-    setCurrentSSE(sse);
+    );
   };
 
   const query = router.query;
@@ -128,34 +121,6 @@ const Home = () => {
             Requirements breakdown
           </b>
           &nbsp;
-          {/* <Radio.Group
-            onChange={onSelectDisplayMode}
-            defaultValue="grid"
-            style={{ float: "right" }}
-          >
-            <Radio.Button value="grid">
-              <AiOutlineGroup
-                style={{
-                  display: "inline-block",
-                  verticalAlign: "middle",
-                  height: 14,
-                }}
-              />{" "}
-              Cards
-            </Radio.Button>
-            <Radio.Button value="plot">
-              <AiOutlineBorderInner
-                style={{
-                  display: "inline-block",
-                  verticalAlign: "middle",
-                  height: 14,
-                }}
-              />{" "}
-              Matrix
-            </Radio.Button>
-          </Radio.Group>
-          <br />
-          <br /> */}
           <div className="user-inputs">
             <div className="user-input">
               <label>High level requirements</label>
@@ -199,7 +164,7 @@ const Home = () => {
           )}
         </div>
 
-        <div className={"scenarios-collection " + displayMode + "-display"}>
+        <div className={"scenarios-collection grid-display"}>
           {scenarios.map((scenario, i) => {
             return (
               <Card
@@ -243,16 +208,6 @@ const Home = () => {
               </Card>
             );
           })}
-        </div>
-
-        <div
-          className="scenarios-plot-container"
-          style={{ display: displayMode == "plot" ? "block" : "none" }}
-        >
-          <ScenariosPlotProbabilityImpact
-            scenarios={scenarios}
-            visible={displayMode == "plot"}
-          />
         </div>
       </div>
     </>
