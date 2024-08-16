@@ -1,7 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
-import { fetchSSE } from "../app/_fetch_sse";
+import { fetchSSE2 } from "../app/_fetch_sse";
 import {
   Alert,
   Button,
@@ -46,17 +46,12 @@ const Home = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
-  const [currentSSE, setCurrentSSE] = useState(null);
-  const [modelOutputFailed, setModelOutputFailed] = useState(false);
+  const [modelOutputNotParseable, setModelOutputNotParseable] = useState(false);
   const router = useRouter();
 
   function abortLoad() {
-    ctrl && ctrl.abort();
+    ctrl && ctrl.abort("User aborted");
     setLoading(false);
-    if (currentSSE && currentSSE.readyState == 1) {
-      currentSSE.close();
-      setCurrentSSE(null);
-    }
   }
 
   function handleSelectChange(value) {
@@ -100,8 +95,8 @@ const Home = () => {
     setDisplayMode(event.target.value);
   };
 
-  const onSubmitPrompt = async (value, event) => {
-    setModelOutputFailed(false);
+  const onSubmitPrompt = async (value) => {
+    setModelOutputNotParseable(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
@@ -129,36 +124,38 @@ const Home = () => {
     let ms = "";
     let output = [];
 
-    let sse = fetchSSE({
-      url: uri,
-      onData: (event) => {
-        const data = JSON.parse(event.data);
-        ms += data.data;
-        try {
-          output = parse(ms || "[]");
-        } catch (error) {
-          console.log("error", error);
-        }
+    fetchSSE2(
+      uri,
+      { method: "GET", signal: ctrl.signal },
+      {
+        json: true,
+        onErrorHandle: () => {
+          abortLoad(ctrl);
+        },
+        onFinish: () => {
+          setLoading(false);
+        },
+        onMessageHandle: (data) => {
+          try {
+            ms += data.data;
 
-        if (Array.isArray(output)) {
-          setScenarios(output);
-        } else {
-          console.log("response is not parseable into an array");
-        }
+            try {
+              output = parse(ms || "[]");
+            } catch (error) {
+              console.log("error", error);
+            }
+            if (Array.isArray(output)) {
+              setScenarios(output);
+            } else {
+              setModelOutputNotParseable(true);
+              console.log("response is not parseable into an array");
+            }
+          } catch (error) {
+            console.log("error", error, "data received", "'" + data + "'");
+          }
+        },
       },
-      onStop: () => {
-        if (output.length == 0) {
-          setModelOutputFailed(true);
-        }
-
-        setLoading(false);
-        abortLoad();
-      },
-      onOpen: () => {
-        setLoading(true);
-      },
-    });
-    setCurrentSSE(sse);
+    );
   };
 
   const query = router.query;
@@ -345,7 +342,7 @@ const Home = () => {
             )}
           </div>
         </div>
-        {modelOutputFailed && (
+        {modelOutputNotParseable && (
           <Space direction="vertical" style={{ width: "100%" }}>
             <Alert
               message="Model failed to respond rightly"

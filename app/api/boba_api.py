@@ -146,13 +146,39 @@ class BobaApi:
             }
             detailed = request.query_params.get("detail") == "true"
 
+            prompt = self.prompts_guided.render_prompt(
+                active_knowledge_context=None,
+                prompt_choice="guided-scenarios-detailed"
+                if detailed
+                else "guided-scenarios",
+                user_input="",
+                additional_vars=variables,
+                warnings=[],
+            )
+
+            chat_session_key_value, chat_session = (
+                self.chat_session_memory.get_or_create_chat(
+                    lambda: JSONChat(
+                        llm_config=LLMConfig(
+                            ConfigService.get_default_guided_mode_model(), 0.5
+                        ),
+                        event_stream_standard=False,
+                    ),
+                    None,
+                    "scenarios",
+                    # TODO: Pass user identifier from session
+                )
+            )
+
             return StreamingResponse(
-                self.prompt_guided_json(
-                    "guided-scenarios-detailed" if detailed else "guided-scenarios",
-                    variables,
-                ),
+                chat_session.run(prompt),
                 media_type="text/event-stream",
-                headers={"Connection": "keep-alive", "Content-Encoding": "none"},
+                headers={
+                    "Connection": "keep-alive",
+                    "Content-Encoding": "none",
+                    "Access-Control-Expose-Headers": "X-Chat-ID",
+                    "X-Chat-ID": chat_session_key_value,
+                },
             )
 
         enable_threat_modelling(app, self.chat_session_memory, self.chat)

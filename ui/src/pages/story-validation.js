@@ -52,6 +52,9 @@ const Home = () => {
         onErrorHandle: () => {
           abortLoad(ctrl);
         },
+        onFinish: () => {
+          setLoading(false);
+        },
         onMessageHandle: (data, response) => {
           if (!chatSessionId) {
             setChatSessionId(response.headers.get("X-Chat-ID"));
@@ -71,12 +74,8 @@ const Home = () => {
               console.log("response is not parseable into an array");
             }
           } catch (error) {
-            setModelOutputFailed(true);
             console.log("error", error, "data received", "'" + data + "'");
           }
-        },
-        onFinish: () => {
-          setLoading(false);
         },
       },
     );
