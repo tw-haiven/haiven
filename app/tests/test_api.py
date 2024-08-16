@@ -4,10 +4,10 @@ from unittest.mock import patch, ANY
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
 
-from api.api_story_validation import enable_story_validation
 from api.api_scenarios import ApiScenarios
 from api.api_threat_modelling import ApiThreatModelling
 from api.api_requirements import ApiRequirementsBreakdown
+from api.api_story_validation import ApiStoryValidation
 
 
 class TestApi(unittest.TestCase):
@@ -279,14 +279,74 @@ class TestApi(unittest.TestCase):
             mock_json_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt"
-        enable_story_validation(self.app, mock_chat_session_memory, mock_prompt_list)
+        ApiStoryValidation(
+            self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
+        )
 
         # Make the request to the endpoint
+        user_input = "some user input"
         response = self.client.post(
-            "/api/story-validation/questions", json={"input": "some user input"}
+            "/api/story-validation/questions", json={"input": user_input}
         )
 
         # Assert the response
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
+        mock_prompt_list.render_prompt.assert_called_with(
+            active_knowledge_context=ANY,
+            prompt_choice="guided-story-validation",
+            user_input=user_input,
+            additional_vars={},
+            warnings=ANY,
+        )
+
+        args, kwargs = mock_chat_session_memory.get_or_create_chat.call_args
+        assert kwargs["chat_category"] == "story-validation"
+        assert kwargs["chat_session_key_value"] is None
+
+    @patch("llms.chats.ServerChatSessionMemory")
+    @patch("prompts.prompts.PromptList")
+    @patch("llms.chats.StreamingChat")
+    def test_post_story_validation_scenarios(
+        self,
+        mock_streaming_chat,
+        mock_prompt_list,
+        mock_chat_session_memory,
+    ):
+        mock_streaming_chat.start_with_prompt.return_value = (
+            "some response from the model"
+        )
+        mock_chat_session_memory.get_or_create_chat.return_value = (
+            "some_session_key",
+            mock_streaming_chat,
+        )
+
+        mock_prompt_list.render_prompt.return_value = "some prompt"
+        ApiStoryValidation(
+            self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
+        )
+
+        # Make the request to the endpoint
+        response = self.client.post(
+            "/api/story-validation/scenarios",
+            json={
+                "chat_session_id": None,
+                "answers": [{"question": "some question 1", "answer": "answer1"}],
+                "input": "some original requirement",
+            },
+        )
+
+        # Assert the response
+        assert response.status_code == 200
+        streamed_content = response.content.decode("utf-8")
+        assert streamed_content == "some response from the model"
+
+        assert mock_streaming_chat.start_with_prompt.call_count == 1
+        args, kwargs = mock_streaming_chat.start_with_prompt.call_args
+        prompt_argument = args[0]
+        assert "some question 1" in prompt_argument
+
+        args, kwargs = mock_chat_session_memory.get_or_create_chat.call_args
+        assert kwargs["chat_category"] == "story-validation-generate"
+        assert kwargs["chat_session_key_value"] is None

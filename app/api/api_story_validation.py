@@ -1,9 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from typing import List
-from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from llms.chats import JSONChat, ServerChatSessionMemory, StreamingChat
-from llms.llm_config import LLMConfig
+from api.api_utils import HaivenBaseApi
 
 
 class StoryValidationQuestions(BaseModel):
@@ -18,36 +16,6 @@ class QuestionAnswer(BaseModel):
 class StoryValidationScenarios(BaseModel):
     input: str
     answers: List[QuestionAnswer]
-    chat_session_id: str
-
-
-def get_story_validation_prompt(input):
-    return f"""
-You are a member of a software engineering team.
-
-# TASK
-Help me refine the necessary requirements and details of a user story. My ultimate goal is to have a list of Given/When/Then scenarios
-
-# CONTEXT
-Here is my input that describes my application and user story:
-
-{input}
-
-# INSTRUCTIONS
-Think about details that are not mentioned or unclear about this user story. 
-Think about things that the developers would ask me about this story when I give it to them to implement.
-
-Come up with 5-10 questions that you would ask to clarify the user story:
-- Thought: Think about what is still uncertain about defining the user story. Ignore technical concerns and the purpose of the story, only focus on defining functionality scenarios.
-- Question: a question to ask to clarify the user story
-- The answer you suggest for the question
-
-You will respond with only a valid JSON array of question-answer objects. Each object will have the following schema:
-    "thought": <string>,
-    "question": <string>,
-    "answer": <string>,
-
-    """
 
 
 def get_story_generation_prompt(validationScenarios: StoryValidationScenarios):
@@ -57,12 +25,23 @@ def get_story_generation_prompt(validationScenarios: StoryValidationScenarios):
     ]
 
     return f"""
-I refined the answers to the questions you gave me:
+
+    You are an analyst on a software engineering team.
+
+# TASK
+Help me draft a user story with Given/When/Then scenarios
+
+# CONTEXT
+Here is my input that describes my application and user story:
+
+{validationScenarios.input}
+    
+    A developer asked me a bunch of questions about this story, here are the questions and the answers I gave them:
 
 {refined_input}
 
 # INSTRUCTIONS
-Based on my original input, and my REVISED ANSWERS, come up with given/when/then scenarios for the user story.
+Based on my original input, and the questions and answers, come up with given/when/then scenarios for the user story.
 
 Use the following format:
 
@@ -91,54 +70,24 @@ Respond with the given/when/then scenarios in Markdown format, putting each part
     """
 
 
-# at least 5, at most 10 thought/question/answer groups:
-def enable_story_validation(
-    app, chat_session_memory: ServerChatSessionMemory, model_key: str
-):
-    @app.post("/api/story-validation/questions")
-    def story_validation(body: StoryValidationQuestions):
-        chat_session_key_value, chat_session = chat_session_memory.get_or_create_chat(
-            lambda: JSONChat(
-                llm_config=LLMConfig(model_key, 0.5), event_stream_standard=False
-            ),
-            None,
-            "story-validation",
-            # TODO: Pass user identifier from session
-        )
+class ApiStoryValidation(HaivenBaseApi):
+    def __init__(self, app, chat_session_memory, model_key, prompt_list):
+        super().__init__(app, chat_session_memory, model_key, prompt_list)
 
-        return StreamingResponse(
-            chat_session.run(get_story_validation_prompt(body.input)),
-            media_type="text/event-stream",
-            headers={
-                "Connection": "keep-alive",
-                "Content-Encoding": "none",
-                "Access-Control-Expose-Headers": "X-Chat-ID",
-                "X-Chat-ID": chat_session_key_value,
-            },
-        )
-
-    @app.post("/api/story-validation/scenarios")
-    def generate_scenarios(body: StoryValidationScenarios):
-        chat_session_key_value, json_chat_session = (
-            chat_session_memory.get_or_create_chat(
-                None,
-                body.chat_session_id,
-                "story-validation",
-                # TODO: Pass user identifier from session
+        @app.post("/api/story-validation/questions")
+        def story_validation(body: StoryValidationQuestions):
+            prompt = prompt_list.render_prompt(
+                active_knowledge_context=None,
+                prompt_choice="guided-story-validation",
+                user_input=body.input,
+                additional_vars={},
+                warnings=[],
             )
-        )
-        new_chat = StreamingChat(
-            llm_config=LLMConfig(model_key, 0.5), stream_in_chunks=True
-        )
-        new_chat.memory = json_chat_session.memory
 
-        return StreamingResponse(
-            new_chat.next(get_story_generation_prompt(body), []),
-            media_type="text/event-stream",
-            headers={
-                "Connection": "keep-alive",
-                "Content-Encoding": "none",
-                "Access-Control-Expose-Headers": "X-Chat-ID",
-                "X-Chat-ID": chat_session_key_value,
-            },
-        )
+            return self.stream_json_chat(prompt, "story-validation")
+
+        @app.post("/api/story-validation/scenarios")
+        def generate_scenarios(body: StoryValidationScenarios):
+            prompt = get_story_generation_prompt(body)
+
+            return self.stream_text_chat(prompt, "story-validation-generate")
