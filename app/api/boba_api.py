@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from api.api_story_validation import enable_story_validation
 from api.api_requirements import enable_requirements
-from api.api_threat_modelling import enable_threat_modelling
+from api.api_threat_modelling import ApiThreatModelling
 from api.api_scenarios import ApiScenarios
 from llms.chats import (
     JSONChat,
@@ -116,7 +116,12 @@ class BobaApi:
 
             return JSONResponse(response_data)
 
-        enable_threat_modelling(app, self.chat_session_memory, self.chat)
+        ApiThreatModelling(
+            app,
+            self.chat_session_memory,
+            ConfigService.get_default_guided_mode_model(),
+            self.prompts_guided,
+        )
         enable_requirements(app, self.chat_session_memory, self.chat)
         enable_story_validation(
             app, self.chat_session_memory, ConfigService.get_default_guided_mode_model()

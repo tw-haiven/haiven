@@ -1,7 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { fetchSSE } from "../app/_fetch_sse";
+import { fetchSSE2 } from "../app/_fetch_sse";
 import { Alert, Drawer, Card, Space, Spin, Button, Radio, Input } from "antd";
 const { TextArea } = Input;
 import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
@@ -23,18 +23,12 @@ const Home = () => {
     useState("Explore scenario");
   const [explorationDrawerHeader, setExplorationDrawerHeader] = useState("");
   const [chatContext, setChatContext] = useState({});
-  const [savedIdeas, setSavedIdeas] = useState([]);
-  const [currentSSE, setCurrentSSE] = useState(null);
   const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const router = useRouter();
 
   function abortLoad() {
-    ctrl && ctrl.abort();
+    ctrl && ctrl.abort("User aborted");
     setLoading(false);
-    if (currentSSE && currentSSE.readyState == 1) {
-      currentSSE.close();
-      setCurrentSSE(null);
-    }
   }
 
   function concatUserInput() {
@@ -83,29 +77,33 @@ const Home = () => {
     let ms = "";
     let output = [];
 
-    let sse = fetchSSE({
-      url: uri,
-      onData: (event, sse) => {
-        const data = JSON.parse(event.data);
-        ms += data.data;
-        try {
-          output = parse(ms || "[]");
-        } catch (error) {
-          console.log("error", error);
-        }
-        if (Array.isArray(output)) {
-          setScenarios(output);
-        } else {
-          setModelOutputFailed(true);
-          console.log("response is not parseable into an array");
-        }
+    fetchSSE2(
+      uri,
+      { method: "GET", signal: ctrl.signal },
+      {
+        json: true,
+        onErrorHandle: () => {
+          abortLoad(ctrl);
+        },
+        onFinish: () => {
+          setLoading(false);
+        },
+        onMessageHandle: (data) => {
+          ms += data.data;
+          try {
+            output = parse(ms || "[]");
+          } catch (error) {
+            console.log("error", error);
+          }
+          if (Array.isArray(output)) {
+            setScenarios(output);
+          } else {
+            setModelOutputFailed(true);
+            console.log("response is not parseable into an array");
+          }
+        },
       },
-      onStop: () => {
-        setLoading(false);
-        abortLoad();
-      },
-    });
-    setCurrentSSE(sse);
+    );
   };
 
   const query = router.query;
