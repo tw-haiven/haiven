@@ -1,5 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
+from config_service import ConfigService
 from logger import HaivenLogger
 
 from embeddings.client import EmbeddingsClient
@@ -9,25 +10,19 @@ from knowledge.knowledge_pack import (
     KnowledgePack,
     KnowledgePackError,
 )
-from config_service import ConfigService
 from embeddings.service import EmbeddingsService
 
 DEFAULT_CONFIG_PATH = "config.yaml"
 
 
 class ContentManager:
-    def __init__(
-        self, knowledge_pack_path: str, config_path: str = DEFAULT_CONFIG_PATH
-    ):
-        if not os.path.exists(config_path):
-            raise KnowledgePackError(f"Cannot find configuration file {config_path}")
-
+    def __init__(self, knowledge_pack_path: str, config_service: ConfigService):
         if not os.path.exists(knowledge_pack_path):
             raise KnowledgePackError(
-                f"Cannot find path to Knowledge Pack: `{knowledge_pack_path}`. Please check the `knowledge_pack_path` in your {config_path} file."
+                f"Cannot find path to Knowledge Pack: `{knowledge_pack_path}`. Please check the `knowledge_pack_path` in your {config_service.path} file."
             )
 
-        self._config_path = config_path
+        self._config_service = config_service
         self.knowledge_pack_definition = KnowledgePack(knowledge_pack_path)
 
         self.knowledge_base_markdown = None
@@ -51,9 +46,11 @@ class ContentManager:
             )
 
     def _load_base_embeddings(self):
-        embedding_model = ConfigService.load_embedding_model(self._config_path)
+        embedding_model = self._config_service.load_embedding_model()
         base_embeddings_path = self.knowledge_pack_definition.path + "/embeddings"
-        EmbeddingsService.initialize(EmbeddingsClient(embedding_model))
+        EmbeddingsService.initialize(
+            EmbeddingsClient(embedding_model), self._config_service
+        )
 
         try:
             EmbeddingsService.load_knowledge_base(base_embeddings_path)

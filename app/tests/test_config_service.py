@@ -112,7 +112,8 @@ class TestConfigService:
         assert model.config["azure_deployment"] == self.deployment_name
         assert model.config["api_key"] == self.api_key
 
-        embedding: EmbeddingModel = ConfigService.load_embedding_model(self.config_path)
+        config_service = ConfigService(self.config_path)
+        embedding: EmbeddingModel = config_service.load_embedding_model()
 
         assert isinstance(embedding, EmbeddingModel)
 

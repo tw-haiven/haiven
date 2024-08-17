@@ -25,14 +25,18 @@ class EmbeddingsService:
     _instance = None
     _embeddings_stores: dict[str, InMemoryEmbeddingsDB] = None
 
-    def __init__(self, embeddings_provider: EmbeddingsClient = None):
+    def __init__(
+        self,
+        config_service: ConfigService,
+        embeddings_provider: EmbeddingsClient = None,
+    ):
         if EmbeddingsService._instance is not None:
             raise Exception(
                 "EmbeddingsService is a singleton class. Use get_instance() to get the instance."
             )
 
         if embeddings_provider is None:
-            embedding_model = ConfigService.load_embedding_model()
+            embedding_model = config_service.load_embedding_model()
             self._embeddings_provider = EmbeddingsClient(embedding_model)
         else:
             self._embeddings_provider = embeddings_provider
@@ -62,7 +66,9 @@ class EmbeddingsService:
         return EmbeddingsService._instance
 
     @staticmethod
-    def initialize(embeddings_provider: EmbeddingsClient = None):
+    def initialize(
+        config_service: ConfigService, embeddings_provider: EmbeddingsClient = None
+    ):
         """
         Initializes the EmbeddingsService singleton with an optional embeddings provider. This method must be called before any other operations if the EmbeddingsService instance has not been created.
 
@@ -70,7 +76,7 @@ class EmbeddingsService:
             embeddings_provider (Embeddings, optional): The embeddings provider to use. Defaults to None, in which case the default provider is loaded.
         """
         if EmbeddingsService._instance is None:
-            EmbeddingsService(embeddings_provider)
+            EmbeddingsService(embeddings_provider, config_service)
 
     @staticmethod
     def reset_instance() -> None:

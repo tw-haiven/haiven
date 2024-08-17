@@ -27,12 +27,10 @@ class TestContentManager:
 
         content_manager = ContentManager(
             knowledge_pack_path=self.knowledge_pack_path,
-            config_path=self.config_file_path,
+            config_service=mock_config_service,
         )
 
-        mock_config_service.load_embedding_model.assert_called_once_with(
-            self.config_file_path
-        )
+        mock_config_service.load_embedding_model.assert_called_once()
         mock_embeddings_service.initialize.assert_called_once()
         mock_embeddings_service.load_knowledge_base.assert_called_once_with(
             self.knowledge_pack_path + "/embeddings"
@@ -65,32 +63,22 @@ class TestContentManager:
         try:
             _ = ContentManager(
                 knowledge_pack_path=self.knowledge_pack_path,
-                config_path=self.config_file_path,
+                config_service=mock_config_service,
             )
         except FileNotFoundError:
             exception_raised = True
 
         assert not exception_raised
 
-    def test_should_raise_error_when_config_file_not_found(self):
-        exception_raised = False
-        try:
-            _ = ContentManager(
-                knowledge_pack_path=self.knowledge_pack_path,
-                config_path="non/existing/path",
-            )
-        except KnowledgePackError as e:
-            assert "configuration" in e.message
-            exception_raised = True
-
-        assert exception_raised
-
-    def test_should_raise_error_when_knowledge_pack_not_found(self):
+    @patch("content_manager.ConfigService")
+    def test_should_raise_error_when_knowledge_pack_not_found(
+        self, mock_config_service
+    ):
         exception_raised = False
         try:
             _ = ContentManager(
                 knowledge_pack_path="non/existing/path",
-                config_path=self.config_file_path,
+                config_service=mock_config_service,
             )
         except KnowledgePackError as e:
             assert "Pack" in e.message

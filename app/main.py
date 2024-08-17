@@ -30,9 +30,12 @@ def create_server():
     os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
     DEFAULT_CONFIG_PATH = "config.yaml"
 
+    # preparing for ConfigService to not be static anymore
+    config_service = ConfigService(DEFAULT_CONFIG_PATH)
+
     knowledge_pack_path = ConfigService.load_knowledge_pack_path(DEFAULT_CONFIG_PATH)
     content_manager = ContentManager(
-        knowledge_pack_path=knowledge_pack_path, config_path=DEFAULT_CONFIG_PATH
+        knowledge_pack_path=knowledge_pack_path, config_service=config_service
     )
 
     prompts_factory = PromptsFactory(knowledge_pack_path)

@@ -10,8 +10,10 @@ from llms.model import Model
 
 
 class ConfigService:
-    @staticmethod
-    def load_embedding_model(path: str = "config.yaml") -> EmbeddingModel:
+    def __init__(self, path: str = "config.yaml"):
+        self.path = path
+
+    def load_embedding_model(self) -> EmbeddingModel:
         """
         Load an embedding model from a YAML config file.
 
@@ -21,9 +23,9 @@ class ConfigService:
         Returns:
             EmbeddingModel: The loaded embedding model for the given provider
         """
-        data = ConfigService._load_yaml(path)
+        data = ConfigService._load_yaml(self.path)
 
-        default_embedding = ConfigService.load_default_models(path).embeddings
+        default_embedding = ConfigService.load_default_models(self.path).embeddings
 
         embeddings_data_list = data["embeddings"]
         embedding_model_data = next(

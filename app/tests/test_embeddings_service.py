@@ -36,7 +36,9 @@ class TestsEmbeddingsService:
         embeddings_provider_mock.generate_from_filesystem.return_value = retriever_mock
         embeddings_provider_mock.generate_from_documents.return_value = retriever_mock
         embeddings_provider_mock.embedding_model = embedding_model
-        EmbeddingsService.initialize(embeddings_provider_mock)
+        config_service_mock = MagicMock()
+        config_service_mock.load_embedding_model.return_value = embedding_model
+        EmbeddingsService.initialize(embeddings_provider_mock, config_service_mock)
 
         self.service = EmbeddingsService.get_instance()
         self.service._embeddings_provider = embeddings_provider_mock
