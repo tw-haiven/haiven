@@ -1,4 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+import copy
 import os
 from typing import List
 
@@ -41,12 +42,15 @@ class ConfigService:
         return embedding_model
 
     @staticmethod
-    def load_models(path: str = "config.yaml") -> List[Model]:
+    def load_enabled_models(
+        path: str = "config.yaml", features: List[str] = []
+    ) -> List[Model]:
         """
-        Load a list of models from a YAML config file.
+        Load a list of models for the enabled providers from a YAML config file.
 
         Args:
             path (str): The path to the YAML file.
+            features (List[str]): A list of features to filter the models by.
 
         Returns:
             List[Model]: The loaded models.
@@ -59,7 +63,51 @@ class ConfigService:
             model = Model.from_dict(model_data)
             models.append(model)
 
-        return models
+        filtered_models = copy.deepcopy(models)
+
+        providers = ConfigService.load_enabled_providers(path)
+
+        if providers and len(providers) > 0:
+            filtered_models = [
+                model
+                for model in filtered_models
+                if any(
+                    model.provider.lower() == model_provider.lower()
+                    for model_provider in providers
+                )
+            ]
+
+        if features and len(features) > 0:
+            filtered_models = [
+                model
+                for model in filtered_models
+                if all(
+                    feature.lower()
+                    in [model_feature.lower() for model_feature in model.features]
+                    for feature in features
+                )
+            ]
+
+        return filtered_models
+
+    @staticmethod
+    def get_model(model_id: str, path: str = "config.yaml") -> Model:
+        """
+        Get a model by its ID.
+
+        Args:
+            model_id (str): The model ID.
+
+        Returns:
+            Model: The model.
+        """
+        models = ConfigService.load_enabled_models(path)
+        model = next((model for model in models if model.id == model_id), None)
+
+        if model is None:
+            raise ValueError(f"Model with ID {model_id} not found")
+
+        return model
 
     def load_knowledge_pack_path(self) -> str:
         """

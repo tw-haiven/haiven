@@ -5,9 +5,9 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from pydantic import BaseModel
+from config_service import ConfigService
 from logger import HaivenLogger
 from llms.model import Model
-from llms.models_service import ModelsService
 from llms.aws_chat import AWSChat
 
 
@@ -73,7 +73,7 @@ class LLMChatFactory:
         if llm_config.service_name == "mock":
             return MockModelClient()
 
-        model: Model = ModelsService.get_model(llm_config.service_name)
+        model: Model = ConfigService.get_model(llm_config.service_name)
 
         HaivenLogger.get().analytics(
             "Model selected",

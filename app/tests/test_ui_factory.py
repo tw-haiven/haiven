@@ -6,6 +6,7 @@ import gradio as gr
 
 
 class TestUIFactory(unittest.TestCase):
+    @patch("llms.image_description_service.ImageDescriptionService")
     @patch("ui.ui_factory.gr.State")
     @patch("ui.ui_factory.gr.Blocks")
     @patch("ui.ui_factory.gr.Tabs")
@@ -22,6 +23,7 @@ class TestUIFactory(unittest.TestCase):
         mock_tabs,
         mock_blocks,
         mock_state,
+        mock_image_description_service,
     ):
         # Setup
         ui = Mock()
@@ -44,6 +46,7 @@ class TestUIFactory(unittest.TestCase):
             prompts_parent_dir=prompts_parent_dir,
             content_manager=content_manager,
             chat_session_memory=chat_session_memory,
+            image_service=mock_image_description_service,
         )
 
         blocks = MagicMock()
@@ -123,6 +126,7 @@ class TestUIFactory(unittest.TestCase):
             content_manager.active_knowledge_context,
             state,
             category_filter,
+            mock_image_description_service,
             knowledge_context_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
@@ -149,6 +153,7 @@ class TestUIFactory(unittest.TestCase):
 
         assert returned_blocks == blocks
 
+    @patch("llms.image_description_service.ImageDescriptionService")
     @patch("ui.ui_factory.gr.State")
     @patch("ui.ui_factory.gr.Blocks")
     @patch("ui.ui_factory.gr.Tabs")
@@ -165,6 +170,7 @@ class TestUIFactory(unittest.TestCase):
         mock_tabs,
         mock_blocks,
         mock_state,
+        mock_image_description_service,
     ):
         # Setup
         ui = Mock()
@@ -187,6 +193,7 @@ class TestUIFactory(unittest.TestCase):
             prompts_parent_dir=prompts_parent_dir,
             content_manager=content_manager,
             chat_session_memory=chat_session_memory,
+            image_service=mock_image_description_service,
         )
 
         blocks = MagicMock()
@@ -267,6 +274,7 @@ class TestUIFactory(unittest.TestCase):
             content_manager.active_knowledge_context,
             state,
             category_filter,
+            mock_image_description_service,
             knowledge_context_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
@@ -292,6 +300,7 @@ class TestUIFactory(unittest.TestCase):
 
         assert returned_blocks == blocks
 
+    @patch("llms.image_description_service.ImageDescriptionService")
     @patch("ui.ui_factory.gr.State")
     @patch("ui.ui_factory.gr.Blocks")
     @patch("ui.ui_factory.gr.Tabs")
@@ -308,6 +317,7 @@ class TestUIFactory(unittest.TestCase):
         mock_tabs,
         mock_blocks,
         mock_state,
+        mock_image_description_service,
     ):
         # Setup
         ui = Mock()
@@ -330,6 +340,7 @@ class TestUIFactory(unittest.TestCase):
             prompts_parent_dir=prompts_parent_dir,
             content_manager=content_manager,
             chat_session_memory=chat_session_memory,
+            image_service=mock_image_description_service,
         )
 
         blocks = MagicMock()
@@ -410,6 +421,7 @@ class TestUIFactory(unittest.TestCase):
             content_manager.active_knowledge_context,
             state,
             category_filter,
+            mock_image_description_service,
             knowledge_context_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
@@ -474,6 +486,7 @@ class TestUIFactory(unittest.TestCase):
             prompts_parent_dir=prompts_parent_dir,
             content_manager=content_manager,
             chat_session_memory=chat_session_memory,
+            image_service=MagicMock(),
         )
 
         blocks = MagicMock()
@@ -525,6 +538,7 @@ class TestUIFactory(unittest.TestCase):
             prompts_parent_dir=prompts_parent_dir,
             content_manager=content_manager,
             chat_session_memory=chat_session_memory,
+            image_service=MagicMock(),
         )
 
         blocks = MagicMock()
@@ -577,6 +591,7 @@ class TestUIFactory(unittest.TestCase):
             prompts_parent_dir=prompts_parent_dir,
             content_manager=content_manager,
             chat_session_memory=chat_session_memory,
+            image_service=MagicMock(),
         )
 
         theme = MagicMock()

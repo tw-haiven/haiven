@@ -24,9 +24,8 @@ def test_get_default_tone():
     ), f"Expected default tone does not match. Expected: {expected_default_tone}, Got: {actual_default_tone}"
 
 
-@mock.patch("llms.models_service.ModelsService.get_models")
-@mock.patch("config_service.ConfigService.load_enabled_providers")
-def test_get_services(load_enabled_providers, models_service_get_models_mock):
+@mock.patch("config_service.ConfigService.load_enabled_models")
+def test_get_services(load_enabled_models):
     # given an LLMConfig object initialised with a config file containing azure services
     first_model_id = "azure-gpt35"
     first_model_provider = "azure"
@@ -42,8 +41,7 @@ def test_get_services(load_enabled_providers, models_service_get_models_mock):
 
     models = [first_model, second_model]
 
-    load_enabled_providers.return_value = ["azure"]
-    models_service_get_models_mock.return_value = models
+    load_enabled_models.return_value = models
 
     # when trying to get valid service values
     valid_service_values = _get_services([])

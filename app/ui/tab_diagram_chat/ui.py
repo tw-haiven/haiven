@@ -10,9 +10,7 @@ from prompts.prompts_factory import PromptsFactory
 from llms.chats import ServerChatSessionMemory, StreamingChat
 from knowledge.knowledge import KnowledgeBaseMarkdown
 from ui.chat_context import ChatContext
-from config_service import ConfigService
 from llms.image_description_service import ImageDescriptionService
-from llms.models_service import ModelsService
 from user_feedback import UserFeedback
 from ui.user_context import user_context
 
@@ -25,6 +23,7 @@ def enable_image_chat(
     active_knowledge_context: str,
     user_identifier_state: gr.State,
     prompt_categories: List[str],
+    image_service: ImageDescriptionService,
     knowledge_context_select: gr.Dropdown = None,
 ):
     load_dotenv()
@@ -42,20 +41,6 @@ def enable_image_chat(
         temperature=0.2,
         prompt="",
         message="",
-    )
-
-    available_vision_models = [
-        (available_model.name, available_model.id)
-        for available_model in ModelsService.get_models(
-            providers=ConfigService.load_enabled_providers(),
-            features=["image-to-text"],
-        )
-    ]
-
-    image_service = ImageDescriptionService(
-        ConfigService.load_default_models().vision or available_vision_models[0][1]
-        if len(available_vision_models) > 0
-        else None
     )
 
     def update_llm_config(request: gr.Request):

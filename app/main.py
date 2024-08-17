@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from app import App
 from llms.chats import ServerChatSessionMemory
 from content_manager import ContentManager
+from llms.image_description_service import ImageDescriptionService
 from ui.event_handler import EventHandler
 from logger import HaivenLogger
 from ui.navigation import NavigationManager
@@ -22,6 +23,21 @@ def backwards_compat_env_vars():
 
     if os.environ.get("OLLAMA_BASE_URL"):
         os.environ["OLLAMA_HOST"] = os.environ["OLLAMA_BASE_URL"]
+
+
+def create_image_service(config_service):
+    available_vision_models = [
+        (available_model.name, available_model.id)
+        for available_model in ConfigService.load_enabled_models(
+            features=["image-to-text"],
+        )
+    ]
+
+    return ImageDescriptionService(
+        config_service.load_default_models().vision or available_vision_models[0][1]
+        if len(available_vision_models) > 0
+        else None
+    )
 
 
 def create_server():
@@ -47,6 +63,7 @@ def create_server():
         prompts_parent_dir=knowledge_pack_path,
         content_manager=content_manager,
         chat_session_memory=chat_session_memory,
+        image_service=create_image_service(config_service),
     )
 
     HaivenLogger.get().logger.info("Starting Haiven...")

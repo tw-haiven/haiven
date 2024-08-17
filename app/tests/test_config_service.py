@@ -93,11 +93,11 @@ class TestConfigService:
         path = "invalid_path"
         # when I call the function __init__ an error should be raised
         with pytest.raises(FileNotFoundError) as e:
-            ConfigService.load_models(path)
+            ConfigService.load_enabled_models(path)
         assert str(e.value) == f"Path {path} is not valid"
 
     def test_config_initialization(self):
-        models: List[Model] = ConfigService.load_models(self.config_path)
+        models: List[Model] = ConfigService.load_enabled_models(self.config_path)
         assert isinstance(models, list)
         assert all(isinstance(model, Model) for model in models)
 

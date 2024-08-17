@@ -7,8 +7,8 @@ import boto3
 from botocore.exceptions import ClientError
 from openai import AzureOpenAI, OpenAI
 from PIL import Image
+from config_service import ConfigService
 from llms.model import Model
-from llms.models_service import ModelsService
 from vertexai.preview.generative_models import GenerativeModel, Part
 import ollama
 
@@ -61,7 +61,7 @@ class ImageDescriptionService:
                 "Model ID must be provided to initialize ImageDescriptionService"
             )
 
-        model: Model = ModelsService.get_model(model_id)
+        model: Model = ConfigService.get_model(model_id)
 
         if model is None:
             raise ValueError(f"Model with ID '{model_id}' not found in configuration")

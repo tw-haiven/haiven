@@ -10,7 +10,6 @@ from knowledge.knowledge_pack import KnowledgePack
 from prompts.prompts import PromptList
 from config_service import ConfigService
 from embeddings.service import EmbeddingsService
-from llms.models_service import ModelsService
 
 
 class UIBaseComponents:
@@ -324,10 +323,7 @@ def _get_default_temperature() -> float:
 
 
 def _get_services(features_filter: List[str]) -> List[tuple[str, str]]:
-    active_model_providers = ConfigService.load_enabled_providers()
-    models = ModelsService.get_models(
-        providers=active_model_providers, features=features_filter
-    )
+    models = ConfigService.load_enabled_models(features=features_filter)
     services = [(model.name, model.id) for model in models]
 
     return services

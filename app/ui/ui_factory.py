@@ -2,6 +2,7 @@
 import gradio as gr
 from llms.chats import ServerChatSessionMemory
 from content_manager import ContentManager
+from llms.image_description_service import ImageDescriptionService
 from ui.event_handler import EventHandler
 from ui.navigation import NavigationManager
 from prompts.prompts_factory import PromptsFactory
@@ -25,6 +26,7 @@ class UIFactory:
         prompts_parent_dir: str,
         content_manager: ContentManager,
         chat_session_memory: ServerChatSessionMemory,
+        image_service: ImageDescriptionService,
     ):
         self.ui_base_components: UIBaseComponents = ui_base_components
         self.prompts_factory: PromptsFactory = prompts_factory
@@ -33,6 +35,8 @@ class UIFactory:
         self.prompts_parent_dir: str = prompts_parent_dir
         self.content_manager: ContentManager = content_manager
         self.chat_session_memory: ServerChatSessionMemory = chat_session_memory
+        self.image_service: ImageDescriptionService = image_service
+
         self.__llm_config = None
         self.__copyright_text = f"© {str(datetime.now().year)} Thoughtworks, Inc."
 
@@ -142,6 +146,7 @@ class UIFactory:
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
+                            self.image_service,
                             knowledge_context_select,
                         )
                         enable_knowledge_chat(
@@ -244,6 +249,7 @@ class UIFactory:
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
+                            self.image_service,
                             knowledge_context_select,
                         )
                         enable_knowledge_chat(
@@ -341,6 +347,7 @@ class UIFactory:
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
+                            self.image_service,
                             knowledge_context_select,
                         )
                         enable_knowledge_chat(
