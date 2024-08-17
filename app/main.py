@@ -35,18 +35,26 @@ def create_server():
         knowledge_pack_path=knowledge_pack_path, config_path=DEFAULT_CONFIG_PATH
     )
 
+    prompts_factory = PromptsFactory(knowledge_pack_path)
+    chat_session_memory = ServerChatSessionMemory()
+
     ui_factory = UIFactory(
         ui_base_components=UIBaseComponents(),
-        prompts_factory=PromptsFactory(knowledge_pack_path),
+        prompts_factory=prompts_factory,
         navigation_manager=NavigationManager(),
         event_handler=EventHandler(HaivenLogger),
         prompts_parent_dir=knowledge_pack_path,
         content_manager=content_manager,
-        chat_session_memory=ServerChatSessionMemory(),
+        chat_session_memory=chat_session_memory,
     )
 
     HaivenLogger.get().logger.info("Starting Haiven...")
-    app = App(content_manager=content_manager, ui_factory=ui_factory)
+    app = App(
+        content_manager=content_manager,
+        prompts_factory=prompts_factory,
+        chat_session_memory=chat_session_memory,
+        ui_factory=ui_factory,
+    )
     return app.launch_via_fastapi_wrapper()
 
 

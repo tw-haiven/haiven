@@ -13,7 +13,12 @@ class TestApp:
         ui_factory = MagicMock()
 
         # Initialize App
-        app = App(content_manager=content_manager, ui_factory=ui_factory)
+        app = App(
+            content_manager=content_manager,
+            prompts_factory=MagicMock(),
+            chat_session_memory=MagicMock(),
+            ui_factory=ui_factory,
+        )
 
         # Assertions to ensure everything was called as expected
         mock_server().create.assert_called_once_with()
@@ -59,7 +64,12 @@ class TestApp:
         ui_factory.create_ui_about.return_value = ui_about
         ui_factory.create_plain_chat.return_value = plain_chat
 
-        app = App(content_manager=content_manager, ui_factory=ui_factory)
+        app = App(
+            content_manager=content_manager,
+            prompts_factory=MagicMock(),
+            chat_session_memory=MagicMock(),
+            ui_factory=ui_factory,
+        )
 
         # Action
         returned_server = app.launch_via_fastapi_wrapper()

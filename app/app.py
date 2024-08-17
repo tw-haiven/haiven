@@ -2,20 +2,28 @@
 import gradio as gr
 from api.boba_api import BobaApi
 from content_manager import ContentManager
+from llms.chats import ServerChatSessionMemory
+from prompts.prompts_factory import PromptsFactory
 from server import Server
 from ui.ui_factory import UIFactory
 from config_service import ConfigService
 
 
 class App:
-    def __init__(self, content_manager: ContentManager, ui_factory: UIFactory):
+    def __init__(
+        self,
+        content_manager: ContentManager,
+        prompts_factory: PromptsFactory,
+        chat_session_memory: ServerChatSessionMemory,
+        ui_factory: UIFactory,
+    ):
         model = ConfigService.get_default_guided_mode_model()
         self.server = Server(
-            ui_factory.chat_session_memory,
+            chat_session_memory,
             BobaApi(
-                ui_factory.prompts_factory,
-                ui_factory.content_manager,
-                ui_factory.chat_session_memory,
+                prompts_factory,
+                content_manager,
+                chat_session_memory,
                 model,
             ),
         ).create()
