@@ -67,13 +67,17 @@ class MockModelClient:
             yield MockChunk(content=chunk)
 
 
+# TODO: temporary hack as part of ConfigService refactoring
+CONFIG_SERVICE = ConfigService("config.yaml")
+
+
 class LLMChatFactory:
     @staticmethod
     def new_llm_chat(llm_config: LLMConfig, stop=None) -> BaseChatModel:
         if llm_config.service_name == "mock":
             return MockModelClient()
 
-        model: Model = ConfigService.get_model(llm_config.service_name)
+        model: Model = CONFIG_SERVICE.get_model(llm_config.service_name)
 
         HaivenLogger.get().analytics(
             "Model selected",
