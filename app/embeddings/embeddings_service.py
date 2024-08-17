@@ -229,12 +229,6 @@ class EmbeddingsService:
 
         return faiss
 
-    def _get_retriever_from_text(self, content: Tuple[List[str], List[dict]]) -> FAISS:
-        text = content[0]
-        metadata = content[1]
-        faiss = self._embeddings_provider.generate_from_documents(text, metadata)
-        return faiss
-
     def _load_knowledge_pack(self, path: str, name: str) -> None:
         if not os.path.exists(path):
             raise FileNotFoundError(
@@ -276,27 +270,6 @@ class EmbeddingsService:
             store_for_context = self._get_or_create_embeddings_db_for_context(context)
 
             store_for_context.add_embedding(embedding.key, embedding)
-
-    def _generate_document_from_text(
-        self,
-        document_key: str,
-        document_metadata: dict,
-        content: Tuple[List[str], List[dict]],
-        context: str,
-    ) -> None:
-        embedding = DocumentEmbedding(
-            context=context,
-            key=document_key,
-            title=document_metadata.get("title", document_key),
-            source=document_metadata.get("source", "source not provided"),
-            sample_question=document_metadata.get("sample_question", ""),
-            description=document_metadata.get("description", ""),
-            provider=self._embeddings_provider.embedding_model.provider.lower(),
-            retriever=self._get_retriever_from_text(content),
-        )
-
-        store_for_context = self._get_or_create_embeddings_db_for_context(context)
-        store_for_context.add_embedding(embedding.key, embedding)
 
     def _similarity_search_with_scores(
         self, query: str, context: str, k: int = 5, score_threshold: float = None
