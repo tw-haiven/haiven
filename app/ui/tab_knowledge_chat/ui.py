@@ -4,7 +4,7 @@ from typing import List
 import gradio as gr
 from dotenv import load_dotenv
 from embeddings.documents import DocumentsUtils
-from embeddings.embeddings_service import EmbeddingsService
+from embeddings.service import EmbeddingsService
 from llms.llm_config import LLMConfig
 from llms.chats import DocumentsChat, ServerChatSessionMemory
 from ui.chat_context import ChatContext

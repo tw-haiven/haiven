@@ -3,7 +3,7 @@ from typing import List
 import gradio as gr
 from dotenv import load_dotenv
 
-from embeddings.embeddings_service import EmbeddingsService
+from embeddings.service import EmbeddingsService
 from llms.llm_config import LLMConfig
 from prompts.prompts import PromptList
 from prompts.prompts_factory import PromptsFactory

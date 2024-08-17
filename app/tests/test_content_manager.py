@@ -5,14 +5,14 @@ from tests.utils import get_test_data_path
 from knowledge.knowledge_pack import KnowledgePackError
 from content_manager import ContentManager
 from embeddings.model import EmbeddingModel
-from embeddings.embeddings_service import EmbeddingsService
+from embeddings.service import EmbeddingsService
 
 
 class TestContentManager:
     knowledge_pack_path = get_test_data_path() + "/test_knowledge_pack"
     config_file_path = get_test_data_path() + "/test_config.yaml"
 
-    @patch("content_manager.Embeddings")
+    @patch("content_manager.EmbeddingsClient")
     @patch("content_manager.EmbeddingsService")
     @patch("content_manager.ConfigService")
     @patch("content_manager.KnowledgeBaseMarkdown")

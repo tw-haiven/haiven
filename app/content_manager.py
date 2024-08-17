@@ -2,7 +2,7 @@
 import os
 from logger import HaivenLogger
 
-from embeddings.embeddings import Embeddings
+from embeddings.client import EmbeddingsClient
 from knowledge.knowledge import KnowledgeBaseMarkdown
 from knowledge.knowledge_pack import (
     KnowledgeContext,
@@ -10,7 +10,7 @@ from knowledge.knowledge_pack import (
     KnowledgePackError,
 )
 from config_service import ConfigService
-from embeddings.embeddings_service import EmbeddingsService
+from embeddings.service import EmbeddingsService
 
 DEFAULT_CONFIG_PATH = "config.yaml"
 
@@ -53,7 +53,7 @@ class ContentManager:
     def _load_base_embeddings(self):
         embedding_model = ConfigService.load_embedding_model(self._config_path)
         base_embeddings_path = self.knowledge_pack_definition.path + "/embeddings"
-        EmbeddingsService.initialize(Embeddings(embedding_model))
+        EmbeddingsService.initialize(EmbeddingsClient(embedding_model))
 
         try:
             EmbeddingsService.load_knowledge_base(base_embeddings_path)

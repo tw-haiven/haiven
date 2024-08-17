@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 from langchain.docstore.document import Document
 from embeddings.model import EmbeddingModel
-from embeddings.embeddings_service import EmbeddingsService
+from embeddings.service import EmbeddingsService
 
 
 class TestsEmbeddingsService:

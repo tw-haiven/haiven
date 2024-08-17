@@ -10,7 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from embeddings.documents import DocumentsUtils
 from llms.llm_config import LLMChatFactory, LLMConfig
 from logger import HaivenLogger
-from embeddings.embeddings_service import EmbeddingsService
+from embeddings.service import EmbeddingsService
 
 
 class HaivenBaseChat:

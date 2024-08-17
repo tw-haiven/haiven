@@ -9,7 +9,7 @@ from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
 from embeddings.model import EmbeddingModel
 
 
-class Embeddings:
+class EmbeddingsClient:
     CONST_INVALID_CONFIG_ERROR = "Invalid config for the given embedding model"
 
     def __init__(self, embedding_model: EmbeddingModel):

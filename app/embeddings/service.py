@@ -6,7 +6,7 @@ from typing import List, Tuple
 import frontmatter
 from langchain.docstore.document import Document
 from langchain_community.vectorstores import FAISS
-from embeddings.embeddings import Embeddings
+from embeddings.client import EmbeddingsClient
 from embeddings.documents import DocumentEmbedding
 from config_service import ConfigService
 from embeddings.in_memory import InMemoryEmbeddingsDB
@@ -25,7 +25,7 @@ class EmbeddingsService:
     _instance = None
     _embeddings_stores: dict[str, InMemoryEmbeddingsDB] = None
 
-    def __init__(self, embeddings_provider: Embeddings = None):
+    def __init__(self, embeddings_provider: EmbeddingsClient = None):
         if EmbeddingsService._instance is not None:
             raise Exception(
                 "EmbeddingsService is a singleton class. Use get_instance() to get the instance."
@@ -33,7 +33,7 @@ class EmbeddingsService:
 
         if embeddings_provider is None:
             embedding_model = ConfigService.load_embedding_model()
-            self._embeddings_provider = Embeddings(embedding_model)
+            self._embeddings_provider = EmbeddingsClient(embedding_model)
         else:
             self._embeddings_provider = embeddings_provider
 
@@ -62,7 +62,7 @@ class EmbeddingsService:
         return EmbeddingsService._instance
 
     @staticmethod
-    def initialize(embeddings_provider: Embeddings = None):
+    def initialize(embeddings_provider: EmbeddingsClient = None):
         """
         Initializes the EmbeddingsService singleton with an optional embeddings provider. This method must be called before any other operations if the EmbeddingsService instance has not been created.
 

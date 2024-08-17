@@ -9,7 +9,7 @@ from llms.llm_config import LLMConfig
 from knowledge.knowledge_pack import KnowledgePack
 from prompts.prompts import PromptList
 from config_service import ConfigService
-from embeddings.embeddings_service import EmbeddingsService
+from embeddings.service import EmbeddingsService
 from llms.models_service import ModelsService
 
 

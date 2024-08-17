@@ -9,7 +9,7 @@ from llms.llm_config import LLMConfig
 from ui.chat_context import ChatContext
 from prompts.prompts import PromptList
 from prompts.prompts_factory import PromptsFactory
-from embeddings.embeddings_service import EmbeddingsService
+from embeddings.service import EmbeddingsService
 from ui.user_context import user_context
 from user_feedback import UserFeedback
 

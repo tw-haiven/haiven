@@ -2,7 +2,7 @@
 from unittest import mock
 
 import pytest
-from embeddings.embeddings import Embeddings
+from embeddings.client import EmbeddingsClient
 from embeddings.model import EmbeddingModel
 
 
@@ -18,7 +18,7 @@ class TestEmbeddings:
 
         # when I call the function get_embeddings an error should be raised
         with pytest.raises(ValueError) as e:
-            Embeddings(embedding_config)
+            EmbeddingsClient(embedding_config)
 
         assert str(e.value) == "Provider unknown_provider not supported"
 
@@ -35,7 +35,7 @@ class TestEmbeddings:
 
         # when I call the function get_embeddings an error should be raised
         with pytest.raises(ValueError) as e:
-            Embeddings(embedding_config)
+            EmbeddingsClient(embedding_config)
 
         assert str(e.value) == "api_key config is not set for the given embedding model"
 
@@ -48,7 +48,7 @@ class TestEmbeddings:
 
         # when I call the function get_embeddings an error should be raised
         with pytest.raises(ValueError) as e:
-            Embeddings(embedding_config)
+            EmbeddingsClient(embedding_config)
 
         assert str(e.value) == "model config is not set for the given embedding model"
 
@@ -78,7 +78,7 @@ class TestEmbeddings:
 
         # when I call the function get_embeddings an error should be raised
         with pytest.raises(ValueError) as e:
-            Embeddings(embedding_model)
+            EmbeddingsClient(embedding_model)
 
         assert str(e.value) == "api_key config is not set for the given embedding model"
 
@@ -96,7 +96,7 @@ class TestEmbeddings:
 
         # when I call the function get_embeddings an error should be raised
         with pytest.raises(ValueError) as e:
-            Embeddings(embedding_model)
+            EmbeddingsClient(embedding_model)
 
         assert (
             str(e.value)
@@ -117,7 +117,7 @@ class TestEmbeddings:
 
         # when I call the function get_embeddings an error should be raised
         with pytest.raises(ValueError) as e:
-            embeddings = Embeddings(embedding_model)
+            embeddings = EmbeddingsClient(embedding_model)
             embeddings.generate_from_documents(text, metadata)
         assert (
             str(e.value)
@@ -138,7 +138,7 @@ class TestEmbeddings:
 
         # when I call the function get_embeddings an error should be raised
         with pytest.raises(ValueError) as e:
-            Embeddings(embedding_model)
+            EmbeddingsClient(embedding_model)
 
         assert (
             str(e.value)
@@ -159,16 +159,16 @@ class TestEmbeddings:
 
         # when I call the function get_embeddings an error should be raised
         with pytest.raises(ValueError) as e:
-            Embeddings(embedding_model)
+            EmbeddingsClient(embedding_model)
 
         assert (
             str(e.value) == "aws_region config is not set for the given embedding model"
         )
 
-    @mock.patch("embeddings.embeddings.FAISS.load_local")
-    @mock.patch("embeddings.embeddings.FAISS.from_documents")
-    @mock.patch("embeddings.embeddings.RecursiveCharacterTextSplitter")
-    @mock.patch("embeddings.embeddings.OpenAIEmbeddings")
+    @mock.patch("embeddings.client.FAISS.load_local")
+    @mock.patch("embeddings.client.FAISS.from_documents")
+    @mock.patch("embeddings.client.RecursiveCharacterTextSplitter")
+    @mock.patch("embeddings.client.OpenAIEmbeddings")
     def test_generate_openai_provider_embeddings(
         self,
         openai_embeddings_mock,
@@ -194,7 +194,7 @@ class TestEmbeddings:
         faiss_embeddings = "faiss_embeddings"
         from_documents_mock.return_value = faiss_embeddings
 
-        embeddings = Embeddings(embedding_config)
+        embeddings = EmbeddingsClient(embedding_config)
         # when I call the function get_embeddings with the documents and a known model_id
         returned_embeddings = embeddings.generate_from_documents(text, metadata)
 
@@ -221,9 +221,9 @@ class TestEmbeddings:
             allow_dangerous_deserialization=True,
         )
 
-    @mock.patch("embeddings.embeddings.FAISS.from_documents")
-    @mock.patch("embeddings.embeddings.RecursiveCharacterTextSplitter")
-    @mock.patch("embeddings.embeddings.AzureOpenAIEmbeddings")
+    @mock.patch("embeddings.client.FAISS.from_documents")
+    @mock.patch("embeddings.client.RecursiveCharacterTextSplitter")
+    @mock.patch("embeddings.client.AzureOpenAIEmbeddings")
     def test_generate_azure_provider_embeddings(
         self, azure_openai_embeddings_mock, text_splitter_mock, from_documents_mock
     ):
@@ -252,7 +252,7 @@ class TestEmbeddings:
         faiss_embeddings = "faiss_embeddings"
         from_documents_mock.return_value = faiss_embeddings
 
-        embeddings = Embeddings(embedding_config)
+        embeddings = EmbeddingsClient(embedding_config)
         # when I call the function get_embeddings with the documents and a known model_id
         returned_embeddings = embeddings.generate_from_documents(text, metadata)
 
@@ -274,10 +274,10 @@ class TestEmbeddings:
             text_splitter_mock().create_documents(), azure_openai_embeddings_mock()
         )
 
-    @mock.patch("embeddings.embeddings.FAISS.load_local")
-    @mock.patch("embeddings.embeddings.FAISS.from_documents")
-    @mock.patch("embeddings.embeddings.RecursiveCharacterTextSplitter")
-    @mock.patch("embeddings.embeddings.BedrockEmbeddings")
+    @mock.patch("embeddings.client.FAISS.load_local")
+    @mock.patch("embeddings.client.FAISS.from_documents")
+    @mock.patch("embeddings.client.RecursiveCharacterTextSplitter")
+    @mock.patch("embeddings.client.BedrockEmbeddings")
     def test_generate_aws_provider_embeddings(
         self,
         bedrock_embeddings_mock,
@@ -300,7 +300,7 @@ class TestEmbeddings:
         faiss_embeddings = "faiss_embeddings"
         from_documents_mock.return_value = faiss_embeddings
 
-        embeddings = Embeddings(embedding_config)
+        embeddings = EmbeddingsClient(embedding_config)
         # when I call the function get_embeddings with the documents and a known model_id
         returned_embeddings = embeddings.generate_from_documents("text", "metadata")
 
