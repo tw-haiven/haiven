@@ -1,6 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from fastapi.responses import StreamingResponse
-from config_service import ConfigService
 from llms.chats import JSONChat, StreamingChat
 from llms.llm_config import LLMConfig
 
@@ -29,9 +28,7 @@ class HaivenBaseApi:
         chat_session_key_value, chat_session = (
             self.chat_session_memory.get_or_create_chat(
                 lambda: JSONChat(
-                    llm_config=LLMConfig(
-                        ConfigService.get_default_guided_mode_model(), 0.5
-                    ),
+                    llm_config=LLMConfig(self.model_key, 0.5),
                     event_stream_standard=False,
                 ),
                 chat_session_key_value=chat_session_key_value,

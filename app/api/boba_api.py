@@ -33,11 +33,11 @@ class BobaApi:
         prompts_factory: PromptsFactory,
         content_manager: ContentManager,
         chat_session_memory: ServerChatSessionMemory,
-        model: str,
+        config_service: ConfigService,
     ):
         self.content_manager = content_manager
         self.chat_session_memory = chat_session_memory
-        self.model = model
+        self.config_service = config_service
 
         self.prompts_chat = prompts_factory.create_chat_prompt_list(
             self.content_manager.knowledge_base_markdown
@@ -47,7 +47,9 @@ class BobaApi:
             self.content_manager.knowledge_base_markdown
         )
 
-        print(f"Model used for guided mode: {self.model}")
+        print(
+            f"Model used for guided mode: {self.config_service.get_default_guided_mode_model()}"
+        )
 
     def prompt(self, prompt_id, user_input, chat_session, context=None):
         rendered_prompt = self.prompts_chat.render_prompt(
@@ -67,7 +69,7 @@ class BobaApi:
     def add_endpoints(self, app: FastAPI):
         @app.get("/api/models")
         def get_models(request: Request):
-            models: List[Model] = ConfigService.load_models("config.yaml")
+            models: List[Model] = self.config_service.load_models("config.yaml")
             return JSONResponse(
                 [{"id": model.id, "name": model.name} for model in models]
             )
@@ -124,30 +126,30 @@ class BobaApi:
         ApiThreatModelling(
             app,
             self.chat_session_memory,
-            ConfigService.get_default_guided_mode_model(),
+            self.config_service.get_default_guided_mode_model(),
             self.prompts_guided,
         )
         ApiRequirementsBreakdown(
             app,
             self.chat_session_memory,
-            ConfigService.get_default_guided_mode_model(),
+            self.config_service.get_default_guided_mode_model(),
             self.prompts_guided,
         )
         ApiStoryValidation(
             app,
             self.chat_session_memory,
-            ConfigService.get_default_guided_mode_model(),
+            self.config_service.get_default_guided_mode_model(),
             self.prompts_guided,
         )
         ApiScenarios(
             app,
             self.chat_session_memory,
-            ConfigService.get_default_guided_mode_model(),
+            self.config_service.get_default_guided_mode_model(),
             self.prompts_guided,
         )
         ApiCreativeMatrix(
             app,
             self.chat_session_memory,
-            ConfigService.get_default_guided_mode_model(),
+            self.config_service.get_default_guided_mode_model(),
             self.prompts_guided,
         )

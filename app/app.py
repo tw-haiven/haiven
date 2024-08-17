@@ -18,7 +18,6 @@ class App:
         chat_session_memory: ServerChatSessionMemory,
         ui_factory: UIFactory,
     ):
-        model = ConfigService.get_default_guided_mode_model()
         self.server = Server(
             chat_session_memory,
             config_service,
@@ -26,7 +25,7 @@ class App:
                 prompts_factory,
                 content_manager,
                 chat_session_memory,
-                model,
+                config_service,
             ),
         ).create()
         self.content_manager = content_manager

@@ -135,8 +135,7 @@ class ConfigService:
             return "Haiven"
         return application_name
 
-    @staticmethod
-    def get_default_guided_mode_model(path: str = "config.yaml") -> str:
+    def get_default_guided_mode_model(self) -> str:
         """
         Get the default chat model from the config file.
 
@@ -146,7 +145,7 @@ class ConfigService:
         Returns:
             str: The default chat model.
         """
-        enabled_provider = ConfigService.load_enabled_providers(path)[0]
+        enabled_provider = ConfigService.load_enabled_providers(self.path)[0]
         match enabled_provider:
             case "azure":
                 return "azure-gpt4"
