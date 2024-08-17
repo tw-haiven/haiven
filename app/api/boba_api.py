@@ -47,9 +47,9 @@ class BobaApi:
             self.content_manager.knowledge_base_markdown
         )
 
-        print(
-            f"Model used for guided mode: {self.config_service.get_default_guided_mode_model()}"
-        )
+        self.model = self.config_service.get_default_guided_mode_model()
+
+        print(f"Model used for guided mode: {self.model}")
 
     def prompt(self, prompt_id, user_input, chat_session, context=None):
         rendered_prompt = self.prompts_chat.render_prompt(
@@ -126,30 +126,30 @@ class BobaApi:
         ApiThreatModelling(
             app,
             self.chat_session_memory,
-            self.config_service.get_default_guided_mode_model(),
+            self.model,
             self.prompts_guided,
         )
         ApiRequirementsBreakdown(
             app,
             self.chat_session_memory,
-            self.config_service.get_default_guided_mode_model(),
+            self.model,
             self.prompts_guided,
         )
         ApiStoryValidation(
             app,
             self.chat_session_memory,
-            self.config_service.get_default_guided_mode_model(),
+            self.model,
             self.prompts_guided,
         )
         ApiScenarios(
             app,
             self.chat_session_memory,
-            self.config_service.get_default_guided_mode_model(),
+            self.model,
             self.prompts_guided,
         )
         ApiCreativeMatrix(
             app,
             self.chat_session_memory,
-            self.config_service.get_default_guided_mode_model(),
+            self.model,
             self.prompts_guided,
         )
