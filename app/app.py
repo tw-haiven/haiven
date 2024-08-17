@@ -16,7 +16,7 @@ class App:
         config_service: ConfigService,
         prompts_factory: PromptsFactory,
         chat_session_memory: ServerChatSessionMemory,
-        ui_factory: UIFactory,
+        ui_factory: UIFactory = None,
     ):
         self.server = Server(
             chat_session_memory,
@@ -32,18 +32,21 @@ class App:
         self.ui_factory = ui_factory
 
     def launch_via_fastapi_wrapper(self):
-        ui_components = [
-            ("create_ui_analysts", "get_analysis_path"),
-            ("create_ui_testing", "get_testing_path"),
-            ("create_ui_coding", "get_coding_path"),
-            ("create_ui_knowledge", "get_knowledge_path"),
-            ("create_ui_about", "get_about_path"),
-            ("create_plain_chat", "get_chat_path"),
-        ]
+        if self.ui_factory is not None:
+            ui_components = [
+                ("create_ui_analysts", "get_analysis_path"),
+                ("create_ui_testing", "get_testing_path"),
+                ("create_ui_coding", "get_coding_path"),
+                ("create_ui_knowledge", "get_knowledge_path"),
+                ("create_ui_about", "get_about_path"),
+                ("create_plain_chat", "get_chat_path"),
+            ]
 
-        for create_ui, get_path in ui_components:
-            ui_component = getattr(self.ui_factory, create_ui)()
-            path = getattr(self.ui_factory.navigation_manager, get_path)()
-            gr.mount_gradio_app(self.server, ui_component, path=path, root_path=path)
+            for create_ui, get_path in ui_components:
+                ui_component = getattr(self.ui_factory, create_ui)()
+                path = getattr(self.ui_factory.navigation_manager, get_path)()
+                gr.mount_gradio_app(
+                    self.server, ui_component, path=path, root_path=path
+                )
 
         return self.server
