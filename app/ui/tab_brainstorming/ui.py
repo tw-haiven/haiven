@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import gradio as gr
 from prompts.prompts import PromptList
-from llms.llm_config import LLMConfig
+from llms.clients import ChatClientConfig
 from prompts.prompts_factory import PromptsFactory
 from llms.chats import ChatOptions, ChatManager
 from knowledge.knowledge import KnowledgeBaseMarkdown
@@ -14,7 +14,7 @@ def enable_brainstorming(
     knowledge_base: KnowledgeBaseMarkdown,
     chat_manager: ChatManager,
     prompts_factory: PromptsFactory,
-    llm_config: LLMConfig,
+    client_config: ChatClientConfig,
     user_identifier_state: gr.State,
     prompt_categories=None,
 ):
@@ -185,12 +185,12 @@ def enable_brainstorming(
                     request, "llm_tone", app_level=True
                 )
                 if llm_model_from_session:
-                    llm_config.change_model(llm_model_from_session)
+                    client_config.change_model(llm_model_from_session)
                 if temperature_from_session:
-                    llm_config.change_temperature(temperature_from_session)
+                    client_config.change_temperature(temperature_from_session)
 
                 chat_session_key_value, chat_session = chat_manager.q_a_chat(
-                    llm_config=llm_config,
+                    client_config=client_config,
                     session_id=None,
                     options=ChatOptions(
                         category="brainstorming", user_identifier=user_identifier_state
@@ -233,8 +233,8 @@ def enable_brainstorming(
         )
 
         def on_vote(vote: gr.LikeData):
-            chat_context.model = llm_config.service_name
-            chat_context.temperature = llm_config.temperature
+            chat_context.model = client_config.service_name
+            chat_context.temperature = client_config.temperature
             chat_context.message = vote.value
 
             UserFeedback.on_message_voted(

@@ -13,11 +13,6 @@ def test_documents_chat(mocker):
 
     knowledge_base_mock = mocker.Mock()
     knowledge_base_mock.retriever = mocker.Mock()
-    chat_model_mock = mocker.Mock()
-    mocker.patch(
-        "llms.llm_config.LLMChatFactory.new_llm_chat",
-        return_value=chat_model_mock,
-    )
 
     documents = [
         Document(

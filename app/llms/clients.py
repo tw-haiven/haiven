@@ -11,7 +11,7 @@ from llms.model import Model
 from llms.aws_chat import AWSChat
 
 
-class LLMConfig:
+class ChatClientConfig:
     def __init__(self, init_service_name: str, init_temperature: float):
         self.service_name: str = init_service_name
         self.temperature: float = init_temperature
@@ -62,32 +62,24 @@ class MockModelClient:
             yield MockChunk(content=chunk)
 
 
-class LLMChatFactory:
-    # TODO: temporary hack as part of ConfigService refactoring
-    __config_service = None
+class ChatClientFactory:
+    def __init__(self, config_service: ConfigService):
+        self.config_service = config_service
 
-    @staticmethod
-    def _get_or_init_config_service():
-        if LLMChatFactory.__config_service is None:
-            LLMChatFactory.__config_service = ConfigService("config.yaml")
-
-        return LLMChatFactory.__config_service
-
-    @staticmethod
-    def new_llm_chat(llm_config: LLMConfig, stop=None) -> BaseChatModel:
-        if llm_config.service_name == "mock":
+    def new_chat_client(
+        self, client_config: ChatClientConfig, stop=None
+    ) -> BaseChatModel:
+        if client_config.service_name == "mock":
             return MockModelClient()
 
-        model: Model = LLMChatFactory._get_or_init_config_service().get_model(
-            llm_config.service_name
-        )
+        model: Model = self.config_service.get_model(client_config.service_name)
 
         HaivenLogger.get().analytics(
             "Model selected",
             {
                 "provider": model.provider,
                 "model": model.id,
-                "temperature": llm_config.temperature,
+                "temperature": client_config.temperature,
             },
         )
 
@@ -100,7 +92,7 @@ class LLMChatFactory:
                     azure_deployment=model.config.get("azure_deployment"),
                     azure_endpoint=model.config.get("azure_endpoint"),
                     api_version=model.config.get("api_version"),
-                    temperature=llm_config.temperature,
+                    temperature=client_config.temperature,
                     stop=[stop] if stop is not None else None,
                     model_kwargs=model_kwargs,
                 )
@@ -114,13 +106,13 @@ class LLMChatFactory:
                 # but they do pass it on when it's passed to the model call...
                 return ChatGoogleGenerativeAI(
                     model=model.config.get("model"),
-                    temperature=llm_config.temperature,
+                    temperature=client_config.temperature,
                     stop=stop_arg,
                 )
 
             # AWS
             case "aws":
-                model_kwargs = {"temperature": llm_config.temperature}
+                model_kwargs = {"temperature": client_config.temperature}
                 if stop is not None:
                     model_kwargs["stop_sequences"] = [stop]
                 return AWSChat(
@@ -136,7 +128,7 @@ class LLMChatFactory:
                 return ChatOpenAI(
                     api_key=model.config.get("api_key"),
                     model_name=model.config.get("model_name"),
-                    temperature=llm_config.temperature,
+                    temperature=client_config.temperature,
                     stop=[stop] if stop is not None else None,
                     model_kwargs=model_kwargs,
                 )
@@ -148,7 +140,7 @@ class LLMChatFactory:
                 return ChatOllama(
                     base_url=model.config.get("base_url"),
                     model=model.config.get("model"),
-                    temperature=llm_config.temperature,
+                    temperature=client_config.temperature,
                     model_kwargs=model_kwargs,
                 )
 

@@ -27,7 +27,7 @@ class KnowledgeContext:
 class KnowledgePack:
     def __init__(self, path: str, contexts: List[KnowledgeContext] = []):
         self.path = path
-        self.contexts = contexts
+        self.contexts: List[KnowledgeContext] = contexts
 
         if len(self.contexts) == 0:
             self._auto_discovery_contexts()

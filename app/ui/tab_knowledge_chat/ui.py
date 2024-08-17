@@ -5,7 +5,7 @@ import gradio as gr
 from dotenv import load_dotenv
 from embeddings.documents import DocumentsUtils
 from embeddings.service import EmbeddingsService
-from llms.llm_config import LLMConfig
+from llms.clients import ChatClientConfig
 from llms.chats import ChatOptions, ChatManager
 from ui.chat_context import ChatContext
 from user_feedback import UserFeedback
@@ -14,7 +14,7 @@ from ui.user_context import user_context
 
 def enable_knowledge_chat(
     chat_manager: ChatManager,
-    llm_config: LLMConfig,
+    client_config: ChatClientConfig,
     active_knowledge_context: str,
     user_identifier_state: gr.State,
     category_filter: List[str],
@@ -32,8 +32,8 @@ def enable_knowledge_chat(
         message="",
     )
 
-    def update_llm_config(request: gr.Request):
-        llm_config_from_session = user_context.get_value(
+    def update_chat_client_config(request: gr.Request):
+        client_config_from_session = user_context.get_value(
             request, "llm_model", app_level=True
         )
 
@@ -41,11 +41,11 @@ def enable_knowledge_chat(
             request, "llm_tone", app_level=True
         )
 
-        if llm_config_from_session:
-            llm_config.change_model(llm_config_from_session)
+        if client_config_from_session:
+            client_config.change_model(client_config_from_session)
 
         if temperature_from_session:
-            llm_config.change_temperature(temperature_from_session)
+            client_config.change_temperature(temperature_from_session)
 
     main_tab = gr.Tab("Knowledge Chat", id=tab_id)
     with main_tab:
@@ -109,7 +109,7 @@ def enable_knowledge_chat(
                     knowledge_context = knowledge.context
 
                 chat_session_key_value, chat_session = chat_manager.docs_chat(
-                    llm_config=llm_config,
+                    client_config=client_config,
                     session_id=None,
                     knowledge_key=knowledge_key,
                     knowledge_context=knowledge_context,
@@ -143,7 +143,7 @@ def enable_knowledge_chat(
             try:
                 chat_session = chat_manager.get_session(chat_session_key_value)
 
-                update_llm_config(request)
+                update_chat_client_config(request)
 
                 response, sources_markdown = chat_session.next(question)
                 history = [(question, response + "\n\n" + sources_markdown)]
@@ -178,8 +178,8 @@ def enable_knowledge_chat(
         )
 
         def on_vote(vote: gr.LikeData):
-            chat_context.model = llm_config.service_name
-            chat_context.temperature = llm_config.temperature
+            chat_context.model = client_config.service_name
+            chat_context.temperature = client_config.temperature
             chat_context.message = vote.value
 
             UserFeedback.on_message_voted(

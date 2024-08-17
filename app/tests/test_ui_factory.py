@@ -63,10 +63,14 @@ class TestUIFactory(unittest.TestCase):
         theme = MagicMock()
         css = MagicMock()
         ui.styling.return_value = (theme, css)
-        llm_config = MagicMock()
+        client_config = MagicMock()
         model_select = MagicMock()
         tone_select = MagicMock()
-        ui.create_llm_settings_ui.return_value = (model_select, tone_select, llm_config)
+        ui.create_llm_settings_ui.return_value = (
+            model_select,
+            tone_select,
+            client_config,
+        )
         knowledge_context_select = MagicMock()
         ui.create_knowledge_context_selector_ui.return_value = knowledge_context_select
         navigation = MagicMock()
@@ -104,7 +108,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_base_markdown,
             chat_manager,
             prompts_factory,
-            llm_config,
+            client_config,
             content_manager.active_knowledge_context,
             state,
             category_filter,
@@ -114,7 +118,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_base_markdown,
             chat_manager,
             prompts_factory,
-            llm_config,
+            client_config,
             state,
             category_filter,
         )
@@ -122,7 +126,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_base_markdown,
             chat_manager,
             prompts_factory,
-            llm_config,
+            client_config,
             content_manager.active_knowledge_context,
             state,
             category_filter,
@@ -131,7 +135,7 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_knowledge_chat.assert_called_with(
             chat_manager,
-            llm_config,
+            client_config,
             content_manager.active_knowledge_context,
             state,
             category_filter,
@@ -210,10 +214,14 @@ class TestUIFactory(unittest.TestCase):
         theme = MagicMock()
         css = MagicMock()
         ui.styling.return_value = (theme, css)
-        llm_config = MagicMock()
+        client_config = MagicMock()
         model_select = MagicMock()
         tone_select = MagicMock()
-        ui.create_llm_settings_ui.return_value = (model_select, tone_select, llm_config)
+        ui.create_llm_settings_ui.return_value = (
+            model_select,
+            tone_select,
+            client_config,
+        )
         knowledge_context_select = MagicMock()
         ui.create_knowledge_context_selector_ui.return_value = knowledge_context_select
         navigation = MagicMock()
@@ -252,7 +260,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_base_markdown,
             chat_manager,
             prompts_factory,
-            llm_config,
+            client_config,
             content_manager.active_knowledge_context,
             state,
             category_filter,
@@ -262,7 +270,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_base_markdown,
             chat_manager,
             prompts_factory,
-            llm_config,
+            client_config,
             state,
             category_filter,
         )
@@ -270,7 +278,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_base_markdown,
             chat_manager,
             prompts_factory,
-            llm_config,
+            client_config,
             content_manager.active_knowledge_context,
             state,
             category_filter,
@@ -279,7 +287,7 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_knowledge_chat.assert_called_with(
             chat_manager,
-            llm_config,
+            client_config,
             content_manager.active_knowledge_context,
             state,
             category_filter,
@@ -357,10 +365,14 @@ class TestUIFactory(unittest.TestCase):
         theme = MagicMock()
         css = MagicMock()
         ui.styling.return_value = (theme, css)
-        llm_config = MagicMock()
+        client_config = MagicMock()
         model_select = MagicMock()
         tone_select = MagicMock()
-        ui.create_llm_settings_ui.return_value = (model_select, tone_select, llm_config)
+        ui.create_llm_settings_ui.return_value = (
+            model_select,
+            tone_select,
+            client_config,
+        )
         knowledge_context_select = MagicMock()
         ui.create_knowledge_context_selector_ui.return_value = knowledge_context_select
         navigation = MagicMock()
@@ -399,7 +411,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_base_markdown,
             chat_manager,
             prompts_factory,
-            llm_config,
+            client_config,
             content_manager.active_knowledge_context,
             state,
             category_filter,
@@ -409,7 +421,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_base_markdown,
             chat_manager,
             prompts_factory,
-            llm_config,
+            client_config,
             state,
             category_filter,
         )
@@ -417,7 +429,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_base_markdown,
             chat_manager,
             prompts_factory,
-            llm_config,
+            client_config,
             content_manager.active_knowledge_context,
             state,
             category_filter,
@@ -426,7 +438,7 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_knowledge_chat.assert_called_with(
             chat_manager,
-            llm_config,
+            client_config,
             content_manager.active_knowledge_context,
             state,
             category_filter,
@@ -454,15 +466,19 @@ class TestUIFactory(unittest.TestCase):
         # Setup
         model_select = MagicMock()
         tone_select = MagicMock()
-        llm_config = MagicMock()
+        client_config = MagicMock()
         change_model = MagicMock()
-        type(llm_config).change_model = PropertyMock(return_value=change_model)
+        type(client_config).change_model = PropertyMock(return_value=change_model)
         change_temperature = MagicMock()
-        type(llm_config).change_temperature = PropertyMock(
+        type(client_config).change_temperature = PropertyMock(
             return_value=change_temperature
         )
         ui = MagicMock()
-        ui.create_llm_settings_ui.return_value = model_select, tone_select, llm_config
+        ui.create_llm_settings_ui.return_value = (
+            model_select,
+            tone_select,
+            client_config,
+        )
         knowledge_context_select = MagicMock()
         ui.create_knowledge_context_selector_ui.return_value = knowledge_context_select
         prompts_factory = MagicMock()

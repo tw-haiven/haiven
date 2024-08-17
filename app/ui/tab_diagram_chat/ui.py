@@ -4,7 +4,7 @@ import gradio as gr
 from dotenv import load_dotenv
 
 from embeddings.service import EmbeddingsService
-from llms.llm_config import LLMConfig
+from llms.clients import ChatClientConfig
 from prompts.prompts import PromptList
 from prompts.prompts_factory import PromptsFactory
 from llms.chats import ChatOptions, ChatManager
@@ -19,7 +19,7 @@ def enable_image_chat(
     knowledge_base: KnowledgeBaseMarkdown,
     chat_manager: ChatManager,
     prompts_factory: PromptsFactory,
-    llm_config: LLMConfig,
+    client_config: ChatClientConfig,
     active_knowledge_context: str,
     user_identifier_state: gr.State,
     prompt_categories: List[str],
@@ -43,18 +43,18 @@ def enable_image_chat(
         message="",
     )
 
-    def update_llm_config(request: gr.Request):
-        llm_config_from_session = user_context.get_value(
+    def update_chat_client_config(request: gr.Request):
+        client_config_from_session = user_context.get_value(
             request, "llm_model", app_level=True
         )
         temperature_from_session = user_context.get_value(
             request, "llm_tone", app_level=True
         )
-        if llm_config_from_session:
-            llm_config.change_model(llm_config_from_session)
+        if client_config_from_session:
+            client_config.change_model(client_config_from_session)
 
         if temperature_from_session:
-            llm_config.change_temperature(temperature_from_session)
+            client_config.change_temperature(temperature_from_session)
 
     def on_change_prompt_choice(
         prompt_choice: str, image_description: str, request: gr.Request
@@ -238,11 +238,11 @@ def enable_image_chat(
                             )
 
         def start(prompt_text: str, user_identifier_state: str, request: gr.Request):
-            update_llm_config(request)
+            update_chat_client_config(request)
 
             if prompt_text:
                 chat_session_key_value, chat_session = chat_manager.streaming_chat(
-                    llm_config=llm_config,
+                    client_config=client_config,
                     session_id=None,
                     options=ChatOptions(
                         category="diagrams", user_identifier=user_identifier_state
@@ -272,10 +272,10 @@ def enable_image_chat(
             request: gr.Request,
         ):
             chat_session = chat_manager.get_session(chat_session_key_value)
-            update_llm_config(request)
-            chat_session.llm_config = llm_config
-            update_llm_config(request)
-            chat_session.llm_config = llm_config
+            update_chat_client_config(request)
+            chat_session.client_config = client_config
+            update_chat_client_config(request)
+            chat_session.client_config = client_config
             if knowledge_choice == []:
                 raise ValueError("No knowledge base selected")
 
@@ -314,8 +314,8 @@ def enable_image_chat(
         )
 
         def on_vote(vote: gr.LikeData):
-            chat_context.model = llm_config.service_name
-            chat_context.temperature = llm_config.temperature
+            chat_context.model = client_config.service_name
+            chat_context.temperature = client_config.temperature
             chat_context.message = vote.value
 
             UserFeedback.on_message_voted(

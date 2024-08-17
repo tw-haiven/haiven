@@ -5,7 +5,7 @@ import gradio as gr
 from dotenv import load_dotenv
 from embeddings.documents import DocumentsUtils
 from knowledge.knowledge import KnowledgeBaseMarkdown
-from llms.llm_config import LLMConfig
+from llms.clients import ChatClientConfig
 from knowledge.knowledge_pack import KnowledgePack
 from prompts.prompts import PromptList
 from config_service import ConfigService
@@ -265,7 +265,7 @@ class UIBaseComponents:
 
     def create_llm_settings_ui(
         self, features_filter: List[str] = []
-    ) -> tuple[gr.Dropdown, gr.Radio, LLMConfig]:
+    ) -> tuple[gr.Dropdown, gr.Radio, ChatClientConfig]:
         features_filter.append("text-generation")
         available_options: List[tuple[str, str]] = self._get_model_service_choices(
             features_filter
@@ -302,7 +302,7 @@ class UIBaseComponents:
             dropdown.interactive = False
             dropdown.label = "Default model set in configuration"
 
-        llmConfig = LLMConfig(dropdown.value, temperature_slider.value)
+        llmConfig = ChatClientConfig(dropdown.value, temperature_slider.value)
 
         return dropdown, temperature_slider, llmConfig
 

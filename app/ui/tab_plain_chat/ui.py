@@ -25,9 +25,9 @@ def enable_plain_chat(
 
     with gr.Group(elem_classes="haiven-group"):
         with gr.Row():
-            model_select, tone_radio, llm_config = ui.create_llm_settings_ui()
-            model_select.change(fn=llm_config.change_model, inputs=model_select)
-            tone_radio.change(fn=llm_config.change_temperature, inputs=tone_radio)
+            model_select, tone_radio, client_config = ui.create_llm_settings_ui()
+            model_select.change(fn=client_config.change_model, inputs=model_select)
+            tone_radio.change(fn=client_config.change_temperature, inputs=tone_radio)
 
     with gr.Row():
         with gr.Column(scale=5):
@@ -65,7 +65,7 @@ def enable_plain_chat(
         message_value: str, chat_history, chat_session_key_value, user_identifier_state
     ):
         chat_session_key_value, chat_session = CHAT_SESSION_MEMORY.get_or_create_chat(
-            fn_create_chat=lambda: StreamingChat(llm_config=llm_config),
+            fn_create_chat=lambda: StreamingChat(client_config=client_config),
             chat_session_key_value=chat_session_key_value,
             chat_category="chat",
             user_identifier=user_identifier_state,
@@ -105,8 +105,8 @@ def enable_plain_chat(
     )
 
     def on_vote(vote: gr.LikeData):
-        chat_context.model = llm_config.service_name
-        chat_context.temperature = llm_config.temperature
+        chat_context.model = client_config.service_name
+        chat_context.temperature = client_config.temperature
         chat_context.message = vote.value
 
         UserFeedback.on_message_voted(

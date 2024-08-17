@@ -37,15 +37,15 @@ class UIFactory:
         self.chat_manager: ChatManager = chat_manager
         self.image_service: ImageDescriptionService = image_service
 
-        self.__llm_config = None
+        self.__client_config = None
         self.__copyright_text = f"© {str(datetime.now().year)} Thoughtworks, Inc."
 
     def _model_changed(self, model_select, request: gr.Request):
-        self.__llm_config.change_model(model_select)
+        self.__client_config.change_model(model_select)
         user_context.set_value(request, "llm_model", model_select, app_level=True)
 
     def _tone_changed(self, tone_select, request: gr.Request):
-        self.__llm_config.change_temperature(tone_select)
+        self.__client_config.change_temperature(tone_select)
         user_context.set_value(request, "llm_tone", tone_select, app_level=True)
 
     def is_empty(self, value) -> bool:
@@ -100,7 +100,7 @@ class UIFactory:
                                 inputs=knowledge_context_select,
                             )
 
-                            model_select, tone_select, self.__llm_config = (
+                            model_select, tone_select, self.__client_config = (
                                 self.ui_base_components.create_llm_settings_ui()
                             )
                             model_select.change(
@@ -124,7 +124,7 @@ class UIFactory:
                             self.content_manager.knowledge_base_markdown,
                             self.chat_manager,
                             self.prompts_factory,
-                            self.__llm_config,
+                            self.__client_config,
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
@@ -134,7 +134,7 @@ class UIFactory:
                             self.content_manager.knowledge_base_markdown,
                             self.chat_manager,
                             self.prompts_factory,
-                            self.__llm_config,
+                            self.__client_config,
                             user_identifier_state,
                             category_filter,
                         )
@@ -142,7 +142,7 @@ class UIFactory:
                             self.content_manager.knowledge_base_markdown,
                             self.chat_manager,
                             self.prompts_factory,
-                            self.__llm_config,
+                            self.__client_config,
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
@@ -151,7 +151,7 @@ class UIFactory:
                         )
                         enable_knowledge_chat(
                             self.chat_manager,
-                            self.__llm_config,
+                            self.__client_config,
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
@@ -202,7 +202,7 @@ class UIFactory:
                                 inputs=knowledge_context_select,
                             )
 
-                            model_select, tone_select, self.__llm_config = (
+                            model_select, tone_select, self.__client_config = (
                                 self.ui_base_components.create_llm_settings_ui()
                             )
                             model_select.change(
@@ -227,7 +227,7 @@ class UIFactory:
                             self.content_manager.knowledge_base_markdown,
                             self.chat_manager,
                             self.prompts_factory,
-                            self.__llm_config,
+                            self.__client_config,
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
@@ -237,7 +237,7 @@ class UIFactory:
                             self.content_manager.knowledge_base_markdown,
                             self.chat_manager,
                             self.prompts_factory,
-                            self.__llm_config,
+                            self.__client_config,
                             user_identifier_state,
                             category_filter,
                         )
@@ -245,7 +245,7 @@ class UIFactory:
                             self.content_manager.knowledge_base_markdown,
                             self.chat_manager,
                             self.prompts_factory,
-                            self.__llm_config,
+                            self.__client_config,
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
@@ -254,7 +254,7 @@ class UIFactory:
                         )
                         enable_knowledge_chat(
                             self.chat_manager,
-                            self.__llm_config,
+                            self.__client_config,
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
@@ -301,7 +301,7 @@ class UIFactory:
                                 inputs=knowledge_context_select,
                             )
 
-                            model_select, tone_select, self.__llm_config = (
+                            model_select, tone_select, self.__client_config = (
                                 self.ui_base_components.create_llm_settings_ui()
                             )
                             model_select.change(
@@ -325,7 +325,7 @@ class UIFactory:
                             self.content_manager.knowledge_base_markdown,
                             self.chat_manager,
                             self.prompts_factory,
-                            self.__llm_config,
+                            self.__client_config,
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
@@ -335,7 +335,7 @@ class UIFactory:
                             self.content_manager.knowledge_base_markdown,
                             self.chat_manager,
                             self.prompts_factory,
-                            self.__llm_config,
+                            self.__client_config,
                             user_identifier_state,
                             category_filter,
                         )
@@ -343,7 +343,7 @@ class UIFactory:
                             self.content_manager.knowledge_base_markdown,
                             self.chat_manager,
                             self.prompts_factory,
-                            self.__llm_config,
+                            self.__client_config,
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
@@ -352,7 +352,7 @@ class UIFactory:
                         )
                         enable_knowledge_chat(
                             self.chat_manager,
-                            self.__llm_config,
+                            self.__client_config,
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
@@ -398,7 +398,7 @@ class UIFactory:
                                 inputs=knowledge_context_select,
                             )
 
-                            model_select, tone_select, self.__llm_config = (
+                            model_select, tone_select, self.__client_config = (
                                 self.ui_base_components.create_llm_settings_ui()
                             )
                             model_select.change(

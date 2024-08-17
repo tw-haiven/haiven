@@ -4,7 +4,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 from llms.chats import ChatManager, ChatOptions
-from llms.llm_config import LLMConfig
+from llms.clients import ChatClientConfig
 from llms.model import Model
 from prompts.prompts import PromptList
 
@@ -39,7 +39,7 @@ class HaivenBaseApi:
 
     def stream_json_chat(self, prompt, chat_category, chat_session_key_value=None):
         chat_session_key_value, chat_session = self.chat_manager.json_chat(
-            llm_config=LLMConfig(self.model_key, 0.5),
+            client_config=ChatClientConfig(self.model_key, 0.5),
             session_id=chat_session_key_value,
             options=ChatOptions(category=chat_category),
         )
@@ -56,7 +56,7 @@ class HaivenBaseApi:
                 yield chunk
 
         chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
-            llm_config=LLMConfig(self.model_key, 0.5),
+            client_config=ChatClientConfig(self.model_key, 0.5),
             session_id=chat_session_key_value,
             options=ChatOptions(in_chunks=True, category=chat_category),
         )

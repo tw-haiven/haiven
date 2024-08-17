@@ -2,15 +2,14 @@
 import unittest
 from unittest.mock import patch
 
-from llms.llm_config import LLMChatFactory, LLMConfig
+from llms.clients import ChatClientFactory, ChatClientConfig
 from llms.model import Model
 
 
-class TestLLMChatFactory(unittest.TestCase):
-    @patch("llms.llm_config.ConfigService")
+class TestChatClientFactory(unittest.TestCase):
+    @patch("llms.clients.ConfigService")
     def test_azure_client(self, mock_config_service):
-        config_service_instance = mock_config_service.return_value
-        config_service_instance.get_model.return_value = Model(
+        mock_config_service.get_model.return_value = Model(
             "some-id",
             "azure",
             "Some name",
@@ -22,6 +21,8 @@ class TestLLMChatFactory(unittest.TestCase):
             },
         )
 
-        base_chat = LLMChatFactory.new_llm_chat(LLMConfig("azure", 0.5))
+        base_chat = ChatClientFactory(mock_config_service).new_chat_client(
+            ChatClientConfig("azure", 0.5)
+        )
         assert base_chat is not None
         assert base_chat.__class__.__name__ == "AzureChatOpenAI"

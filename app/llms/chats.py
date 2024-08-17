@@ -10,7 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from pydantic import BaseModel
 from config_service import ConfigService
 from embeddings.documents import DocumentsUtils
-from llms.llm_config import LLMChatFactory
+from llms.clients import ChatClientFactory
 from logger import HaivenLogger
 from embeddings.service import EmbeddingsService
 
@@ -492,9 +492,11 @@ class ChatManager:
         self,
         config_service: ConfigService,
         chat_session_memory: ServerChatSessionMemory,
+        llm_chat_factory: ChatClientFactory,
     ):
         self.config_service = config_service
         self.chat_session_memory = chat_session_memory
+        self.llm_chat_factory = llm_chat_factory
 
     def clear_session(self, session_id: str):
         self.chat_session_memory.delete_entry(session_id)
@@ -503,9 +505,9 @@ class ChatManager:
         return self.chat_session_memory.get_chat(chat_session_key_value)
 
     def streaming_chat(
-        self, llm_config, session_id: str = None, options: ChatOptions = None
+        self, client_config, session_id: str = None, options: ChatOptions = None
     ):
-        chat_client = LLMChatFactory.new_llm_chat(llm_config)
+        chat_client = self.llm_chat_factory.new_chat_client(client_config)
         return self.chat_session_memory.get_or_create_chat(
             lambda: StreamingChat(
                 chat_client, stream_in_chunks=options.in_chunks if options else None
@@ -516,9 +518,9 @@ class ChatManager:
         )
 
     def json_chat(
-        self, llm_config, session_id: str = None, options: ChatOptions = None
+        self, client_config, session_id: str = None, options: ChatOptions = None
     ):
-        chat_client = LLMChatFactory.new_llm_chat(llm_config)
+        chat_client = self.llm_chat_factory.new_chat_client(client_config)
         return self.chat_session_memory.get_or_create_chat(
             lambda: JSONChat(
                 chat_client,
@@ -529,8 +531,12 @@ class ChatManager:
             user_identifier=options.user_identifier if options else None,
         )
 
-    def q_a_chat(self, llm_config, session_id: str = None, options: ChatOptions = None):
-        chat_client = LLMChatFactory.new_llm_chat(llm_config, stop="</Answer>")
+    def q_a_chat(
+        self, client_config, session_id: str = None, options: ChatOptions = None
+    ):
+        chat_client = self.llm_chat_factory.new_chat_client(
+            client_config, stop="</Answer>"
+        )
         return self.chat_session_memory.get_or_create_chat(
             lambda: Q_A_Chat(chat_client),
             chat_session_key_value=session_id,
@@ -540,13 +546,13 @@ class ChatManager:
 
     def docs_chat(
         self,
-        llm_config,
+        client_config,
         knowledge_key: str,
         knowledge_context: str,
         session_id: str = None,
         options: ChatOptions = None,
     ):
-        chat_client = LLMChatFactory.new_llm_chat(llm_config)
+        chat_client = self.llm_chat_factory.new_chat_client(client_config)
         return self.chat_session_memory.get_or_create_chat(
             lambda: DocumentsChat(
                 chat_client=chat_client,

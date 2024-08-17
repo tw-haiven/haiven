@@ -4,6 +4,7 @@ from api.boba_api import BobaApi
 from content_manager import ContentManager
 from llms.chats import ChatManager, ServerChatSessionMemory
 from llms.image_description_service import ImageDescriptionService
+from llms.clients import ChatClientFactory
 from llms.model import Model
 from logger import HaivenLogger
 from prompts.prompts_factory import PromptsFactory
@@ -42,7 +43,10 @@ class App:
 
         prompts_factory = PromptsFactory(knowledge_pack_path)
         chat_session_memory = ServerChatSessionMemory()
-        chat_manager = ChatManager(config_service, chat_session_memory)
+        llm_chat_factory = ChatClientFactory(config_service)
+        chat_manager = ChatManager(
+            config_service, chat_session_memory, llm_chat_factory
+        )
 
         self.ui_factory = UIFactory(
             ui_base_components=UIBaseComponents(config_service),
