@@ -9,7 +9,6 @@ from openai import AzureOpenAI, OpenAI
 from PIL import Image
 from llms.model import Model
 from llms.models_service import ModelsService
-from config_service import ConfigService
 from vertexai.preview.generative_models import GenerativeModel, Part
 import ollama
 
@@ -20,11 +19,9 @@ class ImageDescriptionService:
     """
     Provides a unified interface for generating descriptions of images using AI services from various cloud providers.
 
-    This class is implemented as a singleton to ensure that only one instance exists throughout the application. It abstracts the complexity of interacting with different AI services for image description, providing a simple interface for clients.
 
     Attributes:
         model_definition (Model): Configuration of the model to be used for generating image descriptions. This includes the provider (GCP, Azure, AWS Anthropic) and necessary credentials and endpoints.
-        model_instance: An instance of the cloud provider's model initialized based on `model_definition`. This is lazily loaded upon the first request to describe an image.
 
     Methods:
         prompt_with_image(image_from_gradio: Image, prompt: str) -> str:
@@ -49,9 +46,7 @@ class ImageDescriptionService:
             Helper method to encode an image to a base64 string, facilitating its transmission over networks.
     """
 
-    __instance = None
-
-    def __init__(self, model_id: str = None):
+    def __init__(self, model_id: str):
         """
         Initializes the ImageDescriptionService with a specific model configuration.
 
@@ -60,49 +55,21 @@ class ImageDescriptionService:
 
         Raises:
             ValueError: If `model_id` is None or an empty string.
-            Exception: If an instance of this class already exists.
         """
-        if model_id is None or model_id == "":
-            model_id = ConfigService.load_default_models().vision
-
-        model: Model = ModelsService.get_model(model_id)
-        self.model_definition = model
-        self.model_instance = None
-
-        if ImageDescriptionService.__instance is not None:
-            raise Exception(
-                "ImageDescriptionService is a singleton class. Use get_instance() to get the instance."
+        if model_id is None:
+            raise ValueError(
+                "Model ID must be provided to initialize ImageDescriptionService"
             )
 
-        ImageDescriptionService.__instance = self
+        model: Model = ModelsService.get_model(model_id)
 
-    @staticmethod
-    def get_instance():
-        if ImageDescriptionService.__instance is None:
-            ImageDescriptionService()
-        return ImageDescriptionService.__instance
+        if model is None:
+            raise ValueError(f"Model with ID '{model_id}' not found in configuration")
 
-    @staticmethod
-    def reset_instance():
-        ImageDescriptionService.__instance = None
+        self.model_definition = model
+        self.model_client = None  # will be instantiated based on the provider
 
-    @staticmethod
-    def prompt_with_image(image_from_gradio: Image, prompt: str) -> str:
-        """
-        Static method to request an image description. It delegates the request to the instance method `_prompt_with_image`.
-
-        Args:
-            image_from_gradio (Image): The image to describe.
-            prompt (str): The prompt to provide context for the description.
-
-        Returns:
-            str: The generated description of the image.
-        """
-        return ImageDescriptionService.get_instance()._prompt_with_image(
-            image_from_gradio, prompt
-        )
-
-    def _prompt_with_image(self, image_from_gradio: Image, user_input: str) -> str:
+    def prompt_with_image(self, image_from_gradio: Image, user_input: str) -> str:
         if image_from_gradio is None:
             return ""
 
@@ -126,14 +93,14 @@ class ImageDescriptionService:
                 return "Provider not supported"
 
     def _describe_with_gcp(self, image: Image.Image, user_input: str) -> str:
-        if self.model_instance is None:
-            self.model_instance = GenerativeModel(
+        if self.model_client is None:
+            self.model_client = GenerativeModel(
                 self.model_definition.config.get("model")
             )
 
         image = Part.from_data(self._get_image_bytes(image), mime_type="image/png")
 
-        model_response = self.model_instance.generate_content(
+        model_response = self.model_client.generate_content(
             [
                 user_input,
                 image,
@@ -142,13 +109,13 @@ class ImageDescriptionService:
         return model_response.text
 
     def _describe_image_with_openai(self, image: Image.Image, user_input: str) -> str:
-        if self.model_instance is None:
+        if self.model_client is None:
             api_key = self.model_definition.config.get("api_key")
             if not api_key.strip():
                 return "Error: Missing Open AI Vision configuration. Please check your environment variables."
-            self.model_instance = OpenAI(api_key=api_key)
+            self.model_client = OpenAI(api_key=api_key)
 
-        response = self.model_instance.chat.completions.create(
+        response = self.model_client.chat.completions.create(
             model=self.model_definition.config.get("model_name"),
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
@@ -175,7 +142,7 @@ class ImageDescriptionService:
         return response.choices[0].message.content
 
     def _describe_image_with_azure(self, image: Image.Image, user_input: str) -> str:
-        if self.model_instance is None:
+        if self.model_client is None:
             azure_endpoint = self.model_definition.config.get("azure_endpoint")
             api_key = self.model_definition.config.get("api_key")
             azure_deployment = self.model_definition.config.get("azure_deployment")
@@ -191,13 +158,13 @@ class ImageDescriptionService:
             ):
                 return "Error: Missing Azure AI Vision configuration. Please check your environment variables."
 
-            self.model_instance = AzureOpenAI(
+            self.model_client = AzureOpenAI(
                 api_key=api_key,
                 api_version=api_version,
                 base_url=f"{azure_endpoint}/openai/deployments/{azure_deployment}",
             )
 
-        response = self.model_instance.chat.completions.create(
+        response = self.model_client.chat.completions.create(
             model=self.model_definition.config.get("azure_deployment"),
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
@@ -227,8 +194,8 @@ class ImageDescriptionService:
         self, image: Image.Image, user_input: str
     ) -> str:
         try:
-            if self.model_instance is None:
-                self.model_instance = boto3.client(
+            if self.model_client is None:
+                self.model_client = boto3.client(
                     service_name="bedrock-runtime",
                     region_name=self.model_definition.config.get("region_name"),
                 )
@@ -267,7 +234,7 @@ class ImageDescriptionService:
                 }
             )
 
-            response = self.model_instance.invoke_model(
+            response = self.model_client.invoke_model(
                 body=body, modelId=self.model_definition.config.get("model_id")
             )
             response = json.loads(response.get("body").read())

@@ -44,6 +44,20 @@ def enable_image_chat(
         message="",
     )
 
+    available_vision_models = [
+        (available_model.name, available_model.id)
+        for available_model in ModelsService.get_models(
+            providers=ConfigService.load_enabled_providers(),
+            features=["image-to-text"],
+        )
+    ]
+
+    image_service = ImageDescriptionService(
+        ConfigService.load_default_models().vision or available_vision_models[0][1]
+        if len(available_vision_models) > 0
+        else None
+    )
+
     def update_llm_config(request: gr.Request):
         llm_config_from_session = user_context.get_value(
             request, "llm_model", app_level=True
@@ -129,6 +143,9 @@ def enable_image_chat(
             show_warning=False,
         )
 
+    def change_vision_model(model_id: str):
+        image_service.change_model(model_id)
+
     main_tab = gr.Tab(interaction_pattern_name, id=tab_id)
     with main_tab:
         with gr.Row():
@@ -157,31 +174,6 @@ def enable_image_chat(
                         label="Provide a brief description about the diagram: what is it about, what visualisation method has been used?",
                         lines=2,
                     )
-
-                    if (
-                        ConfigService.load_default_models().vision is None
-                        or ConfigService.load_default_models().vision == ""
-                    ):
-                        available_vision_models = [
-                            (available_model.name, available_model.id)
-                            for available_model in ModelsService.get_models(
-                                providers=ConfigService.load_enabled_providers(),
-                                features=["image-to-text"],
-                            )
-                        ]
-
-                        ui_vision_model_dropdown = gr.Dropdown(
-                            available_vision_models,
-                            label="Vision model",
-                        )
-
-                        def change_vision_model(model_id: str):
-                            ImageDescriptionService.reset_instance()
-                            ImageDescriptionService(model_id)
-
-                        ui_vision_model_dropdown.change(
-                            fn=change_vision_model, inputs=ui_vision_model_dropdown
-                        )
 
                     # !! Image description currently only supports PNG!!
                     # TODO: Enhance that to determine mime type
@@ -215,7 +207,7 @@ def enable_image_chat(
                     outputs=[ui_prompt_dropdown, ui_prompt, ui_help, ui_help_knowledge],
                 )
                 ui_describe_image_button.click(
-                    fn=ImageDescriptionService.prompt_with_image,
+                    fn=image_service.prompt_with_image,
                     inputs=[ui_image_upload, ui_user_image_input],
                     outputs=[ui_image_description],
                 )
