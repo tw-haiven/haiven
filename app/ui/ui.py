@@ -13,7 +13,7 @@ from embeddings.service import EmbeddingsService
 from llms.models_service import ModelsService
 
 
-class UI:
+class UIBaseComponents:
     def __init__(self):
         load_dotenv()
 

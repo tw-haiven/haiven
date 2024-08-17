@@ -3,7 +3,7 @@ import gradio as gr
 from dotenv import load_dotenv
 from llms.chats import ServerChatSessionMemory, StreamingChat
 from ui.chat_context import ChatContext
-from ui.ui import UI
+from ui.ui import UIBaseComponents
 from user_feedback import UserFeedback
 
 
@@ -11,7 +11,7 @@ def enable_plain_chat(
     CHAT_SESSION_MEMORY: ServerChatSessionMemory, user_identifier_state: gr.State
 ):
     load_dotenv()
-    ui = UI()
+    ui = UIBaseComponents()
 
     chat_context = ChatContext(
         tab_id="chat",

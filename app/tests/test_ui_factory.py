@@ -37,7 +37,7 @@ class TestUIFactory(unittest.TestCase):
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
-            ui=ui,
+            ui_base_components=ui,
             prompts_factory=prompts_factory,
             navigation_manager=navigation_manager,
             event_handler=event_handler,
@@ -180,7 +180,7 @@ class TestUIFactory(unittest.TestCase):
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
-            ui=ui,
+            ui_base_components=ui,
             prompts_factory=prompts_factory,
             navigation_manager=navigation_manager,
             event_handler=event_handler,
@@ -323,7 +323,7 @@ class TestUIFactory(unittest.TestCase):
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
-            ui=ui,
+            ui_base_components=ui,
             prompts_factory=prompts_factory,
             navigation_manager=navigation_manager,
             event_handler=event_handler,
@@ -467,7 +467,7 @@ class TestUIFactory(unittest.TestCase):
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
-            ui=ui,
+            ui_base_components=ui,
             prompts_factory=prompts_factory,
             navigation_manager=navigation_manager,
             event_handler=event_handler,
@@ -480,7 +480,7 @@ class TestUIFactory(unittest.TestCase):
         mock_blocks.return_value = blocks
         theme = MagicMock()
         css = MagicMock()
-        ui_factory.ui.styling.return_value = (theme, css)
+        ui_factory.ui_base_components.styling.return_value = (theme, css)
         ui_factory.navigation_manager.get_knowledge_navigation.return_value = (
             MagicMock(),
             MagicMock(),
@@ -493,10 +493,10 @@ class TestUIFactory(unittest.TestCase):
 
         # Assert
         mock_blocks.assert_called_with(theme=theme, css=css, title="Haiven")
-        ui_factory.ui.styling.assert_called_once()
+        ui_factory.ui_base_components.styling.assert_called_once()
         ui_factory.navigation_manager.get_knowledge_navigation.assert_called_once()
-        ui_factory.ui.ui_header.assert_called_once()
-        ui_factory.ui.ui_show_knowledge.assert_called_with(
+        ui_factory.ui_base_components.ui_header.assert_called_once()
+        ui_factory.ui_base_components.ui_show_knowledge.assert_called_with(
             knowledge_base_markdown, content_manager.knowledge_pack_definition
         )
         ui.create_llm_settings_ui.assert_called_once()
@@ -518,7 +518,7 @@ class TestUIFactory(unittest.TestCase):
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
-            ui=ui,
+            ui_base_components=ui,
             prompts_factory=prompts_factory,
             navigation_manager=navigation_manager,
             event_handler=event_handler,
@@ -531,7 +531,7 @@ class TestUIFactory(unittest.TestCase):
         mock_blocks.return_value = blocks
         theme = MagicMock()
         css = MagicMock()
-        ui_factory.ui.styling.return_value = (theme, css)
+        ui_factory.ui_base_components.styling.return_value = (theme, css)
         navigation = MagicMock()
         category_metadata = MagicMock()
         ui_factory.navigation_manager.get_about_navigation.return_value = (
@@ -544,10 +544,10 @@ class TestUIFactory(unittest.TestCase):
 
         # Assert
         mock_blocks.assert_called_with(theme=theme, css=css, title="About Haiven")
-        ui_factory.ui.styling.assert_called_once()
+        ui_factory.ui_base_components.styling.assert_called_once()
         ui_factory.navigation_manager.get_about_navigation.assert_called_once()
-        ui_factory.ui.ui_header.assert_called_once()
-        ui_factory.ui.ui_show_about.assert_called_once()
+        ui_factory.ui_base_components.ui_header.assert_called_once()
+        ui_factory.ui_base_components.ui_show_about.assert_called_once()
 
         assert returned_blocks == blocks
 
@@ -570,7 +570,7 @@ class TestUIFactory(unittest.TestCase):
         chat_session_memory = MagicMock()
 
         ui_factory = UIFactory(
-            ui=ui,
+            ui_base_components=ui,
             prompts_factory=prompts_factory,
             navigation_manager=navigation_manager,
             event_handler=event_handler,

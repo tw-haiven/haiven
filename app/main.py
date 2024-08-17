@@ -11,7 +11,7 @@ from logger import HaivenLogger
 from ui.navigation import NavigationManager
 from prompts.prompts_factory import PromptsFactory
 from config_service import ConfigService
-from ui.ui import UI
+from ui.ui import UIBaseComponents
 from ui.ui_factory import UIFactory
 
 
@@ -36,7 +36,7 @@ def create_server():
     )
 
     ui_factory = UIFactory(
-        ui=UI(),
+        ui_base_components=UIBaseComponents(),
         prompts_factory=PromptsFactory(knowledge_pack_path),
         navigation_manager=NavigationManager(),
         event_handler=EventHandler(HaivenLogger),

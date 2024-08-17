@@ -5,7 +5,7 @@ from content_manager import ContentManager
 from ui.event_handler import EventHandler
 from ui.navigation import NavigationManager
 from prompts.prompts_factory import PromptsFactory
-from ui.ui import UI
+from ui.ui import UIBaseComponents
 from ui.tab_brainstorming.ui import enable_brainstorming
 from ui.tab_diagram_chat.ui import enable_image_chat
 from ui.tab_knowledge_chat.ui import enable_knowledge_chat
@@ -18,7 +18,7 @@ from datetime import datetime
 class UIFactory:
     def __init__(
         self,
-        ui: UI,
+        ui_base_components: UIBaseComponents,
         prompts_factory: PromptsFactory,
         navigation_manager: NavigationManager,
         event_handler: EventHandler,
@@ -26,7 +26,7 @@ class UIFactory:
         content_manager: ContentManager,
         chat_session_memory: ServerChatSessionMemory,
     ):
-        self.ui: UI = ui
+        self.ui_base_components: UIBaseComponents = ui_base_components
         self.prompts_factory: PromptsFactory = prompts_factory
         self.navigation_manager: NavigationManager = navigation_manager
         self.event_handler: EventHandler = event_handler
@@ -76,22 +76,20 @@ class UIFactory:
                 return self.create_plain_chat()
 
     def create_ui_coding(self):
-        theme, css = self.ui.styling()
+        theme, css = self.ui_base_components.styling()
         blocks = gr.Blocks(theme=theme, css=css, title="Haiven")
         with blocks:
             navigation, category_metadata = (
                 self.navigation_manager.get_coding_navigation()
             )
-            self.ui.ui_header(navigation=navigation)
+            self.ui_base_components.ui_header(navigation=navigation)
             user_identifier_state = gr.State()
             with gr.Group(elem_classes="haiven-content"):
                 with gr.Group(elem_classes=["haiven-group", "haiven-settings"]):
                     with gr.Accordion("Settings"):
                         with gr.Row():
-                            knowledge_context_select = (
-                                self.ui.create_knowledge_context_selector_ui(
-                                    self.content_manager.knowledge_pack_definition
-                                )
+                            knowledge_context_select = self.ui_base_components.create_knowledge_context_selector_ui(
+                                self.content_manager.knowledge_pack_definition
                             )
                             knowledge_context_select.change(
                                 fn=self.__knowledge_context_select_changed,
@@ -99,7 +97,7 @@ class UIFactory:
                             )
 
                             model_select, tone_select, self.__llm_config = (
-                                self.ui.create_llm_settings_ui()
+                                self.ui_base_components.create_llm_settings_ui()
                             )
                             model_select.change(
                                 fn=self._model_changed, inputs=model_select
@@ -111,7 +109,7 @@ class UIFactory:
                 with gr.Row(elem_classes="haiven-tabs-container"):
                     with gr.Tabs() as all_tabs:
                         category_filter = ["coding", "architecture"]
-                        self.ui.create_about_tab_for_task_area(
+                        self.ui_base_components.create_about_tab_for_task_area(
                             category_filter,
                             category_metadata,
                             self.prompts_factory.create_all_prompts_for_user_choice(
@@ -180,21 +178,19 @@ class UIFactory:
         return blocks
 
     def create_ui_testing(self):
-        theme, css = self.ui.styling()
+        theme, css = self.ui_base_components.styling()
         blocks = gr.Blocks(theme=theme, css=css, title="Haiven")
         with blocks:
             navigation, category_metadata = (
                 self.navigation_manager.get_testing_navigation()
             )
-            self.ui.ui_header(navigation=navigation)
+            self.ui_base_components.ui_header(navigation=navigation)
             with gr.Group(elem_classes="haiven-content"):
                 with gr.Group(elem_classes=["haiven-group", "haiven-settings"]):
                     with gr.Accordion("Settings"):
                         with gr.Row():
-                            knowledge_context_select = (
-                                self.ui.create_knowledge_context_selector_ui(
-                                    self.content_manager.knowledge_pack_definition
-                                )
+                            knowledge_context_select = self.ui_base_components.create_knowledge_context_selector_ui(
+                                self.content_manager.knowledge_pack_definition
                             )
                             knowledge_context_select.change(
                                 fn=self.__knowledge_context_select_changed,
@@ -202,7 +198,7 @@ class UIFactory:
                             )
 
                             model_select, tone_select, self.__llm_config = (
-                                self.ui.create_llm_settings_ui()
+                                self.ui_base_components.create_llm_settings_ui()
                             )
                             model_select.change(
                                 fn=self._model_changed, inputs=model_select
@@ -215,7 +211,7 @@ class UIFactory:
 
                     with gr.Tabs() as all_tabs:
                         user_identifier_state = gr.State()
-                        self.ui.create_about_tab_for_task_area(
+                        self.ui_base_components.create_about_tab_for_task_area(
                             category_filter,
                             category_metadata,
                             self.prompts_factory.create_all_prompts_for_user_choice(
@@ -280,21 +276,19 @@ class UIFactory:
     def create_ui_analysts(
         self,
     ):
-        theme, css = self.ui.styling()
+        theme, css = self.ui_base_components.styling()
         blocks = gr.Blocks(theme=theme, css=css, title="Haiven")
         with blocks:
             navigation, category_metadata = (
                 self.navigation_manager.get_analysis_navigation()
             )
-            self.ui.ui_header(navigation=navigation)
+            self.ui_base_components.ui_header(navigation=navigation)
             with gr.Group(elem_classes="haiven-content"):
                 with gr.Group(elem_classes=["haiven-group", "haiven-settings"]):
                     with gr.Accordion("Settings"):
                         with gr.Row():
-                            knowledge_context_select = (
-                                self.ui.create_knowledge_context_selector_ui(
-                                    self.content_manager.knowledge_pack_definition
-                                )
+                            knowledge_context_select = self.ui_base_components.create_knowledge_context_selector_ui(
+                                self.content_manager.knowledge_pack_definition
                             )
                             knowledge_context_select.change(
                                 fn=self.__knowledge_context_select_changed,
@@ -302,7 +296,7 @@ class UIFactory:
                             )
 
                             model_select, tone_select, self.__llm_config = (
-                                self.ui.create_llm_settings_ui()
+                                self.ui_base_components.create_llm_settings_ui()
                             )
                             model_select.change(
                                 fn=self._model_changed, inputs=model_select
@@ -314,7 +308,7 @@ class UIFactory:
                     category_filter = ["analysis"]
                     with gr.Tabs() as all_tabs:
                         user_identifier_state = gr.State()
-                        self.ui.create_about_tab_for_task_area(
+                        self.ui_base_components.create_about_tab_for_task_area(
                             category_filter,
                             category_metadata,
                             self.prompts_factory.create_all_prompts_for_user_choice(
@@ -377,22 +371,20 @@ class UIFactory:
         return blocks
 
     def create_ui_knowledge(self):
-        theme, css = self.ui.styling()
+        theme, css = self.ui_base_components.styling()
         blocks = gr.Blocks(theme=theme, css=css, title="Haiven")
         with blocks:
             navigation, category_metadata = (
                 self.navigation_manager.get_knowledge_navigation()
             )
-            self.ui.ui_header(navigation=navigation)
+            self.ui_base_components.ui_header(navigation=navigation)
 
             with gr.Group(elem_classes="haiven-content"):
                 with gr.Group(elem_classes=["haiven-group", "haiven-settings"]):
                     with gr.Accordion("Settings"):
                         with gr.Row():
-                            knowledge_context_select = (
-                                self.ui.create_knowledge_context_selector_ui(
-                                    self.content_manager.knowledge_pack_definition
-                                )
+                            knowledge_context_select = self.ui_base_components.create_knowledge_context_selector_ui(
+                                self.content_manager.knowledge_pack_definition
                             )
                             knowledge_context_select.change(
                                 fn=self.__knowledge_context_select_changed,
@@ -400,7 +392,7 @@ class UIFactory:
                             )
 
                             model_select, tone_select, self.__llm_config = (
-                                self.ui.create_llm_settings_ui()
+                                self.ui_base_components.create_llm_settings_ui()
                             )
                             model_select.change(
                                 fn=self._model_changed, inputs=model_select
@@ -413,7 +405,7 @@ class UIFactory:
                     with gr.Tabs() as all_tabs:
                         user_identifier_state = gr.State()
                         with gr.Tab("Knowledge"):
-                            self.ui.ui_show_knowledge(
+                            self.ui_base_components.ui_show_knowledge(
                                 self.content_manager.knowledge_base_markdown,
                                 self.content_manager.knowledge_pack_definition,
                             )
@@ -437,18 +429,18 @@ class UIFactory:
         return blocks
 
     def create_ui_about(self):
-        theme, css = self.ui.styling()
+        theme, css = self.ui_base_components.styling()
         blocks = gr.Blocks(theme=theme, css=css, title="About Haiven")
         with blocks:
             navigation, category_metadata = (
                 self.navigation_manager.get_about_navigation()
             )
-            self.ui.ui_header(navigation=navigation)
+            self.ui_base_components.ui_header(navigation=navigation)
 
             with gr.Tab("About"):
-                self.ui.ui_show_about()
+                self.ui_base_components.ui_show_about()
             with gr.Tab("Data processing"):
-                self.ui.ui_show_data_processing()
+                self.ui_base_components.ui_show_data_processing()
 
             with gr.Row():
                 gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])
@@ -456,11 +448,11 @@ class UIFactory:
         return blocks
 
     def create_plain_chat(self):
-        theme, css = self.ui.styling()
+        theme, css = self.ui_base_components.styling()
         blocks = gr.Blocks(theme=theme, css=css, title="Haiven")
 
         with blocks:
-            self.ui.ui_header()
+            self.ui_base_components.ui_header()
             user_identifier_state = gr.State()
 
             with gr.Row():
