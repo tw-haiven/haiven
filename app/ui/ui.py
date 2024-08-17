@@ -3,7 +3,7 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
-from embeddings.documents_utils import DocumentsUtils
+from embeddings.documents import DocumentsUtils
 from knowledge.knowledge import KnowledgeBaseMarkdown
 from llms.llm_config import LLMConfig
 from knowledge.knowledge_pack import KnowledgePack

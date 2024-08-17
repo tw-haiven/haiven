@@ -7,7 +7,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
-from embeddings.documents_utils import DocumentsUtils
+from embeddings.documents import DocumentsUtils
 from llms.llm_config import LLMChatFactory, LLMConfig
 from logger import HaivenLogger
 from embeddings.embeddings_service import EmbeddingsService

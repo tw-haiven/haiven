@@ -7,7 +7,7 @@ import frontmatter
 from langchain.docstore.document import Document
 from langchain_community.vectorstores import FAISS
 from embeddings.embeddings import Embeddings
-from embeddings.document_embedding import DocumentEmbedding
+from embeddings.documents import DocumentEmbedding
 from config_service import ConfigService
 from embeddings.in_memory_embeddings_db_service import InMemoryEmbeddingsDB
 
