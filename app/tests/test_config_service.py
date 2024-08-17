@@ -9,6 +9,7 @@ from llms.default_models import DefaultModels
 from embeddings.model import EmbeddingModel
 from llms.model import Model
 from config_service import ConfigService
+from tests.utils import get_test_data_path
 
 
 @pytest.fixture(scope="class")
@@ -93,11 +94,13 @@ class TestConfigService:
         path = "invalid_path"
         # when I call the function __init__ an error should be raised
         with pytest.raises(FileNotFoundError) as e:
-            ConfigService.load_enabled_models(path)
+            ConfigService(path)
         assert str(e.value) == f"Path {path} is not valid"
 
     def test_config_initialization(self):
-        models: List[Model] = ConfigService.load_enabled_models(self.config_path)
+        config_service = ConfigService(self.config_path)
+
+        models: List[Model] = config_service.load_enabled_models()
         assert isinstance(models, list)
         assert all(isinstance(model, Model) for model in models)
 
@@ -116,7 +119,6 @@ class TestConfigService:
         assert model.config["azure_deployment"] == self.deployment_name
         assert model.config["api_key"] == self.api_key
 
-        config_service = ConfigService(self.config_path)
         embedding: EmbeddingModel = config_service.load_embedding_model()
 
         assert isinstance(embedding, EmbeddingModel)
@@ -133,13 +135,13 @@ class TestConfigService:
         knowledge_pack_path = config_service.load_knowledge_pack_path()
         assert knowledge_pack_path == self.knowledge_pack_path
 
-        default_models = ConfigService.load_default_models(self.config_path)
+        default_models = config_service.load_default_models()
         assert isinstance(default_models, DefaultModels)
         assert default_models.chat == self.model_id
         assert default_models.vision == self.model_id + "_2"
         assert default_models.embeddings == self.embedding_id
 
-        enabled_providers = ConfigService.load_enabled_providers(self.config_path)
+        enabled_providers = config_service.load_enabled_providers()
         assert isinstance(enabled_providers, list)
         assert all(
             provider in enabled_providers
@@ -169,14 +171,15 @@ class TestConfigService:
         exception_raised = False
         try:
             config_content = """
-              knowledge_pack_path: /non/existent/path
+knowledge_pack_path: /non/existent/path
               """
             config_path = "test-env-config.yaml"
-            with open(config_path, "w") as f:
+            with open(get_test_data_path() + "/" + config_path, "w") as f:
                 f.write(config_content)
+                f.flush()
 
-            config_service = ConfigService(config_path)
-            config_service.load_knowledge_pack_path()
+                config_service = ConfigService(get_test_data_path() + "/" + config_path)
+                config_service.load_knowledge_pack_path()
 
         except KnowledgePackError as e:
             assert "Pack" in e.message
@@ -184,4 +187,4 @@ class TestConfigService:
 
         assert exception_raised
 
-        os.remove(config_path)
+        os.remove(get_test_data_path() + "/" + config_path)

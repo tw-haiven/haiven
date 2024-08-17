@@ -13,7 +13,7 @@ from llms.model import Model
 
 class ConfigService:
     def __init__(self, path: str = "config.yaml"):
-        self.path = path
+        self.data = ConfigService._load_yaml(path)
 
     def load_embedding_model(self) -> EmbeddingModel:
         """
@@ -25,11 +25,10 @@ class ConfigService:
         Returns:
             EmbeddingModel: The loaded embedding model for the given provider
         """
-        data = ConfigService._load_yaml(self.path)
 
-        default_embedding = ConfigService.load_default_models(self.path).embeddings
+        default_embedding = self.load_default_models().embeddings
 
-        embeddings_data_list = data["embeddings"]
+        embeddings_data_list = self.data["embeddings"]
         embedding_model_data = next(
             (item for item in embeddings_data_list if item["id"] == default_embedding),
             None,
@@ -41,10 +40,7 @@ class ConfigService:
         embedding_model = EmbeddingModel.from_dict(embedding_model_data)
         return embedding_model
 
-    @staticmethod
-    def load_enabled_models(
-        path: str = "config.yaml", features: List[str] = []
-    ) -> List[Model]:
+    def load_enabled_models(self, features: List[str] = []) -> List[Model]:
         """
         Load a list of models for the enabled providers from a YAML config file.
 
@@ -55,8 +51,8 @@ class ConfigService:
         Returns:
             List[Model]: The loaded models.
         """
-        data = ConfigService._load_yaml(path)
-        model_data_list = data["models"]
+
+        model_data_list = self.data["models"]
         models = []
 
         for model_data in model_data_list:
@@ -65,7 +61,7 @@ class ConfigService:
 
         filtered_models = copy.deepcopy(models)
 
-        providers = ConfigService.load_enabled_providers(path)
+        providers = self.load_enabled_providers()
 
         if providers and len(providers) > 0:
             filtered_models = [
@@ -90,8 +86,7 @@ class ConfigService:
 
         return filtered_models
 
-    @staticmethod
-    def get_model(model_id: str, path: str = "config.yaml") -> Model:
+    def get_model(self, model_id: str) -> Model:
         """
         Get a model by its ID.
 
@@ -101,7 +96,7 @@ class ConfigService:
         Returns:
             Model: The model.
         """
-        models = ConfigService.load_enabled_models(path)
+        models = self.load_enabled_models()
         model = next((model for model in models if model.id == model_id), None)
 
         if model is None:
@@ -119,18 +114,16 @@ class ConfigService:
         Returns:
             str: The knowledge pack path.
         """
-        data = ConfigService._load_yaml(self.path)
-        knowledge_pack_path = data["knowledge_pack_path"]
+        knowledge_pack_path = self.data["knowledge_pack_path"]
 
         if not os.path.exists(knowledge_pack_path):
             raise KnowledgePackError(
-                f"Cannot find path to Knowledge Pack: `{knowledge_pack_path}`. Please check the `knowledge_pack_path` in your {self.path} file."
+                f"Cannot find path to Knowledge Pack: `{knowledge_pack_path}`. Please check the `knowledge_pack_path` in your config file."
             )
 
         return knowledge_pack_path
 
-    @staticmethod
-    def load_enabled_providers(path: str = "config.yaml") -> List[str]:
+    def load_enabled_providers(self) -> List[str]:
         """
         Load the enabled providers from the specified YAML configuration file.
 
@@ -141,16 +134,15 @@ class ConfigService:
             List[str]: The list of enabled providers.
 
         """
-        data = ConfigService._load_yaml(path)
-        enabled_providers = data["enabled_providers"]
+
+        enabled_providers = self.data["enabled_providers"]
 
         if isinstance(enabled_providers, str):
             enabled_providers = enabled_providers.split(",")
 
         return enabled_providers
 
-    @staticmethod
-    def load_default_models(path: str = "config.yaml") -> DefaultModels:
+    def load_default_models(self) -> DefaultModels:
         """
         Load the default models from a YAML file.
 
@@ -161,27 +153,9 @@ class ConfigService:
             DefaultModels: An instance of the DefaultModels config class containing the default model set for llm, vision and embeddings.
 
         """
-        data = ConfigService._load_yaml(path)
-        default_models = DefaultModels.from_dict(data["default_models"])
+        default_models = DefaultModels.from_dict(self.data["default_models"])
 
         return default_models
-
-    @staticmethod
-    def load_application_name(path: str = "config.yaml") -> str:
-        """
-        Load the application name from a YAML file.
-
-        Args:
-            path (str): The path to the YAML file.
-
-        Returns:
-            str: The application name. Defaults to "Haiven" if not present in config file.
-        """
-        data = ConfigService._load_yaml(path)
-        application_name = data["application_name"]
-        if not application_name:
-            return "Haiven"
-        return application_name
 
     def get_default_guided_mode_model(self) -> str:
         """
@@ -193,7 +167,7 @@ class ConfigService:
         Returns:
             str: The default chat model.
         """
-        enabled_provider = ConfigService.load_enabled_providers(self.path)[0]
+        enabled_provider = self.load_enabled_providers()[0]
         match enabled_provider:
             case "azure":
                 return "azure-gpt4"

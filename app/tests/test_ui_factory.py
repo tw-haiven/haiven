@@ -615,7 +615,7 @@ class TestUIFactory(unittest.TestCase):
         blocks.load.assert_called_with(
             event_handler.on_load_plain_chat_ui, None, outputs=[state]
         )
-        mock_enable_plain_chat.assert_called_with(chat_session_memory, state)
+        mock_enable_plain_chat.assert_called_with(chat_session_memory, state, ui)
         blocks.queue.assert_called_once()
 
         assert returned_blocks == blocks

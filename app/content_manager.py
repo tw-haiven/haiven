@@ -10,8 +10,6 @@ from knowledge.knowledge_pack import (
 )
 from embeddings.service import EmbeddingsService
 
-DEFAULT_CONFIG_PATH = "config.yaml"
-
 
 class ContentManager:
     def __init__(self, config_service: ConfigService):

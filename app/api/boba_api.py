@@ -69,7 +69,7 @@ class BobaApi:
     def add_endpoints(self, app: FastAPI):
         @app.get("/api/models")
         def get_models(request: Request):
-            models: List[Model] = self.config_service.load_enabled_models("config.yaml")
+            models: List[Model] = self.config_service.load_enabled_models()
             return JSONResponse(
                 [{"id": model.id, "name": model.name} for model in models]
             )

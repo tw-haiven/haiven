@@ -7,7 +7,6 @@ import boto3
 from botocore.exceptions import ClientError
 from openai import AzureOpenAI, OpenAI
 from PIL import Image
-from config_service import ConfigService
 from llms.model import Model
 from vertexai.preview.generative_models import GenerativeModel, Part
 import ollama
@@ -21,7 +20,7 @@ class ImageDescriptionService:
 
 
     Attributes:
-        model_definition (Model): Configuration of the model to be used for generating image descriptions. This includes the provider (GCP, Azure, AWS Anthropic) and necessary credentials and endpoints.
+        model (Model): Configuration of the model to be used for generating image descriptions. This includes the provider (GCP, Azure, AWS Anthropic) and necessary credentials and endpoints.
 
     Methods:
         prompt_with_image(image_from_gradio: Image, prompt: str) -> str:
@@ -46,7 +45,7 @@ class ImageDescriptionService:
             Helper method to encode an image to a base64 string, facilitating its transmission over networks.
     """
 
-    def __init__(self, model_id: str):
+    def __init__(self, model: Model):
         """
         Initializes the ImageDescriptionService with a specific model configuration.
 
@@ -56,15 +55,6 @@ class ImageDescriptionService:
         Raises:
             ValueError: If `model_id` is None or an empty string.
         """
-        if model_id is None:
-            raise ValueError(
-                "Model ID must be provided to initialize ImageDescriptionService"
-            )
-
-        model: Model = ConfigService.get_model(model_id)
-
-        if model is None:
-            raise ValueError(f"Model with ID '{model_id}' not found in configuration")
 
         self.model_definition = model
         self.model_client = None  # will be instantiated based on the provider

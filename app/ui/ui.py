@@ -13,8 +13,9 @@ from embeddings.service import EmbeddingsService
 
 
 class UIBaseComponents:
-    def __init__(self):
+    def __init__(self, config_service: ConfigService):
         load_dotenv()
+        self.config_service = config_service
 
     @staticmethod
     def PATH_KNOWLEDGE() -> str:
@@ -251,12 +252,25 @@ class UIBaseComponents:
         )
         return knowledge_packs_selector
 
+    def _get_model_service_choices(
+        self, features_filter: List[str]
+    ) -> List[tuple[str, str]]:
+        models = self.config_service.load_enabled_models(features=features_filter)
+        services = [(model.name, model.id) for model in models]
+
+        return services
+
+    def _get_default_temperature(self) -> float:
+        return 0.2
+
     def create_llm_settings_ui(
         self, features_filter: List[str] = []
     ) -> tuple[gr.Dropdown, gr.Radio, LLMConfig]:
         features_filter.append("text-generation")
-        available_options: List[tuple[str, str]] = _get_services(features_filter)
-        default_temperature: float = _get_default_temperature()
+        available_options: List[tuple[str, str]] = self._get_model_service_choices(
+            features_filter
+        )
+        default_temperature: float = self._get_default_temperature()
 
         if len(available_options) == 0:
             raise ValueError(
@@ -282,8 +296,9 @@ class UIBaseComponents:
         )
         temperature_slider.value = default_temperature
 
-        if ConfigService.load_default_models().chat is not None:
-            dropdown.value = ConfigService.load_default_models().chat
+        default_chat_model = self.config_service.load_default_models().chat
+        if default_chat_model is not None:
+            dropdown.value = default_chat_model
             dropdown.interactive = False
             dropdown.label = "Default model set in configuration"
 
@@ -308,22 +323,3 @@ class UIBaseComponents:
                 f"# {section_title}\n## Available prompts\n{prompt_list_markdown}"
             )
             gr.Markdown(markdown, line_breaks=True)
-
-
-def _get_valid_tone_values() -> List[tuple[str, float]]:
-    return [
-        ("More creative (0.8)", 0.8),
-        ("Balanced (0.5)", 0.5),
-        ("More precise (0.2)", 0.2),
-    ]
-
-
-def _get_default_temperature() -> float:
-    return 0.2
-
-
-def _get_services(features_filter: List[str]) -> List[tuple[str, str]]:
-    models = ConfigService.load_enabled_models(features=features_filter)
-    services = [(model.name, model.id) for model in models]
-
-    return services

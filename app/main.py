@@ -7,6 +7,7 @@ from app import App
 from llms.chats import ServerChatSessionMemory
 from content_manager import ContentManager
 from llms.image_description_service import ImageDescriptionService
+from llms.model import Model
 from ui.event_handler import EventHandler
 from logger import HaivenLogger
 from ui.navigation import NavigationManager
@@ -28,16 +29,20 @@ def backwards_compat_env_vars():
 def create_image_service(config_service):
     available_vision_models = [
         (available_model.name, available_model.id)
-        for available_model in ConfigService.load_enabled_models(
+        for available_model in config_service.load_enabled_models(
             features=["image-to-text"],
         )
     ]
 
-    return ImageDescriptionService(
+    model_id = (
         config_service.load_default_models().vision or available_vision_models[0][1]
         if len(available_vision_models) > 0
         else None
     )
+
+    model: Model = config_service.get_model(model_id)
+
+    return ImageDescriptionService(model)
 
 
 def create_server():
@@ -56,7 +61,7 @@ def create_server():
     chat_session_memory = ServerChatSessionMemory()
 
     ui_factory = UIFactory(
-        ui_base_components=UIBaseComponents(),
+        ui_base_components=UIBaseComponents(config_service),
         prompts_factory=prompts_factory,
         navigation_manager=NavigationManager(),
         event_handler=EventHandler(HaivenLogger),

@@ -1,31 +1,11 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from unittest import mock
 from llms.model import Model
-from ui.ui import _get_valid_tone_values, _get_default_temperature, _get_services
+from ui.ui import UIBaseComponents
 
 
-def test_get_valid_tone_values():
-    expected_tone_values = [
-        ("More creative (0.8)", 0.8),
-        ("Balanced (0.5)", 0.5),
-        ("More precise (0.2)", 0.2),
-    ]
-    actual_tone_values = _get_valid_tone_values()
-    assert (
-        actual_tone_values == expected_tone_values
-    ), f"Expected tone values do not match. Expected: {expected_tone_values}, Got: {actual_tone_values}"
-
-
-def test_get_default_tone():
-    expected_default_tone = 0.2
-    actual_default_tone = _get_default_temperature()
-    assert (
-        actual_default_tone == expected_default_tone
-    ), f"Expected default tone does not match. Expected: {expected_default_tone}, Got: {actual_default_tone}"
-
-
-@mock.patch("config_service.ConfigService.load_enabled_models")
-def test_get_services(load_enabled_models):
+@mock.patch("config_service.ConfigService")
+def test_get_services(mock_config_service):
     # given an LLMConfig object initialised with a config file containing azure services
     first_model_id = "azure-gpt35"
     first_model_provider = "azure"
@@ -41,10 +21,12 @@ def test_get_services(load_enabled_models):
 
     models = [first_model, second_model]
 
-    load_enabled_models.return_value = models
+    mock_config_service.load_enabled_models.return_value = models
+
+    ui = UIBaseComponents(mock_config_service)
 
     # when trying to get valid service values
-    valid_service_values = _get_services([])
+    valid_service_values = ui._get_model_service_choices([])
     # then the services defined in the config file should be returned
     assert valid_service_values == [
         (first_model_name, first_model_id),

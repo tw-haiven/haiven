@@ -464,7 +464,11 @@ class UIFactory:
 
             with gr.Row():
                 with gr.Tabs():
-                    enable_plain_chat(self.chat_session_memory, user_identifier_state)
+                    enable_plain_chat(
+                        self.chat_session_memory,
+                        user_identifier_state,
+                        self.ui_base_components,
+                    )
 
             with gr.Row():
                 gr.HTML(self.__copyright_text, elem_classes=["copyright_text"])

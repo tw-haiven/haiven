@@ -8,10 +8,11 @@ from user_feedback import UserFeedback
 
 
 def enable_plain_chat(
-    CHAT_SESSION_MEMORY: ServerChatSessionMemory, user_identifier_state: gr.State
+    CHAT_SESSION_MEMORY: ServerChatSessionMemory,
+    user_identifier_state: gr.State,
+    ui: UIBaseComponents,
 ):
     load_dotenv()
-    ui = UIBaseComponents()
 
     chat_context = ChatContext(
         tab_id="chat",
