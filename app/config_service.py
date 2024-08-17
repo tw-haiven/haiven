@@ -4,6 +4,7 @@ from typing import List
 
 import yaml
 from dotenv import load_dotenv
+from knowledge.knowledge_pack import KnowledgePackError
 from llms.default_models import DefaultModels
 from embeddings.model import EmbeddingModel
 from llms.model import Model
@@ -60,8 +61,7 @@ class ConfigService:
 
         return models
 
-    @staticmethod
-    def load_knowledge_pack_path(config_file_path: str = "config.yaml") -> str:
+    def load_knowledge_pack_path(self) -> str:
         """
         Load the knowledge pack path from a YAML config file.
 
@@ -71,8 +71,13 @@ class ConfigService:
         Returns:
             str: The knowledge pack path.
         """
-        data = ConfigService._load_yaml(config_file_path)
+        data = ConfigService._load_yaml(self.path)
         knowledge_pack_path = data["knowledge_pack_path"]
+
+        if not os.path.exists(knowledge_pack_path):
+            raise KnowledgePackError(
+                f"Cannot find path to Knowledge Pack: `{knowledge_pack_path}`. Please check the `knowledge_pack_path` in your {self.path} file."
+            )
 
         return knowledge_pack_path
 

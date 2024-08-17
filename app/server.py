@@ -26,10 +26,14 @@ class Server:
     boba_build_dir_path = "./resources/static/out"
 
     def __init__(
-        self, chat_session_memory: ServerChatSessionMemory, boba_api: BobaApi = None
+        self,
+        chat_session_memory: ServerChatSessionMemory,
+        config_service: ConfigService,
+        boba_api: BobaApi = None,
     ):
         self.url = Url()
         self.chat_session_memory = chat_session_memory
+        self.config_service = config_service
         self.boba_api = boba_api
 
     def user_endpoints(self, app):
@@ -212,10 +216,7 @@ class Server:
             print(f"WARNING: Boba UI cannot be mounted {e}")
 
     def serve_static_from_knowledge_pack(self, app):
-        DEFAULT_CONFIG_PATH = "config.yaml"
-        knowledge_pack_path = ConfigService.load_knowledge_pack_path(
-            DEFAULT_CONFIG_PATH
-        )
+        knowledge_pack_path = self.config_service.load_knowledge_pack_path()
 
         teams_static_dir = Path(knowledge_pack_path + "/static")
         teams_static_dir.mkdir(parents=True, exist_ok=True)

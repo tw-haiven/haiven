@@ -13,6 +13,7 @@ class App:
     def __init__(
         self,
         content_manager: ContentManager,
+        config_service: ConfigService,
         prompts_factory: PromptsFactory,
         chat_session_memory: ServerChatSessionMemory,
         ui_factory: UIFactory,
@@ -20,6 +21,7 @@ class App:
         model = ConfigService.get_default_guided_mode_model()
         self.server = Server(
             chat_session_memory,
+            config_service,
             BobaApi(
                 prompts_factory,
                 content_manager,

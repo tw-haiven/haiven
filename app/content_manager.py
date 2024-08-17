@@ -1,5 +1,4 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import os
 from config_service import ConfigService
 from logger import HaivenLogger
 
@@ -8,7 +7,6 @@ from knowledge.knowledge import KnowledgeBaseMarkdown
 from knowledge.knowledge_pack import (
     KnowledgeContext,
     KnowledgePack,
-    KnowledgePackError,
 )
 from embeddings.service import EmbeddingsService
 
@@ -16,11 +14,8 @@ DEFAULT_CONFIG_PATH = "config.yaml"
 
 
 class ContentManager:
-    def __init__(self, knowledge_pack_path: str, config_service: ConfigService):
-        if not os.path.exists(knowledge_pack_path):
-            raise KnowledgePackError(
-                f"Cannot find path to Knowledge Pack: `{knowledge_pack_path}`. Please check the `knowledge_pack_path` in your {config_service.path} file."
-            )
+    def __init__(self, config_service: ConfigService):
+        knowledge_pack_path = config_service.load_knowledge_pack_path()
 
         self._config_service = config_service
         self.knowledge_pack_definition = KnowledgePack(knowledge_pack_path)

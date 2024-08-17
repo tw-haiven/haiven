@@ -9,12 +9,14 @@ class TestApp:
         # Mock the dependencies
         server = MagicMock()
         mock_server().create.return_value = server
+        config_service = MagicMock()
         content_manager = MagicMock()
         ui_factory = MagicMock()
 
         # Initialize App
         app = App(
             content_manager=content_manager,
+            config_service=config_service,
             prompts_factory=MagicMock(),
             chat_session_memory=MagicMock(),
             ui_factory=ui_factory,
@@ -64,8 +66,11 @@ class TestApp:
         ui_factory.create_ui_about.return_value = ui_about
         ui_factory.create_plain_chat.return_value = plain_chat
 
+        config_service = MagicMock()
+
         app = App(
             content_manager=content_manager,
+            config_service=config_service,
             prompts_factory=MagicMock(),
             chat_session_memory=MagicMock(),
             ui_factory=ui_factory,

@@ -1,8 +1,10 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
+import tempfile
 from typing import List
 
 import pytest
+from knowledge.knowledge_pack import KnowledgePackError
 from llms.default_models import DefaultModels
 from embeddings.model import EmbeddingModel
 from llms.model import Model
@@ -12,7 +14,9 @@ from config_service import ConfigService
 @pytest.fixture(scope="class")
 def setup_class(request):
     # given I have a valid config file
-    request.cls.knowledge_pack_path = "teams"
+
+    request.cls.temp_dir = tempfile.TemporaryDirectory()
+    request.cls.knowledge_pack_path = request.cls.temp_dir.name
     request.cls.active_model_providers = "Azure,GCP,some_provider"
     request.cls.model_id = "azure-gpt35"
     request.cls.name = "GPT-3.5 on Azure"
@@ -126,7 +130,7 @@ class TestConfigService:
         assert embedding.config["azure_deployment"] == self.embedding_deployment_name
         assert embedding.config["api_key"] == self.api_key
 
-        knowledge_pack_path = ConfigService.load_knowledge_pack_path(self.config_path)
+        knowledge_pack_path = config_service.load_knowledge_pack_path()
         assert knowledge_pack_path == self.knowledge_pack_path
 
         default_models = ConfigService.load_default_models(self.config_path)
@@ -152,9 +156,32 @@ class TestConfigService:
         with open(config_path, "w") as f:
             f.write(config_content)
 
-        os.environ["KNOWLEDGE_PACK_PATH"] = knowledge_pack_path
+        os.environ["KNOWLEDGE_PACK_PATH"] = self.temp_dir.name
 
-        knowledge_pack_path: str = ConfigService.load_knowledge_pack_path(config_path)
+        config_service = ConfigService(config_path)
+
+        knowledge_pack_path: str = config_service.load_knowledge_pack_path()
         assert knowledge_pack_path == knowledge_pack_path
+
+        os.remove(config_path)
+
+    def test_should_raise_error_when_knowledge_pack_not_found(self):
+        exception_raised = False
+        try:
+            config_content = """
+              knowledge_pack_path: /non/existent/path
+              """
+            config_path = "test-env-config.yaml"
+            with open(config_path, "w") as f:
+                f.write(config_content)
+
+            config_service = ConfigService(config_path)
+            config_service.load_knowledge_pack_path()
+
+        except KnowledgePackError as e:
+            assert "Pack" in e.message
+            exception_raised = True
+
+        assert exception_raised
 
         os.remove(config_path)

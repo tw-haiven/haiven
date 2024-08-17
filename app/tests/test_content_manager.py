@@ -2,7 +2,6 @@
 from unittest.mock import patch
 
 from tests.utils import get_test_data_path
-from knowledge.knowledge_pack import KnowledgePackError
 from content_manager import ContentManager
 from embeddings.model import EmbeddingModel
 from embeddings.service import EmbeddingsService
@@ -24,9 +23,11 @@ class TestContentManager:
         mock_embeddings,
     ):
         mock_config_service.load_embedding_model.return_value = {}
+        mock_config_service.load_knowledge_pack_path.return_value = (
+            self.knowledge_pack_path
+        )
 
         content_manager = ContentManager(
-            knowledge_pack_path=self.knowledge_pack_path,
             config_service=mock_config_service,
         )
 
@@ -58,30 +59,16 @@ class TestContentManager:
         )
 
         mock_config_service.load_embedding_model.return_value = embedding_model
+        mock_config_service.load_knowledge_pack_path.return_value = (
+            self.knowledge_pack_path
+        )
 
         exception_raised = False
         try:
             _ = ContentManager(
-                knowledge_pack_path=self.knowledge_pack_path,
                 config_service=mock_config_service,
             )
         except FileNotFoundError:
             exception_raised = True
 
         assert not exception_raised
-
-    @patch("content_manager.ConfigService")
-    def test_should_raise_error_when_knowledge_pack_not_found(
-        self, mock_config_service
-    ):
-        exception_raised = False
-        try:
-            _ = ContentManager(
-                knowledge_pack_path="non/existing/path",
-                config_service=mock_config_service,
-            )
-        except KnowledgePackError as e:
-            assert "Pack" in e.message
-            exception_raised = True
-
-        assert exception_raised

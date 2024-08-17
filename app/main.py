@@ -33,10 +33,8 @@ def create_server():
     # preparing for ConfigService to not be static anymore
     config_service = ConfigService(DEFAULT_CONFIG_PATH)
 
-    knowledge_pack_path = ConfigService.load_knowledge_pack_path(DEFAULT_CONFIG_PATH)
-    content_manager = ContentManager(
-        knowledge_pack_path=knowledge_pack_path, config_service=config_service
-    )
+    knowledge_pack_path = config_service.load_knowledge_pack_path()
+    content_manager = ContentManager(config_service=config_service)
 
     prompts_factory = PromptsFactory(knowledge_pack_path)
     chat_session_memory = ServerChatSessionMemory()
@@ -54,6 +52,7 @@ def create_server():
     HaivenLogger.get().logger.info("Starting Haiven...")
     app = App(
         content_manager=content_manager,
+        config_service=config_service,
         prompts_factory=prompts_factory,
         chat_session_memory=chat_session_memory,
         ui_factory=ui_factory,
