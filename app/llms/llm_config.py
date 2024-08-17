@@ -22,11 +22,6 @@ class LLMConfig:
     def change_temperature(self, new_tone: float):
         self.temperature = new_tone
 
-    def supports_system_messages(self) -> bool:
-        if self.service_name == "google-gemini":
-            return False
-        return True
-
 
 class MockChunk(BaseModel):
     content: str
@@ -67,17 +62,25 @@ class MockModelClient:
             yield MockChunk(content=chunk)
 
 
-# TODO: temporary hack as part of ConfigService refactoring
-CONFIG_SERVICE = ConfigService("config.yaml")
-
-
 class LLMChatFactory:
+    # TODO: temporary hack as part of ConfigService refactoring
+    __config_service = None
+
+    @staticmethod
+    def _get_or_init_config_service():
+        if LLMChatFactory.__config_service is None:
+            LLMChatFactory.__config_service = ConfigService("config.yaml")
+
+        return LLMChatFactory.__config_service
+
     @staticmethod
     def new_llm_chat(llm_config: LLMConfig, stop=None) -> BaseChatModel:
         if llm_config.service_name == "mock":
             return MockModelClient()
 
-        model: Model = CONFIG_SERVICE.get_model(llm_config.service_name)
+        model: Model = LLMChatFactory._get_or_init_config_service().get_model(
+            llm_config.service_name
+        )
 
         HaivenLogger.get().analytics(
             "Model selected",

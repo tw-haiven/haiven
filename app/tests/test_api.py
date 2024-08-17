@@ -21,23 +21,21 @@ class TestApi(unittest.TestCase):
         pass
 
     @patch("llms.chats.JSONChat")
-    @patch("llms.chats.ServerChatSessionMemory")
+    @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
     def test_scenarios(
         self,
         mock_prompt_list,
-        mock_chat_session_memory,
+        mock_chat_manager,
         mock_json_chat,
     ):
         mock_json_chat.run.return_value = "some response from the model"
-        mock_chat_session_memory.get_or_create_chat.return_value = (
+        mock_chat_manager.json_chat.return_value = (
             "some_key",
             mock_json_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt"
-        ApiScenarios(
-            self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
-        )
+        ApiScenarios(self.app, mock_chat_manager, "some_model_key", mock_prompt_list)
 
         # Make the request to the endpoint
         input = "someinput"
@@ -68,26 +66,24 @@ class TestApi(unittest.TestCase):
         )
 
     @patch("llms.chats.StreamingChat")
-    @patch("llms.chats.ServerChatSessionMemory")
+    @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
     def test_scenarios_explore(
         self,
         mock_prompt_list,
-        mock_chat_session_memory,
+        mock_chat_manager,
         mock_streaming_chat,
     ):
         mock_streaming_chat.start_with_prompt.return_value = (
             "some response from the model"
         )
 
-        mock_chat_session_memory.get_or_create_chat.return_value = (
+        mock_chat_manager.streaming_chat.return_value = (
             "some_key",
             mock_streaming_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt"
-        ApiScenarios(
-            self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
-        )
+        ApiScenarios(self.app, mock_chat_manager, "some_model_key", mock_prompt_list)
 
         # Make the request to the endpoint
         response = self.client.post(
@@ -105,24 +101,24 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
 
-        args, kwargs = mock_chat_session_memory.get_or_create_chat.call_args
-        assert kwargs["chat_category"] == "scenarios-explore"
-        assert kwargs["chat_session_key_value"] is None
+        args, kwargs = mock_chat_manager.streaming_chat.call_args
+        assert kwargs["options"].category == "scenarios-explore"
+        assert kwargs["session_id"] is None
 
     @patch("llms.chats.JSONChat")
-    @patch("llms.chats.ServerChatSessionMemory")
+    @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
     def test_threat_modelling(
-        self, mock_prompt_list, mock_chat_session_memory, mock_json_chat
+        self, mock_prompt_list, mock_chat_manager, mock_json_chat
     ):
         mock_json_chat.run.return_value = "some response from the model"
-        mock_chat_session_memory.get_or_create_chat.return_value = (
+        mock_chat_manager.json_chat.return_value = (
             "some_key",
             mock_json_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt"
         ApiThreatModelling(
-            self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
+            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
 
         # Make the request to the endpoint
@@ -150,22 +146,22 @@ class TestApi(unittest.TestCase):
         )
 
     @patch("llms.chats.StreamingChat")
-    @patch("llms.chats.ServerChatSessionMemory")
+    @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
     def test_threat_modelling_explore(
-        self, mock_prompt_list, mock_chat_session_memory, mock_streaming_chat
+        self, mock_prompt_list, mock_chat_manager, mock_streaming_chat
     ):
         mock_streaming_chat.start_with_prompt.return_value = (
             "some response from the model"
         )
 
-        mock_chat_session_memory.get_or_create_chat.return_value = (
+        mock_chat_manager.streaming_chat.return_value = (
             "some_key",
             mock_streaming_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt"
         ApiThreatModelling(
-            self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
+            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
 
         # Make the request to the endpoint
@@ -184,27 +180,27 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
 
-        args, kwargs = mock_chat_session_memory.get_or_create_chat.call_args
-        assert kwargs["chat_category"] == "threat-modelling-explore"
-        assert kwargs["chat_session_key_value"] is None
+        args, kwargs = mock_chat_manager.streaming_chat.call_args
+        assert kwargs["options"].category == "threat-modelling-explore"
+        assert kwargs["session_id"] is None
 
     @patch("llms.chats.JSONChat")
-    @patch("llms.chats.ServerChatSessionMemory")
+    @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
     def test_requirements(
         self,
         mock_prompt_list,
-        mock_chat_session_memory,
+        mock_chat_manager,
         mock_json_chat,
     ):
         mock_json_chat.run.return_value = "some response from the model"
-        mock_chat_session_memory.get_or_create_chat.return_value = (
+        mock_chat_manager.json_chat.return_value = (
             "some_key",
             mock_json_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt"
         ApiRequirementsBreakdown(
-            self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
+            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
 
         # Make the request to the endpoint
@@ -224,25 +220,25 @@ class TestApi(unittest.TestCase):
         )
 
     @patch("llms.chats.StreamingChat")
-    @patch("llms.chats.ServerChatSessionMemory")
+    @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
     def test_requirements_explore(
         self,
         mock_prompt_list,
-        mock_chat_session_memory,
+        mock_chat_manager,
         mock_streaming_chat,
     ):
         mock_streaming_chat.start_with_prompt.return_value = (
             "some response from the model"
         )
 
-        mock_chat_session_memory.get_or_create_chat.return_value = (
+        mock_chat_manager.streaming_chat.return_value = (
             "some_key",
             mock_streaming_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt"
         ApiRequirementsBreakdown(
-            self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
+            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
 
         # Make the request to the endpoint
@@ -261,27 +257,27 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
 
-        args, kwargs = mock_chat_session_memory.get_or_create_chat.call_args
-        assert kwargs["chat_category"] == "requirements-breakdown-explore"
-        assert kwargs["chat_session_key_value"] == "some session id"
+        args, kwargs = mock_chat_manager.streaming_chat.call_args
+        assert kwargs["options"].category == "requirements-breakdown-explore"
+        assert kwargs["session_id"] == "some session id"
 
     @patch("llms.chats.JSONChat")
-    @patch("llms.chats.ServerChatSessionMemory")
+    @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
     def test_story_validation(
         self,
         mock_prompt_list,
-        mock_chat_session_memory,
+        mock_chat_manager,
         mock_json_chat,
     ):
         mock_json_chat.run.return_value = "some response from the model"
-        mock_chat_session_memory.get_or_create_chat.return_value = (
+        mock_chat_manager.json_chat.return_value = (
             "some_key",
             mock_json_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt"
         ApiStoryValidation(
-            self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
+            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
 
         # Make the request to the endpoint
@@ -302,30 +298,30 @@ class TestApi(unittest.TestCase):
             warnings=ANY,
         )
 
-        args, kwargs = mock_chat_session_memory.get_or_create_chat.call_args
-        assert kwargs["chat_category"] == "story-validation"
-        assert kwargs["chat_session_key_value"] is None
+        args, kwargs = mock_chat_manager.json_chat.call_args
+        assert kwargs["options"].category == "story-validation"
+        assert kwargs["session_id"] is None
 
-    @patch("llms.chats.ServerChatSessionMemory")
+    @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
     @patch("llms.chats.StreamingChat")
     def test_post_story_validation_scenarios(
         self,
         mock_streaming_chat,
         mock_prompt_list,
-        mock_chat_session_memory,
+        mock_chat_manager,
     ):
         mock_streaming_chat.start_with_prompt.return_value = (
             "some response from the model"
         )
-        mock_chat_session_memory.get_or_create_chat.return_value = (
+        mock_chat_manager.streaming_chat.return_value = (
             "some_session_key",
             mock_streaming_chat,
         )
 
         mock_prompt_list.render_prompt.return_value = "some prompt"
         ApiStoryValidation(
-            self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
+            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
 
         # Make the request to the endpoint
@@ -348,27 +344,27 @@ class TestApi(unittest.TestCase):
         prompt_argument = args[0]
         assert "some question 1" in prompt_argument
 
-        args, kwargs = mock_chat_session_memory.get_or_create_chat.call_args
-        assert kwargs["chat_category"] == "story-validation-generate"
-        assert kwargs["chat_session_key_value"] is None
+        args, kwargs = mock_chat_manager.streaming_chat.call_args
+        assert kwargs["options"].category == "story-validation-generate"
+        assert kwargs["session_id"] is None
 
     @patch("llms.chats.JSONChat")
-    @patch("llms.chats.ServerChatSessionMemory")
+    @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
     def test_creative_matrix(
         self,
         mock_prompt_list,
-        mock_chat_session_memory,
+        mock_chat_manager,
         mock_json_chat,
     ):
         mock_json_chat.run.return_value = "some response from the model"
-        mock_chat_session_memory.get_or_create_chat.return_value = (
+        mock_chat_manager.json_chat.return_value = (
             "some_key",
             mock_json_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt"
         ApiCreativeMatrix(
-            self.app, mock_chat_session_memory, "some_model_key", mock_prompt_list
+            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
 
         # Make the request to the endpoint

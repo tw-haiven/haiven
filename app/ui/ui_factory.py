@@ -1,6 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import gradio as gr
-from llms.chats import ServerChatSessionMemory
+from llms.chats import ChatManager
 from content_manager import ContentManager
 from llms.image_description_service import ImageDescriptionService
 from ui.event_handler import EventHandler
@@ -25,7 +25,7 @@ class UIFactory:
         event_handler: EventHandler,
         prompts_parent_dir: str,
         content_manager: ContentManager,
-        chat_session_memory: ServerChatSessionMemory,
+        chat_manager: ChatManager,
         image_service: ImageDescriptionService,
     ):
         self.ui_base_components: UIBaseComponents = ui_base_components
@@ -34,7 +34,7 @@ class UIFactory:
         self.event_handler: EventHandler = event_handler
         self.prompts_parent_dir: str = prompts_parent_dir
         self.content_manager: ContentManager = content_manager
-        self.chat_session_memory: ServerChatSessionMemory = chat_session_memory
+        self.chat_manager: ChatManager = chat_manager
         self.image_service: ImageDescriptionService = image_service
 
         self.__llm_config = None
@@ -122,7 +122,7 @@ class UIFactory:
                         )
                         enable_chat(
                             self.content_manager.knowledge_base_markdown,
-                            self.chat_session_memory,
+                            self.chat_manager,
                             self.prompts_factory,
                             self.__llm_config,
                             self.content_manager.active_knowledge_context,
@@ -132,7 +132,7 @@ class UIFactory:
                         )
                         enable_brainstorming(
                             self.content_manager.knowledge_base_markdown,
-                            self.chat_session_memory,
+                            self.chat_manager,
                             self.prompts_factory,
                             self.__llm_config,
                             user_identifier_state,
@@ -140,7 +140,7 @@ class UIFactory:
                         )
                         enable_image_chat(
                             self.content_manager.knowledge_base_markdown,
-                            self.chat_session_memory,
+                            self.chat_manager,
                             self.prompts_factory,
                             self.__llm_config,
                             self.content_manager.active_knowledge_context,
@@ -150,7 +150,7 @@ class UIFactory:
                             knowledge_context_select,
                         )
                         enable_knowledge_chat(
-                            self.chat_session_memory,
+                            self.chat_manager,
                             self.__llm_config,
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
@@ -225,7 +225,7 @@ class UIFactory:
                         )
                         enable_chat(
                             self.content_manager.knowledge_base_markdown,
-                            self.chat_session_memory,
+                            self.chat_manager,
                             self.prompts_factory,
                             self.__llm_config,
                             self.content_manager.active_knowledge_context,
@@ -235,7 +235,7 @@ class UIFactory:
                         )
                         enable_brainstorming(
                             self.content_manager.knowledge_base_markdown,
-                            self.chat_session_memory,
+                            self.chat_manager,
                             self.prompts_factory,
                             self.__llm_config,
                             user_identifier_state,
@@ -243,7 +243,7 @@ class UIFactory:
                         )
                         enable_image_chat(
                             self.content_manager.knowledge_base_markdown,
-                            self.chat_session_memory,
+                            self.chat_manager,
                             self.prompts_factory,
                             self.__llm_config,
                             self.content_manager.active_knowledge_context,
@@ -253,7 +253,7 @@ class UIFactory:
                             knowledge_context_select,
                         )
                         enable_knowledge_chat(
-                            self.chat_session_memory,
+                            self.chat_manager,
                             self.__llm_config,
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
@@ -323,7 +323,7 @@ class UIFactory:
                         )
                         enable_chat(
                             self.content_manager.knowledge_base_markdown,
-                            self.chat_session_memory,
+                            self.chat_manager,
                             self.prompts_factory,
                             self.__llm_config,
                             self.content_manager.active_knowledge_context,
@@ -333,7 +333,7 @@ class UIFactory:
                         )
                         enable_brainstorming(
                             self.content_manager.knowledge_base_markdown,
-                            self.chat_session_memory,
+                            self.chat_manager,
                             self.prompts_factory,
                             self.__llm_config,
                             user_identifier_state,
@@ -341,7 +341,7 @@ class UIFactory:
                         )
                         enable_image_chat(
                             self.content_manager.knowledge_base_markdown,
-                            self.chat_session_memory,
+                            self.chat_manager,
                             self.prompts_factory,
                             self.__llm_config,
                             self.content_manager.active_knowledge_context,
@@ -351,7 +351,7 @@ class UIFactory:
                             knowledge_context_select,
                         )
                         enable_knowledge_chat(
-                            self.chat_session_memory,
+                            self.chat_manager,
                             self.__llm_config,
                             self.content_manager.active_knowledge_context,
                             user_identifier_state,
@@ -465,7 +465,7 @@ class UIFactory:
             with gr.Row():
                 with gr.Tabs():
                     enable_plain_chat(
-                        self.chat_session_memory,
+                        self.chat_manager,
                         user_identifier_state,
                         self.ui_base_components,
                     )

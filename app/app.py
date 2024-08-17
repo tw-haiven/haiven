@@ -2,34 +2,69 @@
 import gradio as gr
 from api.boba_api import BobaApi
 from content_manager import ContentManager
-from llms.chats import ServerChatSessionMemory
+from llms.chats import ChatManager, ServerChatSessionMemory
+from llms.image_description_service import ImageDescriptionService
+from llms.model import Model
+from logger import HaivenLogger
 from prompts.prompts_factory import PromptsFactory
 from server import Server
+from ui.event_handler import EventHandler
+from ui.navigation import NavigationManager
+from ui.ui import UIBaseComponents
 from ui.ui_factory import UIFactory
 from config_service import ConfigService
 
 
 class App:
-    def __init__(
-        self,
-        content_manager: ContentManager,
-        config_service: ConfigService,
-        prompts_factory: PromptsFactory,
-        chat_session_memory: ServerChatSessionMemory,
-        ui_factory: UIFactory = None,
-    ):
+    def create_image_service(self, config_service):
+        available_vision_models = [
+            (available_model.name, available_model.id)
+            for available_model in config_service.load_enabled_models(
+                features=["image-to-text"],
+            )
+        ]
+
+        model_id = (
+            config_service.load_default_models().vision or available_vision_models[0][1]
+            if len(available_vision_models) > 0
+            else None
+        )
+
+        model: Model = config_service.get_model(model_id)
+
+        return ImageDescriptionService(model)
+
+    def __init__(self, config_path: str):
+        config_service = ConfigService(config_path)
+
+        knowledge_pack_path = config_service.load_knowledge_pack_path()
+        content_manager = ContentManager(config_service=config_service)
+
+        prompts_factory = PromptsFactory(knowledge_pack_path)
+        chat_session_memory = ServerChatSessionMemory()
+        chat_manager = ChatManager(config_service, chat_session_memory)
+
+        self.ui_factory = UIFactory(
+            ui_base_components=UIBaseComponents(config_service),
+            prompts_factory=prompts_factory,
+            navigation_manager=NavigationManager(),
+            event_handler=EventHandler(HaivenLogger),
+            prompts_parent_dir=knowledge_pack_path,
+            content_manager=content_manager,
+            chat_manager=chat_manager,
+            image_service=self.create_image_service(config_service),
+        )
+
         self.server = Server(
-            chat_session_memory,
+            chat_manager,
             config_service,
             BobaApi(
                 prompts_factory,
                 content_manager,
-                chat_session_memory,
+                chat_manager,
                 config_service,
             ),
         ).create()
-        self.content_manager = content_manager
-        self.ui_factory = ui_factory
 
     def launch_via_fastapi_wrapper(self):
         if self.ui_factory is not None:
@@ -45,6 +80,7 @@ class App:
             for create_ui, get_path in ui_components:
                 ui_component = getattr(self.ui_factory, create_ui)()
                 path = getattr(self.ui_factory.navigation_manager, get_path)()
+
                 gr.mount_gradio_app(
                     self.server, ui_component, path=path, root_path=path
                 )

@@ -3,7 +3,7 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
-from llms.chats import ServerChatSessionMemory, StreamingChat
+from llms.chats import ChatManager, ChatOptions
 from knowledge.knowledge import KnowledgeBaseMarkdown
 from llms.llm_config import LLMConfig
 from ui.chat_context import ChatContext
@@ -16,7 +16,7 @@ from user_feedback import UserFeedback
 
 def enable_chat(
     knowledge_base: KnowledgeBaseMarkdown,
-    CHAT_SESSION_MEMORY: ServerChatSessionMemory,
+    chat_manager: ChatManager,
     prompts_factory: PromptsFactory,
     llm_config: LLMConfig,
     active_knowledge_context: str,
@@ -205,7 +205,7 @@ def enable_chat(
                 )
 
         def clear(chat_session_key_value: str):
-            CHAT_SESSION_MEMORY.delete_entry(chat_session_key_value)
+            chat_manager.clear_session(chat_session_key_value)
 
             return {ui_message: "", ui_chatbot: []}
 
@@ -219,20 +219,22 @@ def enable_chat(
             if prompt_text:
                 update_llm_config(request)
 
-                chat_session_key_value, chat_session = (
-                    CHAT_SESSION_MEMORY.get_or_create_chat(
-                        lambda: StreamingChat(llm_config=llm_config),
-                        None,
-                        "chat",
-                        user_identifier_state,
+                chat_session_key_value, chat_session = chat_manager.streaming_chat(
+                    llm_config=llm_config,
+                    session_id=None,
+                    options=ChatOptions(
+                        category="chat", user_identifier=user_identifier_state
+                    ),
+                )
+
+                if prompt_choice:
+                    chosen_prompt_title = prompt_list.get(prompt_choice).metadata.get(
+                        "title", "Unnamed use case"
                     )
-                )
 
-                chosen_prompt_title = prompt_list.get(prompt_choice).metadata.get(
-                    "title", "Unnamed use case"
-                )
-
-                start_display_message = f"Execute the instructions for '{chosen_prompt_title}'.\n\n**My input:**\n\n{user_input}"
+                    start_display_message = f"Execute the instructions for '{chosen_prompt_title}'.\n\n**My input:**\n\n{user_input}"
+                else:
+                    start_display_message = prompt_text
 
                 for chat_history_chunk in chat_session.start_with_prompt(
                     prompt_text, start_display_message
@@ -252,13 +254,12 @@ def enable_chat(
             chat_session_key_value,
             user_identifier_state,
         ):
-            chat_session_key_value, chat_session = (
-                CHAT_SESSION_MEMORY.get_or_create_chat(
-                    fn_create_chat=lambda: StreamingChat(llm_config=llm_config),
-                    chat_session_key_value=chat_session_key_value,
-                    chat_category="chat",
-                    user_identifier=user_identifier_state,
-                )
+            chat_session_key_value, chat_session = chat_manager.streaming_chat(
+                llm_config=llm_config,
+                session_id=chat_session_key_value,
+                options=ChatOptions(
+                    category="chat", user_identifier=user_identifier_state
+                ),
             )
 
             for chat_history_chunk in chat_session.next(message_value, chat_history):
@@ -271,7 +272,7 @@ def enable_chat(
             message: str,
             request: gr.Request,
         ):
-            chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)
+            chat_session = chat_manager.get_session(chat_session_key_value)
             update_llm_config(request)
             chat_session.llm_config = llm_config
 

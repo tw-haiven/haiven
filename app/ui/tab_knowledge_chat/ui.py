@@ -6,14 +6,14 @@ from dotenv import load_dotenv
 from embeddings.documents import DocumentsUtils
 from embeddings.service import EmbeddingsService
 from llms.llm_config import LLMConfig
-from llms.chats import DocumentsChat, ServerChatSessionMemory
+from llms.chats import ChatOptions, ChatManager
 from ui.chat_context import ChatContext
 from user_feedback import UserFeedback
 from ui.user_context import user_context
 
 
 def enable_knowledge_chat(
-    CHAT_SESSION_MEMORY: ServerChatSessionMemory,
+    chat_manager: ChatManager,
     llm_config: LLMConfig,
     active_knowledge_context: str,
     user_identifier_state: gr.State,
@@ -31,6 +31,21 @@ def enable_knowledge_chat(
         prompt="Knowledge chat",
         message="",
     )
+
+    def update_llm_config(request: gr.Request):
+        llm_config_from_session = user_context.get_value(
+            request, "llm_model", app_level=True
+        )
+
+        temperature_from_session = user_context.get_value(
+            request, "llm_tone", app_level=True
+        )
+
+        if llm_config_from_session:
+            llm_config.change_model(llm_config_from_session)
+
+        if temperature_from_session:
+            llm_config.change_temperature(temperature_from_session)
 
     main_tab = gr.Tab("Knowledge Chat", id=tab_id)
     with main_tab:
@@ -93,17 +108,14 @@ def enable_knowledge_chat(
                     knowledge_key = knowledge.key
                     knowledge_context = knowledge.context
 
-                chat_session_key_value, chat_session = (
-                    CHAT_SESSION_MEMORY.get_or_create_chat(
-                        lambda: DocumentsChat(
-                            llm_config=llm_config,
-                            knowledge=knowledge_key,
-                            context=knowledge_context,
-                        ),
-                        None,
-                        "knowledge-chat",
-                        user_identifier_state,
-                    )
+                chat_session_key_value, chat_session = chat_manager.docs_chat(
+                    llm_config=llm_config,
+                    session_id=None,
+                    knowledge_key=knowledge_key,
+                    knowledge_context=knowledge_context,
+                    options=ChatOptions(
+                        category="knowledge-chat", user_identifier=user_identifier_state
+                    ),
                 )
 
                 if knowledge_document_selected == "all":
@@ -129,18 +141,9 @@ def enable_knowledge_chat(
             question: str, chat_session_key_value: str, request: gr.Request
         ):
             try:
-                chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)
+                chat_session = chat_manager.get_session(chat_session_key_value)
 
-                llm_config_from_session = user_context.get_value(
-                    request, "llm_model", app_level=True
-                )
-                temperature_from_session = user_context.get_value(
-                    request, "llm_tone", app_level=True
-                )
-                if llm_config_from_session:
-                    chat_session.llm_config.change_model(llm_config_from_session)
-                if temperature_from_session:
-                    chat_session.llm_config.change_temperature(temperature_from_session)
+                update_llm_config(request)
 
                 response, sources_markdown = chat_session.next(question)
                 history = [(question, response + "\n\n" + sources_markdown)]

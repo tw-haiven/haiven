@@ -13,7 +13,7 @@ from llms.model import Model
 
 class ConfigService:
     def __init__(self, path: str = "config.yaml"):
-        self.data = ConfigService._load_yaml(path)
+        self.data = self._load_yaml(path)
 
     def load_embedding_model(self) -> EmbeddingModel:
         """
@@ -176,7 +176,7 @@ class ConfigService:
             case "aws":
                 return "aws-claude-v3"
 
-    def _load_yaml(path: str) -> dict:
+    def _load_yaml(self, path: str) -> dict:
         """
         Load YAML data from a config file.
 

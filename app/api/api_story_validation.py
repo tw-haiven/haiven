@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from typing import List
 from pydantic import BaseModel
-from api.api_utils import HaivenBaseApi
+from api.api_basics import HaivenBaseApi
 
 
 class StoryValidationQuestions(BaseModel):

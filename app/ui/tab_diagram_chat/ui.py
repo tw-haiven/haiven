@@ -7,7 +7,7 @@ from embeddings.service import EmbeddingsService
 from llms.llm_config import LLMConfig
 from prompts.prompts import PromptList
 from prompts.prompts_factory import PromptsFactory
-from llms.chats import ServerChatSessionMemory, StreamingChat
+from llms.chats import ChatOptions, ChatManager
 from knowledge.knowledge import KnowledgeBaseMarkdown
 from ui.chat_context import ChatContext
 from llms.image_description_service import ImageDescriptionService
@@ -17,7 +17,7 @@ from ui.user_context import user_context
 
 def enable_image_chat(
     knowledge_base: KnowledgeBaseMarkdown,
-    CHAT_SESSION_MEMORY: ServerChatSessionMemory,
+    chat_manager: ChatManager,
     prompts_factory: PromptsFactory,
     llm_config: LLMConfig,
     active_knowledge_context: str,
@@ -241,13 +241,12 @@ def enable_image_chat(
             update_llm_config(request)
 
             if prompt_text:
-                chat_session_key_value, chat_session = (
-                    CHAT_SESSION_MEMORY.get_or_create_chat(
-                        fn_create_chat=lambda: StreamingChat(llm_config=llm_config),
-                        chat_session_key_value=None,
-                        chat_category="diagrams",
-                        user_identifier=user_identifier_state,
-                    )
+                chat_session_key_value, chat_session = chat_manager.streaming_chat(
+                    llm_config=llm_config,
+                    session_id=None,
+                    options=ChatOptions(
+                        category="diagrams", user_identifier=user_identifier_state
+                    ),
                 )
 
                 for chat_history_chunk in chat_session.start_with_prompt(prompt_text):
@@ -261,7 +260,7 @@ def enable_image_chat(
                 gr.update(ui_message="", ui_chatbot=[], state_chat_session_key=None)
 
         def chat(message_value: str, chat_history, chat_session_key_value: str):
-            chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)
+            chat_session = chat_manager.get_session(chat_session_key_value)
 
             for chat_history_chunk in chat_session.next(message_value, chat_history):
                 yield {ui_message: "", ui_chatbot: chat_history_chunk}
@@ -272,7 +271,7 @@ def enable_image_chat(
             chat_session_key_value,
             request: gr.Request,
         ):
-            chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)
+            chat_session = chat_manager.get_session(chat_session_key_value)
             update_llm_config(request)
             chat_session.llm_config = llm_config
             update_llm_config(request)

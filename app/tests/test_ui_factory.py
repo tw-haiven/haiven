@@ -36,7 +36,7 @@ class TestUIFactory(unittest.TestCase):
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
         content_manager.active_knowledge_context = active_context
-        chat_session_memory = MagicMock()
+        chat_manager = MagicMock()
 
         ui_factory = UIFactory(
             ui_base_components=ui,
@@ -45,7 +45,7 @@ class TestUIFactory(unittest.TestCase):
             event_handler=event_handler,
             prompts_parent_dir=prompts_parent_dir,
             content_manager=content_manager,
-            chat_session_memory=chat_session_memory,
+            chat_manager=chat_manager,
             image_service=mock_image_description_service,
         )
 
@@ -102,7 +102,7 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_chat.assert_called_with(
             knowledge_base_markdown,
-            chat_session_memory,
+            chat_manager,
             prompts_factory,
             llm_config,
             content_manager.active_knowledge_context,
@@ -112,7 +112,7 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_brainstorming.assert_called_with(
             knowledge_base_markdown,
-            chat_session_memory,
+            chat_manager,
             prompts_factory,
             llm_config,
             state,
@@ -120,7 +120,7 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_image_chat.assert_called_with(
             knowledge_base_markdown,
-            chat_session_memory,
+            chat_manager,
             prompts_factory,
             llm_config,
             content_manager.active_knowledge_context,
@@ -130,7 +130,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_context_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
-            chat_session_memory,
+            chat_manager,
             llm_config,
             content_manager.active_knowledge_context,
             state,
@@ -183,7 +183,7 @@ class TestUIFactory(unittest.TestCase):
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
         content_manager.active_knowledge_context = active_context
-        chat_session_memory = MagicMock()
+        chat_manager = MagicMock()
 
         ui_factory = UIFactory(
             ui_base_components=ui,
@@ -192,7 +192,7 @@ class TestUIFactory(unittest.TestCase):
             event_handler=event_handler,
             prompts_parent_dir=prompts_parent_dir,
             content_manager=content_manager,
-            chat_session_memory=chat_session_memory,
+            chat_manager=chat_manager,
             image_service=mock_image_description_service,
         )
 
@@ -250,7 +250,7 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_chat.assert_called_with(
             knowledge_base_markdown,
-            chat_session_memory,
+            chat_manager,
             prompts_factory,
             llm_config,
             content_manager.active_knowledge_context,
@@ -260,7 +260,7 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_brainstorming.assert_called_with(
             knowledge_base_markdown,
-            chat_session_memory,
+            chat_manager,
             prompts_factory,
             llm_config,
             state,
@@ -268,7 +268,7 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_image_chat.assert_called_with(
             knowledge_base_markdown,
-            chat_session_memory,
+            chat_manager,
             prompts_factory,
             llm_config,
             content_manager.active_knowledge_context,
@@ -278,7 +278,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_context_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
-            chat_session_memory,
+            chat_manager,
             llm_config,
             content_manager.active_knowledge_context,
             state,
@@ -330,7 +330,7 @@ class TestUIFactory(unittest.TestCase):
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
         content_manager.active_knowledge_context = active_knowldge_context
-        chat_session_memory = MagicMock()
+        chat_manager = MagicMock()
 
         ui_factory = UIFactory(
             ui_base_components=ui,
@@ -339,7 +339,7 @@ class TestUIFactory(unittest.TestCase):
             event_handler=event_handler,
             prompts_parent_dir=prompts_parent_dir,
             content_manager=content_manager,
-            chat_session_memory=chat_session_memory,
+            chat_manager=chat_manager,
             image_service=mock_image_description_service,
         )
 
@@ -397,7 +397,7 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_chat.assert_called_with(
             knowledge_base_markdown,
-            chat_session_memory,
+            chat_manager,
             prompts_factory,
             llm_config,
             content_manager.active_knowledge_context,
@@ -407,7 +407,7 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_brainstorming.assert_called_with(
             knowledge_base_markdown,
-            chat_session_memory,
+            chat_manager,
             prompts_factory,
             llm_config,
             state,
@@ -415,7 +415,7 @@ class TestUIFactory(unittest.TestCase):
         )
         mock_enable_image_chat.assert_called_with(
             knowledge_base_markdown,
-            chat_session_memory,
+            chat_manager,
             prompts_factory,
             llm_config,
             content_manager.active_knowledge_context,
@@ -425,7 +425,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_context_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
-            chat_session_memory,
+            chat_manager,
             llm_config,
             content_manager.active_knowledge_context,
             state,
@@ -476,7 +476,7 @@ class TestUIFactory(unittest.TestCase):
         content_manager.knowledge_pack_definition = knowledge_pack
         content_manager.knowledge_base_markdown = knowledge_base_markdown
         content_manager.active_knowledge_context = active_knowledge_context
-        chat_session_memory = MagicMock()
+        chat_manager = MagicMock()
 
         ui_factory = UIFactory(
             ui_base_components=ui,
@@ -485,7 +485,7 @@ class TestUIFactory(unittest.TestCase):
             event_handler=event_handler,
             prompts_parent_dir=prompts_parent_dir,
             content_manager=content_manager,
-            chat_session_memory=chat_session_memory,
+            chat_manager=chat_manager,
             image_service=MagicMock(),
         )
 
@@ -528,7 +528,7 @@ class TestUIFactory(unittest.TestCase):
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
         content_manager.active_knowledge_context = None
-        chat_session_memory = MagicMock()
+        chat_manager = MagicMock()
 
         ui_factory = UIFactory(
             ui_base_components=ui,
@@ -537,7 +537,7 @@ class TestUIFactory(unittest.TestCase):
             event_handler=event_handler,
             prompts_parent_dir=prompts_parent_dir,
             content_manager=content_manager,
-            chat_session_memory=chat_session_memory,
+            chat_manager=chat_manager,
             image_service=MagicMock(),
         )
 
@@ -581,7 +581,7 @@ class TestUIFactory(unittest.TestCase):
         knowledge_base_markdown = MagicMock()
         content_manager = MagicMock()
         content_manager.knowledge_base_markdown = knowledge_base_markdown
-        chat_session_memory = MagicMock()
+        chat_manager = MagicMock()
 
         ui_factory = UIFactory(
             ui_base_components=ui,
@@ -590,7 +590,7 @@ class TestUIFactory(unittest.TestCase):
             event_handler=event_handler,
             prompts_parent_dir=prompts_parent_dir,
             content_manager=content_manager,
-            chat_session_memory=chat_session_memory,
+            chat_manager=chat_manager,
             image_service=MagicMock(),
         )
 
@@ -615,7 +615,7 @@ class TestUIFactory(unittest.TestCase):
         blocks.load.assert_called_with(
             event_handler.on_load_plain_chat_ui, None, outputs=[state]
         )
-        mock_enable_plain_chat.assert_called_with(chat_session_memory, state, ui)
+        mock_enable_plain_chat.assert_called_with(chat_manager, state, ui)
         blocks.queue.assert_called_once()
 
         assert returned_blocks == blocks

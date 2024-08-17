@@ -7,30 +7,25 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
+from pydantic import BaseModel
+from config_service import ConfigService
 from embeddings.documents import DocumentsUtils
-from llms.llm_config import LLMChatFactory, LLMConfig
+from llms.llm_config import LLMChatFactory
 from logger import HaivenLogger
 from embeddings.service import EmbeddingsService
 
 
 class HaivenBaseChat:
-    def __init__(
-        self, llm_config: LLMConfig, chat_model: BaseChatModel, system_message: str
-    ):
+    def __init__(self, chat_client: BaseChatModel, system_message: str):
         self.system = system_message
-        self.llm_config = llm_config
-        if llm_config.supports_system_messages():
-            self.memory = [SystemMessage(content=system_message)]
-        else:
-            self.memory = []
-        self.chat_model = chat_model
+        self.memory = [SystemMessage(content=system_message)]
+        self.chat_client = chat_client
 
     def log_run(self, extra={}):
         class_name = self.__class__.__name__
         extra_info = {
             "chat_type": class_name,
             "conversation": {"length": len(self.memory)},
-            "model": self.llm_config.service_name,
         }
         extra_info.update(extra)
 
@@ -42,25 +37,22 @@ class HaivenBaseChat:
 
 class NonStreamingChat(HaivenBaseChat):
     def __init__(
-        self, llm_config: LLMConfig, system_message: str = "You are a helpful assistant"
+        self, chat: BaseChatModel, system_message: str = "You are a helpful assistant"
     ):
-        super().__init__(
-            llm_config, LLMChatFactory.new_llm_chat(llm_config), system_message
-        )
+        super().__init__(chat, system_message)
 
     def run(self, message: str):
         self.memory.append(HumanMessage(content=message))
         self.log_run()
 
-        ai_message = self.chat_model(self.memory)
+        ai_message = self.chat_client(self.memory)
         self.memory.append(AIMessage(content=ai_message.content))
 
         return ai_message.content
 
     def start(self, template: PromptTemplate, variables):
         initial_instructions = template.format(**variables)
-        if not self.llm_config.supports_system_messages():
-            initial_instructions = self.system + initial_instructions
+
         return self.run(initial_instructions)
 
     def start_with_prompt(self, prompt: str):
@@ -73,20 +65,18 @@ class NonStreamingChat(HaivenBaseChat):
 class StreamingChat(HaivenBaseChat):
     def __init__(
         self,
-        llm_config: LLMConfig,
+        chat_client: BaseChatModel,
         system_message: str = "You are a helpful assistant",
         stream_in_chunks: bool = False,
     ):
-        super().__init__(
-            llm_config, LLMChatFactory.new_llm_chat(llm_config), system_message
-        )
+        super().__init__(chat_client, system_message)
         self.stream_in_chunks = stream_in_chunks
 
     def run(self, message: str):
         self.memory.append(HumanMessage(content=message))
         self.log_run()
 
-        for i, chunk in enumerate(self.chat_model.stream(self.memory)):
+        for i, chunk in enumerate(self.chat_client.stream(self.memory)):
             if i == 0:
                 self.memory.append(AIMessage(content=""))
             self.memory[-1].content += chunk.content
@@ -94,8 +84,6 @@ class StreamingChat(HaivenBaseChat):
 
     def start(self, template: PromptTemplate, variables={}):
         initial_message = template.format(**variables)
-        if not self.llm_config.supports_system_messages():
-            initial_message = self.system + initial_message
 
         chat_history = [[initial_message, ""]]
 
@@ -139,7 +127,7 @@ class StreamingChat(HaivenBaseChat):
             it is more important that a similarity search would find relevant information based on the summary."""
             )
         )
-        summary = self.chat_model(copy_of_history)
+        summary = self.chat_client(copy_of_history)
         return summary.content
 
     def next_advice_from_knowledge(
@@ -249,11 +237,12 @@ class Q_A_ResponseParser:
 
 class Q_A_Chat(HaivenBaseChat):
     def __init__(
-        self, llm_config: LLMConfig, system_message: str = "You are a helpful assistant"
+        self,
+        chat_client: BaseChatModel,
+        system_message: str = "You are a helpful assistant",
     ):
         super().__init__(
-            llm_config,
-            LLMChatFactory.new_llm_chat(llm_config, stop="</Answer>"),
+            chat_client,
             system_message,
         )
 
@@ -267,7 +256,7 @@ class Q_A_Chat(HaivenBaseChat):
         self.memory.append(HumanMessage(content=message))
         self.log_run()
 
-        ai_message = self.chat_model(self.memory)
+        ai_message = self.chat_client(self.memory)
         processed_response = self.process_response(ai_message.content)
         self.memory.append(AIMessage(content=processed_response))
 
@@ -275,8 +264,7 @@ class Q_A_Chat(HaivenBaseChat):
 
     def start(self, template: PromptTemplate, variables):
         initial_instructions = template.format(**variables)
-        if not self.llm_config.supports_system_messages():
-            initial_instructions = self.system + initial_instructions
+
         return self.run(initial_instructions)
 
     def start_with_prompt(self, prompt: str):
@@ -289,26 +277,26 @@ class Q_A_Chat(HaivenBaseChat):
 class DocumentsChat(HaivenBaseChat):
     def __init__(
         self,
-        llm_config: LLMConfig,
+        chat_client: BaseChatModel,
         knowledge: str,
         context: str,
         system_message: str = "You are a helpful assistant",
     ):
-        super().__init__(
-            llm_config, LLMChatFactory.new_llm_chat(llm_config), system_message
-        )
+        super().__init__(chat_client, system_message)
         self.context = context
         self.knowledge = knowledge
-        self.chain = DocumentsChat.create_chain(self.chat_model)
+        self.chain = DocumentsChat.create_chain(self.chat_client)
 
     @staticmethod
-    def create_chain(chat_model):
-        return load_qa_chain(llm=chat_model, chain_type="stuff")
+    def create_chain(chat_client):
+        return load_qa_chain(llm=chat_client, chain_type="stuff")
 
     def run(self, message: str):
         self.log_run({"knowledge": self.knowledge})
         self.memory.append(HumanMessage(content=message))
-        self.chain.llm_chain.llm = LLMChatFactory.new_llm_chat(self.llm_config)
+        self.chain.llm_chain.llm = (
+            self.chat_client
+        )  # TODO: Previously this created a new object, is this still working?
 
         if self.knowledge == "all":
             search_results = EmbeddingsService.similarity_search(
@@ -370,20 +358,19 @@ class DocumentsChat(HaivenBaseChat):
 class JSONChat(HaivenBaseChat):
     def __init__(
         self,
-        llm_config=LLMConfig("azure-gpt4", 0.2),
+        chat_client: BaseChatModel,
         system_message: str = "You are a helpful assistant",
         event_stream_standard=True,
     ):
-        super().__init__(
-            llm_config, LLMChatFactory.new_llm_chat(llm_config), system_message
-        )
+        super().__init__(chat_client, system_message)
         # Transition to new frontend SSE implementation: Add "data: " and "[DONE]" vs not doing that
         self.event_stream_standard = event_stream_standard
 
     def stream_from_model(self, prompt):
-        client = LLMChatFactory.new_llm_chat(self.llm_config)
         messages = [HumanMessage(content=prompt)]
-        stream = client.stream(messages)
+        stream = self.chat_client.stream(
+            messages
+        )  # TODO: Previously this was a new object, does this still work?
         for chunk in stream:
             yield chunk.content
 
@@ -491,3 +478,82 @@ class ServerChatSessionMemory:
 
         chat_session: HaivenBaseChat = chat_session_data["chat"]
         return chat_session.memory_as_text()
+
+
+class ChatOptions(BaseModel):
+    category: str = None
+    stop: str = None
+    in_chunks: bool = False
+    user_identifier: str = None
+
+
+class ChatManager:
+    def __init__(
+        self,
+        config_service: ConfigService,
+        chat_session_memory: ServerChatSessionMemory,
+    ):
+        self.config_service = config_service
+        self.chat_session_memory = chat_session_memory
+
+    def clear_session(self, session_id: str):
+        self.chat_session_memory.delete_entry(session_id)
+
+    def get_session(self, chat_session_key_value):
+        return self.chat_session_memory.get_chat(chat_session_key_value)
+
+    def streaming_chat(
+        self, llm_config, session_id: str = None, options: ChatOptions = None
+    ):
+        chat_client = LLMChatFactory.new_llm_chat(llm_config)
+        return self.chat_session_memory.get_or_create_chat(
+            lambda: StreamingChat(
+                chat_client, stream_in_chunks=options.in_chunks if options else None
+            ),
+            chat_session_key_value=session_id,
+            chat_category=options.category if options else None,
+            user_identifier=options.user_identifier if options else None,
+        )
+
+    def json_chat(
+        self, llm_config, session_id: str = None, options: ChatOptions = None
+    ):
+        chat_client = LLMChatFactory.new_llm_chat(llm_config)
+        return self.chat_session_memory.get_or_create_chat(
+            lambda: JSONChat(
+                chat_client,
+                event_stream_standard=False,
+            ),
+            chat_session_key_value=session_id,
+            chat_category=options.category if options else None,
+            user_identifier=options.user_identifier if options else None,
+        )
+
+    def q_a_chat(self, llm_config, session_id: str = None, options: ChatOptions = None):
+        chat_client = LLMChatFactory.new_llm_chat(llm_config, stop="</Answer>")
+        return self.chat_session_memory.get_or_create_chat(
+            lambda: Q_A_Chat(chat_client),
+            chat_session_key_value=session_id,
+            chat_category=options.category if options else None,
+            # TODO: Pass user identifier from session
+        )
+
+    def docs_chat(
+        self,
+        llm_config,
+        knowledge_key: str,
+        knowledge_context: str,
+        session_id: str = None,
+        options: ChatOptions = None,
+    ):
+        chat_client = LLMChatFactory.new_llm_chat(llm_config)
+        return self.chat_session_memory.get_or_create_chat(
+            lambda: DocumentsChat(
+                chat_client=chat_client,
+                knowledge=knowledge_key,
+                context=knowledge_context,
+            ),
+            chat_session_key_value=session_id,
+            chat_category=options.category if options else None,
+            # TODO: Pass user identifier from session
+        )

@@ -5,7 +5,7 @@ from fastapi.responses import FileResponse
 
 from api.boba_api import BobaApi
 from config_service import ConfigService
-from llms.chats import ServerChatSessionMemory
+from llms.chats import ChatManager
 from logger import HaivenLogger
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -27,12 +27,12 @@ class Server:
 
     def __init__(
         self,
-        chat_session_memory: ServerChatSessionMemory,
+        chat_manager: ChatManager,
         config_service: ConfigService,
         boba_api: BobaApi = None,
     ):
         self.url = Url()
-        self.chat_session_memory = chat_session_memory
+        self.chat_manager = chat_manager
         self.config_service = config_service
         self.boba_api = boba_api
 
@@ -61,7 +61,9 @@ class Server:
             chat_session_key = request.query_params.get("key")
             user_id = request.session["user"]["sub"]
             return PlainTextResponse(
-                self.chat_session_memory.dump_as_text(chat_session_key, user_id)
+                self.chat_manager.chat_session_memory.dump_as_text(
+                    chat_session_key, user_id
+                )
             )
 
         @app.get(self.url.login())

@@ -3,7 +3,7 @@ import gradio as gr
 from prompts.prompts import PromptList
 from llms.llm_config import LLMConfig
 from prompts.prompts_factory import PromptsFactory
-from llms.chats import Q_A_Chat, ServerChatSessionMemory
+from llms.chats import ChatOptions, ChatManager
 from knowledge.knowledge import KnowledgeBaseMarkdown
 from ui.chat_context import ChatContext
 from user_feedback import UserFeedback
@@ -12,7 +12,7 @@ from ui.user_context import user_context
 
 def enable_brainstorming(
     knowledge_base: KnowledgeBaseMarkdown,
-    CHAT_SESSION_MEMORY: ServerChatSessionMemory,
+    chat_manager: ChatManager,
     prompts_factory: PromptsFactory,
     llm_config: LLMConfig,
     user_identifier_state: gr.State,
@@ -189,15 +189,12 @@ def enable_brainstorming(
                 if temperature_from_session:
                     llm_config.change_temperature(temperature_from_session)
 
-                chat_session_key_value, chat_session = (
-                    CHAT_SESSION_MEMORY.get_or_create_chat(
-                        lambda: Q_A_Chat(
-                            llm_config=llm_config, system_message=system_message
-                        ),
-                        None,
-                        "brainstorming",
-                        user_identifier_state,
-                    )
+                chat_session_key_value, chat_session = chat_manager.q_a_chat(
+                    llm_config=llm_config,
+                    session_id=None,
+                    options=ChatOptions(
+                        category="brainstorming", user_identifier=user_identifier_state
+                    ),
                 )
 
                 response = chat_session.start_with_prompt(prompt_text)
@@ -213,7 +210,7 @@ def enable_brainstorming(
                 return {ui_message: "", ui_chatbot: [], state_chat_session_key: None}
 
         def chat(message_value: str, chat_history, chat_session_key_value: str):
-            chat_session = CHAT_SESSION_MEMORY.get_chat(chat_session_key_value)
+            chat_session = chat_manager.get_session(chat_session_key_value)
 
             response = chat_session.next(message_value)
             chat_history.append((message_value, response))

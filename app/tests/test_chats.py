@@ -3,7 +3,6 @@ import os
 
 from langchain.docstore.document import Document
 from llms.chats import DocumentsChat, ServerChatSessionMemory
-from llms.llm_config import LLMConfig
 from unittest.mock import MagicMock
 
 
@@ -35,13 +34,8 @@ def test_documents_chat(mocker):
     chain_mock.return_value = {"output_text": "Paris", "source_documents": documents}
     mocker.patch("llms.chats.DocumentsChat.create_chain", return_value=chain_mock)
 
-    service = "azure-gpt35"
-    default_tone = "more precise (0.2)"
     documents_chat = DocumentsChat(
-        llm_config=LLMConfig(
-            service,
-            default_tone,
-        ),
+        chat_client=MagicMock(),
         knowledge=knowledge_base_mock,
         context="test_context",
     )
