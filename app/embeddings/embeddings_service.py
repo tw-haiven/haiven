@@ -9,7 +9,7 @@ from langchain_community.vectorstores import FAISS
 from embeddings.embeddings import Embeddings
 from embeddings.documents import DocumentEmbedding
 from config_service import ConfigService
-from embeddings.in_memory_embeddings_db_service import InMemoryEmbeddingsDB
+from embeddings.in_memory import InMemoryEmbeddingsDB
 
 
 class EmbeddingsService:
@@ -79,39 +79,6 @@ class EmbeddingsService:
         """
         EmbeddingsService._embeddings_stores = {}
         EmbeddingsService._instance = None
-
-    @staticmethod
-    def load_base_document(document_path: str) -> None:
-        """
-        Loads a document from the specified path, generates its embedding using the configured embeddings provider, and stores it in the in-memory database. This method is static and can be called without instantiating the class.
-
-        Parameters:
-            document_path (str): The file system path to the document to be loaded.
-        """
-        instance = EmbeddingsService.get_instance()
-        instance._load_document(document_path, context="base")
-
-    @staticmethod
-    def generate_base_document_from_text(
-        document_key: str,
-        document_metadata: dict,
-        content: Tuple[List[str], List[dict]],
-    ) -> None:
-        """
-        Generates a document embedding from provided text content and metadata, then stores it. This allows for dynamic creation of document embeddings from text that may not be persisted to disk.
-
-        Parameters:
-            document_key (str): A unique key identifying the document.
-            document_metadata (dict): Metadata associated with the document.
-            content (Tuple[List[str], List[dict]]): The text content of the document and any associated metadata.
-        """
-        instance = EmbeddingsService.get_instance()
-        instance._generate_document_from_text(
-            document_key=document_key,
-            document_metadata=document_metadata,
-            content=content,
-            context="base",
-        )
 
     @staticmethod
     def load_knowledge_base(knowledge_pack_path: str) -> None:
@@ -200,32 +167,6 @@ class EmbeddingsService:
         instance = EmbeddingsService.get_instance()
         return instance._similarity_search_with_scores(
             query, context, k, score_threshold
-        )
-
-    @staticmethod
-    def similarity_search_on_single_document_with_scores(
-        query: str,
-        document_key: str,
-        context: str,
-        k: int = 5,
-        score_threshold: float = None,
-    ) -> List[Tuple[Document, float]]:
-        """
-        Performs a similarity search on a single document's embedding, returning similar documents and their scores. This method is useful for focused searches within a specific document's context.
-
-        Parameters:
-            query (str): The search query.
-            document_key (str): The key of the document to search within.
-            context (str): The context to search within.
-            k (int, optional): The number of results to return. Defaults to 5.
-            score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
-
-        Returns:
-            List[Tuple[Document, float]]: A list of tuples, each containing a Document and its similarity score.
-        """
-        instance = EmbeddingsService.get_instance()
-        return instance._similarity_search_on_single_document_with_scores(
-            query, document_key, context, k, score_threshold
         )
 
     @staticmethod

@@ -4,7 +4,7 @@ from unittest.mock import patch
 from tests.utils import get_test_data_path
 from knowledge.knowledge_pack import KnowledgePackError
 from content_manager import ContentManager
-from embeddings.embedding_model import EmbeddingModel
+from embeddings.model import EmbeddingModel
 from embeddings.embeddings_service import EmbeddingsService
 
 

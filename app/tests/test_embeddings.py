@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 from embeddings.embeddings import Embeddings
-from embeddings.embedding_model import EmbeddingModel
+from embeddings.model import EmbeddingModel
 
 
 class TestEmbeddings:

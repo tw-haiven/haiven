@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from langchain.docstore.document import Document
-from embeddings.embedding_model import EmbeddingModel
+from embeddings.model import EmbeddingModel
 from embeddings.embeddings_service import EmbeddingsService
 
 
@@ -143,7 +143,7 @@ class TestsEmbeddingsService:
         self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
 
         similarity_results = (
-            self.service.similarity_search_on_single_document_with_scores(
+            self.service._similarity_search_on_single_document_with_scores(
                 query="When Ingenuity was launched?",
                 document_key="ingenuity-wikipedia",
                 context="base",
@@ -160,7 +160,7 @@ class TestsEmbeddingsService:
         self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
 
         similarity_results = (
-            self.service.similarity_search_on_single_document_with_scores(
+            self.service._similarity_search_on_single_document_with_scores(
                 query="When Ingenuity was launched?",
                 document_key="ingenuity-wikipedia",
                 context="Context A",

@@ -4,7 +4,7 @@ from typing import List
 
 import pytest
 from llms.default_models import DefaultModels
-from embeddings.embedding_model import EmbeddingModel
+from embeddings.model import EmbeddingModel
 from llms.model import Model
 from config_service import ConfigService
 

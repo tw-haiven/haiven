@@ -5,7 +5,7 @@ from typing import List
 import yaml
 from dotenv import load_dotenv
 from llms.default_models import DefaultModels
-from embeddings.embedding_model import EmbeddingModel
+from embeddings.model import EmbeddingModel
 from llms.model import Model
 
 
