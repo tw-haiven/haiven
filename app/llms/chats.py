@@ -156,7 +156,7 @@ class StreamingChat(HaivenBaseChat):
             )
         else:
             knwoeldge_document = (
-                self.content_manager.knowledge_base_documents.get_embedded_document(
+                self.content_manager.knowledge_base_documents.get_document(
                     knowledge_document_key
                 )
             )

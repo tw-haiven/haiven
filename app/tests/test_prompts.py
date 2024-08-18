@@ -10,7 +10,7 @@ TEST_KNOWLEDGE_PACK_PATH = get_test_data_path() + "/test_knowledge_pack"
 
 def create_knowledge_base(knowledge_pack_path):
     knowledge_base = KnowledgeBaseMarkdown()
-    knowledge_base.load_context_knowledge(
+    knowledge_base.load_for_context(
         ACTIVE_KNOWLEDGE_CONTEXT,
         knowledge_pack_path + "/contexts/" + ACTIVE_KNOWLEDGE_CONTEXT,
     )

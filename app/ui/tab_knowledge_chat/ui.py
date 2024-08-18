@@ -62,7 +62,7 @@ def enable_knowledge_chat(
                             knowledge_documents = [("All documents", "all")]
                             knowledge_documents.extend(
                                 (embedding.title, embedding.key)
-                                for embedding in content_manager.knowledge_base_documents.get_embedded_documents(
+                                for embedding in content_manager.knowledge_base_documents.get_documents(
                                     context=context_selected
                                 )
                             )
@@ -102,10 +102,8 @@ def enable_knowledge_chat(
                         request, "active_knowledge_context", app_level=True
                     )
                 else:
-                    knowledge = (
-                        content_manager.knowledge_base_documents.get_embedded_document(
-                            knowledge_document_selected
-                        )
+                    knowledge = content_manager.knowledge_base_documents.get_document(
+                        knowledge_document_selected
                     )
                     knowledge_key = knowledge.key
                     knowledge_context = knowledge.context
@@ -201,7 +199,7 @@ def enable_knowledge_chat(
         choices = [("All Documents", "all")]
         choices.extend(
             (embedding.title, embedding.key)
-            for embedding in content_manager.knowledge_base_documents.get_embedded_documents(
+            for embedding in content_manager.knowledge_base_documents.get_documents(
                 context=knowledge_context_select
             )
         )

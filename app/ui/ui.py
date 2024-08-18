@@ -115,7 +115,7 @@ class UIBaseComponents:
                             and you can also ask them questions directly on the "Knowledge chat" tab.
                             """)
                 context_content = (
-                    content_manager.knowledge_base_documents.get_embedded_documents()
+                    content_manager.knowledge_base_documents.get_documents()
                 )
                 with gr.Accordion(
                     label="Common documents",
@@ -145,7 +145,7 @@ class UIBaseComponents:
                     for context in content_manager.knowledge_pack_definition.contexts
                 ]:
                     context_content = (
-                        content_manager.knowledge_base_documents.get_embedded_documents(
+                        content_manager.knowledge_base_documents.get_documents(
                             context_key, False
                         )
                     )

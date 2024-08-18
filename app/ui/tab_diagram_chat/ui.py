@@ -220,7 +220,7 @@ def enable_image_chat(
                             knowledge_documents.extend(
                                 [
                                     (embedding.title, embedding.key)
-                                    for embedding in content_manager.knowledge_base_documents.get_embedded_documents(
+                                    for embedding in content_manager.knowledge_base_documents.get_documents(
                                         context=context_selected
                                     )
                                 ]
@@ -333,7 +333,7 @@ def enable_image_chat(
         choices = [("All Documents", "all")]
         choices.extend(
             (embedding.title, embedding.key)
-            for embedding in content_manager.knowledge_base_documents.get_embedded_documents(
+            for embedding in content_manager.knowledge_base_documents.get_documents(
                 context=knowledge_context_select
             )
         )

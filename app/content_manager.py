@@ -29,9 +29,7 @@ class ContentManager:
     def _load_base_markdown_knowledge(self):
         knowledge_base_markdown = KnowledgeBaseMarkdown()
         try:
-            knowledge_base_markdown.load_base_knowledge(
-                self.knowledge_pack_definition.path
-            )
+            knowledge_base_markdown.load_for_base(self.knowledge_pack_definition.path)
         except FileNotFoundError as e:
             # TODO: Should this be an analytics() log?
             HaivenLogger.get().analytics(
@@ -49,7 +47,7 @@ class ContentManager:
         )
 
         try:
-            knowledge_base_documents.load_knowledge_base(base_embeddings_path)
+            knowledge_base_documents.load_documents_for_base(base_embeddings_path)
         except FileNotFoundError as e:
             HaivenLogger.get().analytics(
                 "KnowledgePackEmbeddingsNotFound", {"error": str(e)}
@@ -70,7 +68,7 @@ class ContentManager:
         )
 
         try:
-            self.knowledge_base_markdown.load_context_knowledge(
+            self.knowledge_base_markdown.load_for_context(
                 knowledge_context.name, path=context_path
             )
         except FileNotFoundError as e:
@@ -94,7 +92,7 @@ class ContentManager:
         )
 
         try:
-            self.knowledge_base_documents.load_knowledge_context(
+            self.knowledge_base_documents.load_documents_for_context(
                 knowledge_context.name, context_embeddings_path
             )
         except FileNotFoundError as e:

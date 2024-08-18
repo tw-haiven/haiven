@@ -49,22 +49,22 @@ class TestsKnowledgeBaseDocuments:
     def test_load_base_knowledge_pack_creates_one_entry_in_stores(
         self,
     ):
-        assert len(self.service._embeddings_stores) == 1
-        assert self.service._embeddings_stores["base"]._embeddings == {}
+        assert len(self.service._document_stores) == 1
+        assert self.service._document_stores["base"]._embeddings == {}
 
-        self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
+        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
-        assert len(self.service._embeddings_stores) == 1
+        assert len(self.service._document_stores) == 1
         assert (
             "ingenuity-wikipedia"
-            in self.service._embeddings_stores["base"]._embeddings.keys()
+            in self.service._document_stores["base"]._embeddings.keys()
         )
 
     def test_load_context_knowledge_with_empty_embeddings_raise_error(
         self,
     ):
         try:
-            self.service.load_knowledge_context(
+            self.service.load_documents_for_context(
                 context_name="Context B",
                 context_path=self.knowledge_pack_path
                 + "/contexts/context_b/embeddings",
@@ -74,78 +74,76 @@ class TestsKnowledgeBaseDocuments:
             exception_raised = True
 
         assert exception_raised
-        assert len(self.service._embeddings_stores) == 1  # only base embeddings
-        assert "base" in self.service._embeddings_stores.keys()
-        assert "Context B" not in self.service._embeddings_stores.keys()
+        assert len(self.service._document_stores) == 1  # only base embeddings
+        assert "base" in self.service._document_stores.keys()
+        assert "Context B" not in self.service._document_stores.keys()
 
     def test_load_base_and_context_knowledge_creates_two_entry_in_stores(
         self,
     ):
-        assert len(self.service._embeddings_stores) == 1
+        assert len(self.service._document_stores) == 1
 
-        self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
+        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
-        assert len(self.service._embeddings_stores) == 1
-        assert "base" in self.service._embeddings_stores.keys()
+        assert len(self.service._document_stores) == 1
+        assert "base" in self.service._document_stores.keys()
 
-        self.service.load_knowledge_context(
+        self.service.load_documents_for_context(
             context_name="Context A",
             context_path=self.knowledge_pack_path + "/contexts/context_a/embeddings",
         )
 
-        assert len(self.service._embeddings_stores) == 2
-        assert "base" in self.service._embeddings_stores.keys()
-        assert "Context A" in self.service._embeddings_stores.keys()
+        assert len(self.service._document_stores) == 2
+        assert "base" in self.service._document_stores.keys()
+        assert "Context A" in self.service._document_stores.keys()
 
     def test_re_load_base_or_context_knowledge_should_not_create_extra_entries(
         self,
     ):
-        assert len(self.service._embeddings_stores) == 1
+        assert len(self.service._document_stores) == 1
 
-        self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
+        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
-        assert len(self.service._embeddings_stores) == 1
-        assert "base" in self.service._embeddings_stores.keys()
+        assert len(self.service._document_stores) == 1
+        assert "base" in self.service._document_stores.keys()
 
-        self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
+        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
-        assert len(self.service._embeddings_stores) == 1
-        assert "base" in self.service._embeddings_stores.keys()
+        assert len(self.service._document_stores) == 1
+        assert "base" in self.service._document_stores.keys()
 
-        self.service.load_knowledge_context(
+        self.service.load_documents_for_context(
             context_name="Context A",
             context_path=self.knowledge_pack_path + "/contexts/context_a/embeddings",
         )
 
-        assert len(self.service._embeddings_stores) == 2
-        assert "base" in self.service._embeddings_stores.keys()
-        assert "Context A" in self.service._embeddings_stores.keys()
+        assert len(self.service._document_stores) == 2
+        assert "base" in self.service._document_stores.keys()
+        assert "Context A" in self.service._document_stores.keys()
 
-        self.service.load_knowledge_context(
+        self.service.load_documents_for_context(
             context_name="Context A",
             context_path=self.knowledge_pack_path + "/contexts/context_a/embeddings",
         )
 
-        assert len(self.service._embeddings_stores) == 2
-        assert "base" in self.service._embeddings_stores.keys()
-        assert "Context A" in self.service._embeddings_stores.keys()
+        assert len(self.service._document_stores) == 2
+        assert "base" in self.service._document_stores.keys()
+        assert "Context A" in self.service._document_stores.keys()
 
     def test_generate_load_knowledge_base_should_load_two_embedding(self):
-        self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
+        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
-        assert len(self.service._embeddings_stores) == 1
-        assert len(self.service._embeddings_stores.keys()) == 1
-        assert "base" in self.service._embeddings_stores.keys()
+        assert len(self.service._document_stores) == 1
+        assert len(self.service._document_stores.keys()) == 1
+        assert "base" in self.service._document_stores.keys()
 
-        assert (
-            "ingenuity-wikipedia" in self.service._embeddings_stores["base"].get_keys()
-        )
-        assert "tw-guide-agile-sd" in self.service._embeddings_stores["base"].get_keys()
+        assert "ingenuity-wikipedia" in self.service._document_stores["base"].get_keys()
+        assert "tw-guide-agile-sd" in self.service._document_stores["base"].get_keys()
 
     def test_similarity_search_on_single_document_with_scores_for_base_return_documents_and_scores(
         self,
     ):
-        self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
+        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
         similarity_results = (
             self.service._similarity_search_on_single_document_with_scores(
@@ -162,7 +160,7 @@ class TestsKnowledgeBaseDocuments:
     def test_similarity_search_on_single_document_with_scores_for_context_does_not_return_documents_and_scores_if_context_is_not_loaded(
         self,
     ):
-        self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
+        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
         similarity_results = (
             self.service._similarity_search_on_single_document_with_scores(
@@ -177,11 +175,11 @@ class TestsKnowledgeBaseDocuments:
     def test_similarity_search_for_context_should_return_documents_from_base_and_context_stores_sorted_by_scores(
         self,
     ):
-        assert len(self.service._embeddings_stores) == 1
+        assert len(self.service._document_stores) == 1
 
-        self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
+        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
-        self.service.load_knowledge_context(
+        self.service.load_documents_for_context(
             context_name="Context A",
             context_path=self.knowledge_pack_path + "/contexts/context_a/embeddings",
         )

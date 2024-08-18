@@ -1,6 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from unittest.mock import patch
 
+from knowledge.documents import KnowledgeBaseDocuments
 from tests.utils import get_test_data_path
 from content_manager import ContentManager
 from embeddings.model import EmbeddingModel
@@ -33,15 +34,15 @@ class TestContentManager:
         mock_config_service.load_embedding_model.assert_called_once()
 
         assert content_manager.knowledge_base_documents is not None
-        mock_knowledge_base_documents_instance = (
+        mock_knowledge_base_documents_instance: KnowledgeBaseDocuments = (
             mock_knowledge_base_documents.return_value
         )
-        mock_knowledge_base_documents_instance.load_knowledge_base.assert_called_once_with(
+        mock_knowledge_base_documents_instance.load_documents_for_base.assert_called_once_with(
             self.knowledge_pack_path + "/embeddings"
         )
 
         mock_knowledge_base_markdown.assert_called_once()
-        content_manager.knowledge_base_markdown.load_base_knowledge.assert_called_once_with(
+        content_manager.knowledge_base_markdown.load_for_base.assert_called_once_with(
             self.knowledge_pack_path
         )
 

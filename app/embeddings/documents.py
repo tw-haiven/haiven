@@ -4,7 +4,7 @@ from typing import List
 from langchain.docstore.document import Document
 
 
-class DocumentEmbedding:
+class KnowledgeDocument:
     def __init__(
         self,
         key: str,
