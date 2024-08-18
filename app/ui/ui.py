@@ -3,7 +3,7 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
-from content_manager import ContentManager
+from knowledge_manager import KnowledgeManager
 from embeddings.documents import DocumentsUtils
 from llms.clients import ChatClientConfig
 from knowledge.pack import KnowledgePack
@@ -77,7 +77,7 @@ class UIBaseComponents:
                     navigation_html += f"<div class='item'><a href='/{item['path']}' class='item-link {classes} {'selected' if navigation['selected'] == item['path'] else ''}'>{icon_html}{item['title']}</a></div>"
                 gr.HTML(f"<div class='navigation'>{navigation_html}</div>")
 
-    def ui_show_knowledge(self, content_manager: ContentManager):
+    def ui_show_knowledge(self, knowledge_manager: KnowledgeManager):
         with gr.Row():
             with gr.Column(scale=2, elem_classes="knowledge-column"):
                 gr.Markdown("""## Prompt snippets
@@ -87,9 +87,9 @@ class UIBaseComponents:
                             """)
                 for context_key in [
                     context.name
-                    for context in content_manager.knowledge_pack_definition.contexts
+                    for context in knowledge_manager.knowledge_pack_definition.contexts
                 ]:
-                    context_content = content_manager.knowledge_base_markdown.get_all_knowledge_documents(
+                    context_content = knowledge_manager.knowledge_base_markdown.get_all_knowledge_documents(
                         context_key
                     )
                     with gr.Accordion(
@@ -115,7 +115,7 @@ class UIBaseComponents:
                             and you can also ask them questions directly on the "Knowledge chat" tab.
                             """)
                 context_content = (
-                    content_manager.knowledge_base_documents.get_documents()
+                    knowledge_manager.knowledge_base_documents.get_documents()
                 )
                 with gr.Accordion(
                     label="Common documents",
@@ -142,10 +142,10 @@ class UIBaseComponents:
 
                 for context_key in [
                     context.name
-                    for context in content_manager.knowledge_pack_definition.contexts
+                    for context in knowledge_manager.knowledge_pack_definition.contexts
                 ]:
                     context_content = (
-                        content_manager.knowledge_base_documents.get_documents(
+                        knowledge_manager.knowledge_base_documents.get_documents(
                             context_key, False
                         )
                     )

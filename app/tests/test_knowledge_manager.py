@@ -3,18 +3,18 @@ from unittest.mock import patch
 
 from knowledge.documents import KnowledgeBaseDocuments
 from tests.utils import get_test_data_path
-from content_manager import ContentManager
+from knowledge_manager import KnowledgeManager
 from embeddings.model import EmbeddingModel
 
 
-class TestContentManager:
+class TestKnowledgeManager:
     knowledge_pack_path = get_test_data_path() + "/test_knowledge_pack"
     config_file_path = get_test_data_path() + "/test_config.yaml"
 
-    @patch("content_manager.EmbeddingsClient")
-    @patch("content_manager.KnowledgeBaseDocuments")
-    @patch("content_manager.ConfigService")
-    @patch("content_manager.KnowledgeBaseMarkdown")
+    @patch("knowledge_manager.EmbeddingsClient")
+    @patch("knowledge_manager.KnowledgeBaseDocuments")
+    @patch("knowledge_manager.ConfigService")
+    @patch("knowledge_manager.KnowledgeBaseMarkdown")
     def test_init(
         self,
         mock_knowledge_base_markdown,
@@ -27,13 +27,13 @@ class TestContentManager:
             self.knowledge_pack_path
         )
 
-        content_manager = ContentManager(
+        knowledge_manager = KnowledgeManager(
             config_service=mock_config_service,
         )
 
         mock_config_service.load_embedding_model.assert_called_once()
 
-        assert content_manager.knowledge_base_documents is not None
+        assert knowledge_manager.knowledge_base_documents is not None
         mock_knowledge_base_documents_instance: KnowledgeBaseDocuments = (
             mock_knowledge_base_documents.return_value
         )
@@ -42,12 +42,12 @@ class TestContentManager:
         )
 
         mock_knowledge_base_markdown.assert_called_once()
-        content_manager.knowledge_base_markdown.load_for_base.assert_called_once_with(
+        knowledge_manager.knowledge_base_markdown.load_for_base.assert_called_once_with(
             self.knowledge_pack_path
         )
 
-    @patch("content_manager.ConfigService")
-    @patch("content_manager.KnowledgeBaseMarkdown")
+    @patch("knowledge_manager.ConfigService")
+    @patch("knowledge_manager.KnowledgeBaseMarkdown")
     def test_load_context_knowledge_with_empty_embeddings_should_not_fail(
         self,
         mock_knowledge_base,
@@ -67,7 +67,7 @@ class TestContentManager:
 
         exception_raised = False
         try:
-            _ = ContentManager(
+            _ = KnowledgeManager(
                 config_service=mock_config_service,
             )
         except FileNotFoundError:

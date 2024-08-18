@@ -75,7 +75,7 @@ class ApiBasics(HaivenBaseApi):
         chat_session_memory,
         model_key,
         prompts_guided,
-        content_manager,
+        knowledge_manager,
         prompts_chat,
     ):
         super().__init__(app, chat_session_memory, model_key, prompts_guided)
@@ -95,15 +95,13 @@ class ApiBasics(HaivenBaseApi):
         @app.get("/api/knowledge/snippets")
         def get_knowledge_snippets(request: Request):
             all_contexts = (
-                content_manager.knowledge_base_markdown.get_all_contexts_keys()
+                knowledge_manager.knowledge_base_markdown.get_all_contexts_keys()
             )
 
             response_data = []
             for context in all_contexts:
-                snippets = (
-                    content_manager.knowledge_base_markdown.get_knowledge_content_dict(
-                        context
-                    )
+                snippets = knowledge_manager.knowledge_base_markdown.get_knowledge_content_dict(
+                    context
                 )
                 response_data.append({"context": context, "snippets": snippets})
 

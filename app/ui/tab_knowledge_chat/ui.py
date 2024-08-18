@@ -3,7 +3,7 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
-from content_manager import ContentManager
+from knowledge_manager import KnowledgeManager
 from embeddings.documents import DocumentsUtils
 from llms.clients import ChatClientConfig
 from llms.chats import ChatOptions, ChatManager
@@ -13,7 +13,7 @@ from ui.user_context import user_context
 
 
 def enable_knowledge_chat(
-    content_manager: ContentManager,
+    knowledge_manager: KnowledgeManager,
     chat_manager: ChatManager,
     client_config: ChatClientConfig,
     user_identifier_state: gr.State,
@@ -58,11 +58,13 @@ def enable_knowledge_chat(
                     )
                     with gr.Group():
                         with gr.Row(elem_classes="knowledge-advice"):
-                            context_selected = content_manager.active_knowledge_context
+                            context_selected = (
+                                knowledge_manager.active_knowledge_context
+                            )
                             knowledge_documents = [("All documents", "all")]
                             knowledge_documents.extend(
                                 (embedding.title, embedding.key)
-                                for embedding in content_manager.knowledge_base_documents.get_documents(
+                                for embedding in knowledge_manager.knowledge_base_documents.get_documents(
                                     context=context_selected
                                 )
                             )
@@ -102,7 +104,7 @@ def enable_knowledge_chat(
                         request, "active_knowledge_context", app_level=True
                     )
                 else:
-                    knowledge = content_manager.knowledge_base_documents.get_document(
+                    knowledge = knowledge_manager.knowledge_base_documents.get_document(
                         knowledge_document_selected
                     )
                     knowledge_key = knowledge.key
@@ -199,7 +201,7 @@ def enable_knowledge_chat(
         choices = [("All Documents", "all")]
         choices.extend(
             (embedding.title, embedding.key)
-            for embedding in content_manager.knowledge_base_documents.get_documents(
+            for embedding in knowledge_manager.knowledge_base_documents.get_documents(
                 context=knowledge_context_select
             )
         )

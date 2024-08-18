@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import gradio as gr
 from api.boba_api import BobaApi
-from content_manager import ContentManager
+from knowledge_manager import KnowledgeManager
 from llms.chats import ChatManager, ServerChatSessionMemory
 from llms.image_description_service import ImageDescriptionService
 from llms.clients import ChatClientFactory
@@ -39,13 +39,13 @@ class App:
         config_service = ConfigService(config_path)
 
         knowledge_pack_path = config_service.load_knowledge_pack_path()
-        content_manager = ContentManager(config_service=config_service)
+        knowledge_manager = KnowledgeManager(config_service=config_service)
 
         prompts_factory = PromptsFactory(knowledge_pack_path)
         chat_session_memory = ServerChatSessionMemory()
         llm_chat_factory = ChatClientFactory(config_service)
         chat_manager = ChatManager(
-            config_service, chat_session_memory, llm_chat_factory, content_manager
+            config_service, chat_session_memory, llm_chat_factory, knowledge_manager
         )
 
         self.ui_factory = UIFactory(
@@ -54,7 +54,7 @@ class App:
             navigation_manager=NavigationManager(),
             event_handler=EventHandler(HaivenLogger),
             prompts_parent_dir=knowledge_pack_path,
-            content_manager=content_manager,
+            knowledge_manager=knowledge_manager,
             chat_manager=chat_manager,
             image_service=self.create_image_service(config_service),
         )
@@ -64,7 +64,7 @@ class App:
             config_service,
             BobaApi(
                 prompts_factory,
-                content_manager,
+                knowledge_manager,
                 chat_manager,
                 config_service,
             ),

@@ -3,7 +3,7 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
-from content_manager import ContentManager
+from knowledge_manager import KnowledgeManager
 from llms.chats import ChatManager, ChatOptions
 from llms.clients import ChatClientConfig
 from ui.chat_context import ChatContext
@@ -14,7 +14,7 @@ from user_feedback import UserFeedback
 
 
 def enable_chat(
-    content_manager: ContentManager,
+    knowledge_manager: KnowledgeManager,
     chat_manager: ChatManager,
     prompts_factory: PromptsFactory,
     client_config: ChatClientConfig,
@@ -25,7 +25,7 @@ def enable_chat(
     load_dotenv()
     tab_id = "chat"
     prompt_list = prompts_factory.create_chat_prompt_list(
-        content_manager.knowledge_base_markdown
+        knowledge_manager.knowledge_base_markdown
     )
     interaction_pattern_name = prompt_list.interaction_pattern_name
     prompt_list.filter(prompt_categories)
@@ -172,12 +172,14 @@ def enable_chat(
 
                     with gr.Group():
                         with gr.Row(elem_classes="knowledge-advice"):
-                            context_selected = content_manager.active_knowledge_context
+                            context_selected = (
+                                knowledge_manager.active_knowledge_context
+                            )
                             knowledge_documents = [("All documents", "all")]
                             knowledge_documents.extend(
                                 [
                                     (embedding.title, embedding.key)
-                                    for embedding in content_manager.knowledge_base_documents.get_documents(
+                                    for embedding in knowledge_manager.knowledge_base_documents.get_documents(
                                         context=context_selected
                                     )
                                 ]
@@ -342,7 +344,7 @@ def enable_chat(
         choices = [("All Documents", "all")]
         choices.extend(
             (embedding.title, embedding.key)
-            for embedding in content_manager.knowledge_base_documents.get_documents(
+            for embedding in knowledge_manager.knowledge_base_documents.get_documents(
                 context=knowledge_context_select
             )
         )

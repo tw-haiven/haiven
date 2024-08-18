@@ -9,9 +9,11 @@ from unittest.mock import MagicMock, patch
 
 class TestChats(unittest.TestCase):
     @patch("llms.chats.DocumentsChat.create_chain")
-    @patch("content_manager.ContentManager")
+    @patch("knowledge_manager.KnowledgeManager")
     @patch("logger.HaivenLogger.get")
-    def test_documents_chat(self, mock_logger, mock_content_manager, mock_create_chain):
+    def test_documents_chat(
+        self, mock_logger, mock_knowledge_manager, mock_create_chain
+    ):
         os.environ["USE_AZURE"] = "true"
 
         document_embedding_mock = MagicMock()
@@ -25,7 +27,7 @@ class TestChats(unittest.TestCase):
         ]
 
         mock_knowledge_base_documents = MagicMock()
-        mock_content_manager.knowledge_base_documents = mock_knowledge_base_documents
+        mock_knowledge_manager.knowledge_base_documents = mock_knowledge_base_documents
         mock_knowledge_base_documents.similarity_search_on_single_document.return_value = [
             document for document in expected_documents
         ]
@@ -39,7 +41,7 @@ class TestChats(unittest.TestCase):
 
         documents_chat = DocumentsChat(
             chat_client=MagicMock(),
-            content_manager=mock_content_manager,
+            knowledge_manager=mock_knowledge_manager,
             knowledge="a-document-key",
             context="test_context",
         )

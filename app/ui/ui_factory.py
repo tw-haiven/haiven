@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import gradio as gr
 from llms.chats import ChatManager
-from content_manager import ContentManager
+from knowledge_manager import KnowledgeManager
 from llms.image_description_service import ImageDescriptionService
 from ui.event_handler import EventHandler
 from ui.navigation import NavigationManager
@@ -24,7 +24,7 @@ class UIFactory:
         navigation_manager: NavigationManager,
         event_handler: EventHandler,
         prompts_parent_dir: str,
-        content_manager: ContentManager,
+        knowledge_manager: KnowledgeManager,
         chat_manager: ChatManager,
         image_service: ImageDescriptionService,
     ):
@@ -33,7 +33,7 @@ class UIFactory:
         self.navigation_manager: NavigationManager = navigation_manager
         self.event_handler: EventHandler = event_handler
         self.prompts_parent_dir: str = prompts_parent_dir
-        self.content_manager: ContentManager = content_manager
+        self.knowledge_manager: KnowledgeManager = knowledge_manager
         self.chat_manager: ChatManager = chat_manager
         self.image_service: ImageDescriptionService = image_service
 
@@ -54,7 +54,7 @@ class UIFactory:
     def __knowledge_context_select_changed(
         self, knowledge_context_select, request: gr.Request
     ):
-        knowledge_context = self.content_manager.on_context_selected(
+        knowledge_context = self.knowledge_manager.on_context_selected(
             knowledge_context_select
         )
         user_context.set_value(
@@ -93,7 +93,7 @@ class UIFactory:
                     with gr.Accordion("Settings"):
                         with gr.Row():
                             knowledge_context_select = self.ui_base_components.create_knowledge_context_selector_ui(
-                                self.content_manager.knowledge_pack_definition
+                                self.knowledge_manager.knowledge_pack_definition
                             )
                             knowledge_context_select.change(
                                 fn=self.__knowledge_context_select_changed,
@@ -117,11 +117,11 @@ class UIFactory:
                             category_filter,
                             category_metadata,
                             self.prompts_factory.create_all_prompts_for_user_choice(
-                                self.content_manager.knowledge_base_markdown
+                                self.knowledge_manager.knowledge_base_markdown
                             ),
                         )
                         enable_chat(
-                            self.content_manager,
+                            self.knowledge_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
@@ -130,7 +130,7 @@ class UIFactory:
                             knowledge_context_select,
                         )
                         enable_brainstorming(
-                            self.content_manager,
+                            self.knowledge_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
@@ -138,7 +138,7 @@ class UIFactory:
                             category_filter,
                         )
                         enable_image_chat(
-                            self.content_manager,
+                            self.knowledge_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
@@ -148,7 +148,7 @@ class UIFactory:
                             knowledge_context_select,
                         )
                         enable_knowledge_chat(
-                            self.content_manager,
+                            self.knowledge_manager,
                             self.chat_manager,
                             self.__client_config,
                             user_identifier_state,
@@ -193,7 +193,7 @@ class UIFactory:
                     with gr.Accordion("Settings"):
                         with gr.Row():
                             knowledge_context_select = self.ui_base_components.create_knowledge_context_selector_ui(
-                                self.content_manager.knowledge_pack_definition
+                                self.knowledge_manager.knowledge_pack_definition
                             )
                             knowledge_context_select.change(
                                 fn=self.__knowledge_context_select_changed,
@@ -218,11 +218,11 @@ class UIFactory:
                             category_filter,
                             category_metadata,
                             self.prompts_factory.create_all_prompts_for_user_choice(
-                                self.content_manager.knowledge_base_markdown,
+                                self.knowledge_manager.knowledge_base_markdown,
                             ),
                         )
                         enable_chat(
-                            self.content_manager,
+                            self.knowledge_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
@@ -231,7 +231,7 @@ class UIFactory:
                             knowledge_context_select,
                         )
                         enable_brainstorming(
-                            self.content_manager,
+                            self.knowledge_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
@@ -239,7 +239,7 @@ class UIFactory:
                             category_filter,
                         )
                         enable_image_chat(
-                            self.content_manager,
+                            self.knowledge_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
@@ -249,7 +249,7 @@ class UIFactory:
                             knowledge_context_select,
                         )
                         enable_knowledge_chat(
-                            self.content_manager,
+                            self.knowledge_manager,
                             self.chat_manager,
                             self.__client_config,
                             user_identifier_state,
@@ -290,7 +290,7 @@ class UIFactory:
                     with gr.Accordion("Settings"):
                         with gr.Row():
                             knowledge_context_select = self.ui_base_components.create_knowledge_context_selector_ui(
-                                self.content_manager.knowledge_pack_definition
+                                self.knowledge_manager.knowledge_pack_definition
                             )
                             knowledge_context_select.change(
                                 fn=self.__knowledge_context_select_changed,
@@ -314,11 +314,11 @@ class UIFactory:
                             category_filter,
                             category_metadata,
                             self.prompts_factory.create_all_prompts_for_user_choice(
-                                self.content_manager.knowledge_base_markdown
+                                self.knowledge_manager.knowledge_base_markdown
                             ),
                         )
                         enable_chat(
-                            self.content_manager,
+                            self.knowledge_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
@@ -327,7 +327,7 @@ class UIFactory:
                             knowledge_context_select,
                         )
                         enable_brainstorming(
-                            self.content_manager,
+                            self.knowledge_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
@@ -335,7 +335,7 @@ class UIFactory:
                             category_filter,
                         )
                         enable_image_chat(
-                            self.content_manager,
+                            self.knowledge_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
@@ -345,7 +345,7 @@ class UIFactory:
                             knowledge_context_select,
                         )
                         enable_knowledge_chat(
-                            self.content_manager,
+                            self.knowledge_manager,
                             self.chat_manager,
                             self.__client_config,
                             user_identifier_state,
@@ -385,7 +385,7 @@ class UIFactory:
                     with gr.Accordion("Settings"):
                         with gr.Row():
                             knowledge_context_select = self.ui_base_components.create_knowledge_context_selector_ui(
-                                self.content_manager.knowledge_pack_definition
+                                self.knowledge_manager.knowledge_pack_definition
                             )
                             knowledge_context_select.change(
                                 fn=self.__knowledge_context_select_changed,
@@ -407,7 +407,7 @@ class UIFactory:
                         user_identifier_state = gr.State()
                         with gr.Tab("Knowledge"):
                             self.ui_base_components.ui_show_knowledge(
-                                self.content_manager
+                                self.knowledge_manager
                             )
 
                 with gr.Row():

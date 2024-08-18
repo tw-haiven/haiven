@@ -33,9 +33,9 @@ class TestUIFactory(unittest.TestCase):
         prompts_parent_dir = "test_parent_dir"
         knowledge_base_markdown = MagicMock()
         active_context = "test_context"
-        content_manager = MagicMock()
-        content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.active_knowledge_context = active_context
+        knowledge_manager = MagicMock()
+        knowledge_manager.knowledge_base_markdown = knowledge_base_markdown
+        knowledge_manager.active_knowledge_context = active_context
         chat_manager = MagicMock()
 
         ui_factory = UIFactory(
@@ -44,7 +44,7 @@ class TestUIFactory(unittest.TestCase):
             navigation_manager=navigation_manager,
             event_handler=event_handler,
             prompts_parent_dir=prompts_parent_dir,
-            content_manager=content_manager,
+            knowledge_manager=knowledge_manager,
             chat_manager=chat_manager,
             image_service=mock_image_description_service,
         )
@@ -105,7 +105,7 @@ class TestUIFactory(unittest.TestCase):
             category_filter, category_metadata, all_prompts
         )
         mock_enable_chat.assert_called_with(
-            content_manager,
+            knowledge_manager,
             chat_manager,
             prompts_factory,
             client_config,
@@ -114,7 +114,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_context_select,
         )
         mock_enable_brainstorming.assert_called_with(
-            content_manager,
+            knowledge_manager,
             chat_manager,
             prompts_factory,
             client_config,
@@ -122,7 +122,7 @@ class TestUIFactory(unittest.TestCase):
             category_filter,
         )
         mock_enable_image_chat.assert_called_with(
-            content_manager,
+            knowledge_manager,
             chat_manager,
             prompts_factory,
             client_config,
@@ -132,7 +132,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_context_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
-            content_manager,
+            knowledge_manager,
             chat_manager,
             client_config,
             state,
@@ -182,9 +182,9 @@ class TestUIFactory(unittest.TestCase):
         prompts_parent_dir = "test_parent_dir"
         knowledge_base_markdown = MagicMock()
         active_context = "test_context"
-        content_manager = MagicMock()
-        content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.active_knowledge_context = active_context
+        knowledge_manager = MagicMock()
+        knowledge_manager.knowledge_base_markdown = knowledge_base_markdown
+        knowledge_manager.active_knowledge_context = active_context
         chat_manager = MagicMock()
 
         ui_factory = UIFactory(
@@ -193,7 +193,7 @@ class TestUIFactory(unittest.TestCase):
             navigation_manager=navigation_manager,
             event_handler=event_handler,
             prompts_parent_dir=prompts_parent_dir,
-            content_manager=content_manager,
+            knowledge_manager=knowledge_manager,
             chat_manager=chat_manager,
             image_service=mock_image_description_service,
         )
@@ -255,7 +255,7 @@ class TestUIFactory(unittest.TestCase):
             category_filter, category_metadata, all_prompts
         )
         mock_enable_chat.assert_called_with(
-            content_manager,
+            knowledge_manager,
             chat_manager,
             prompts_factory,
             client_config,
@@ -264,7 +264,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_context_select,
         )
         mock_enable_brainstorming.assert_called_with(
-            content_manager,
+            knowledge_manager,
             chat_manager,
             prompts_factory,
             client_config,
@@ -272,7 +272,7 @@ class TestUIFactory(unittest.TestCase):
             category_filter,
         )
         mock_enable_image_chat.assert_called_with(
-            content_manager,
+            knowledge_manager,
             chat_manager,
             prompts_factory,
             client_config,
@@ -282,7 +282,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_context_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
-            content_manager,
+            knowledge_manager,
             chat_manager,
             client_config,
             state,
@@ -331,9 +331,9 @@ class TestUIFactory(unittest.TestCase):
         prompts_parent_dir = "test_parent_dir"
         knowledge_base_markdown = MagicMock()
         active_knowldge_context = "test_context"
-        content_manager = MagicMock()
-        content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.active_knowledge_context = active_knowldge_context
+        knowledge_manager = MagicMock()
+        knowledge_manager.knowledge_base_markdown = knowledge_base_markdown
+        knowledge_manager.active_knowledge_context = active_knowldge_context
         chat_manager = MagicMock()
 
         ui_factory = UIFactory(
@@ -342,7 +342,7 @@ class TestUIFactory(unittest.TestCase):
             navigation_manager=navigation_manager,
             event_handler=event_handler,
             prompts_parent_dir=prompts_parent_dir,
-            content_manager=content_manager,
+            knowledge_manager=knowledge_manager,
             chat_manager=chat_manager,
             image_service=mock_image_description_service,
         )
@@ -404,7 +404,7 @@ class TestUIFactory(unittest.TestCase):
             category_filter, category_metadata, all_prompts
         )
         mock_enable_chat.assert_called_with(
-            content_manager,
+            knowledge_manager,
             chat_manager,
             prompts_factory,
             client_config,
@@ -413,7 +413,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_context_select,
         )
         mock_enable_brainstorming.assert_called_with(
-            content_manager,
+            knowledge_manager,
             chat_manager,
             prompts_factory,
             client_config,
@@ -421,7 +421,7 @@ class TestUIFactory(unittest.TestCase):
             category_filter,
         )
         mock_enable_image_chat.assert_called_with(
-            content_manager,
+            knowledge_manager,
             chat_manager,
             prompts_factory,
             client_config,
@@ -431,7 +431,7 @@ class TestUIFactory(unittest.TestCase):
             knowledge_context_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
-            content_manager,
+            knowledge_manager,
             chat_manager,
             client_config,
             state,
@@ -482,10 +482,10 @@ class TestUIFactory(unittest.TestCase):
         knowledge_base_markdown = MagicMock()
         active_knowledge_context = "test_context"
         knowledge_pack = MagicMock()
-        content_manager = MagicMock()
-        content_manager.knowledge_pack_definition = knowledge_pack
-        content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.active_knowledge_context = active_knowledge_context
+        knowledge_manager = MagicMock()
+        knowledge_manager.knowledge_pack_definition = knowledge_pack
+        knowledge_manager.knowledge_base_markdown = knowledge_base_markdown
+        knowledge_manager.active_knowledge_context = active_knowledge_context
         chat_manager = MagicMock()
 
         ui_factory = UIFactory(
@@ -494,7 +494,7 @@ class TestUIFactory(unittest.TestCase):
             navigation_manager=navigation_manager,
             event_handler=event_handler,
             prompts_parent_dir=prompts_parent_dir,
-            content_manager=content_manager,
+            knowledge_manager=knowledge_manager,
             chat_manager=chat_manager,
             image_service=MagicMock(),
         )
@@ -520,7 +520,7 @@ class TestUIFactory(unittest.TestCase):
         ui_factory.navigation_manager.get_knowledge_navigation.assert_called_once()
         ui_factory.ui_base_components.ui_header.assert_called_once()
         ui_factory.ui_base_components.ui_show_knowledge.assert_called_with(
-            content_manager
+            knowledge_manager
         )
         ui.create_llm_settings_ui.assert_called_once()
 
@@ -535,9 +535,9 @@ class TestUIFactory(unittest.TestCase):
         event_handler = MagicMock()
         prompts_parent_dir = "test_parent_dir"
         knowledge_base_markdown = MagicMock()
-        content_manager = MagicMock()
-        content_manager.knowledge_base_markdown = knowledge_base_markdown
-        content_manager.active_knowledge_context = None
+        knowledge_manager = MagicMock()
+        knowledge_manager.knowledge_base_markdown = knowledge_base_markdown
+        knowledge_manager.active_knowledge_context = None
         chat_manager = MagicMock()
 
         ui_factory = UIFactory(
@@ -546,7 +546,7 @@ class TestUIFactory(unittest.TestCase):
             navigation_manager=navigation_manager,
             event_handler=event_handler,
             prompts_parent_dir=prompts_parent_dir,
-            content_manager=content_manager,
+            knowledge_manager=knowledge_manager,
             chat_manager=chat_manager,
             image_service=MagicMock(),
         )
@@ -589,8 +589,8 @@ class TestUIFactory(unittest.TestCase):
         event_handler = MagicMock()
         prompts_parent_dir = "test_parent_dir"
         knowledge_base_markdown = MagicMock()
-        content_manager = MagicMock()
-        content_manager.knowledge_base_markdown = knowledge_base_markdown
+        knowledge_manager = MagicMock()
+        knowledge_manager.knowledge_base_markdown = knowledge_base_markdown
         chat_manager = MagicMock()
 
         ui_factory = UIFactory(
@@ -599,7 +599,7 @@ class TestUIFactory(unittest.TestCase):
             navigation_manager=navigation_manager,
             event_handler=event_handler,
             prompts_parent_dir=prompts_parent_dir,
-            content_manager=content_manager,
+            knowledge_manager=knowledge_manager,
             chat_manager=chat_manager,
             image_service=MagicMock(),
         )

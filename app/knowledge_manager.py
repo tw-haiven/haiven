@@ -11,7 +11,7 @@ from knowledge.pack import (
 from knowledge.documents import KnowledgeBaseDocuments
 
 
-class ContentManager:
+class KnowledgeManager:
     def __init__(self, config_service: ConfigService):
         self._config_service = config_service
 

@@ -9,7 +9,7 @@ from api.api_creative_matrix import ApiCreativeMatrix
 from llms.chats import (
     ChatManager,
 )
-from content_manager import ContentManager
+from knowledge_manager import KnowledgeManager
 from prompts.prompts_factory import PromptsFactory
 from config_service import ConfigService
 
@@ -18,20 +18,20 @@ class BobaApi:
     def __init__(
         self,
         prompts_factory: PromptsFactory,
-        content_manager: ContentManager,
+        knowledge_manager: KnowledgeManager,
         chat_manager: ChatManager,
         config_service: ConfigService,
     ):
-        self.content_manager = content_manager
+        self.knowledge_manager = knowledge_manager
         self.chat_manager = chat_manager
         self.config_service = config_service
 
         self.prompts_chat = prompts_factory.create_chat_prompt_list(
-            self.content_manager.knowledge_base_markdown
+            self.knowledge_manager.knowledge_base_markdown
         )
         prompts_factory_guided = PromptsFactory("./resources/prompts_guided")
         self.prompts_guided = prompts_factory_guided.create_guided_prompt_list(
-            self.content_manager.knowledge_base_markdown
+            self.knowledge_manager.knowledge_base_markdown
         )
 
         self.model = self.config_service.get_default_guided_mode_model()
@@ -59,7 +59,7 @@ class BobaApi:
             self.chat_manager,
             self.model,
             self.prompts_guided,
-            self.content_manager,
+            self.knowledge_manager,
             self.prompts_chat,
         )
 
