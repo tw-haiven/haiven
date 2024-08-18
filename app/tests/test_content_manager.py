@@ -4,7 +4,6 @@ from unittest.mock import patch
 from tests.utils import get_test_data_path
 from content_manager import ContentManager
 from embeddings.model import EmbeddingModel
-from embeddings.service import EmbeddingsService
 
 
 class TestContentManager:
@@ -32,8 +31,10 @@ class TestContentManager:
         )
 
         mock_config_service.load_embedding_model.assert_called_once()
-        mock_embeddings_service.initialize.assert_called_once()
-        mock_embeddings_service.load_knowledge_base.assert_called_once_with(
+
+        assert content_manager.embeddings_service is not None
+        mock_embeddings_service_instance = mock_embeddings_service.return_value
+        mock_embeddings_service_instance.load_knowledge_base.assert_called_once_with(
             self.knowledge_pack_path + "/embeddings"
         )
 
@@ -49,8 +50,6 @@ class TestContentManager:
         mock_knowledge_base,
         mock_config_service,
     ):
-        EmbeddingsService.reset_instance()
-
         embedding_model = EmbeddingModel(
             id="ollama-embeddings",
             name="Ollama Embeddings",

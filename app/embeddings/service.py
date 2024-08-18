@@ -14,15 +14,13 @@ from embeddings.in_memory import InMemoryEmbeddingsDB
 
 class EmbeddingsService:
     """
-    EmbeddingsService is a singleton class responsible for managing embeddings operations. It provides functionalities to initialize and retrieve the singleton instance, load embeddings, and perform similarity searches on documents. The class uses an embeddings provider to generate embeddings and an in-memory database to store and retrieve embeddings.
+    EmbeddingsService is responsible for managing embeddings operations. It provides functionalities to initialize and retrieve the singleton instance, load embeddings, and perform similarity searches on documents. The class uses an embeddings provider to generate embeddings and an in-memory database to store and retrieve embeddings.
 
     Attributes:
-        _instance (EmbeddingsService): The singleton instance of the EmbeddingsService.
         _embeddings_stores (dict[str, InMemoryEmbeddingsDB]): The in-memory database for storing embeddings.
         _embeddings_provider (Embeddings): The provider used for generating embeddings.
     """
 
-    _instance = None
     _embeddings_stores: dict[str, InMemoryEmbeddingsDB] = None
 
     def __init__(
@@ -30,11 +28,6 @@ class EmbeddingsService:
         config_service: ConfigService,
         embeddings_provider: EmbeddingsClient = None,
     ):
-        if EmbeddingsService._instance is not None:
-            raise Exception(
-                "EmbeddingsService is a singleton class. Use get_instance() to get the instance."
-            )
-
         if embeddings_provider is None:
             embedding_model = config_service.load_embedding_model()
             self._embeddings_provider = EmbeddingsClient(embedding_model)
@@ -45,60 +38,16 @@ class EmbeddingsService:
             self._embeddings_stores = {}
             self._embeddings_stores["base"] = InMemoryEmbeddingsDB()
 
-        EmbeddingsService._instance = self
-
-    @staticmethod
-    def get_instance():
-        """
-        Returns the singleton instance of the EmbeddingsService. If the instance has not been initialized, it raises an exception.
-
-        Returns:
-            EmbeddingsService: The singleton instance of the EmbeddingsService.
-
-        Raises:
-            Exception: If the EmbeddingsService has not been initialized.
-        """
-        if EmbeddingsService._instance is None:
-            raise Exception(
-                "EmbeddingsService has to be initialized first. First use initialize() before using EmbeddingsService"
-            )
-
-        return EmbeddingsService._instance
-
-    @staticmethod
-    def initialize(
-        config_service: ConfigService, embeddings_provider: EmbeddingsClient = None
-    ):
-        """
-        Initializes the EmbeddingsService singleton with an optional embeddings provider. This method must be called before any other operations if the EmbeddingsService instance has not been created.
-
-        Parameters:
-            embeddings_provider (Embeddings, optional): The embeddings provider to use. Defaults to None, in which case the default provider is loaded.
-        """
-        if EmbeddingsService._instance is None:
-            EmbeddingsService(embeddings_provider, config_service)
-
-    @staticmethod
-    def reset_instance() -> None:
-        """
-        Resets the singleton instance of the EmbeddingsService. This is useful for testing purposes or reinitializing the service with different configurations.
-        """
-        EmbeddingsService._embeddings_stores = {}
-        EmbeddingsService._instance = None
-
-    @staticmethod
-    def load_knowledge_base(knowledge_pack_path: str) -> None:
+    def load_knowledge_base(self, knowledge_pack_path: str) -> None:
         """
         Loads multiple documents from a specified directory, often referred to as a knowledge pack. Each document in the directory is loaded, processed, and its embedding is stored.
 
         Parameters:
             knowledge_pack_path (str): The file system path to the directory containing the knowledge pack documents.
         """
-        instance = EmbeddingsService.get_instance()
-        instance._load_knowledge_pack(path=knowledge_pack_path, name="base")
+        self._load_knowledge_pack(path=knowledge_pack_path, name="base")
 
-    @staticmethod
-    def load_knowledge_context(context_name: str, context_path: str) -> None:
+    def load_knowledge_context(self, context_name: str, context_path: str) -> None:
         """
         Loads multiple documents from a specified directory, often referred to as a knowledge pack. Each document in the directory is loaded, processed, and its embedding is stored.
 
@@ -106,11 +55,9 @@ class EmbeddingsService:
             context_name (str): The name of the context.
             context_path (str): The file system path to the directory containing the context documents.
         """
-        instance = EmbeddingsService.get_instance()
-        instance._load_knowledge_pack(path=context_path, name=context_name)
+        self._load_knowledge_pack(path=context_path, name=context_name)
 
-    @staticmethod
-    def get_embedded_document(document_key: str) -> DocumentEmbedding:
+    def get_embedded_document(self, document_key: str) -> DocumentEmbedding:
         """
         Retrieves a specific document embedding by its key. This method is useful for accessing the embedding of a previously loaded or generated document.
 
@@ -120,17 +67,15 @@ class EmbeddingsService:
         Returns:
             DocumentEmbedding: The embedding of the specified document.
         """
-        instance = EmbeddingsService.get_instance()
-        for _, store in instance._embeddings_stores.items():
+        for _, store in self._embeddings_stores.items():
             embedding = store.get_embedding(document_key)
             if embedding is not None:
                 return embedding
 
         return None
 
-    @staticmethod
     def get_embedded_documents(
-        context: str = None, include_base_context=True
+        self, context: str = None, include_base_context=True
     ) -> List[DocumentEmbedding]:
         """
         Retrieves all stored document embeddings. This method provides access to the complete set of embeddings currently managed by the service.
@@ -141,22 +86,20 @@ class EmbeddingsService:
         Returns:
             List[DocumentEmbedding]: A list of all document embeddings stored in the service.
         """
-        instance = EmbeddingsService.get_instance()
         all_embeddings = []
 
         if include_base_context:
-            store = instance._embeddings_stores["base"]
+            store = self._embeddings_stores["base"]
             all_embeddings.extend(store.get_embeddings())
 
         if context is not None and context != "":
-            store = instance._embeddings_stores[context]
+            store = self._embeddings_stores[context]
             all_embeddings.extend(store.get_embeddings())
 
         return all_embeddings
 
-    @staticmethod
     def similarity_search_with_scores(
-        query: str, context: str, k: int = 5, score_threshold: float = None
+        self, query: str, context: str, k: int = 5, score_threshold: float = None
     ) -> List[Tuple[Document, float]]:
         """
         Performs a similarity search across all stored document embeddings, returning a list of documents and their similarity scores relative to the query. This method supports specifying the number of results (k) and an optional score threshold.
@@ -170,13 +113,10 @@ class EmbeddingsService:
         Returns:
             List[Tuple[Document, float]]: A list of tuples, each containing a Document and its similarity score.
         """
-        instance = EmbeddingsService.get_instance()
-        return instance._similarity_search_with_scores(
-            query, context, k, score_threshold
-        )
+        return self._similarity_search_with_scores(query, context, k, score_threshold)
 
-    @staticmethod
     def similarity_search_on_single_document(
+        self,
         query: str,
         document_key: str,
         context: str,
@@ -196,14 +136,12 @@ class EmbeddingsService:
         Returns:
             List[Document]: A list of documents that are similar to the query.
         """
-        instance = EmbeddingsService.get_instance()
-        return instance._similarity_search_on_single_document(
+        return self._similarity_search_on_single_document(
             query, document_key, context, k, score_threshold
         )
 
-    @staticmethod
     def similarity_search(
-        query: str, context: str, k: int = 5, score_threshold: float = None
+        self, query: str, context: str, k: int = 5, score_threshold: float = None
     ) -> List[Document]:
         """
         Performs a similarity search across all documents, returning only the documents that match the query criteria. This method abstracts away the scores for use cases where only the matching documents are required.
@@ -217,8 +155,7 @@ class EmbeddingsService:
         Returns:
             List[Document]: A list of documents that are similar to the query.
         """
-        instance = EmbeddingsService.get_instance()
-        return instance._similarity_search(query, context, k, score_threshold)
+        return self._similarity_search(query, context, k, score_threshold)
 
     def _get_or_create_embeddings_db_for_context(
         self, context: str
@@ -249,11 +186,11 @@ class EmbeddingsService:
             self._embeddings_stores[name] = InMemoryEmbeddingsDB()
 
         for knowledge_file in knowledge_files:
-            self._load_document(
+            self._load_document_into_store(
                 document_path=os.path.join(path, knowledge_file), context=name
             )
 
-    def _load_document(self, document_path: str, context: str) -> None:
+    def _load_document_into_store(self, document_path: str, context: str) -> None:
         document = frontmatter.load(document_path)
         if (
             document.metadata.get("provider")

@@ -1,17 +1,17 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import gradio as gr
+from content_manager import ContentManager
 from prompts.prompts import PromptList
 from llms.clients import ChatClientConfig
 from prompts.prompts_factory import PromptsFactory
 from llms.chats import ChatOptions, ChatManager
-from knowledge.knowledge import KnowledgeBaseMarkdown
 from ui.chat_context import ChatContext
 from user_feedback import UserFeedback
 from ui.user_context import user_context
 
 
 def enable_brainstorming(
-    knowledge_base: KnowledgeBaseMarkdown,
+    content_manager: ContentManager,
     chat_manager: ChatManager,
     prompts_factory: PromptsFactory,
     client_config: ChatClientConfig,
@@ -19,7 +19,9 @@ def enable_brainstorming(
     prompt_categories=None,
 ):
     tab_id = "brainstorming"
-    prompt_list = prompts_factory.create_brainstorming_prompt_list(knowledge_base)
+    prompt_list = prompts_factory.create_brainstorming_prompt_list(
+        content_manager.knowledge_base_markdown
+    )
     interaction_pattern_name = prompt_list.interaction_pattern_name
 
     chat_context = ChatContext(

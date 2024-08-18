@@ -3,12 +3,11 @@ from typing import List
 import gradio as gr
 from dotenv import load_dotenv
 
-from embeddings.service import EmbeddingsService
+from content_manager import ContentManager
 from llms.clients import ChatClientConfig
 from prompts.prompts import PromptList
 from prompts.prompts_factory import PromptsFactory
 from llms.chats import ChatOptions, ChatManager
-from knowledge.knowledge import KnowledgeBaseMarkdown
 from ui.chat_context import ChatContext
 from llms.image_description_service import ImageDescriptionService
 from user_feedback import UserFeedback
@@ -16,11 +15,10 @@ from ui.user_context import user_context
 
 
 def enable_image_chat(
-    knowledge_base: KnowledgeBaseMarkdown,
+    content_manager: ContentManager,
     chat_manager: ChatManager,
     prompts_factory: PromptsFactory,
     client_config: ChatClientConfig,
-    active_knowledge_context: str,
     user_identifier_state: gr.State,
     prompt_categories: List[str],
     image_service: ImageDescriptionService,
@@ -29,7 +27,7 @@ def enable_image_chat(
     load_dotenv()
     tab_id = "diagrams"
     prompt_list = prompts_factory.create_diagrams_prompt_list(
-        knowledge_base, variables=["image_description"]
+        content_manager.knowledge_base_markdown, variables=["image_description"]
     )
     interaction_pattern_name = prompt_list.interaction_pattern_name
     prompt_list.filter(prompt_categories)
@@ -216,13 +214,13 @@ def enable_image_chat(
 
                     with gr.Group():
                         with gr.Row(elem_classes="knowledge-advice"):
-                            context_selected = active_knowledge_context
+                            context_selected = content_manager.active_knowledge_context
 
                             knowledge_documents = [("All documents", "all")]
                             knowledge_documents.extend(
                                 [
                                     (embedding.title, embedding.key)
-                                    for embedding in EmbeddingsService.get_embedded_documents(
+                                    for embedding in content_manager.embeddings_service.get_embedded_documents(
                                         context=context_selected
                                     )
                                 ]
@@ -335,7 +333,7 @@ def enable_image_chat(
         choices = [("All Documents", "all")]
         choices.extend(
             (embedding.title, embedding.key)
-            for embedding in EmbeddingsService.get_embedded_documents(
+            for embedding in content_manager.embeddings_service.get_embedded_documents(
                 context=knowledge_context_select
             )
         )

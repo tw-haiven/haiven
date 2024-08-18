@@ -18,18 +18,18 @@ class ContentManager:
         self._config_service = config_service
         self.knowledge_pack_definition = KnowledgePack(knowledge_pack_path)
 
-        self.knowledge_base_markdown = None
         self.active_knowledge_context = None
 
-        self._load_base_knowledge()
-        self._pre_load_context_knowledge()
-        self._load_base_embeddings()
-        self._pre_load_context_embeddings()
+        self.knowledge_base_markdown = self._load_base_markdown_knowledge()
+        self._load_context_markdown_knowledge()
 
-    def _load_base_knowledge(self):
-        self.knowledge_base_markdown = KnowledgeBaseMarkdown()
+        self.embeddings_service = self._load_base_embeddings_knowledge()
+        self._load_context_embeddings_knowledge()
+
+    def _load_base_markdown_knowledge(self):
+        knowledge_base_markdown = KnowledgeBaseMarkdown()
         try:
-            self.knowledge_base_markdown.load_base_knowledge(
+            knowledge_base_markdown.load_base_knowledge(
                 self.knowledge_pack_definition.path
             )
         except FileNotFoundError as e:
@@ -38,21 +38,26 @@ class ContentManager:
                 "KnowledgePackKnowledgeNotFound", {"error": str(e)}
             )
 
-    def _load_base_embeddings(self):
+        return knowledge_base_markdown
+
+    def _load_base_embeddings_knowledge(self):
         embedding_model = self._config_service.load_embedding_model()
         base_embeddings_path = self.knowledge_pack_definition.path + "/embeddings"
-        EmbeddingsService.initialize(
-            EmbeddingsClient(embedding_model), self._config_service
+
+        embeddings_service = EmbeddingsService(
+            self._config_service, EmbeddingsClient(embedding_model)
         )
 
         try:
-            EmbeddingsService.load_knowledge_base(base_embeddings_path)
+            embeddings_service.load_knowledge_base(base_embeddings_path)
         except FileNotFoundError as e:
             HaivenLogger.get().analytics(
                 "KnowledgePackEmbeddingsNotFound", {"error": str(e)}
             )
 
-    def _pre_load_context_knowledge(self):
+        return embeddings_service
+
+    def _load_context_markdown_knowledge(self):
         for context in self.knowledge_pack_definition.contexts:
             self._load_context_knowledge(context)
 
@@ -73,7 +78,7 @@ class ContentManager:
                 "KnowledgePackContextNotFound", {"error": str(e)}
             )
 
-    def _pre_load_context_embeddings(self):
+    def _load_context_embeddings_knowledge(self):
         for context in self.knowledge_pack_definition.contexts:
             self._load_context_embeddings(context)
 
@@ -89,7 +94,7 @@ class ContentManager:
         )
 
         try:
-            EmbeddingsService.load_knowledge_context(
+            self.embeddings_service.load_knowledge_context(
                 knowledge_context.name, context_embeddings_path
             )
         except FileNotFoundError as e:

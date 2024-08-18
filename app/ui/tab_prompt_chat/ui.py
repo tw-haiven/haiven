@@ -3,30 +3,30 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
+from content_manager import ContentManager
 from llms.chats import ChatManager, ChatOptions
-from knowledge.knowledge import KnowledgeBaseMarkdown
 from llms.clients import ChatClientConfig
 from ui.chat_context import ChatContext
 from prompts.prompts import PromptList
 from prompts.prompts_factory import PromptsFactory
-from embeddings.service import EmbeddingsService
 from ui.user_context import user_context
 from user_feedback import UserFeedback
 
 
 def enable_chat(
-    knowledge_base: KnowledgeBaseMarkdown,
+    content_manager: ContentManager,
     chat_manager: ChatManager,
     prompts_factory: PromptsFactory,
     client_config: ChatClientConfig,
-    active_knowledge_context: str,
     user_identifier_state: gr.State,
     prompt_categories: List[str],
     knowledge_context_select: gr.Dropdown = None,
 ):
     load_dotenv()
     tab_id = "chat"
-    prompt_list = prompts_factory.create_chat_prompt_list(knowledge_base)
+    prompt_list = prompts_factory.create_chat_prompt_list(
+        content_manager.knowledge_base_markdown
+    )
     interaction_pattern_name = prompt_list.interaction_pattern_name
     prompt_list.filter(prompt_categories)
 
@@ -172,12 +172,12 @@ def enable_chat(
 
                     with gr.Group():
                         with gr.Row(elem_classes="knowledge-advice"):
-                            context_selected = active_knowledge_context
+                            context_selected = content_manager.active_knowledge_context
                             knowledge_documents = [("All documents", "all")]
                             knowledge_documents.extend(
                                 [
                                     (embedding.title, embedding.key)
-                                    for embedding in EmbeddingsService.get_embedded_documents(
+                                    for embedding in content_manager.embeddings_service.get_embedded_documents(
                                         context=context_selected
                                     )
                                 ]
@@ -342,7 +342,7 @@ def enable_chat(
         choices = [("All Documents", "all")]
         choices.extend(
             (embedding.title, embedding.key)
-            for embedding in EmbeddingsService.get_embedded_documents(
+            for embedding in content_manager.embeddings_service.get_embedded_documents(
                 context=knowledge_context_select
             )
         )

@@ -105,17 +105,16 @@ class TestUIFactory(unittest.TestCase):
             category_filter, category_metadata, all_prompts
         )
         mock_enable_chat.assert_called_with(
-            knowledge_base_markdown,
+            content_manager,
             chat_manager,
             prompts_factory,
             client_config,
-            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
         )
         mock_enable_brainstorming.assert_called_with(
-            knowledge_base_markdown,
+            content_manager,
             chat_manager,
             prompts_factory,
             client_config,
@@ -123,20 +122,19 @@ class TestUIFactory(unittest.TestCase):
             category_filter,
         )
         mock_enable_image_chat.assert_called_with(
-            knowledge_base_markdown,
+            content_manager,
             chat_manager,
             prompts_factory,
             client_config,
-            content_manager.active_knowledge_context,
             state,
             category_filter,
             mock_image_description_service,
             knowledge_context_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
+            content_manager,
             chat_manager,
             client_config,
-            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
@@ -257,17 +255,16 @@ class TestUIFactory(unittest.TestCase):
             category_filter, category_metadata, all_prompts
         )
         mock_enable_chat.assert_called_with(
-            knowledge_base_markdown,
+            content_manager,
             chat_manager,
             prompts_factory,
             client_config,
-            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
         )
         mock_enable_brainstorming.assert_called_with(
-            knowledge_base_markdown,
+            content_manager,
             chat_manager,
             prompts_factory,
             client_config,
@@ -275,20 +272,19 @@ class TestUIFactory(unittest.TestCase):
             category_filter,
         )
         mock_enable_image_chat.assert_called_with(
-            knowledge_base_markdown,
+            content_manager,
             chat_manager,
             prompts_factory,
             client_config,
-            content_manager.active_knowledge_context,
             state,
             category_filter,
             mock_image_description_service,
             knowledge_context_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
+            content_manager,
             chat_manager,
             client_config,
-            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
@@ -408,17 +404,16 @@ class TestUIFactory(unittest.TestCase):
             category_filter, category_metadata, all_prompts
         )
         mock_enable_chat.assert_called_with(
-            knowledge_base_markdown,
+            content_manager,
             chat_manager,
             prompts_factory,
             client_config,
-            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
         )
         mock_enable_brainstorming.assert_called_with(
-            knowledge_base_markdown,
+            content_manager,
             chat_manager,
             prompts_factory,
             client_config,
@@ -426,20 +421,19 @@ class TestUIFactory(unittest.TestCase):
             category_filter,
         )
         mock_enable_image_chat.assert_called_with(
-            knowledge_base_markdown,
+            content_manager,
             chat_manager,
             prompts_factory,
             client_config,
-            content_manager.active_knowledge_context,
             state,
             category_filter,
             mock_image_description_service,
             knowledge_context_select,
         )
         mock_enable_knowledge_chat.assert_called_with(
+            content_manager,
             chat_manager,
             client_config,
-            content_manager.active_knowledge_context,
             state,
             category_filter,
             knowledge_context_select,
@@ -526,7 +520,7 @@ class TestUIFactory(unittest.TestCase):
         ui_factory.navigation_manager.get_knowledge_navigation.assert_called_once()
         ui_factory.ui_base_components.ui_header.assert_called_once()
         ui_factory.ui_base_components.ui_show_knowledge.assert_called_with(
-            knowledge_base_markdown, content_manager.knowledge_pack_definition
+            content_manager
         )
         ui.create_llm_settings_ui.assert_called_once()
 

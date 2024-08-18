@@ -9,10 +9,10 @@ from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 from pydantic import BaseModel
 from config_service import ConfigService
+from content_manager import ContentManager
 from embeddings.documents import DocumentsUtils
 from llms.clients import ChatClientFactory
 from logger import HaivenLogger
-from embeddings.service import EmbeddingsService
 
 
 class HaivenBaseChat:
@@ -66,11 +66,13 @@ class StreamingChat(HaivenBaseChat):
     def __init__(
         self,
         chat_client: BaseChatModel,
+        content_manager: ContentManager,
         system_message: str = "You are a helpful assistant",
         stream_in_chunks: bool = False,
     ):
         super().__init__(chat_client, system_message)
         self.stream_in_chunks = stream_in_chunks
+        self.content_manager = content_manager
 
     def run(self, message: str):
         self.memory.append(HumanMessage(content=message))
@@ -147,14 +149,18 @@ class StreamingChat(HaivenBaseChat):
         """
 
         if knowledge_document_key == "all":
-            context_documents = EmbeddingsService.similarity_search(
-                similarity_query, knowledge_context
+            context_documents = (
+                self.content_manager.embeddings_service.similarity_search(
+                    similarity_query, knowledge_context
+                )
             )
         else:
-            knwoeldge_document = EmbeddingsService.get_embedded_document(
-                knowledge_document_key
+            knwoeldge_document = (
+                self.content_manager.embeddings_service.get_embedded_document(
+                    knowledge_document_key
+                )
             )
-            context_documents = EmbeddingsService.similarity_search_on_single_document(
+            context_documents = self.content_manager.embeddings_service.similarity_search_on_single_document(
                 query=similarity_query,
                 document_key=knwoeldge_document.key,
                 context=knwoeldge_document.context,
@@ -278,6 +284,7 @@ class DocumentsChat(HaivenBaseChat):
     def __init__(
         self,
         chat_client: BaseChatModel,
+        content_manager: ContentManager,
         knowledge: str,
         context: str,
         system_message: str = "You are a helpful assistant",
@@ -285,6 +292,7 @@ class DocumentsChat(HaivenBaseChat):
         super().__init__(chat_client, system_message)
         self.context = context
         self.knowledge = knowledge
+        self.content_manager = content_manager
         self.chain = DocumentsChat.create_chain(self.chat_client)
 
     @staticmethod
@@ -299,11 +307,11 @@ class DocumentsChat(HaivenBaseChat):
         )  # TODO: Previously this created a new object, is this still working?
 
         if self.knowledge == "all":
-            search_results = EmbeddingsService.similarity_search(
+            search_results = self.content_manager.embeddings_service.similarity_search(
                 query=message, context=self.context, k=10
             )
         else:
-            search_results = EmbeddingsService.similarity_search_on_single_document(
+            search_results = self.content_manager.embeddings_service.similarity_search_on_single_document(
                 query=message, document_key=self.knowledge, context=self.context
             )
 
@@ -493,10 +501,12 @@ class ChatManager:
         config_service: ConfigService,
         chat_session_memory: ServerChatSessionMemory,
         llm_chat_factory: ChatClientFactory,
+        content_manager: ContentManager,
     ):
         self.config_service = config_service
         self.chat_session_memory = chat_session_memory
         self.llm_chat_factory = llm_chat_factory
+        self.content_manager = content_manager
 
     def clear_session(self, session_id: str):
         self.chat_session_memory.delete_entry(session_id)
@@ -510,7 +520,9 @@ class ChatManager:
         chat_client = self.llm_chat_factory.new_chat_client(client_config)
         return self.chat_session_memory.get_or_create_chat(
             lambda: StreamingChat(
-                chat_client, stream_in_chunks=options.in_chunks if options else None
+                chat_client,
+                self.content_manager,
+                stream_in_chunks=options.in_chunks if options else None,
             ),
             chat_session_key_value=session_id,
             chat_category=options.category if options else None,
@@ -556,6 +568,7 @@ class ChatManager:
         return self.chat_session_memory.get_or_create_chat(
             lambda: DocumentsChat(
                 chat_client=chat_client,
+                content_manager=self.content_manager,
                 knowledge=knowledge_key,
                 context=knowledge_context,
             ),

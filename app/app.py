@@ -45,7 +45,7 @@ class App:
         chat_session_memory = ServerChatSessionMemory()
         llm_chat_factory = ChatClientFactory(config_service)
         chat_manager = ChatManager(
-            config_service, chat_session_memory, llm_chat_factory
+            config_service, chat_session_memory, llm_chat_factory, content_manager
         )
 
         self.ui_factory = UIFactory(

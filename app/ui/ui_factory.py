@@ -121,17 +121,16 @@ class UIFactory:
                             ),
                         )
                         enable_chat(
-                            self.content_manager.knowledge_base_markdown,
+                            self.content_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
-                            self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
                             knowledge_context_select,
                         )
                         enable_brainstorming(
-                            self.content_manager.knowledge_base_markdown,
+                            self.content_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
@@ -139,20 +138,19 @@ class UIFactory:
                             category_filter,
                         )
                         enable_image_chat(
-                            self.content_manager.knowledge_base_markdown,
+                            self.content_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
-                            self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
                             self.image_service,
                             knowledge_context_select,
                         )
                         enable_knowledge_chat(
+                            self.content_manager,
                             self.chat_manager,
                             self.__client_config,
-                            self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
                             knowledge_context_select,
@@ -224,17 +222,16 @@ class UIFactory:
                             ),
                         )
                         enable_chat(
-                            self.content_manager.knowledge_base_markdown,
+                            self.content_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
-                            self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
                             knowledge_context_select,
                         )
                         enable_brainstorming(
-                            self.content_manager.knowledge_base_markdown,
+                            self.content_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
@@ -242,20 +239,19 @@ class UIFactory:
                             category_filter,
                         )
                         enable_image_chat(
-                            self.content_manager.knowledge_base_markdown,
+                            self.content_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
-                            self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
                             self.image_service,
                             knowledge_context_select,
                         )
                         enable_knowledge_chat(
+                            self.content_manager,
                             self.chat_manager,
                             self.__client_config,
-                            self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
                             knowledge_context_select,
@@ -322,17 +318,16 @@ class UIFactory:
                             ),
                         )
                         enable_chat(
-                            self.content_manager.knowledge_base_markdown,
+                            self.content_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
-                            self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
                             knowledge_context_select,
                         )
                         enable_brainstorming(
-                            self.content_manager.knowledge_base_markdown,
+                            self.content_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
@@ -340,20 +335,19 @@ class UIFactory:
                             category_filter,
                         )
                         enable_image_chat(
-                            self.content_manager.knowledge_base_markdown,
+                            self.content_manager,
                             self.chat_manager,
                             self.prompts_factory,
                             self.__client_config,
-                            self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
                             self.image_service,
                             knowledge_context_select,
                         )
                         enable_knowledge_chat(
+                            self.content_manager,
                             self.chat_manager,
                             self.__client_config,
-                            self.content_manager.active_knowledge_context,
                             user_identifier_state,
                             category_filter,
                             knowledge_context_select,
@@ -413,8 +407,7 @@ class UIFactory:
                         user_identifier_state = gr.State()
                         with gr.Tab("Knowledge"):
                             self.ui_base_components.ui_show_knowledge(
-                                self.content_manager.knowledge_base_markdown,
-                                self.content_manager.knowledge_pack_definition,
+                                self.content_manager
                             )
 
                 with gr.Row():

@@ -3,8 +3,8 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
+from content_manager import ContentManager
 from embeddings.documents import DocumentsUtils
-from embeddings.service import EmbeddingsService
 from llms.clients import ChatClientConfig
 from llms.chats import ChatOptions, ChatManager
 from ui.chat_context import ChatContext
@@ -13,9 +13,9 @@ from ui.user_context import user_context
 
 
 def enable_knowledge_chat(
+    content_manager: ContentManager,
     chat_manager: ChatManager,
     client_config: ChatClientConfig,
-    active_knowledge_context: str,
     user_identifier_state: gr.State,
     category_filter: List[str],
     knowledge_context_select: gr.Dropdown = None,
@@ -58,11 +58,11 @@ def enable_knowledge_chat(
                     )
                     with gr.Group():
                         with gr.Row(elem_classes="knowledge-advice"):
-                            context_selected = active_knowledge_context
+                            context_selected = content_manager.active_knowledge_context
                             knowledge_documents = [("All documents", "all")]
                             knowledge_documents.extend(
                                 (embedding.title, embedding.key)
-                                for embedding in EmbeddingsService.get_embedded_documents(
+                                for embedding in content_manager.embeddings_service.get_embedded_documents(
                                     context=context_selected
                                 )
                             )
@@ -102,8 +102,10 @@ def enable_knowledge_chat(
                         request, "active_knowledge_context", app_level=True
                     )
                 else:
-                    knowledge = EmbeddingsService.get_embedded_document(
-                        knowledge_document_selected
+                    knowledge = (
+                        content_manager.embeddings_service.get_embedded_document(
+                            knowledge_document_selected
+                        )
                     )
                     knowledge_key = knowledge.key
                     knowledge_context = knowledge.context
@@ -199,7 +201,7 @@ def enable_knowledge_chat(
         choices = [("All Documents", "all")]
         choices.extend(
             (embedding.title, embedding.key)
-            for embedding in EmbeddingsService.get_embedded_documents(
+            for embedding in content_manager.embeddings_service.get_embedded_documents(
                 context=knowledge_context_select
             )
         )

@@ -11,8 +11,6 @@ from embeddings.service import EmbeddingsService
 class TestsEmbeddingsService:
     @pytest.fixture(autouse=True)
     def setup(self):
-        EmbeddingsService.reset_instance()
-
         embedding_model = EmbeddingModel(
             id="ollama-embeddings",
             name="Ollama Embeddings",
@@ -38,10 +36,8 @@ class TestsEmbeddingsService:
         embeddings_provider_mock.embedding_model = embedding_model
         config_service_mock = MagicMock()
         config_service_mock.load_embedding_model.return_value = embedding_model
-        EmbeddingsService.initialize(embeddings_provider_mock, config_service_mock)
 
-        self.service = EmbeddingsService.get_instance()
-        self.service._embeddings_provider = embeddings_provider_mock
+        self.service = EmbeddingsService(config_service_mock, embeddings_provider_mock)
         self.service._embeddings_provider.embedding_model = embedding_model
         self.knowledge_pack_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -51,12 +47,16 @@ class TestsEmbeddingsService:
     def test_load_base_knowledge_pack_creates_one_entry_in_stores(
         self,
     ):
-        assert len(self.service._embeddings_stores) == 0
+        assert len(self.service._embeddings_stores) == 1
+        assert self.service._embeddings_stores["base"]._embeddings == {}
 
         self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
 
         assert len(self.service._embeddings_stores) == 1
-        assert "base" in self.service._embeddings_stores.keys()
+        assert (
+            "ingenuity-wikipedia"
+            in self.service._embeddings_stores["base"]._embeddings.keys()
+        )
 
     def test_load_context_knowledge_with_empty_embeddings_raise_error(
         self,
@@ -72,13 +72,14 @@ class TestsEmbeddingsService:
             exception_raised = True
 
         assert exception_raised
-        assert len(self.service._embeddings_stores) == 0
+        assert len(self.service._embeddings_stores) == 1  # only base embeddings
+        assert "base" in self.service._embeddings_stores.keys()
         assert "Context B" not in self.service._embeddings_stores.keys()
 
     def test_load_base_and_context_knowledge_creates_two_entry_in_stores(
         self,
     ):
-        assert len(self.service._embeddings_stores) == 0
+        assert len(self.service._embeddings_stores) == 1
 
         self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
 
@@ -97,7 +98,7 @@ class TestsEmbeddingsService:
     def test_re_load_base_or_context_knowledge_should_not_create_extra_entries(
         self,
     ):
-        assert len(self.service._embeddings_stores) == 0
+        assert len(self.service._embeddings_stores) == 1
 
         self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
 
@@ -174,7 +175,7 @@ class TestsEmbeddingsService:
     def test_similarity_search_for_context_should_return_documents_from_base_and_context_stores_sorted_by_scores(
         self,
     ):
-        assert len(self.service._embeddings_stores) == 0
+        assert len(self.service._embeddings_stores) == 1
 
         self.service.load_knowledge_base(self.knowledge_pack_path + "/embeddings")
 

@@ -3,13 +3,12 @@ from typing import List
 
 import gradio as gr
 from dotenv import load_dotenv
+from content_manager import ContentManager
 from embeddings.documents import DocumentsUtils
-from knowledge.knowledge import KnowledgeBaseMarkdown
 from llms.clients import ChatClientConfig
 from knowledge.knowledge_pack import KnowledgePack
 from prompts.prompts import PromptList
 from config_service import ConfigService
-from embeddings.service import EmbeddingsService
 
 
 class UIBaseComponents:
@@ -78,11 +77,7 @@ class UIBaseComponents:
                     navigation_html += f"<div class='item'><a href='/{item['path']}' class='item-link {classes} {'selected' if navigation['selected'] == item['path'] else ''}'>{icon_html}{item['title']}</a></div>"
                 gr.HTML(f"<div class='navigation'>{navigation_html}</div>")
 
-    def ui_show_knowledge(
-        self,
-        knowledge_base_markdown: KnowledgeBaseMarkdown,
-        knwoledge_pack_definition: KnowledgePack,
-    ):
+    def ui_show_knowledge(self, content_manager: ContentManager):
         with gr.Row():
             with gr.Column(scale=2, elem_classes="knowledge-column"):
                 gr.Markdown("""## Prompt snippets
@@ -91,10 +86,11 @@ class UIBaseComponents:
                             Which of the snippets get pulled in depends on the definition of the prompt.
                             """)
                 for context_key in [
-                    context.name for context in knwoledge_pack_definition.contexts
+                    context.name
+                    for context in content_manager.knowledge_pack_definition.contexts
                 ]:
-                    context_content = (
-                        knowledge_base_markdown.get_all_knowledge_documents(context_key)
+                    context_content = content_manager.knowledge_base_markdown.get_all_knowledge_documents(
+                        context_key
                     )
                     with gr.Accordion(
                         label=context_key.replace("_", " ").title(),
@@ -118,7 +114,9 @@ class UIBaseComponents:
                             You can address these documents while you are chatting (see button "Get input from team knowledge"),
                             and you can also ask them questions directly on the "Knowledge chat" tab.
                             """)
-                context_content = EmbeddingsService.get_embedded_documents()
+                context_content = (
+                    content_manager.embeddings_service.get_embedded_documents()
+                )
                 with gr.Accordion(
                     label="Common documents",
                     open=False,
@@ -143,10 +141,13 @@ class UIBaseComponents:
                         )
 
                 for context_key in [
-                    context.name for context in knwoledge_pack_definition.contexts
+                    context.name
+                    for context in content_manager.knowledge_pack_definition.contexts
                 ]:
-                    context_content = EmbeddingsService.get_embedded_documents(
-                        context_key, False
+                    context_content = (
+                        content_manager.embeddings_service.get_embedded_documents(
+                            context_key, False
+                        )
                     )
                     with gr.Accordion(
                         label=context_key.replace("_", " ").title(),
