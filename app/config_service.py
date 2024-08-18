@@ -5,7 +5,7 @@ from typing import List
 
 import yaml
 from dotenv import load_dotenv
-from knowledge.knowledge_pack import KnowledgePackError
+from knowledge.pack import KnowledgePackError
 from llms.default_models import DefaultModels
 from embeddings.model import EmbeddingModel
 from llms.model import Model

@@ -24,9 +24,9 @@ class TestChats(unittest.TestCase):
             )
         ]
 
-        embeddings_service = MagicMock()
-        mock_content_manager.embeddings_service = embeddings_service
-        embeddings_service.similarity_search_on_single_document.return_value = [
+        mock_knowledge_base_documents = MagicMock()
+        mock_content_manager.knowledge_base_documents = mock_knowledge_base_documents
+        mock_knowledge_base_documents.similarity_search_on_single_document.return_value = [
             document for document in expected_documents
         ]
 

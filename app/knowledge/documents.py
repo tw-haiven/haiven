@@ -12,9 +12,11 @@ from config_service import ConfigService
 from embeddings.in_memory import InMemoryEmbeddingsDB
 
 
-class EmbeddingsService:
+class KnowledgeBaseDocuments:
     """
-    EmbeddingsService is responsible for managing embeddings operations. It provides functionalities to initialize and retrieve the singleton instance, load embeddings, and perform similarity searches on documents. The class uses an embeddings provider to generate embeddings and an in-memory database to store and retrieve embeddings.
+    KnowledgeBaseDocuments is responsible for managing the embeddings in the knowledge pack.
+    It provides functionalities to load and store the embeddings, and perform similarity searches on documents.
+    The class uses an embeddings provider to generate embeddings and an in-memory database to store and retrieve embeddings.
 
     Attributes:
         _embeddings_stores (dict[str, InMemoryEmbeddingsDB]): The in-memory database for storing embeddings.

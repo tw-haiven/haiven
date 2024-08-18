@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from content_manager import ContentManager
 from embeddings.documents import DocumentsUtils
 from llms.clients import ChatClientConfig
-from knowledge.knowledge_pack import KnowledgePack
+from knowledge.pack import KnowledgePack
 from prompts.prompts import PromptList
 from config_service import ConfigService
 
@@ -115,7 +115,7 @@ class UIBaseComponents:
                             and you can also ask them questions directly on the "Knowledge chat" tab.
                             """)
                 context_content = (
-                    content_manager.embeddings_service.get_embedded_documents()
+                    content_manager.knowledge_base_documents.get_embedded_documents()
                 )
                 with gr.Accordion(
                     label="Common documents",
@@ -145,7 +145,7 @@ class UIBaseComponents:
                     for context in content_manager.knowledge_pack_definition.contexts
                 ]:
                     context_content = (
-                        content_manager.embeddings_service.get_embedded_documents(
+                        content_manager.knowledge_base_documents.get_embedded_documents(
                             context_key, False
                         )
                     )

@@ -3,16 +3,20 @@ import os
 
 import frontmatter
 
-from knowledge.knowledge_document import KnowledgeDocument
+
+class KnowledgeMarkdown:
+    def __init__(self, content: str, metadata: dict):
+        self.content = content
+        self.metadata = metadata
 
 
 class KnowledgeBaseMarkdown:
-    _knowledge: dict[str, list[KnowledgeDocument]]
+    _knowledge: dict[str, list[KnowledgeMarkdown]]
 
     def __init__(self):
         self._knowledge = {}
 
-    def _load_context(self, path: str) -> list[KnowledgeDocument]:
+    def _load_context(self, path: str) -> list[KnowledgeMarkdown]:
         knowledge_files = sorted(
             [f for f in os.listdir(path) if f.endswith(".md") and f != "README.md"]
         )
@@ -26,7 +30,7 @@ class KnowledgeBaseMarkdown:
         for content in file_contents:
             if content.metadata.get("key"):
                 context_content.append(
-                    KnowledgeDocument(content.content, content.metadata)
+                    KnowledgeMarkdown(content.content, content.metadata)
                 )
 
         return context_content
@@ -51,7 +55,7 @@ class KnowledgeBaseMarkdown:
 
     def get_knowledge_document(
         self, context: str, knowledge_key: str
-    ) -> KnowledgeDocument:
+    ) -> KnowledgeMarkdown:
         """
         Retrieves a specific knowledge entry by its key from the specified context.
 
@@ -88,7 +92,7 @@ class KnowledgeBaseMarkdown:
         ]
         return all_keys
 
-    def get_all_knowledge_documents(self, context: str) -> list[KnowledgeDocument]:
+    def get_all_knowledge_documents(self, context: str) -> list[KnowledgeMarkdown]:
         all_knowledge = self._knowledge[context]
         return all_knowledge
 

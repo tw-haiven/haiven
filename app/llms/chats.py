@@ -150,17 +150,17 @@ class StreamingChat(HaivenBaseChat):
 
         if knowledge_document_key == "all":
             context_documents = (
-                self.content_manager.embeddings_service.similarity_search(
+                self.content_manager.knowledge_base_documents.similarity_search(
                     similarity_query, knowledge_context
                 )
             )
         else:
             knwoeldge_document = (
-                self.content_manager.embeddings_service.get_embedded_document(
+                self.content_manager.knowledge_base_documents.get_embedded_document(
                     knowledge_document_key
                 )
             )
-            context_documents = self.content_manager.embeddings_service.similarity_search_on_single_document(
+            context_documents = self.content_manager.knowledge_base_documents.similarity_search_on_single_document(
                 query=similarity_query,
                 document_key=knwoeldge_document.key,
                 context=knwoeldge_document.context,
@@ -307,11 +307,13 @@ class DocumentsChat(HaivenBaseChat):
         )  # TODO: Previously this created a new object, is this still working?
 
         if self.knowledge == "all":
-            search_results = self.content_manager.embeddings_service.similarity_search(
-                query=message, context=self.context, k=10
+            search_results = (
+                self.content_manager.knowledge_base_documents.similarity_search(
+                    query=message, context=self.context, k=10
+                )
             )
         else:
-            search_results = self.content_manager.embeddings_service.similarity_search_on_single_document(
+            search_results = self.content_manager.knowledge_base_documents.similarity_search_on_single_document(
                 query=message, document_key=self.knowledge, context=self.context
             )
 

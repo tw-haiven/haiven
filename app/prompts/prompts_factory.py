@@ -1,5 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-from knowledge.knowledge import KnowledgeBaseMarkdown
+from knowledge.markdown import KnowledgeBaseMarkdown
 from prompts.prompts import PromptList
 
 

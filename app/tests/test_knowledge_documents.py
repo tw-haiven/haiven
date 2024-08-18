@@ -5,10 +5,10 @@ from unittest.mock import MagicMock
 import pytest
 from langchain.docstore.document import Document
 from embeddings.model import EmbeddingModel
-from embeddings.service import EmbeddingsService
+from knowledge.documents import KnowledgeBaseDocuments
 
 
-class TestsEmbeddingsService:
+class TestsKnowledgeBaseDocuments:
     @pytest.fixture(autouse=True)
     def setup(self):
         embedding_model = EmbeddingModel(
@@ -37,7 +37,9 @@ class TestsEmbeddingsService:
         config_service_mock = MagicMock()
         config_service_mock.load_embedding_model.return_value = embedding_model
 
-        self.service = EmbeddingsService(config_service_mock, embeddings_provider_mock)
+        self.service = KnowledgeBaseDocuments(
+            config_service_mock, embeddings_provider_mock
+        )
         self.service._embeddings_provider.embedding_model = embedding_model
         self.knowledge_pack_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),

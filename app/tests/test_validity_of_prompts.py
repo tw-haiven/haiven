@@ -2,7 +2,7 @@
 import os
 
 import pytest
-from knowledge.knowledge import KnowledgeBaseMarkdown
+from knowledge.markdown import KnowledgeBaseMarkdown
 from prompts.prompts import PromptList
 
 

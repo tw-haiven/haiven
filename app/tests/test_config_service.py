@@ -4,7 +4,7 @@ import tempfile
 from typing import List
 
 import pytest
-from knowledge.knowledge_pack import KnowledgePackError
+from knowledge.pack import KnowledgePackError
 from llms.default_models import DefaultModels
 from embeddings.model import EmbeddingModel
 from llms.model import Model

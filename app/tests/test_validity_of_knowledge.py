@@ -2,7 +2,7 @@
 import os
 
 import pytest
-from knowledge.knowledge import (
+from knowledge.markdown import (
     KnowledgeBaseMarkdown,
 )
 

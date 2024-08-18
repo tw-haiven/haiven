@@ -11,14 +11,14 @@ class TestContentManager:
     config_file_path = get_test_data_path() + "/test_config.yaml"
 
     @patch("content_manager.EmbeddingsClient")
-    @patch("content_manager.EmbeddingsService")
+    @patch("content_manager.KnowledgeBaseDocuments")
     @patch("content_manager.ConfigService")
     @patch("content_manager.KnowledgeBaseMarkdown")
     def test_init(
         self,
         mock_knowledge_base_markdown,
         mock_config_service,
-        mock_embeddings_service,
+        mock_knowledge_base_documents,
         mock_embeddings,
     ):
         mock_config_service.load_embedding_model.return_value = {}
@@ -32,9 +32,11 @@ class TestContentManager:
 
         mock_config_service.load_embedding_model.assert_called_once()
 
-        assert content_manager.embeddings_service is not None
-        mock_embeddings_service_instance = mock_embeddings_service.return_value
-        mock_embeddings_service_instance.load_knowledge_base.assert_called_once_with(
+        assert content_manager.knowledge_base_documents is not None
+        mock_knowledge_base_documents_instance = (
+            mock_knowledge_base_documents.return_value
+        )
+        mock_knowledge_base_documents_instance.load_knowledge_base.assert_called_once_with(
             self.knowledge_pack_path + "/embeddings"
         )
 

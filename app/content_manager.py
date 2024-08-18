@@ -3,28 +3,28 @@ from config_service import ConfigService
 from logger import HaivenLogger
 
 from embeddings.client import EmbeddingsClient
-from knowledge.knowledge import KnowledgeBaseMarkdown
-from knowledge.knowledge_pack import (
+from knowledge.markdown import KnowledgeBaseMarkdown
+from knowledge.pack import (
     KnowledgeContext,
     KnowledgePack,
 )
-from embeddings.service import EmbeddingsService
+from knowledge.documents import KnowledgeBaseDocuments
 
 
 class ContentManager:
     def __init__(self, config_service: ConfigService):
-        knowledge_pack_path = config_service.load_knowledge_pack_path()
-
         self._config_service = config_service
-        self.knowledge_pack_definition = KnowledgePack(knowledge_pack_path)
 
+        self.knowledge_pack_definition = KnowledgePack(
+            config_service.load_knowledge_pack_path()
+        )
         self.active_knowledge_context = None
 
         self.knowledge_base_markdown = self._load_base_markdown_knowledge()
         self._load_context_markdown_knowledge()
 
-        self.embeddings_service = self._load_base_embeddings_knowledge()
-        self._load_context_embeddings_knowledge()
+        self.knowledge_base_documents = self._load_base_documents_knowledge()
+        self._load_context_documents_knowledge()
 
     def _load_base_markdown_knowledge(self):
         knowledge_base_markdown = KnowledgeBaseMarkdown()
@@ -40,22 +40,22 @@ class ContentManager:
 
         return knowledge_base_markdown
 
-    def _load_base_embeddings_knowledge(self):
+    def _load_base_documents_knowledge(self):
         embedding_model = self._config_service.load_embedding_model()
         base_embeddings_path = self.knowledge_pack_definition.path + "/embeddings"
 
-        embeddings_service = EmbeddingsService(
+        knowledge_base_documents = KnowledgeBaseDocuments(
             self._config_service, EmbeddingsClient(embedding_model)
         )
 
         try:
-            embeddings_service.load_knowledge_base(base_embeddings_path)
+            knowledge_base_documents.load_knowledge_base(base_embeddings_path)
         except FileNotFoundError as e:
             HaivenLogger.get().analytics(
                 "KnowledgePackEmbeddingsNotFound", {"error": str(e)}
             )
 
-        return embeddings_service
+        return knowledge_base_documents
 
     def _load_context_markdown_knowledge(self):
         for context in self.knowledge_pack_definition.contexts:
@@ -78,7 +78,7 @@ class ContentManager:
                 "KnowledgePackContextNotFound", {"error": str(e)}
             )
 
-    def _load_context_embeddings_knowledge(self):
+    def _load_context_documents_knowledge(self):
         for context in self.knowledge_pack_definition.contexts:
             self._load_context_embeddings(context)
 
@@ -94,7 +94,7 @@ class ContentManager:
         )
 
         try:
-            self.embeddings_service.load_knowledge_context(
+            self.knowledge_base_documents.load_knowledge_context(
                 knowledge_context.name, context_embeddings_path
             )
         except FileNotFoundError as e:
