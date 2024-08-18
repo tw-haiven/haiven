@@ -3,7 +3,7 @@
 
 This is a high level overview of how the (Python) code is structured, as of the time of committing this. It's not fully complete, but shows the components that are most important to understand the structure.
 
-First, an overview of the main shared components:
+First, an overview of the main shared components (where "KP Files" means "Knowledge Pack Files", i.e. that component is loading files from the knowledge pack):
 
 ```mermaid
 %%{init: {'theme': 'neutral' } }%%
@@ -16,7 +16,6 @@ graph TD;
 
     subgraph LLMs
         ChatClientFactory --> |creates| BaseChatModel[langchain_core...BaseChatModel]
-        style BaseChatModel fill:lightyellow
         ChatClientConfig
         ImageDescriptionService
     end
@@ -27,10 +26,15 @@ graph TD;
     subgraph Knowledge
         KnowledgeManager
         KnowledgeManager --> |creates| KnowledgeBaseMarkdown
+        
+        KnowledgeBaseMarkdown --> FilesystemKnowledge[KP Files]
         KnowledgeManager --> |creates| KnowledgeBaseDocuments
         KnowledgeManager --> |creates| KnowledgePack
+        KnowledgeBaseDocuments --> FilesystemKnowledge
         KnowledgeBaseDocuments --> EmbeddingsClient
         KnowledgeBaseDocuments --> InMemoryEmbeddingsDB
+        InMemoryEmbeddingsDB --> FAISS
+        
         InMemoryEmbeddingsDB --> |*| DocumentEmbedding
         KnowledgePack -->|**| KnowledgeContext
     end
@@ -39,6 +43,7 @@ graph TD;
 
     subgraph Prompts
         PromptsFactory --> |create| PromptList
+        PromptList --> FilesystemPrompts[KP Files]
     end
 
     subgraph Chats
@@ -60,6 +65,11 @@ graph TD;
     JSONChat --> KnowledgeManager
 
     ImageDescriptionService --> ConfigService
+
+    style BaseChatModel fill:lightyellow
+    style FilesystemPrompts fill:lightgreen
+    style FilesystemKnowledge fill:lightgreen
+    style FAISS fill:lightblue
     
 ```
 
