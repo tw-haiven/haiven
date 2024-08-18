@@ -1,9 +1,13 @@
 
 # Codebase overview
 
-This is a high level overview of how the (Python) code is structured, as of the time of committing this. It's not fully complete, but shows the components that are most important to understand the structure.
+This is a high level overview of how the (Python) code is structured, as of the time of committing this. It's not fully complete, but shows the components that are most important to understand the structure. 
 
-First, an overview of the main shared components (where "KP Files" means "Knowledge Pack Files", i.e. that component is loading files from the knowledge pack):
+First, an overview of the main shared components
+
+* "KP Files" stands for "Knowledge Pack Files", i.e. that component is loading files from the knowledge pack
+* All of these are getting wired together in [`App`](../app/app.py).
+
 
 ```mermaid
 %%{init: {'theme': 'neutral' } }%%
@@ -12,6 +16,7 @@ graph TD;
 
     subgraph Config
         ConfigService
+        ConfigService --> FilesystemConfig[config.yaml]
     end
 
     subgraph LLMs
@@ -22,7 +27,6 @@ graph TD;
 
     ChatClientFactory --> ConfigService
 
-    
     subgraph Knowledge
         KnowledgeManager
         KnowledgeManager --> |creates| KnowledgeBaseMarkdown
@@ -69,6 +73,7 @@ graph TD;
     style BaseChatModel fill:lightyellow
     style FilesystemPrompts fill:lightgreen
     style FilesystemKnowledge fill:lightgreen
+    style FilesystemConfig fill:lightgreen
     style FAISS fill:lightblue
     
 ```
