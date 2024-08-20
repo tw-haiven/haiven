@@ -1,8 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import { Card, Space, Flex, Tag } from "antd";
-
-import { use, useEffect, useState } from "react";
-
+import { Card, Space, Tag } from "antd";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { getPrompts } from "../app/_boba_api";
 
 export default function ChatDashboard() {
@@ -77,7 +76,7 @@ export default function ChatDashboard() {
       <Space direction="horizontal" wrap>
         {filteredPrompts.map((prompt, index) => {
           return (
-            <a
+            <Link
               href={"/chat?prompt=" + prompt.identifier}
               key={prompt.identifier + "-href"}
             >
@@ -108,7 +107,7 @@ export default function ChatDashboard() {
                 <div className="card-prop-name">Input needed</div>
                 <div className="card-prop-value">{prompt.help_user_input}</div>
               </Card>
-            </a>
+            </Link>
           );
         })}
       </Space>

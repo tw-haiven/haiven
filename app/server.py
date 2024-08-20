@@ -101,6 +101,7 @@ class Server:
                 "creative-matrix",
                 "requirements",
                 "story-validation",
+                "dashboard",
             ]
             paths = request.url.path.split("/")
             if (
