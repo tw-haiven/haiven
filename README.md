@@ -146,13 +146,21 @@ If you want to use Azure, GCP or AWS, you need to set the corresponding environm
 Prerequisites:
 - Python3
 - [Poetry](https://python-poetry.org/)
+- Node and yarn
 - While you don't have OAuth integration and credentials set up yet, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
 
-Run:
+Run backend and chat mode UI (GradIO):
 
 ```
 poetry run init
 poetry run app
+```
+
+Run guided mode UI in addition (React):
+```
+cd ui
+yarn install
+yarn copy
 ```
 
 Test:
