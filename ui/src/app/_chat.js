@@ -30,8 +30,9 @@ const ChatWidget = forwardRef(
     };
 
     useImperativeHandle(ref, () => ({
-      async sendMessage(message) {
+      async startNewConversation(message) {
         setChatIsVisible(true);
+        proChat.clearMessage();
         return await proChat.sendMessage(message);
       },
     }));

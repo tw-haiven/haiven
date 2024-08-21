@@ -70,7 +70,7 @@ export default function ChatExploration({
 
   const addMessageToChatWidget = async (prompt) => {
     if (chatRef.current) {
-      chatRef.current.sendMessage(prompt);
+      chatRef.current.startNewConversation(prompt);
     }
   };
 

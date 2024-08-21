@@ -19,7 +19,7 @@ const PromptChat = () => {
   const [promptInput, setPromptInput] = useState("");
   const [selectedPrompt, setPromptSelection] = useState("");
   const [showChat, setShowChat] = useState(false);
-  const [promptStarted, setPromptStarted] = useState(false);
+  const [conversationStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
   const [clipboardDrawerOpen, setClipboardDrawerOpen] = useState(false);
   const [imageDescription, setImageDescription] = useState("");
@@ -27,10 +27,13 @@ const PromptChat = () => {
   useEffect(() => setShowChat(false), []);
 
   const submitPromptToBackend = async (messages) => {
-    if (promptStarted !== true) {
-      const lastMessage = messages[messages.length - 1];
+    if (conversationStarted !== true) {
+      // start a new chat session with the selected prompt
+
+      const userInput = messages[messages.length - 1];
+
       const requestData = {
-        userinput: lastMessage?.content,
+        userinput: userInput?.content,
         promptid: selectedPrompt.identifier,
         chatSessionId: chatSessionId,
       };
@@ -50,7 +53,7 @@ const PromptChat = () => {
       setShowChat(true);
       return response;
     } else {
-      console.log("Continuing conversation...");
+      // continue chat session
       const lastMessage = messages[messages.length - 1];
       const response = await fetch("/api/prompt", {
         method: "POST",
@@ -85,7 +88,6 @@ const PromptChat = () => {
     getContexts((data) => {
       const labelValuePairs = data.map((context) => {
         if (context.context === "base") {
-          console.log("context is base!");
           return {
             label: "none",
             value: "base",
@@ -109,13 +111,16 @@ const PromptChat = () => {
     }
   }, [prompts]);
 
-  const onImageDescriptionChange = async (description) => {
-    setImageDescription(description);
-  };
-
   const startChat = async () => {
     if (chatRef.current) {
-      chatRef.current.sendMessage(promptInput);
+      // the ProChat controls the flow - let it know we have a new message,
+      // the ultimate request will come back to "onSubmitPrompt" function here
+
+      let userInput = promptInput;
+      if (imageDescription && imageDescription !== "") {
+        userInput += "\n\n" + imageDescription;
+      }
+      chatRef.current.startNewConversation(userInput);
     }
   };
 
