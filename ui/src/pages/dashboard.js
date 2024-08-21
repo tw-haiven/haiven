@@ -42,6 +42,11 @@ export default function ChatDashboard() {
   }, []);
 
   useEffect(() => {
+    if (selectedCategories.length === 0) {
+      setFilteredPrompts(prompts);
+      return;
+    }
+
     setFilteredPrompts(
       prompts.filter((prompt) =>
         prompt.categories.some((category) =>
