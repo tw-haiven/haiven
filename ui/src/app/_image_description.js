@@ -1,13 +1,15 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState, useEffect } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { Flex, message, Upload } from "antd";
+import { Flex, message, Upload, Button, Spin } from "antd";
 import { fetchSSE } from "./_fetch_sse";
 
+let ctrl;
+
 const DescribeImage = ({ onImageDescriptionChange }) => {
-  const [loading, setLoading] = useState(false);
   const [previewImageDataUrl, setPreviewImageDataUrl] = useState();
   const [image, setImage] = useState();
+  const [descriptionLoading, setDescriptionLoading] = useState(false);
 
   const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -28,12 +30,21 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
     return isJpgOrPng && isLt2M;
   };
 
+  function abortDescriptionLoad() {
+    ctrl && ctrl.abort("User aborted");
+    setDescriptionLoading(false);
+  }
+
   const describeImage = async (image) => {
     const formData = new FormData();
     formData.append("file", image);
     formData.append("prompt", "Describe this technical diagram to me");
 
+    setDescriptionLoading(true);
+    ctrl = new AbortController();
+
     let ms = "";
+    onImageDescriptionChange(ms);
 
     fetchSSE(
       "/api/prompt/image",
@@ -42,12 +53,16 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
         credentials: "include",
         headers: {},
         body: formData,
+        signal: ctrl.signal,
       },
       {
         onErrorHandle: () => {
           onImageDescriptionChange("Error loading image description");
+          abortDescriptionLoad(false);
         },
-        onFinish: () => {},
+        onFinish: () => {
+          setDescriptionLoading(false);
+        },
         onMessageHandle: (data) => {
           try {
             ms += data;
@@ -68,7 +83,6 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
 
   const handleChange = (info) => {
     getBase64(info.file.originFileObj, (url) => {
-      setLoading(false);
       setPreviewImageDataUrl(url);
     });
     setImage(info.file.originFileObj);
@@ -82,7 +96,7 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
       }}
       type="button"
     >
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <PlusOutlined />
       <div
         style={{
           marginTop: 8,
@@ -102,6 +116,7 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
         showUploadList={false}
         beforeUpload={beforeUpload}
         onChange={handleChange}
+        disabled={descriptionLoading}
       >
         {previewImageDataUrl ? (
           <img
@@ -115,6 +130,14 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
           uploadButton
         )}
       </Upload>
+      {descriptionLoading && (
+        <>
+          <Spin />
+          <Button type="primary" danger onClick={abortDescriptionLoad}>
+            Stop
+          </Button>
+        </>
+      )}
     </Flex>
   );
 };
