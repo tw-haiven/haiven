@@ -59,7 +59,9 @@ class ImageDescriptionService:
         self.model_definition = model
         self.model_client = None  # will be instantiated based on the provider
 
-    def prompt_with_image(self, image_from_gradio: Image, user_input: str) -> str:
+    def prompt_with_image(
+        self, image_from_gradio: Image, user_input: str, stream: bool = False
+    ) -> str:
         if image_from_gradio is None:
             return ""
 
@@ -70,7 +72,9 @@ class ImageDescriptionService:
             case "gcp":
                 return self._describe_with_gcp(image_from_gradio, user_input)
             case "azure":
-                return self._describe_image_with_azure(image_from_gradio, user_input)
+                return self._describe_image_with_azure(
+                    image_from_gradio, user_input, stream
+                )
             case "aws":
                 return self._describe_image_with_aws_anthropic(
                     image_from_gradio, user_input
@@ -131,7 +135,9 @@ class ImageDescriptionService:
 
         return response.choices[0].message.content
 
-    def _describe_image_with_azure(self, image: Image.Image, user_input: str) -> str:
+    def _describe_image_with_azure(
+        self, image: Image.Image, user_input: str, stream: bool = False
+    ) -> str:
         if self.model_client is None:
             azure_endpoint = self.model_definition.config.get("azure_endpoint")
             api_key = self.model_definition.config.get("api_key")
@@ -154,31 +160,47 @@ class ImageDescriptionService:
                 base_url=f"{azure_endpoint}/openai/deployments/{azure_deployment}",
             )
 
-        response = self.model_client.chat.completions.create(
-            model=self.model_definition.config.get("azure_deployment"),
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": user_input,
+        model = self.model_definition.config.get("azure_deployment")
+        messages = [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": user_input,
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": "data:image/png;base64,"
+                            + self._encode_image_base64(image)
                         },
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": "data:image/png;base64,"
-                                + self._encode_image_base64(image)
-                            },
-                        },
-                    ],
-                },
-            ],
-            max_tokens=2000,
-        )
+                    },
+                ],
+            },
+        ]
 
-        return response.choices[0].message.content
+        if stream:
+            response = self.model_client.chat.completions.create(
+                model=model,
+                messages=messages,
+                max_tokens=2000,
+                stream=True,
+            )
+            for chunk in response:
+                if len(chunk.choices) > 0:
+                    delta = chunk.choices[0].delta
+                    if delta.content:
+                        yield delta.content
+        else:
+            response = self.model_client.chat.completions.create(
+                model=model,
+                messages=messages,
+                max_tokens=2000,
+            )
+
+            return response.choices[0].message.content
 
     def _describe_image_with_aws_anthropic(
         self, image: Image.Image, user_input: str

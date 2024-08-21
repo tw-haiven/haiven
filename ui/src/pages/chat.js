@@ -7,9 +7,9 @@ import { RiQuestionLine } from "react-icons/ri";
 
 const { TextArea } = Input;
 import ChatWidget from "../app/_chat";
-import Clipboard from "../app/_clipboard";
-import ClipboardButton from "../app/_clipboard_button";
+import UploadImage from "../app/_image_upload";
 import { getPrompts, getContexts } from "../app/_boba_api";
+import { fetchSSE } from "../app/_fetch_sse";
 
 const PromptChat = () => {
   const chatRef = useRef();
@@ -23,6 +23,7 @@ const PromptChat = () => {
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
   const [clipboardDrawerOpen, setClipboardDrawerOpen] = useState(false);
+  const [imageDescription, setImageDescription] = useState("");
 
   useEffect(() => setShowChat(false), []);
 
@@ -109,7 +110,39 @@ const PromptChat = () => {
     }
   }, [prompts]);
 
-  const addMessageToChatWidget = async () => {
+  const describeImage = async (image) => {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("prompt", "Describe this technical diagram to me");
+
+    let ms = "";
+
+    fetchSSE(
+      "/api/prompt/image",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {},
+        body: formData,
+      },
+      {
+        onErrorHandle: () => {
+          setImageDescription("");
+        },
+        onFinish: () => {},
+        onMessageHandle: (data) => {
+          try {
+            ms += data;
+            setImageDescription(ms);
+          } catch (error) {
+            console.error("Error processing response", error);
+          }
+        },
+      },
+    );
+  };
+
+  const startChat = async () => {
     if (chatRef.current) {
       chatRef.current.sendMessage(promptInput);
     }
@@ -117,12 +150,6 @@ const PromptChat = () => {
 
   return (
     <>
-      {/* <Clipboard
-        toggleClipboardDrawer={setClipboardDrawerOpen}
-        isOpen={clipboardDrawerOpen}
-        contexts={contexts}
-      /> */}
-
       <div className="prompt-chat-container">
         <div id="prompt-center">
           {/* <ClipboardButton toggleClipboardDrawer={setClipboardDrawerOpen} /> */}
@@ -190,6 +217,15 @@ const PromptChat = () => {
                     }}
                   />
                 </div>
+                <div className="user-input">
+                  <label>
+                    Get an image description to include in your input:
+                  </label>
+                  <UploadImage onImageSelection={describeImage} />
+                  {imageDescription && (
+                    <TextArea value={imageDescription} rows={6} />
+                  )}
+                </div>
 
                 {contexts && (
                   <div className="context-list">
@@ -206,7 +242,7 @@ const PromptChat = () => {
               </div>
             </div>
             <div className="prompt-center-section">
-              <Button type="primary" onClick={addMessageToChatWidget}>
+              <Button type="primary" onClick={startChat}>
                 Go
               </Button>
             </div>

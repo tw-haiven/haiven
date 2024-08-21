@@ -1,10 +1,15 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+import io
 from typing import List
 from fastapi import Request
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi import File, Form, UploadFile
+from PIL import Image
+
 from pydantic import BaseModel
 from llms.chats import ChatManager, ChatOptions
 from llms.clients import ChatClientConfig
+from llms.image_description_service import ImageDescriptionService
 from llms.model import Model
 from prompts.prompts import PromptList
 
@@ -21,12 +26,15 @@ def streaming_media_type() -> str:
 
 
 def streaming_headers(chat_session_key_value=None):
-    return {
+    headers = {
         "Connection": "keep-alive",
         "Content-Encoding": "none",
         "Access-Control-Expose-Headers": "X-Chat-ID",
-        "X-Chat-ID": chat_session_key_value,
     }
+    if chat_session_key_value:
+        headers["X-Chat-ID"] = chat_session_key_value
+
+    return headers
 
 
 class HaivenBaseApi:
@@ -77,6 +85,7 @@ class ApiBasics(HaivenBaseApi):
         prompts_guided,
         knowledge_manager,
         prompts_chat,
+        image_service: ImageDescriptionService,
     ):
         super().__init__(app, chat_session_memory, model_key, prompts_guided)
 
@@ -119,4 +128,19 @@ class ApiBasics(HaivenBaseApi):
 
             return self.stream_text_chat(
                 rendered_prompt, "boba-chat", prompt_data.chatSessionId
+            )
+
+        @app.post("/api/prompt/image")
+        async def describe_image(prompt: str = Form(...), file: UploadFile = File(...)):
+            def chat_with_yield(image, prompt):
+                for chunk in image_service.prompt_with_image(image, prompt, True):
+                    yield chunk
+
+            contents = await file.read()
+            image = Image.open(io.BytesIO(contents))
+
+            return StreamingResponse(
+                chat_with_yield(image, prompt),
+                media_type=streaming_media_type(),
+                headers=streaming_headers(None),
             )

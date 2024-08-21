@@ -10,6 +10,8 @@ from llms.chats import (
     ChatManager,
 )
 from knowledge_manager import KnowledgeManager
+from llms.image_description_service import ImageDescriptionService
+from llms.model import Model
 from prompts.prompts_factory import PromptsFactory
 from config_service import ConfigService
 
@@ -36,6 +38,9 @@ class BobaApi:
 
         self.model = self.config_service.get_default_guided_mode_model()
 
+        image_model: Model = config_service.get_model("azure-gpt4-with-vision")
+        self.image_service = ImageDescriptionService(image_model)
+
         print(f"Model used for guided mode: {self.model}")
 
     def prompt(self, prompt_id, user_input, chat_session, context=None):
@@ -61,6 +66,7 @@ class BobaApi:
             self.prompts_guided,
             self.knowledge_manager,
             self.prompts_chat,
+            self.image_service,
         )
 
         ApiThreatModelling(
