@@ -82,22 +82,7 @@ class ImageDescriptionService:
             case _:
                 return "Provider not supported"
 
-    def prompt_with_image_stream(self, image_from_gradio: Image, user_input: str):
-        if image_from_gradio is None:
-            return ""
-
-        if user_input == "":
-            user_input = DEFAULT_PROMPT
-
-        match self.model_definition.provider.lower():
-            case "azure":
-                return self._describe_image_with_azure_stream(
-                    image_from_gradio, user_input
-                )
-            case _:
-                return f"Image description streaming not implemented yet for provider {self.model_definition.provider}"
-
-    def _describe_with_gcp(self, image: Image.Image, user_input: str) -> str:
+    def _describe_with_gcp(self, image: Image.Image, user_input: str):
         if self.model_client is None:
             self.model_client = GenerativeModel(
                 self.model_definition.config.get("model")
@@ -111,9 +96,9 @@ class ImageDescriptionService:
                 image,
             ]
         )
-        return model_response.text
+        yield model_response.text
 
-    def _describe_image_with_openai(self, image: Image.Image, user_input: str) -> str:
+    def _describe_image_with_openai(self, image: Image.Image, user_input: str):
         if self.model_client is None:
             api_key = self.model_definition.config.get("api_key")
             if not api_key.strip():
@@ -126,64 +111,9 @@ class ImageDescriptionService:
             max_tokens=2000,
         )
 
-        return response.choices[0].message.content
+        yield response.choices[0].message.content
 
-    def _init_azure_client(self):
-        if self.model_client is None:
-            azure_endpoint = self.model_definition.config.get("azure_endpoint")
-            api_key = self.model_definition.config.get("api_key")
-            azure_deployment = self.model_definition.config.get("azure_deployment")
-            api_version = self.model_definition.config.get("api_version")
-
-            if not all(
-                [
-                    azure_endpoint.strip(),
-                    api_key.strip(),
-                    azure_deployment.strip(),
-                    api_version.strip(),
-                ]
-            ):
-                return "Error: Missing Azure AI Vision configuration. Please check your environment variables."
-
-            self.model_client = AzureOpenAI(
-                api_key=api_key,
-                api_version=api_version,
-                base_url=f"{azure_endpoint}/openai/deployments/{azure_deployment}",
-            )
-
-    def _messages_for_openai_api(self, image: Image.Image, user_input: str):
-        return [
-            {"role": "system", "content": "You are a helpful assistant."},
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": user_input,
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": "data:image/png;base64,"
-                            + self._encode_image_base64(image)
-                        },
-                    },
-                ],
-            },
-        ]
-
-    def _describe_image_with_azure(self, image: Image.Image, user_input: str) -> str:
-        self._init_azure_client()
-
-        response = self.model_client.chat.completions.create(
-            model=self.model_definition.config.get("azure_deployment"),
-            messages=self._messages_for_openai_api(image, user_input),
-            max_tokens=2000,
-        )
-
-        return response.choices[0].message.content
-
-    def _describe_image_with_azure_stream(self, image: Image.Image, user_input: str):
+    def _describe_image_with_azure(self, image: Image.Image, user_input: str):
         self._init_azure_client()
 
         response = self.model_client.chat.completions.create(
@@ -199,9 +129,7 @@ class ImageDescriptionService:
                 if delta.content:
                     yield delta.content
 
-    def _describe_image_with_aws_anthropic(
-        self, image: Image.Image, user_input: str
-    ) -> str:
+    def _describe_image_with_aws_anthropic(self, image: Image.Image, user_input: str):
         try:
             if self.model_client is None:
                 self.model_client = boto3.client(
@@ -247,16 +175,14 @@ class ImageDescriptionService:
                 body=body, modelId=self.model_definition.config.get("model_id")
             )
             response = json.loads(response.get("body").read())
-            return response["content"][0]["text"]
+            yield response["content"][0]["text"]
 
         except ClientError as err:
             message = err.response["Error"]["Message"]
             print("A client error occured: " + format(message))
-            return "Error: " + message
+            yield "Error: " + message
 
-    def _describe_image_with_ollama(
-        self, gradio_image: Image.Image, user_input: str
-    ) -> str:
+    def _describe_image_with_ollama(self, gradio_image: Image.Image, user_input: str):
         res = ollama.chat(
             model=self.model_definition.config.get("model"),
             messages=[
@@ -269,7 +195,7 @@ class ImageDescriptionService:
         )
 
         print(res["message"]["content"])
-        return res["message"]["content"]
+        yield res["message"]["content"]
 
     def _get_image_bytes(self, image):
         buffered = BytesIO()
@@ -280,3 +206,47 @@ class ImageDescriptionService:
         buffered = BytesIO()
         image.save(buffered, format="PNG")
         return base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+    def _init_azure_client(self):
+        if self.model_client is None:
+            azure_endpoint = self.model_definition.config.get("azure_endpoint")
+            api_key = self.model_definition.config.get("api_key")
+            azure_deployment = self.model_definition.config.get("azure_deployment")
+            api_version = self.model_definition.config.get("api_version")
+
+            if not all(
+                [
+                    azure_endpoint.strip(),
+                    api_key.strip(),
+                    azure_deployment.strip(),
+                    api_version.strip(),
+                ]
+            ):
+                return "Error: Missing Azure AI Vision configuration. Please check your environment variables."
+
+            self.model_client = AzureOpenAI(
+                api_key=api_key,
+                api_version=api_version,
+                base_url=f"{azure_endpoint}/openai/deployments/{azure_deployment}",
+            )
+
+    def _messages_for_openai_api(self, image: Image.Image, user_input: str):
+        return [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": user_input,
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": "data:image/png;base64,"
+                            + self._encode_image_base64(image)
+                        },
+                    },
+                ],
+            },
+        ]

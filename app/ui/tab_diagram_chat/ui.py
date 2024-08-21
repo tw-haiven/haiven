@@ -85,6 +85,14 @@ def enable_image_chat(
         else:
             return [None, "", "", ""]
 
+    def on_describe_image(image_upload, user_image_input):
+        image_description = ""
+        for description_chunk in image_service.prompt_with_image(
+            image_upload, user_image_input
+        ):
+            image_description += description_chunk
+            yield image_description
+
     def __render_prompt_with_warnings(
         prompt_list: PromptList,
         active_knowledge_context: str,
@@ -190,7 +198,7 @@ def enable_image_chat(
                     outputs=[ui_prompt_dropdown, ui_prompt, ui_help, ui_help_knowledge],
                 )
                 ui_describe_image_button.click(
-                    fn=image_service.prompt_with_image,
+                    fn=on_describe_image,
                     inputs=[ui_image_upload, ui_user_image_input],
                     outputs=[ui_image_description],
                 )

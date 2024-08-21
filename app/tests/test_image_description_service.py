@@ -39,17 +39,22 @@ class TestImageDescriptionService:
         user_input = "Describe this image"
 
         mock_azure_openai_instance = mock_azure_openai.return_value
-        mock_response = MagicMock()
-        mock_response.choices = [
-            MagicMock(message=MagicMock(content="Test description"))
+
+        mock_response = [
+            MagicMock(choices=[MagicMock(delta=MagicMock(content="Test "))]),
+            MagicMock(choices=[MagicMock(delta=MagicMock(content="description"))]),
         ]
-        mock_azure_openai_instance.chat.completions.create.return_value = mock_response
+
+        mock_azure_openai_instance.chat.completions.create.return_value = iter(
+            mock_response
+        )
 
         result = image_description_service._describe_image_with_azure(
             image=test_image, user_input=user_input
         )
 
-        assert result == "Test description"
+        assert next(result) == "Test "
+        assert next(result) == "description"
         mock_azure_openai_instance.chat.completions.create.assert_called_once()
         args, kwargs = mock_azure_openai_instance.chat.completions.create.call_args
 
