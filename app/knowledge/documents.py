@@ -259,7 +259,7 @@ class KnowledgeBaseDocuments:
         Returns:
             List[Document]: A list of documents that are similar to the query.
         """
-        documents_with_scores = self._similarity_search_with_scores(
+        documents_with_scores = self.similarity_search_with_scores(
             query, context, k, score_threshold
         )
         documents = [doc for doc, _ in documents_with_scores]
