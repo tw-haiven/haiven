@@ -1,12 +1,13 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import io
 from typing import List
-from fastapi import Request
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi import File, Form, UploadFile
 from PIL import Image
 
 from pydantic import BaseModel
+from knowledge_manager import KnowledgeManager
 from llms.chats import ChatManager, ChatOptions
 from llms.clients import ChatClientConfig
 from llms.image_description_service import ImageDescriptionService
@@ -79,15 +80,15 @@ class HaivenBaseApi:
 class ApiBasics(HaivenBaseApi):
     def __init__(
         self,
-        app,
-        chat_session_memory,
-        model_key,
-        prompts_guided,
-        knowledge_manager,
-        prompts_chat,
+        app: FastAPI,
+        chat_manager: ChatManager,
+        model_key: str,
+        prompts_guided: PromptList,
+        knowledge_manager: KnowledgeManager,
+        prompts_chat: PromptList,
         image_service: ImageDescriptionService,
     ):
-        super().__init__(app, chat_session_memory, model_key, prompts_guided)
+        super().__init__(app, chat_manager, model_key, prompts_guided)
 
         @app.get("/api/models")
         def get_models(request: Request):

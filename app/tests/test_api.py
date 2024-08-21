@@ -1,9 +1,10 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import unittest
-from unittest.mock import patch, ANY
+from unittest.mock import MagicMock, patch, ANY
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
 
+from api.api_basics import ApiBasics
 from api.api_scenarios import ApiScenarios
 from api.api_threat_modelling import ApiThreatModelling
 from api.api_requirements import ApiRequirementsBreakdown
@@ -19,6 +20,50 @@ class TestApi(unittest.TestCase):
     def tearDown(self):
         # Clean up code to run after each test
         pass
+
+    @patch("llms.chats.StreamingChat")
+    @patch("llms.chats.ChatManager")
+    @patch("prompts.prompts.PromptList")
+    def test_prompting(
+        self,
+        mock_prompt_list,
+        mock_chat_manager,
+        mock_streaming_chat,
+    ):
+        mock_streaming_chat.start_with_prompt.return_value = (
+            "some response from the model"
+        )
+        mock_chat_manager.streaming_chat.return_value = (
+            "some_key",
+            mock_streaming_chat,
+        )
+        mock_prompt_list.render_prompt.return_value = "some prompt"
+        ApiBasics(
+            self.app,
+            chat_manager=mock_chat_manager,
+            model_key="some_model_key",
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            prompts_chat=mock_prompt_list,
+            image_service=MagicMock(),
+        )
+
+        response = self.client.post(
+            "/api/prompt",
+            json={"promptid": "some-prompt-id", "userinput": "some user input"},
+        )
+
+        # Assert the response
+        assert response.status_code == 200
+        streamed_content = response.content.decode("utf-8")
+        assert streamed_content == "some response from the model"
+        mock_prompt_list.render_prompt.assert_called_with(
+            active_knowledge_context=ANY,
+            prompt_choice="some-prompt-id",
+            user_input="some user input",
+            additional_vars={},
+            warnings=ANY,
+        )
 
     @patch("llms.chats.JSONChat")
     @patch("llms.chats.ChatManager")
