@@ -94,9 +94,11 @@ class ImageDescriptionService:
             [
                 user_input,
                 image,
-            ]
+            ],
+            stream=True,
         )
-        yield model_response.text
+        for chunk in model_response:
+            yield chunk.text
 
     def _describe_image_with_openai(self, image: Image.Image, user_input: str):
         if self.model_client is None:
@@ -109,9 +111,14 @@ class ImageDescriptionService:
             model=self.model_definition.config.get("model_name"),
             messages=self._messages_for_openai_api(image, user_input),
             max_tokens=2000,
+            stream=True,
         )
 
-        yield response.choices[0].message.content
+        for chunk in response:
+            if len(chunk.choices) > 0:
+                delta = chunk.choices[0].delta
+                if delta.content:
+                    yield delta.content
 
     def _describe_image_with_azure(self, image: Image.Image, user_input: str):
         self._init_azure_client()
@@ -171,11 +178,14 @@ class ImageDescriptionService:
                 }
             )
 
-            response = self.model_client.invoke_model(
+            response = self.model_client.invoke_model_with_response_stream(
                 body=body, modelId=self.model_definition.config.get("model_id")
             )
-            response = json.loads(response.get("body").read())
-            yield response["content"][0]["text"]
+
+            for event in response["body"]:
+                chunk = json.loads(event["chunk"]["bytes"])
+                if "delta" in chunk and "text" in chunk["delta"]:
+                    yield chunk["delta"]["text"]
 
         except ClientError as err:
             message = err.response["Error"]["Message"]
