@@ -82,6 +82,21 @@ class ImageDescriptionService:
             case _:
                 return "Provider not supported"
 
+    def prompt_with_image_stream(self, image_from_gradio: Image, user_input: str):
+        if image_from_gradio is None:
+            return ""
+
+        if user_input == "":
+            user_input = DEFAULT_PROMPT
+
+        match self.model_definition.provider.lower():
+            case "azure":
+                return self._describe_image_with_azure_stream(
+                    image_from_gradio, user_input
+                )
+            case _:
+                return f"Image description streaming not implemented yet for provider {self.model_definition.provider}"
+
     def _describe_with_gcp(self, image: Image.Image, user_input: str) -> str:
         if self.model_client is None:
             self.model_client = GenerativeModel(
@@ -167,6 +182,22 @@ class ImageDescriptionService:
         )
 
         return response.choices[0].message.content
+
+    def _describe_image_with_azure_stream(self, image: Image.Image, user_input: str):
+        self._init_azure_client()
+
+        response = self.model_client.chat.completions.create(
+            model=self.model_definition.config.get("azure_deployment"),
+            messages=self._messages_for_openai_api(image, user_input),
+            max_tokens=2000,
+            stream=True,
+        )
+
+        for chunk in response:
+            if len(chunk.choices) > 0:
+                delta = chunk.choices[0].delta
+                if delta.content:
+                    yield delta.content
 
     def _describe_image_with_aws_anthropic(
         self, image: Image.Image, user_input: str

@@ -133,7 +133,7 @@ class ApiBasics(HaivenBaseApi):
         @app.post("/api/prompt/image")
         async def describe_image(prompt: str = Form(...), file: UploadFile = File(...)):
             def chat_with_yield(image, prompt):
-                for chunk in image_service.prompt_with_image(image, prompt, True):
+                for chunk in image_service.prompt_with_image_stream(image, prompt):
                     yield chunk
 
             contents = await file.read()
