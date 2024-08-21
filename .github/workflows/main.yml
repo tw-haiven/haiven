@@ -88,6 +88,8 @@ jobs:
           push: true
           context: .
 
+      # The fine-grained access tokens used by these requests need to have read & write access to "Contents"
+      # (Explored GH Webhooks instead of these steps instead, but couldn't get the auth to work)
       - name: Notify TW demo deployment
         run: |
           curl -L \
@@ -96,5 +98,5 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.DISPATCH_TW_DEMO_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/tw-haiven/haiven-tw-demo-deployment/dispatches \
-            -d '{"event_type":"haiven-base-new","client_payload":{}}'
+            -d '{"event_type":"haiven-base-new","client_payload":{}}' \
             --fail
