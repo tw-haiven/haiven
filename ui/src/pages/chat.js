@@ -7,9 +7,8 @@ import { RiQuestionLine } from "react-icons/ri";
 
 const { TextArea } = Input;
 import ChatWidget from "../app/_chat";
-import UploadImage from "../app/_image_upload";
+import DescribeImage from "../app/_image_description";
 import { getPrompts, getContexts } from "../app/_boba_api";
-import { fetchSSE } from "../app/_fetch_sse";
 
 const PromptChat = () => {
   const chatRef = useRef();
@@ -110,36 +109,8 @@ const PromptChat = () => {
     }
   }, [prompts]);
 
-  const describeImage = async (image) => {
-    const formData = new FormData();
-    formData.append("file", image);
-    formData.append("prompt", "Describe this technical diagram to me");
-
-    let ms = "";
-
-    fetchSSE(
-      "/api/prompt/image",
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {},
-        body: formData,
-      },
-      {
-        onErrorHandle: () => {
-          setImageDescription("");
-        },
-        onFinish: () => {},
-        onMessageHandle: (data) => {
-          try {
-            ms += data;
-            setImageDescription(ms);
-          } catch (error) {
-            console.error("Error processing response", error);
-          }
-        },
-      },
-    );
+  const onImageDescriptionChange = async (description) => {
+    setImageDescription(description);
   };
 
   const startChat = async () => {
@@ -221,7 +192,9 @@ const PromptChat = () => {
                   <label>
                     Get an image description to include in your input:
                   </label>
-                  <UploadImage onImageSelection={describeImage} />
+                  <DescribeImage
+                    onImageDescriptionChange={setImageDescription}
+                  />
                   {imageDescription && (
                     <TextArea value={imageDescription} rows={6} />
                   )}

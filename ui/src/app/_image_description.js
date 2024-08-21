@@ -1,12 +1,13 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import React, { useState, forwardRef, useImperativeHandle } from "react";
+import React, { useState, useEffect } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Flex, message, Upload } from "antd";
+import { fetchSSE } from "./_fetch_sse";
 
-const UploadImage = ({ onImageSelection }) => {
+const DescribeImage = ({ onImageDescriptionChange }) => {
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState();
-  const [imageFile, setImageFile] = useState();
+  const [previewImageDataUrl, setPreviewImageDataUrl] = useState();
+  const [image, setImage] = useState();
 
   const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -27,14 +28,50 @@ const UploadImage = ({ onImageSelection }) => {
     return isJpgOrPng && isLt2M;
   };
 
+  const describeImage = async (image) => {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("prompt", "Describe this technical diagram to me");
+
+    let ms = "";
+
+    fetchSSE(
+      "/api/prompt/image",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {},
+        body: formData,
+      },
+      {
+        onErrorHandle: () => {
+          onImageDescriptionChange("Error loading image description");
+        },
+        onFinish: () => {},
+        onMessageHandle: (data) => {
+          try {
+            ms += data;
+            onImageDescriptionChange(ms);
+          } catch (error) {
+            console.error("Error processing response", error);
+          }
+        },
+      },
+    );
+  };
+
+  useEffect(() => {
+    if (image) {
+      describeImage(image);
+    }
+  }, [image]);
+
   const handleChange = (info) => {
-    console.log("handleChange", info);
-    setImageFile(info.file.originFileObj);
     getBase64(info.file.originFileObj, (url) => {
       setLoading(false);
-      setImageUrl(url);
+      setPreviewImageDataUrl(url);
     });
-    onImageSelection(imageFile);
+    setImage(info.file.originFileObj);
   };
 
   const uploadButton = (
@@ -66,9 +103,9 @@ const UploadImage = ({ onImageSelection }) => {
         beforeUpload={beforeUpload}
         onChange={handleChange}
       >
-        {imageUrl ? (
+        {previewImageDataUrl ? (
           <img
-            src={imageUrl}
+            src={previewImageDataUrl}
             alt="Preview of the image uploaded as input for the chat conversation"
             style={{
               width: "100%",
@@ -81,4 +118,4 @@ const UploadImage = ({ onImageSelection }) => {
     </Flex>
   );
 };
-export default UploadImage;
+export default DescribeImage;
