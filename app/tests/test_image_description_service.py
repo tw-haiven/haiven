@@ -18,7 +18,7 @@ class TestImageDescriptionService:
         return Image.open(buffered)
 
     @patch("llms.image_description_service.AzureOpenAI")
-    def test_init_azure(
+    def test_describe_with_azure(
         self,
         mock_azure_openai,
     ):
@@ -55,6 +55,7 @@ class TestImageDescriptionService:
 
         kwargs["model"] == "some-image-model"
         assert len(kwargs["messages"]) == 2
-        kwargs["messages"][1]["content"][0]["text"] == "Describe this image"
+        print("Actual value:", kwargs["messages"][1]["content"][0]["text"])
+        assert kwargs["messages"][1]["content"][0]["text"] == "Describe this image"
 
         assert image_description_service.model_client is not None

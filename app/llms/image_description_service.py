@@ -107,31 +107,13 @@ class ImageDescriptionService:
 
         response = self.model_client.chat.completions.create(
             model=self.model_definition.config.get("model_name"),
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": user_input,
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": "data:image/png;base64,"
-                                + self._encode_image_base64(image)
-                            },
-                        },
-                    ],
-                },
-            ],
+            messages=self._messages_for_openai_api(image, user_input),
             max_tokens=2000,
         )
 
         return response.choices[0].message.content
 
-    def _describe_image_with_azure(self, image: Image.Image, user_input: str) -> str:
+    def _init_azure_client(self):
         if self.model_client is None:
             azure_endpoint = self.model_definition.config.get("azure_endpoint")
             api_key = self.model_definition.config.get("api_key")
@@ -154,27 +136,33 @@ class ImageDescriptionService:
                 base_url=f"{azure_endpoint}/openai/deployments/{azure_deployment}",
             )
 
+    def _messages_for_openai_api(self, image: Image.Image, user_input: str):
+        return [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": user_input,
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": "data:image/png;base64,"
+                            + self._encode_image_base64(image)
+                        },
+                    },
+                ],
+            },
+        ]
+
+    def _describe_image_with_azure(self, image: Image.Image, user_input: str) -> str:
+        self._init_azure_client()
+
         response = self.model_client.chat.completions.create(
             model=self.model_definition.config.get("azure_deployment"),
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": user_input,
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": "data:image/png;base64,"
-                                + self._encode_image_base64(image)
-                            },
-                        },
-                    ],
-                },
-            ],
+            messages=self._messages_for_openai_api(image, user_input),
             max_tokens=2000,
         )
 
