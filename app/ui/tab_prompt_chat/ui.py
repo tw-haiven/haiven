@@ -4,7 +4,7 @@ from typing import List
 import gradio as gr
 from dotenv import load_dotenv
 from knowledge_manager import KnowledgeManager
-from llms.chats import ChatManager, ChatOptions
+from llms.chats import ChatManager, ChatOptions, UIStreamingChatWrapper
 from llms.clients import ChatClientConfig
 from ui.chat_context import ChatContext
 from prompts.prompts import PromptList
@@ -221,7 +221,7 @@ def enable_chat(
             if prompt_text:
                 update_chat_client_config(request)
 
-                chat_session_key_value, chat_session = chat_manager.streaming_chat(
+                chat_session_key_value, chat_client = chat_manager.streaming_chat(
                     client_config=client_config,
                     session_id=None,
                     options=ChatOptions(
@@ -238,8 +238,8 @@ def enable_chat(
                 else:
                     start_display_message = prompt_text
 
-                for chat_history_chunk in chat_session.start_with_prompt(
-                    prompt_text, start_display_message
+                for chat_history_chunk in UIStreamingChatWrapper.start_with_prompt(
+                    chat_client, prompt_text, start_display_message
                 ):
                     yield {
                         ui_message: "",
@@ -256,7 +256,7 @@ def enable_chat(
             chat_session_key_value,
             user_identifier_state,
         ):
-            chat_session_key_value, chat_session = chat_manager.streaming_chat(
+            chat_session_key_value, chat_client = chat_manager.streaming_chat(
                 client_config=client_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(
@@ -264,7 +264,9 @@ def enable_chat(
                 ),
             )
 
-            for chat_history_chunk in chat_session.next(message_value, chat_history):
+            for chat_history_chunk in UIStreamingChatWrapper.next(
+                chat_client, message_value, chat_history
+            ):
                 yield {ui_message: "", ui_chatbot: chat_history_chunk}
 
         def chat_with_knowledge(
@@ -274,9 +276,9 @@ def enable_chat(
             message: str,
             request: gr.Request,
         ):
-            chat_session = chat_manager.get_session(chat_session_key_value)
+            chat_client = chat_manager.get_session(chat_session_key_value)
             update_chat_client_config(request)
-            chat_session.client_config = client_config
+            chat_client.client_config = client_config
 
             if knowledge_choice == []:
                 raise ValueError("No knowledge base selected")
@@ -285,8 +287,8 @@ def enable_chat(
                 request, "active_knowledge_context", True
             )
 
-            for chat_history_chunk in chat_session.next_advice_from_knowledge(
-                chat_history, knowledge_choice, context_selected, message
+            for chat_history_chunk in UIStreamingChatWrapper.next_advice_from_knowledge(
+                chat_client, chat_history, knowledge_choice, context_selected, message
             ):
                 yield {ui_message: "", ui_chatbot: chat_history_chunk}
 

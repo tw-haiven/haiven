@@ -7,7 +7,7 @@ from knowledge_manager import KnowledgeManager
 from llms.clients import ChatClientConfig
 from prompts.prompts import PromptList
 from prompts.prompts_factory import PromptsFactory
-from llms.chats import ChatOptions, ChatManager
+from llms.chats import ChatOptions, ChatManager, UIStreamingChatWrapper
 from ui.chat_context import ChatContext
 from llms.image_description_service import ImageDescriptionService
 from user_feedback import UserFeedback
@@ -249,7 +249,7 @@ def enable_image_chat(
             update_chat_client_config(request)
 
             if prompt_text:
-                chat_session_key_value, chat_session = chat_manager.streaming_chat(
+                chat_session_key_value, chat_client = chat_manager.streaming_chat(
                     client_config=client_config,
                     session_id=None,
                     options=ChatOptions(
@@ -257,7 +257,9 @@ def enable_image_chat(
                     ),
                 )
 
-                for chat_history_chunk in chat_session.start_with_prompt(prompt_text):
+                for chat_history_chunk in UIStreamingChatWrapper.start_with_prompt(
+                    chat_client, prompt_text
+                ):
                     yield {
                         ui_message: "",
                         ui_chatbot: chat_history_chunk,
@@ -268,9 +270,11 @@ def enable_image_chat(
                 gr.update(ui_message="", ui_chatbot=[], state_chat_session_key=None)
 
         def chat(message_value: str, chat_history, chat_session_key_value: str):
-            chat_session = chat_manager.get_session(chat_session_key_value)
+            chat_client = chat_manager.get_session(chat_session_key_value)
 
-            for chat_history_chunk in chat_session.next(message_value, chat_history):
+            for chat_history_chunk in UIStreamingChatWrapper.next(
+                chat_client, message_value, chat_history
+            ):
                 yield {ui_message: "", ui_chatbot: chat_history_chunk}
 
         def chat_with_knowledge(
@@ -279,11 +283,11 @@ def enable_image_chat(
             chat_session_key_value,
             request: gr.Request,
         ):
-            chat_session = chat_manager.get_session(chat_session_key_value)
+            chat_client = chat_manager.get_session(chat_session_key_value)
             update_chat_client_config(request)
-            chat_session.client_config = client_config
+            chat_client.client_config = client_config
             update_chat_client_config(request)
-            chat_session.client_config = client_config
+            chat_client.client_config = client_config
             if knowledge_choice == []:
                 raise ValueError("No knowledge base selected")
 
@@ -291,8 +295,8 @@ def enable_image_chat(
                 request, "active_knowledge_context", True
             )
 
-            for chat_history_chunk in chat_session.next_advice_from_knowledge(
-                chat_history, knowledge_choice, context_selected
+            for chat_history_chunk in UIStreamingChatWrapper.next_advice_from_knowledge(
+                chat_client, chat_history, knowledge_choice, context_selected
             ):
                 yield {ui_chatbot: chat_history_chunk}
 

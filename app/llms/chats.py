@@ -16,10 +16,16 @@ from logger import HaivenLogger
 
 
 class HaivenBaseChat:
-    def __init__(self, chat_client: BaseChatModel, system_message: str):
+    def __init__(
+        self,
+        chat_client: BaseChatModel,
+        knowledge_manager: KnowledgeManager,
+        system_message: str,
+    ):
         self.system = system_message
         self.memory = [SystemMessage(content=system_message)]
         self.chat_client = chat_client
+        self.knowledge_manager = knowledge_manager
 
     def log_run(self, extra={}):
         class_name = self.__class__.__name__
@@ -50,57 +56,8 @@ class HaivenBaseChat:
         summary = self.chat_client(copy_of_history)
         return summary.content
 
-
-class StreamingChat(HaivenBaseChat):
-    def __init__(
-        self,
-        chat_client: BaseChatModel,
-        knowledge_manager: KnowledgeManager,
-        system_message: str = "You are a helpful assistant",
-        stream_in_chunks: bool = False,
-    ):
-        super().__init__(chat_client, system_message)
-        self.stream_in_chunks = stream_in_chunks
-        self.knowledge_manager = knowledge_manager
-
-    def run(self, message: str):
-        self.memory.append(HumanMessage(content=message))
-        self.log_run()
-
-        for i, chunk in enumerate(self.chat_client.stream(self.memory)):
-            if i == 0:
-                self.memory.append(AIMessage(content=""))
-            self.memory[-1].content += chunk.content
-            yield chunk.content
-
-    def start_with_prompt(
-        self, prompt: str, initial_display_message: str = "Let's get started!"
-    ):
-        # TODO: Need to clean up these different "start", "run", functions...
-        # Once we migrated all Gradio UI, some of these not necessary anymore, as chat_history is remembered in React frontend
-        chat_history = [[initial_display_message, ""]]
-        for chunk in self.run(prompt):
-            chat_history[-1][1] += chunk
-            if self.stream_in_chunks:
-                yield chunk
-            else:
-                yield chat_history
-
-    def next(self, human_message, chat_history=[]):
-        chat_history += [[human_message, ""]]
-        for chunk in self.run(human_message):
-            if self.stream_in_chunks:
-                yield chunk
-            else:
-                chat_history[-1][1] += chunk
-                yield chat_history
-
-    def next_advice_from_knowledge(
-        self,
-        chat_history,
-        knowledge_document_key: str,
-        knowledge_context: str,
-        message: str = None,
+    def _similarity_search_based_on_history(
+        self, message, knowledge_document_key, knowledge_context
     ):
         # 1 summarise the conversation so far
         summary = self._summarise_conversation()
@@ -144,11 +101,45 @@ class StreamingChat(HaivenBaseChat):
             + "\n\n"
         )
 
-        # 3 continue the conversation and get the advice
+        return context_for_prompt, sources_markdown
+
+
+class StreamingChat(HaivenBaseChat):
+    def __init__(
+        self,
+        chat_client: BaseChatModel,
+        knowledge_manager: KnowledgeManager,
+        system_message: str = "You are a helpful assistant",
+        stream_in_chunks: bool = False,
+    ):
+        super().__init__(chat_client, knowledge_manager, system_message)
+        self.stream_in_chunks = stream_in_chunks
+
+    def run(self, message: str):
+        self.memory.append(HumanMessage(content=message))
+        self.log_run()
+
+        for i, chunk in enumerate(self.chat_client.stream(self.memory)):
+            if i == 0:
+                self.memory.append(AIMessage(content=""))
+            self.memory[-1].content += chunk.content
+            yield chunk.content
+
+    def run_with_document(
+        self,
+        knowledge_document_key: str,
+        knowledge_context: str,
+        message: str = None,
+    ):
+        context_for_prompt, sources_markdown = self._similarity_search_based_on_history(
+            message, knowledge_document_key, knowledge_context
+        )
+
         user_request = (
             message
             or "Based on our conversation so far, what do you think is relevant to me with the CONTEXT information I gathered?"
         )
+
         prompt = f"""
         
         {user_request}
@@ -160,22 +151,9 @@ class StreamingChat(HaivenBaseChat):
         Do not provide any advice that is outside of the CONTEXT I provided.
         """
 
-        chat_history += [
-            [
-                f"""{user_request}
-                
-                (with input from '{knowledge_document_key}')
-                """,
-                "",
-            ],
-        ]
-
-        chat_history[-1][1] += sources_markdown
-        yield chat_history
-
+        # ask the LLM for the advice
         for chunk in self.run(prompt):
-            chat_history[-1][1] += chunk
-            yield chat_history
+            yield chunk, sources_markdown
 
 
 class Q_A_ResponseParser:
@@ -205,6 +183,7 @@ class Q_A_Chat(HaivenBaseChat):
     ):
         super().__init__(
             chat_client,
+            None,
             system_message,
         )
 
@@ -245,10 +224,9 @@ class DocumentsChat(HaivenBaseChat):
         context: str,
         system_message: str = "You are a helpful assistant",
     ):
-        super().__init__(chat_client, system_message)
+        super().__init__(chat_client, knowledge_manager, system_message)
         self.context = context
         self.knowledge = knowledge
-        self.knowledge_manager = knowledge_manager
         self.chain = DocumentsChat.create_chain(self.chat_client)
 
     @staticmethod
@@ -328,7 +306,7 @@ class JSONChat(HaivenBaseChat):
         system_message: str = "You are a helpful assistant",
         event_stream_standard=True,
     ):
-        super().__init__(chat_client, system_message)
+        super().__init__(chat_client, None, system_message)
         # Transition to new frontend SSE implementation: Add "data: " and "[DONE]" vs not doing that
         self.event_stream_standard = event_stream_standard
 
@@ -534,3 +512,51 @@ class ChatManager:
             chat_category=options.category if options else None,
             # TODO: Pass user identifier from session
         )
+
+
+class UIStreamingChatWrapper:
+    @staticmethod
+    def start_with_prompt(
+        chat_client: StreamingChat,
+        prompt: str,
+        initial_display_message: str = "Let's get started!",
+    ):
+        chat_history = [[initial_display_message, ""]]
+        for chunk in chat_client.run(prompt):
+            chat_history[-1][1] += chunk
+            yield chat_history
+
+    @staticmethod
+    def next(chat_client: StreamingChat, human_message, chat_history=[]):
+        chat_history += [[human_message, ""]]
+        for chunk in chat_client.run(human_message):
+            chat_history[-1][1] += chunk
+            yield chat_history
+
+    @staticmethod
+    def next_advice_from_knowledge(
+        chat_client: StreamingChat,
+        chat_history,
+        knowledge_document_key: str,
+        knowledge_context: str,
+        message: str = None,
+    ):
+        for i, (chunk, sources_markdown) in enumerate(
+            chat_client.run_with_document(
+                knowledge_document_key, knowledge_context, message
+            )
+        ):
+            if i == 0:
+                chat_history += [
+                    [
+                        f"""{message}
+                        
+                        (with input from '{knowledge_document_key}')
+                        """,
+                        "",
+                    ],
+                ]
+                chat_history[-1][1] += sources_markdown
+                yield chat_history
+            chat_history[-1][1] += chunk
+            yield chat_history
