@@ -73,18 +73,6 @@ class StreamingChat(HaivenBaseChat):
             self.memory[-1].content += chunk.content
             yield chunk.content
 
-    def start(self, template: PromptTemplate, variables={}):
-        initial_message = template.format(**variables)
-
-        chat_history = [[initial_message, ""]]
-
-        for chunk in self.run(initial_message):
-            chat_history[-1][1] += chunk
-            if self.stream_in_chunks:
-                yield chunk
-            else:
-                yield chat_history
-
     def start_with_prompt(
         self, prompt: str, initial_display_message: str = "Let's get started!"
     ):
