@@ -34,32 +34,21 @@ class HaivenBaseChat:
     def memory_as_text(self):
         return "\n".join([str(message) for message in self.memory])
 
-
-class NonStreamingChat(HaivenBaseChat):
-    def __init__(
-        self, chat: BaseChatModel, system_message: str = "You are a helpful assistant"
-    ):
-        super().__init__(chat, system_message)
-
-    def run(self, message: str):
-        self.memory.append(HumanMessage(content=message))
-        self.log_run()
-
-        ai_message = self.chat_client(self.memory)
-        self.memory.append(AIMessage(content=ai_message.content))
-
-        return ai_message.content
-
-    def start(self, template: PromptTemplate, variables):
-        initial_instructions = template.format(**variables)
-
-        return self.run(initial_instructions)
-
-    def start_with_prompt(self, prompt: str):
-        return self.run(prompt)
-
-    def next(self, human_message):
-        return self.run(human_message)
+    def _summarise_conversation(self):
+        copy_of_history = []
+        copy_of_history.extend(self.memory)
+        copy_of_history.append(
+            HumanMessage(
+                content="""
+            Summarise the conversation we've had so far in maximum 2 paragraphs.
+            I want to use the summary to start a search for other relevant information for my task,
+            so please make sure to include important key words and phrases that would help
+            me find relevant information. It is not important that the summary is polished sentences,
+            it is more important that a similarity search would find relevant information based on the summary."""
+            )
+        )
+        summary = self.chat_client(copy_of_history)
+        return summary.content
 
 
 class StreamingChat(HaivenBaseChat):
