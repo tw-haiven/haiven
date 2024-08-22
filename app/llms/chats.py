@@ -107,22 +107,6 @@ class StreamingChat(HaivenBaseChat):
                 chat_history[-1][1] += chunk
                 yield chat_history
 
-    def summarise_conversation(self):
-        copy_of_history = []
-        copy_of_history.extend(self.memory)
-        copy_of_history.append(
-            HumanMessage(
-                content="""
-            Summarise the conversation we've had so far in maximum 2 paragraphs.
-            I want to use the summary to start a search for other relevant information for my task,
-            so please make sure to include important key words and phrases that would help
-            me find relevant information. It is not important that the summary is polished sentences,
-            it is more important that a similarity search would find relevant information based on the summary."""
-            )
-        )
-        summary = self.chat_client(copy_of_history)
-        return summary.content
-
     def next_advice_from_knowledge(
         self,
         chat_history,
@@ -131,7 +115,7 @@ class StreamingChat(HaivenBaseChat):
         message: str = None,
     ):
         # 1 summarise the conversation so far
-        summary = self.summarise_conversation()
+        summary = self._summarise_conversation()
 
         similarity_query = f"""
             {summary}
@@ -146,15 +130,15 @@ class StreamingChat(HaivenBaseChat):
                 )
             )
         else:
-            knwoeldge_document = (
+            knowledge_document = (
                 self.knowledge_manager.knowledge_base_documents.get_document(
                     knowledge_document_key
                 )
             )
             context_documents = self.knowledge_manager.knowledge_base_documents.similarity_search_on_single_document(
                 query=similarity_query,
-                document_key=knwoeldge_document.key,
-                context=knwoeldge_document.context,
+                document_key=knowledge_document.key,
+                context=knowledge_document.context,
             )
 
         context_for_prompt = "\n---".join(
@@ -175,36 +159,29 @@ class StreamingChat(HaivenBaseChat):
         # 3 continue the conversation and get the advice
         user_request = (
             message
-            or "Based on what I'm trying to do as per the SUMMARY, what do you think is relevant to me in the CONTEXT?"
+            or "Based on our conversation so far, what do you think is relevant to me with the CONTEXT information I gathered?"
         )
         prompt = f"""
-        I have a SUMMARY of our conversation so far, and I would like some additional advice and context
-        for that conversation, based on the CONTEXT I will provide to you.
+        
+        {user_request}
 
-        ---- SUMMARY
-        {summary}
-
-        ---- CONTEXT
+        ---- Here is some additional CONTEXT that might be relevant to this:
         {context_for_prompt}
 
-        ----
-        {user_request}
-        Based on what I'm trying to do as per the SUMMARY, what do you think is relevant to me in the CONTEXT?
-
-        {"In particular, I want to know:" if message else ""}
-
-        Do not provide any advice that is out of the context provided.
+        -------
+        Do not provide any advice that is outside of the CONTEXT I provided.
         """
 
-        user_request = (
-            f"\n\nIn particular, I want to know: {message}" if message else ""
-        )
         chat_history += [
             [
-                f"Give me advice based on the content of '{knowledge_document_key}'{user_request}",
+                f"""{user_request}
+                
+                (with input from '{knowledge_document_key}')
+                """,
                 "",
-            ]
+            ],
         ]
+
         chat_history[-1][1] += sources_markdown
         yield chat_history
 
