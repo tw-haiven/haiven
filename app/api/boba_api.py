@@ -43,21 +43,6 @@ class BobaApi:
 
         print(f"Model used for guided mode: {self.model}")
 
-    def prompt(self, prompt_id, user_input, chat_session, context=None):
-        rendered_prompt = self.prompts_chat.render_prompt(
-            active_knowledge_context=context,
-            prompt_choice=prompt_id,
-            user_input=user_input,
-            additional_vars={},
-            warnings=[],
-        )
-
-        return self.chat(rendered_prompt, chat_session)
-
-    def chat(self, rendered_prompt, chat_session):
-        for chunk in chat_session.start_with_prompt(rendered_prompt):
-            yield chunk
-
     def add_endpoints(self, app: FastAPI):
         ApiBasics(
             app,
