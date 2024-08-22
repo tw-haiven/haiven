@@ -295,9 +295,6 @@ class DocumentsChat(HaivenBaseChat):
         """
         )
 
-    def next(self, human_message):
-        return self.run(human_message)
-
 
 class JSONChat(HaivenBaseChat):
     def __init__(
@@ -514,6 +511,8 @@ class ChatManager:
         )
 
 
+# Temporary class to wrap the StreamingChat for the GradioUI, which needs the chat_history as return value
+# This is not needed for other clients, who might handle chat history display in their interface elsewhere
 class UIStreamingChatWrapper:
     @staticmethod
     def start_with_prompt(

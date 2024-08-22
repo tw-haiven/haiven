@@ -48,7 +48,7 @@ class TestChats(unittest.TestCase):
         )
 
         question = "What is the capital of France?"
-        answer, sources_markdown = documents_chat.next(question)
+        answer, sources_markdown = documents_chat.run(question)
 
         args, _ = chain_fn_mock.call_args
         assert args[0]["input_documents"] == expected_documents

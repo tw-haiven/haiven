@@ -147,7 +147,7 @@ def enable_knowledge_chat(
 
                 update_chat_client_config(request)
 
-                response, sources_markdown = chat_session.next(question)
+                response, sources_markdown = chat_session.run(question)
                 history = [(question, response + "\n\n" + sources_markdown)]
                 return {
                     ui_question: "",
