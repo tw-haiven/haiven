@@ -3,8 +3,9 @@ import os
 import unittest
 
 from langchain.docstore.document import Document
-from llms.chats import DocumentsChat, ServerChatSessionMemory
+from llms.chats import DocumentsChat, ServerChatSessionMemory, StreamingChat
 from unittest.mock import MagicMock, patch
+from langchain.schema import AIMessage, HumanMessage, SystemMessage
 
 
 class TestChats(unittest.TestCase):
@@ -56,6 +57,35 @@ class TestChats(unittest.TestCase):
         assert answer == "Paris"
         assert "These sources were searched" in sources_markdown
         assert "Some Website" in sources_markdown
+
+    @patch("knowledge_manager.KnowledgeManager")
+    @patch("logger.HaivenLogger.get")
+    def test_streaming_chat(self, mock_logger, mock_knowledge_manager):
+        os.environ["USE_AZURE"] = "true"
+
+        mock_chat_client = MagicMock()
+        mock_chat_client.stream.return_value = iter(
+            [
+                MagicMock(content="Pa"),
+                MagicMock(content="ris"),
+            ]
+        )
+
+        streaming_chat = StreamingChat(
+            chat_client=mock_chat_client, knowledge_manager=mock_knowledge_manager
+        )
+
+        assert len(streaming_chat.memory) == 1
+        assert isinstance(streaming_chat.memory[0], SystemMessage)
+
+        question = "What is the capital of France?"
+        answer = streaming_chat.run(question)
+
+        assert next(answer) == "Pa"
+        assert next(answer) == "ris"
+        assert len(streaming_chat.memory) == 3
+        assert isinstance(streaming_chat.memory[1], HumanMessage)
+        assert isinstance(streaming_chat.memory[2], AIMessage)
 
     def test_dump_as_text(self):
         # Arrange
