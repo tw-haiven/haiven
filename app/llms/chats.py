@@ -99,6 +99,8 @@ class StreamingChat(HaivenBaseChat):
     def start_with_prompt(
         self, prompt: str, initial_display_message: str = "Let's get started!"
     ):
+        # TODO: Need to clean up these different "start", "run", functions...
+        # Once we migrated all Gradio UI, some of these not necessary anymore, as chat_history is remembered in React frontend
         chat_history = [[initial_display_message, ""]]
         for chunk in self.run(prompt):
             chat_history[-1][1] += chunk

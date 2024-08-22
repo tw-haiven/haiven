@@ -30,9 +30,7 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_streaming_chat,
     ):
-        mock_streaming_chat.start_with_prompt.return_value = (
-            "some response from the model"
-        )
+        mock_streaming_chat.run.return_value = "some response from the model"
         mock_chat_manager.streaming_chat.return_value = (
             "some_key",
             mock_streaming_chat,
@@ -119,9 +117,7 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_streaming_chat,
     ):
-        mock_streaming_chat.start_with_prompt.return_value = (
-            "some response from the model"
-        )
+        mock_streaming_chat.run.return_value = "some response from the model"
 
         mock_chat_manager.streaming_chat.return_value = (
             "some_key",
@@ -196,9 +192,7 @@ class TestApi(unittest.TestCase):
     def test_threat_modelling_explore(
         self, mock_prompt_list, mock_chat_manager, mock_streaming_chat
     ):
-        mock_streaming_chat.start_with_prompt.return_value = (
-            "some response from the model"
-        )
+        mock_streaming_chat.run.return_value = "some response from the model"
 
         mock_chat_manager.streaming_chat.return_value = (
             "some_key",
@@ -273,9 +267,7 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_streaming_chat,
     ):
-        mock_streaming_chat.start_with_prompt.return_value = (
-            "some response from the model"
-        )
+        mock_streaming_chat.run.return_value = "some response from the model"
 
         mock_chat_manager.streaming_chat.return_value = (
             "some_key",
@@ -356,9 +348,7 @@ class TestApi(unittest.TestCase):
         mock_prompt_list,
         mock_chat_manager,
     ):
-        mock_streaming_chat.start_with_prompt.return_value = (
-            "some response from the model"
-        )
+        mock_streaming_chat.run.return_value = "some response from the model"
         mock_chat_manager.streaming_chat.return_value = (
             "some_session_key",
             mock_streaming_chat,
@@ -384,8 +374,8 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
 
-        assert mock_streaming_chat.start_with_prompt.call_count == 1
-        args, kwargs = mock_streaming_chat.start_with_prompt.call_args
+        assert mock_streaming_chat.run.call_count == 1
+        args, kwargs = mock_streaming_chat.run.call_args
         prompt_argument = args[0]
         assert "some question 1" in prompt_argument
 

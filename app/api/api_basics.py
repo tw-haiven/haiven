@@ -8,7 +8,7 @@ from PIL import Image
 
 from pydantic import BaseModel
 from knowledge_manager import KnowledgeManager
-from llms.chats import ChatManager, ChatOptions
+from llms.chats import ChatManager, ChatOptions, StreamingChat
 from llms.clients import ChatClientConfig
 from llms.image_description_service import ImageDescriptionService
 from llms.model import Model
@@ -60,8 +60,8 @@ class HaivenBaseApi:
         )
 
     def stream_text_chat(self, prompt, chat_category, chat_session_key_value=None):
-        def chat_with_yield(chat_session, prompt):
-            for chunk in chat_session.start_with_prompt(prompt):
+        def stream(chat_session: StreamingChat, prompt):
+            for chunk in chat_session.run(prompt):
                 yield chunk
 
         chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
@@ -71,7 +71,7 @@ class HaivenBaseApi:
         )
 
         return StreamingResponse(
-            chat_with_yield(chat_session, prompt),
+            stream(chat_session, prompt),
             media_type=streaming_media_type(),
             headers=streaming_headers(chat_session_key_value),
         )
