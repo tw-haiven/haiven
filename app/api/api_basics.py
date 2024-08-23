@@ -17,8 +17,8 @@ from prompts.prompts import PromptList
 
 
 class PromptRequestBody(BaseModel):
-    promptid: str
     userinput: str
+    promptid: str = None
     chatSessionId: str = None
     context: str = None
     document: str = None
@@ -144,13 +144,16 @@ class ApiBasics(HaivenBaseApi):
 
         @app.post("/api/prompt")
         def chat(prompt_data: PromptRequestBody):
-            rendered_prompt = prompts_chat.render_prompt(
-                active_knowledge_context=prompt_data.context,
-                prompt_choice=prompt_data.promptid,
-                user_input=prompt_data.userinput,
-                additional_vars={},
-                warnings=[],
-            )
+            if prompt_data.promptid:
+                rendered_prompt = prompts_chat.render_prompt(
+                    active_knowledge_context=prompt_data.context,
+                    prompt_choice=prompt_data.promptid,
+                    user_input=prompt_data.userinput,
+                    additional_vars={},
+                    warnings=[],
+                )
+            else:
+                rendered_prompt = prompt_data.userinput
 
             return self.stream_text_chat(
                 rendered_prompt,
