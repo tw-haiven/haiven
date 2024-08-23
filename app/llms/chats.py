@@ -59,8 +59,10 @@ class HaivenBaseChat:
     def _similarity_search_based_on_history(
         self, message, knowledge_document_key, knowledge_context
     ):
-        # 1 summarise the conversation so far
-        summary = self._summarise_conversation()
+        if len(self.memory) > 2:
+            summary = self._summarise_conversation()
+        else:
+            summary = "\n".join([message.content for message in self.memory])
 
         similarity_query = f"""
             {summary}
@@ -227,10 +229,10 @@ class DocumentsChat(HaivenBaseChat):
         super().__init__(chat_client, knowledge_manager, system_message)
         self.context = context
         self.knowledge = knowledge
-        self.chain = DocumentsChat.create_chain(self.chat_client)
+        self.chain = DocumentsChat._create_chain(self.chat_client)
 
     @staticmethod
-    def create_chain(chat_client):
+    def _create_chain(chat_client):
         return load_qa_chain(llm=chat_client, chain_type="stuff")
 
     def run(self, message: str):
@@ -251,7 +253,7 @@ class DocumentsChat(HaivenBaseChat):
                 query=message, document_key=self.knowledge, context=self.context
             )
 
-        template = self.build_prompt(message)
+        template = self._build_prompt(message)
 
         ai_message = self.chain(
             {"input_documents": search_results, "question": template}
@@ -273,7 +275,7 @@ class DocumentsChat(HaivenBaseChat):
 
         return ai_message["output_text"], sources_markdown
 
-    def build_prompt(self, question) -> str:
+    def _build_prompt(self, question) -> str:
         return (
             """Provide information over the following pieces of CONTEXT to answer the QUESTION at the end.
 

@@ -9,7 +9,7 @@ from langchain.schema import AIMessage, HumanMessage, SystemMessage
 
 
 class TestChats(unittest.TestCase):
-    @patch("llms.chats.DocumentsChat.create_chain")
+    @patch("llms.chats.DocumentsChat._create_chain")
     @patch("knowledge_manager.KnowledgeManager")
     @patch("logger.HaivenLogger.get")
     def test_documents_chat(
