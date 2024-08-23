@@ -2,7 +2,7 @@
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
-import { Input, Select, Button, Tooltip, Radio } from "antd";
+import { Input, Select, Button, Tooltip, Radio, Tabs } from "antd";
 import { RiQuestionLine } from "react-icons/ri";
 
 const { TextArea } = Input;
@@ -130,129 +130,177 @@ const PromptChat = () => {
     }
   };
 
+  const image_description_user_input = (
+    <div className="user-input">
+      <b>Get an image description to include:</b>
+      <DescribeImage onImageDescriptionChange={setImageDescription} />
+      {imageDescription && <TextArea value={imageDescription} rows={6} />}
+    </div>
+  );
+
+  const document_choice_user_input = (
+    <div className="user-input">
+      <b>Include a document</b> <br />
+      <Select
+        onChange={setSelectedDocument}
+        style={{ width: 300 }}
+        options={documents}
+        value={selectedDocument?.key}
+      ></Select>
+    </div>
+  );
+
+  const prompt_options = (
+    <div id="prompt-center">
+      {/* <ClipboardButton toggleClipboardDrawer={setClipboardDrawerOpen} /> */}
+      <div className="user-inputs">
+        <div className="prompt-center-section">
+          <div className="section-header">
+            What do you want to do?
+            <Tooltip
+              className="tooltip-help"
+              title="Choose a task from the dropdown to get more info about what each of them can do"
+            >
+              <RiQuestionLine />
+            </Tooltip>
+          </div>
+
+          <div className="section-inputs">
+            <div className="user-input">
+              <Select
+                onChange={handlePromptSelection}
+                style={{ width: 300 }}
+                options={prompts}
+                value={selectedPrompt?.identifier}
+              ></Select>
+            </div>
+
+            {selectedPrompt && (
+              <div className="user-input">
+                <p>
+                  <b>Description: </b>
+                  {selectedPrompt.help_prompt_description}
+                </p>
+                <p>
+                  <b>Your input: </b>
+                  {selectedPrompt.help_user_input}
+                </p>
+                <p>
+                  <b>Sample input: </b>
+                  {selectedPrompt.help_sample_input}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="prompt-center-section">
+          <div className="section-header">
+            Add your input
+            <Tooltip
+              className="tooltip-help"
+              title="Provide the input based on the description of the chosen task. Optionally, you can choose to add one of the available contexts from your knowledge pack."
+            >
+              <RiQuestionLine />
+            </Tooltip>
+          </div>
+
+          <div className="section-inputs">
+            <div className="user-input">
+              <b>Your input:</b>
+              <TextArea
+                value={promptInput}
+                rows={4}
+                onChange={(e, v) => {
+                  setPromptInput(e.target.value);
+                }}
+              />
+            </div>
+            {image_description_user_input}
+          </div>
+        </div>
+        <div className="prompt-center-section">
+          <div className="section-header">
+            Add some context
+            <Tooltip
+              className="tooltip-help"
+              title="You can pull in some extra content from the knowledge pack (optional)"
+            >
+              <RiQuestionLine />
+            </Tooltip>
+          </div>
+          <div className="section-inputs">
+            {contexts && (
+              <div className="user-input">
+                <b>Add a context</b> <br />
+                <Radio.Group
+                  optionType="button"
+                  buttonStyle="solid"
+                  options={contexts}
+                  defaultValue="base"
+                  onChange={handleContextSelection}
+                />
+              </div>
+            )}
+            {documents && document_choice_user_input}
+          </div>
+        </div>
+        <div className="prompt-center-section">
+          <Button type="primary" onClick={startChat}>
+            Go
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const plain_chat = (
+    <div id="prompt-center">
+      <div className="prompt-center-section">
+        <div className="section-inputs">
+          <div className="user-input">
+            <b>Start your chat with a message:</b>
+            <TextArea
+              value={promptInput}
+              rows={4}
+              onChange={(e, v) => {
+                setPromptInput(e.target.value);
+              }}
+            />
+          </div>
+          {image_description_user_input}
+          {documents && document_choice_user_input}
+        </div>
+      </div>
+      <div className="prompt-center-section">
+        <Button type="primary" onClick={startChat}>
+          Go
+        </Button>
+      </div>
+    </div>
+  );
+
+  const tabItems = [
+    {
+      key: "tab-prompts-chat",
+      label: "Use existing prompts",
+      children: prompt_options,
+    },
+    {
+      key: "tab-chat",
+      label: "Just chat",
+      children: plain_chat,
+    },
+  ];
+
   return (
     <>
       <div className="prompt-chat-container">
-        <div id="prompt-center">
-          {/* <ClipboardButton toggleClipboardDrawer={setClipboardDrawerOpen} /> */}
-          <h2>Prompting Center</h2>
-          <div className="user-inputs">
-            <div className="prompt-center-section">
-              <div className="section-header">
-                What do you want to do?
-                <Tooltip
-                  className="tooltip-help"
-                  title="Choose a task from the dropdown to get more info about what each of them can do"
-                >
-                  <RiQuestionLine />
-                </Tooltip>
-              </div>
-
-              <div className="section-inputs">
-                <div className="user-input">
-                  <Select
-                    onChange={handlePromptSelection}
-                    style={{ width: 300 }}
-                    options={prompts}
-                    value={selectedPrompt?.identifier}
-                  ></Select>
-                </div>
-
-                {selectedPrompt && (
-                  <div className="user-input">
-                    <p>
-                      <b>Description: </b>
-                      {selectedPrompt.help_prompt_description}
-                    </p>
-                    <p>
-                      <b>Your input: </b>
-                      {selectedPrompt.help_user_input}
-                    </p>
-                    <p>
-                      <b>Sample input: </b>
-                      {selectedPrompt.help_sample_input}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="prompt-center-section">
-              <div className="section-header">
-                Add your input
-                <Tooltip
-                  className="tooltip-help"
-                  title="Provide the input based on the description of the chosen task. Optionally, you can choose to add one of the available contexts from your knowledge pack."
-                >
-                  <RiQuestionLine />
-                </Tooltip>
-              </div>
-
-              <div className="section-inputs">
-                <div className="user-input">
-                  <b>Your input:</b>
-                  <TextArea
-                    value={promptInput}
-                    rows={4}
-                    onChange={(e, v) => {
-                      setPromptInput(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="user-input">
-                  <b>Get an image description to include in your input:</b>
-                  <DescribeImage
-                    onImageDescriptionChange={setImageDescription}
-                  />
-                  {imageDescription && (
-                    <TextArea value={imageDescription} rows={6} />
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="prompt-center-section">
-              <div className="section-header">
-                Add some context
-                <Tooltip
-                  className="tooltip-help"
-                  title="You can pull in some extra content from the knowledge pack (optional)"
-                >
-                  <RiQuestionLine />
-                </Tooltip>
-              </div>
-              <div className="section-inputs">
-                {contexts && (
-                  <div className="user-input">
-                    <b>Add a context</b> <br />
-                    <Radio.Group
-                      optionType="button"
-                      buttonStyle="solid"
-                      options={contexts}
-                      defaultValue="base"
-                      onChange={handleContextSelection}
-                    />
-                  </div>
-                )}
-                {documents && (
-                  <div className="user-input">
-                    <b>Include a document</b> <br />
-                    <Select
-                      onChange={setSelectedDocument}
-                      style={{ width: 300 }}
-                      options={documents}
-                      value={selectedDocument?.key}
-                    ></Select>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="prompt-center-section">
-              <Button type="primary" onClick={startChat}>
-                Go
-              </Button>
-            </div>
-          </div>
-        </div>
+        <Tabs
+          className="chat-tabs"
+          defaultActiveKey="tab-prompts-chat"
+          items={tabItems}
+        />
 
         <ProChatProvider>
           <ChatWidget

@@ -12,6 +12,7 @@
   --color-sapphire-light: #47a1ad80;
   
   --standard-left-padding: 1.5em;
+  --font-weight-semi-bold: 630;
 }
 
 html {
@@ -62,20 +63,26 @@ body {
 
 #prompt-center {
   padding: var(--standard-left-padding);
+  padding-top: 0;
   font-size: 13px;
+}
+
+.chat-tabs .ant-tabs-nav-wrap {
+  padding-left: var(--standard-left-padding);
+  font-weight: var(--font-weight-semi-bold);
 }
 
 .prompt-center-section {
   display: flex;
   flex-direction: row;
   padding: 1em 0;
-  border-top: 1px solid var(--color-dark-blue)
+  border-bottom: 1px solid var(--color-light-gray)
 }
 
 .section-header {
   display: flex;
   flex: 1;
-  font-weight: bold;
+  font-weight: var(--font-weight-semi-bold);
 }
 
 .section-header .tooltip-help {
@@ -95,7 +102,7 @@ body {
 
 .user-input label {
   margin-right: 0.3em;
-  font-weight: bold;
+  font-weight: var(--font-weight-semi-bold);
 }
 
 .user-input textarea, .user-input input {
@@ -143,7 +150,7 @@ body {
 }
 
 .scenario-card-content .ant-card-head-title {
-  font-weight: bold;
+  font-weight: var(--font-weight-semi-bold);
   white-space: normal;
   min-height: 55px;
   display: contents;
@@ -154,7 +161,7 @@ body {
 }
 
 .scenario-card-content .card-prop-name {
-  font-weight: bold;
+  font-weight: var(--font-weight-semi-bold);
 }
 
 .generated-text-results {
@@ -184,7 +191,7 @@ body {
   margin-right: auto;
 
   margin-bottom: 10px;
-  font-weight: bold;
+  font-weight: var(--font-weight-semi-bold);
 }
 
 .scenarios-collection {
@@ -273,7 +280,7 @@ textarea.answer-overwrite {
 }
 
 .boba-matrix .matrix-item .matrix-item-title {
-  font-weight: bold;
+  font-weight: var(--font-weight-semi-bold);
   
 }
 
@@ -290,7 +297,7 @@ textarea.answer-overwrite {
 }
 
 .suggestions-title {
-  font-weight: bold;
+  font-weight: var(--font-weight-semi-bold);
   font-size: 85%;
 }
 
@@ -481,11 +488,11 @@ textarea.answer-overwrite {
   min-height: 500px;
 }
 #eval-results .scenario-header {
-  font-weight: bold;
+  font-weight: var(--font-weight-semi-bold);
   height: 50px;
 }
 #eval-results .strategy-header {
-  font-weight: bold;
+  font-weight: var(--font-weight-semi-bold);
   min-height: 100px;
 }
 
@@ -495,7 +502,7 @@ textarea.answer-overwrite {
   border: 1px solid white;
 }
 .eval-result-score {
-  font-weight: bold;
+  font-weight: var(--font-weight-semi-bold);
 }
 
 .subprompt-entry {
