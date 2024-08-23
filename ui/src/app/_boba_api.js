@@ -8,17 +8,17 @@ export const getPrompts = async (onSuccess) => {
     },
   }).then((response) => {
     response.json().then((data) => {
-      const formattedPrompts = data.map((item) => ({
+      const formattedForDropdown = data.map((item) => ({
         ...item,
         value: item.identifier,
         label: item.title,
       }));
-      onSuccess(formattedPrompts);
+      onSuccess(formattedForDropdown);
     });
   });
 };
 
-export const getContexts = async (onSuccess) => {
+export const getContextSnippets = async (onSuccess) => {
   fetch("/api/knowledge/snippets", {
     method: "GET",
     credentials: "include",
@@ -28,6 +28,25 @@ export const getContexts = async (onSuccess) => {
   }).then((response) => {
     response.json().then((data) => {
       onSuccess(data);
+    });
+  });
+};
+
+export const getDocuments = async (onSuccess) => {
+  fetch("/api/knowledge/documents", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((response) => {
+    response.json().then((data) => {
+      const formattedForDropdown = data.map((item) => ({
+        ...item,
+        value: item.key,
+        label: item.title,
+      }));
+      onSuccess(formattedForDropdown);
     });
   });
 };

@@ -7,6 +7,7 @@ from fastapi import File, Form, UploadFile
 from PIL import Image
 
 from pydantic import BaseModel
+from embeddings.documents import KnowledgeDocument
 from knowledge_manager import KnowledgeManager
 from llms.chats import ChatManager, ChatOptions, StreamingChat
 from llms.clients import ChatClientConfig
@@ -20,6 +21,7 @@ class PromptRequestBody(BaseModel):
     userinput: str
     chatSessionId: str = None
     context: str = None
+    document: str = None
 
 
 def streaming_media_type() -> str:
@@ -59,10 +61,21 @@ class HaivenBaseApi:
             headers=streaming_headers(chat_session_key_value),
         )
 
-    def stream_text_chat(self, prompt, chat_category, chat_session_key_value=None):
+    def stream_text_chat(
+        self, prompt, chat_category, chat_session_key_value=None, document_key=None
+    ):
         def stream(chat_session: StreamingChat, prompt):
-            for chunk in chat_session.run(prompt):
-                yield chunk
+            if document_key:
+                sources = ""
+                for chunk, sources in chat_session.run_with_document(
+                    document_key, None, prompt
+                ):
+                    sources = sources
+                    yield chunk
+                yield "\n\n" + sources
+            else:
+                for chunk in chat_session.run(prompt):
+                    yield chunk
 
         chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
             client_config=ChatClientConfig(self.model_key, 0.5),
@@ -117,6 +130,18 @@ class ApiBasics(HaivenBaseApi):
 
             return JSONResponse(response_data)
 
+        @app.get("/api/knowledge/documents")
+        def get_knowledge_documents(request: Request):
+            documents: List[KnowledgeDocument] = (
+                knowledge_manager.knowledge_base_documents.get_documents(context=None)
+            )
+
+            response_data = []
+            for document in documents:
+                response_data.append({"key": document.key, "title": document.title})
+
+            return JSONResponse(response_data)
+
         @app.post("/api/prompt")
         def chat(prompt_data: PromptRequestBody):
             rendered_prompt = prompts_chat.render_prompt(
@@ -128,7 +153,10 @@ class ApiBasics(HaivenBaseApi):
             )
 
             return self.stream_text_chat(
-                rendered_prompt, "boba-chat", prompt_data.chatSessionId
+                rendered_prompt,
+                "boba-chat",
+                prompt_data.chatSessionId,
+                prompt_data.document,
             )
 
         @app.post("/api/prompt/image")

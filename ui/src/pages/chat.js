@@ -8,21 +8,25 @@ import { RiQuestionLine } from "react-icons/ri";
 const { TextArea } = Input;
 import ChatWidget from "../app/_chat";
 import DescribeImage from "../app/_image_description";
-import { getPrompts, getContexts } from "../app/_boba_api";
+import { getPrompts, getContextSnippets, getDocuments } from "../app/_boba_api";
 
 const PromptChat = () => {
   const chatRef = useRef();
 
   const [prompts, setPrompts] = useState([]);
+  const [selectedPrompt, setPromptSelection] = useState("");
   const [contexts, setContexts] = useState([]);
   const [selectedContext, setSelectedContext] = useState("");
+  const [documents, setDocuments] = useState([]);
+  const [selectedDocument, setSelectedDocument] = useState("");
+
   const [promptInput, setPromptInput] = useState("");
-  const [selectedPrompt, setPromptSelection] = useState("");
+  const [imageDescription, setImageDescription] = useState("");
+
   const [showChat, setShowChat] = useState(false);
   const [conversationStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
   const [clipboardDrawerOpen, setClipboardDrawerOpen] = useState(false);
-  const [imageDescription, setImageDescription] = useState("");
 
   useEffect(() => setShowChat(false), []);
 
@@ -36,6 +40,7 @@ const PromptChat = () => {
         userinput: userInput?.content,
         promptid: selectedPrompt.identifier,
         chatSessionId: chatSessionId,
+        document: selectedDocument,
       };
       if (selectedContext !== "base") {
         requestData.context = selectedContext;
@@ -71,21 +76,21 @@ const PromptChat = () => {
     }
   };
 
-  function handlePromptChange(value) {
+  function handlePromptSelection(value) {
     const selectedPrompt = prompts.find(
       (prompt) => prompt.identifier === value,
     );
     setPromptSelection(selectedPrompt);
   }
 
-  const handleContextChange = ({ target: { value } }) => {
+  const handleContextSelection = ({ target: { value } }) => {
     console.log("Context radio checked", value);
     setSelectedContext(value);
   };
 
   useEffect(() => {
     getPrompts(setPrompts);
-    getContexts((data) => {
+    getContextSnippets((data) => {
       const labelValuePairs = data.map((context) => {
         if (context.context === "base") {
           return {
@@ -101,13 +106,14 @@ const PromptChat = () => {
       });
       setContexts(labelValuePairs);
     });
+    getDocuments(setDocuments);
   }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const prompt = params.get("prompt");
     if (prompt) {
-      handlePromptChange(prompt);
+      handlePromptSelection(prompt);
     }
   }, [prompts]);
 
@@ -145,7 +151,7 @@ const PromptChat = () => {
               <div className="section-inputs">
                 <div className="user-input">
                   <Select
-                    onChange={handlePromptChange}
+                    onChange={handlePromptSelection}
                     style={{ width: 300 }}
                     options={prompts}
                     value={selectedPrompt?.identifier}
@@ -184,7 +190,7 @@ const PromptChat = () => {
 
               <div className="section-inputs">
                 <div className="user-input">
-                  <label>Your input:</label>
+                  <b>Your input:</b>
                   <TextArea
                     value={promptInput}
                     rows={4}
@@ -194,9 +200,7 @@ const PromptChat = () => {
                   />
                 </div>
                 <div className="user-input">
-                  <label>
-                    Get an image description to include in your input:
-                  </label>
+                  <b>Get an image description to include in your input:</b>
                   <DescribeImage
                     onImageDescriptionChange={setImageDescription}
                   />
@@ -204,17 +208,40 @@ const PromptChat = () => {
                     <TextArea value={imageDescription} rows={6} />
                   )}
                 </div>
-
+              </div>
+            </div>
+            <div className="prompt-center-section">
+              <div className="section-header">
+                Add some context
+                <Tooltip
+                  className="tooltip-help"
+                  title="You can pull in some extra content from the knowledge pack (optional)"
+                >
+                  <RiQuestionLine />
+                </Tooltip>
+              </div>
+              <div className="section-inputs">
                 {contexts && (
-                  <div className="context-list">
+                  <div className="user-input">
                     <b>Add a context</b> <br />
                     <Radio.Group
                       optionType="button"
                       buttonStyle="solid"
                       options={contexts}
                       defaultValue="base"
-                      onChange={handleContextChange}
+                      onChange={handleContextSelection}
                     />
+                  </div>
+                )}
+                {documents && (
+                  <div className="user-input">
+                    <b>Include a document</b> <br />
+                    <Select
+                      onChange={setSelectedDocument}
+                      style={{ width: 300 }}
+                      options={documents}
+                      value={selectedDocument?.key}
+                    ></Select>
                   </div>
                 )}
               </div>
