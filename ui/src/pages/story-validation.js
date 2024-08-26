@@ -123,101 +123,126 @@ const Home = () => {
   return (
     <>
       <div id="canvas">
-        <div id="prompt-center">
-          <h2>Validate and refine a user story</h2>
-          <h3>Step 1: Discover gaps in your story</h3>
-          <div className="user-inputs">
-            <div className="user-input">
-              <label>High level requirements</label>
-              <TextArea
-                placeholder="What do you have so far?"
-                value={promptInput}
-                onChange={(e, v) => {
-                  setPromptInput(e.target.value);
-                }}
-                rows={5}
-              />
+        <div className="prompt-chat-container">
+          <div className="prompt-chat-options-container">
+            <div className="prompt-chat-options-section">
+              <h1>Validate and refine a user story</h1>
+              <p>
+                Haiven will ask you questions about your requirement, so you can
+                discover gaps you haven't thought about yet. In a second step,
+                you can generate a draft for a user story.
+              </p>
             </div>
-            <Button type="primary" onClick={onSubmitPrompt}>
-              Go
-            </Button>
-            {modelOutputFailed && (
-              <Space direction="vertical" style={{ width: "100%" }}>
-                <Alert
-                  message="Model failed to respond rightly"
-                  description="Please rewrite your message and try again"
-                  type="warning"
+            <div className="user-inputs">
+              <div className="user-input">
+                <p>Give a high level description of your requirement:</p>
+                <TextArea
+                  placeholder="What do you have so far?"
+                  value={promptInput}
+                  onChange={(e, v) => {
+                    setPromptInput(e.target.value);
+                  }}
+                  rows={5}
                 />
-              </Space>
+              </div>
+              <Button
+                type="primary"
+                onClick={onSubmitPrompt}
+                className="go-button"
+                disabled={isLoading}
+              >
+                GENERATE QUESTIONS
+              </Button>
+              {modelOutputFailed && (
+                <Space direction="vertical" style={{ width: "100%" }}>
+                  <Alert
+                    message="Model failed to respond rightly"
+                    description="Please rewrite your message and try again"
+                    type="warning"
+                  />
+                </Space>
+              )}
+            </div>
+
+            {isLoading && (
+              <div style={{ marginTop: 10 }}>
+                <Spin />
+                <Button
+                  type="primary"
+                  danger
+                  onClick={abortCurrentLoad}
+                  style={{ marginLeft: "1em" }}
+                >
+                  Stop
+                </Button>
+              </div>
+            )}
+
+            {questions.length > 0 && (
+              <div className="user-inputs" style={{ marginTop: "1em" }}>
+                <h3>Get a draft</h3>
+                Go through the questions and refine the answers.
+                <br />
+                Once you're happy with the selected answers, you can generate
+                given/when/then scenarios for this story <br />
+                <Button
+                  type="primary"
+                  onClick={onGenerateScenarios}
+                  className="go-button"
+                  disabled={isLoading}
+                >
+                  GIVEN/WHEN/THEN
+                </Button>
+              </div>
             )}
           </div>
-          &nbsp;
-          {isLoading && (
-            <div style={{ marginTop: 10 }}>
-              <Spin />
-              <div style={{ marginLeft: 105, display: "inline-block" }}>
-                &nbsp;
-              </div>
 
-              <Button type="primary" danger onClick={abortCurrentLoad}>
-                Stop
-              </Button>
-            </div>
-          )}
-        </div>
-
-        <div className={"scenarios-collection cards-display"}>
-          {questions.map((question, i) => {
-            return (
-              <Card
-                key={i}
-                className="scenario"
-                title={<>{question.question}</>}
-              >
-                <div className="q-a-card-content">
-                  {question.question && (
-                    <div className="card-prop stackable">
-                      <div className="card-prop-name">Suggested answer</div>
-                      <div>
-                        <TextArea
-                          className="answer-overwrite"
-                          value={question.answer}
-                          onChange={(e) => {
-                            const updatedQuestions = [...questions];
-                            updatedQuestions[i].answer = e.target.value;
-                            setQuestions(updatedQuestions);
-                          }}
-                          rows={8}
-                        ></TextArea>
-                      </div>
-                    </div>
-                  )}
+          <div className={"scenarios-collection cards-display"}>
+            {storyScenarios && (
+              <>
+                <h2>Draft </h2>
+                <div className="generated-text-results">
+                  <Button onClick={copyScenarios} className="icon-button">
+                    <RiFileCopyLine />
+                  </Button>
+                  <ReactMarkdown>{storyScenarios}</ReactMarkdown>
                 </div>
-              </Card>
-            );
-          })}
+              </>
+            )}
+            <div className="cards-container">
+              <h2>Questions</h2>
+              {questions.map((question, i) => {
+                return (
+                  <Card
+                    key={i}
+                    className="scenario"
+                    title={<>{question.question}</>}
+                  >
+                    <div className="q-a-card-content">
+                      {question.question && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Suggested answer</div>
+                          <div>
+                            <TextArea
+                              className="answer-overwrite"
+                              value={question.answer}
+                              onChange={(e) => {
+                                const updatedQuestions = [...questions];
+                                updatedQuestions[i].answer = e.target.value;
+                                setQuestions(updatedQuestions);
+                              }}
+                              rows={8}
+                            ></TextArea>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
         </div>
-
-        {questions.length > 0 && (
-          <div className="generate-instructions">
-            <h3>Step 2: Generate scenarios</h3>
-            Go through the questions and refine the answers.
-            <br />
-            Once you're happy with the selected answers, you can generate
-            given/when/then scenarios for this story <br />
-            <Button type="primary" onClick={onGenerateScenarios}>
-              Generate
-            </Button>
-          </div>
-        )}
-        {storyScenarios && (
-          <div className="generated-text-results">
-            <Button onClick={copyScenarios} className="icon-button">
-              <RiFileCopyLine />
-            </Button>
-            <ReactMarkdown>{storyScenarios}</ReactMarkdown>
-          </div>
-        )}
       </div>
     </>
   );

@@ -121,11 +121,14 @@ const Home = () => {
           <div className="prompt-chat-options-container">
             <div className="prompt-chat-options-section">
               <h1>Requirements breakdown</h1>
+              <p>
+                Haiven will help you break down your requirement into multiple
+                scenarios.
+              </p>
             </div>
-            &nbsp;
             <div className="prompt-chat-options-section">
               <div className="user-input">
-                <label>High level requirements</label>
+                <p>Give a high level description of your requirement:</p>
                 <TextArea
                   placeholder="Describe the high level requirements to break down"
                   value={promptInput}
