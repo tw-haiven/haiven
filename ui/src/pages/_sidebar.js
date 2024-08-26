@@ -59,7 +59,7 @@ const Sidebar = () => {
         children: [
           {
             key: "requirements",
-            label: <Link href="/requirements">Breakdown</Link>,
+            label: <Link href="/requirements">Requirements breakdown</Link>,
             icon: <RiTable2 />,
           },
           {
