@@ -113,6 +113,7 @@ const PromptChat = () => {
     const prompt = searchParams.get("prompt");
     if (prompt) {
       handlePromptSelection(prompt);
+      setShowChat(false);
     }
   }, [prompts, searchParams]);
 
@@ -198,7 +199,7 @@ const PromptChat = () => {
       </div>
       <div className="prompt-chat-options-section">
         <Button type="primary" onClick={startChat} className="go-button">
-          GENERATE
+          START CHAT
         </Button>
       </div>
     </div>
