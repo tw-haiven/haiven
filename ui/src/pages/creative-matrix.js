@@ -171,14 +171,15 @@ const CreativeMatrix = () => {
     <div id="canvas">
       <div className="prompt-chat-container">
         <div className="prompt-chat-options-container">
-          <h1 style={{ marginTop: 0 }}>
-            Creative Matrix &nbsp;&nbsp;
+          <h1>Creative Matrix</h1>
+
+          <div className="user-input">
             <Select
               defaultValue={templates[0].name}
               onChange={onChangeTemplate}
               options={templates.map((t) => ({ value: t.name, label: t.name }))}
             ></Select>
-          </h1>
+          </div>
 
           <div className="user-input">
             <p>Prompt:</p>
