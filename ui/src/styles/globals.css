@@ -71,7 +71,7 @@ body {
 .prompt-chat-container {
   display: flex;
   flex-direction: row;
-  flex: 1;
+  height: 100%;
 }
 
 .prompt-chat-container .prompt-chat-options-container {
@@ -81,6 +81,7 @@ body {
   display: flex;
   flex-direction: column;
   flex: 1;
+  box-shadow: 5px 0px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Cannot put a class on the root div of the chat (which is probably from ProChatProvider component) */
@@ -193,12 +194,6 @@ body {
   box-shadow: none;
   border: none;
   margin-top: 1em;
-}
-
-#canvas {
-  /* display: inline-block; */
-  padding-top: 10px;
-  padding-left: 10px;
 }
 
 .scenarios-collection {
@@ -536,6 +531,7 @@ textarea.answer-overwrite {
 
 #canvas {
   overflow-x: hidden;
+  height: 100%;
 }
 #storyboard {
   overflow-x: scroll;
