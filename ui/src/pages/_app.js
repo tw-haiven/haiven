@@ -23,14 +23,16 @@ export default function App({
         theme={{
           token: {
             // Seed Token
-            colorPrimary: "#003d4f",
             borderRadius: 0,
+
+            colorPrimary: "#003d4f",
             colorError: "#f2617aff",
             colorWarning: "#CC850A",
             colorSuccess: "#6B9E78",
             colorLink: "#f2617aff",
+
             fontFamilyCode: "Inter, Noto Sans SC, sans-serif",
-            fontSize: "13px",
+
             lineType: "none",
             motion: "false",
             // Alias Token
