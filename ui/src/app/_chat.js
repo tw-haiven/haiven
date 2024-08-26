@@ -16,6 +16,21 @@ const ChatWidget = forwardRef(
           .ant-pro-chat-list-item-message-content {
             background-color: #ffffff;
           }
+          .ant-pro-chat-list-item-message-content h1, h2, h3, h4 {
+            font-weight: 630;
+          }
+          .ant-pro-chat-list-item-message-content h1 {
+            font-size: 1.7em;
+          }
+          .ant-pro-chat-list-item-message-content h2 {
+            font-size: 1.5em;
+          }
+          .ant-pro-chat-list-item-message-content h3 {
+            font-size: 1.3em;
+          }
+          .ant-pro-chat-list-item-message-content h3, h4, h5 {
+            font-size: 1.1em;
+          }
       `),
     );
 
@@ -62,6 +77,11 @@ const ChatWidget = forwardRef(
             locale="en-US"
             helloMessage={helloMessage}
             request={onSubmit}
+            inputAreaProps={{
+              style: {
+                borderRadius: "0",
+              },
+            }}
           />
         )}
       </div>

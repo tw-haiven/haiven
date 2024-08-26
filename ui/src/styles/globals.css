@@ -25,6 +25,15 @@ html {
   font-variation-settings: normal;
 }
 
+h1, h2, h3, h4 {
+  margin: 0.5em 0;
+  font-weight: var(--font-weight-semi-bold)
+}
+
+h1 {
+  font-size: 1.5em;
+}
+
 .ant-pro-chat p {
   word-break: keep-all !important;
 }
@@ -36,13 +45,6 @@ html {
 .ant-avatar img {
   width: 1em;
   height: 1em;
-}
-
-.prompt-chat-container {
-  /* display: flex;
-  flex-direction: column;
-  height: 100vh;
-  flex: 1; */
 }
 
 .prompt-choice {
@@ -61,28 +63,37 @@ body {
   /* width: calc(100% - 250px); */
 }
 
-#prompt-center {
-  padding: var(--standard-left-padding);
-  padding-top: 0;
-  font-size: 13px;
-}
-
-.chat-tabs .ant-tabs-nav-wrap {
+/* .chat-tabs .ant-tabs-nav-wrap {
   padding-left: var(--standard-left-padding);
   font-weight: var(--font-weight-semi-bold);
-}
+} */
 
-.prompt-center-section {
+.prompt-chat-container {
   display: flex;
   flex-direction: row;
-  padding: 1em 0;
-  border-bottom: 1px solid var(--color-light-gray)
+  flex: 1;
 }
 
-.section-header {
+.prompt-chat-container .prompt-chat-options-container {
+  padding: var(--standard-left-padding);
+  padding-top: 1em;
+  font-size: 13px;
   display: flex;
+  flex-direction: column;
   flex: 1;
+}
+
+/* Cannot put a class on the root div of the chat (which is probably from ProChatProvider component) */
+.prompt-chat-container > :nth-child(2) {
+  display: flex;
+  flex: 4;
+}
+
+.prompt-chat-options-container .go-button {
+  width: 100%;
   font-weight: var(--font-weight-semi-bold);
+  font-size: 90%;
+  margin-top: 2em;
 }
 
 .section-header .tooltip-help {
@@ -90,14 +101,8 @@ body {
   fill: var(--color-sapphire)
 }
 
-.section-inputs {
-  display: flex;
-  flex: 4;
-  flex-direction: column;
-}
-
 .user-input {
-  padding-bottom: 0.5em;
+  padding: 0.5em 0;
 }
 
 .user-input label {

@@ -83,8 +83,7 @@ const PromptChat = () => {
     setPromptSelection(selectedPrompt);
   }
 
-  const handleContextSelection = ({ target: { value } }) => {
-    console.log("Context radio checked", value);
+  const handleContextSelection = (value) => {
     setSelectedContext(value);
   };
 
@@ -132,7 +131,7 @@ const PromptChat = () => {
 
   const image_description_user_input = (
     <div className="user-input">
-      <b>Get an image description to include:</b>
+      Include an image description
       <DescribeImage onImageDescriptionChange={setImageDescription} />
       {imageDescription && <TextArea value={imageDescription} rows={6} />}
     </div>
@@ -140,7 +139,8 @@ const PromptChat = () => {
 
   const document_choice_user_input = (
     <div className="user-input">
-      <b>Include a document</b> <br />
+      Include a document
+      <br />
       <Select
         onChange={setSelectedDocument}
         style={{ width: 300 }}
@@ -151,113 +151,63 @@ const PromptChat = () => {
   );
 
   const prompt_options = (
-    <div id="prompt-center">
+    <div className="prompt-chat-options-container">
       {/* <ClipboardButton toggleClipboardDrawer={setClipboardDrawerOpen} /> */}
-      <div className="user-inputs">
-        <div className="prompt-center-section">
-          <div className="section-header">
-            What do you want to do?
-            <Tooltip
-              className="tooltip-help"
-              title="Choose a task from the dropdown to get more info about what each of them can do"
-            >
-              <RiQuestionLine />
-            </Tooltip>
-          </div>
+      <div className="prompt-chat-options-section">
+        <h1>{selectedPrompt?.title}</h1>
+        <p>{selectedPrompt?.help_prompt_description}</p>
+      </div>
 
-          <div className="section-inputs">
+      <div className="prompt-chat-options-section">
+        <div>
+          <h2>Your input</h2>
+          <div className="user-input">{selectedPrompt?.help_user_input}</div>
+
+          <div className="user-input">
+            <TextArea
+              value={promptInput}
+              rows={4}
+              onChange={(e, v) => {
+                setPromptInput(e.target.value);
+              }}
+            />
+          </div>
+          {image_description_user_input}
+        </div>
+      </div>
+      <div className="prompt-chat-options-section">
+        <div>
+          <h2>Add some context</h2>
+        </div>
+        <div>
+          {contexts && (
             <div className="user-input">
+              Include text snippets
+              <br />
               <Select
-                onChange={handlePromptSelection}
+                onChange={handleContextSelection}
                 style={{ width: 300 }}
-                options={prompts}
-                value={selectedPrompt?.identifier}
+                options={contexts}
+                value={selectedContext?.key}
+                defaultValue="base"
               ></Select>
             </div>
-
-            {selectedPrompt && (
-              <div className="user-input">
-                <p>
-                  <b>Description: </b>
-                  {selectedPrompt.help_prompt_description}
-                </p>
-                <p>
-                  <b>Your input: </b>
-                  {selectedPrompt.help_user_input}
-                </p>
-                <p>
-                  <b>Sample input: </b>
-                  {selectedPrompt.help_sample_input}
-                </p>
-              </div>
-            )}
-          </div>
+          )}
+          {documents && document_choice_user_input}
         </div>
-
-        <div className="prompt-center-section">
-          <div className="section-header">
-            Add your input
-            <Tooltip
-              className="tooltip-help"
-              title="Provide the input based on the description of the chosen task. Optionally, you can choose to add one of the available contexts from your knowledge pack."
-            >
-              <RiQuestionLine />
-            </Tooltip>
-          </div>
-
-          <div className="section-inputs">
-            <div className="user-input">
-              <b>Your input:</b>
-              <TextArea
-                value={promptInput}
-                rows={4}
-                onChange={(e, v) => {
-                  setPromptInput(e.target.value);
-                }}
-              />
-            </div>
-            {image_description_user_input}
-          </div>
-        </div>
-        <div className="prompt-center-section">
-          <div className="section-header">
-            Add some context
-            <Tooltip
-              className="tooltip-help"
-              title="You can pull in some extra content from the knowledge pack (optional)"
-            >
-              <RiQuestionLine />
-            </Tooltip>
-          </div>
-          <div className="section-inputs">
-            {contexts && (
-              <div className="user-input">
-                <b>Add a context</b> <br />
-                <Radio.Group
-                  optionType="button"
-                  buttonStyle="solid"
-                  options={contexts}
-                  defaultValue="base"
-                  onChange={handleContextSelection}
-                />
-              </div>
-            )}
-            {documents && document_choice_user_input}
-          </div>
-        </div>
-        <div className="prompt-center-section">
-          <Button type="primary" onClick={startChat}>
-            Go
-          </Button>
-        </div>
+      </div>
+      <div className="prompt-chat-options-section">
+        <Button type="primary" onClick={startChat} className="go-button">
+          GENERATE
+        </Button>
       </div>
     </div>
   );
 
   const plain_chat = (
-    <div id="prompt-center">
-      <div className="prompt-center-section">
-        <div className="section-inputs">
+    <div className="prompt-center">
+      <div className="prompt-chat-options-section">
+        <div>
           <div className="user-input">
             <b>Start your chat with a message:</b>
             <TextArea
@@ -272,7 +222,7 @@ const PromptChat = () => {
           {documents && document_choice_user_input}
         </div>
       </div>
-      <div className="prompt-center-section">
+      <div className="prompt-chat-options-section">
         <Button type="primary" onClick={startChat}>
           Go
         </Button>
@@ -296,17 +246,14 @@ const PromptChat = () => {
   return (
     <>
       <div className="prompt-chat-container">
-        <Tabs
-          className="chat-tabs"
-          defaultActiveKey="tab-prompts-chat"
-          items={tabItems}
-        />
+        {prompt_options}
 
         <ProChatProvider>
           <ChatWidget
             onSubmitMessage={submitPromptToBackend}
             ref={chatRef}
             visible={showChat}
+            helloMessage={"Fill in some input on the left and hit 'Generate'"}
           />
         </ProChatProvider>
       </div>

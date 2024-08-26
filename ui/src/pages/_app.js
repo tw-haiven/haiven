@@ -25,8 +25,12 @@ export default function App({
             colorPrimary: "#003d4f",
             borderRadius: 0,
             colorError: "#f2617aff",
+            colorWarning: "#CC850A",
+            colorSuccess: "#6B9E78",
             colorLink: "#f2617aff",
             fontFamilyCode: "Inter, Noto Sans SC, sans-serif",
+            lineType: "none",
+            motion: "false",
             // Alias Token
             colorBgContainer: "#edf1f3",
           },
