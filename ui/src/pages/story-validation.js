@@ -210,7 +210,7 @@ const Home = () => {
               </>
             )}
             <div className="cards-container">
-              <h2>Questions</h2>
+              {questions.length > 0 && <h2>Questions</h2>}
               {questions.map((question, i) => {
                 return (
                   <Card
