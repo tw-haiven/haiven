@@ -17,7 +17,7 @@ import {
 import ScenariosPlot from "./_plot";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
-const { Search } = Input;
+const { TextArea } = Input;
 
 import {
   RiStackLine,
@@ -95,17 +95,17 @@ const Home = () => {
     setDisplayMode(event.target.value);
   };
 
-  const onSubmitPrompt = async (value) => {
+  const onSubmitPrompt = async () => {
     setModelOutputNotParseable(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
-    setPrompt(value);
+    // setPrompt(value);
 
     const uri =
       "/api/make-scenario" +
       "?input=" +
-      encodeURIComponent(value) +
+      encodeURIComponent(prompt) +
       "&num_scenarios=" +
       encodeURIComponent(numOfScenarios) +
       "&detail=" +
@@ -193,245 +193,265 @@ const Home = () => {
         />
       </Drawer>
       <div id="canvas">
-        <div id="prompt-center">
-          <b style={{ fontSize: 20, display: "inline-block" }}>Scenarios</b>
-          &nbsp;
-          <Radio.Group
-            className="display-mode"
-            onChange={onSelectDisplayMode}
-            defaultValue="grid"
-            style={{ float: "right" }}
-          >
-            <Radio.Button value="grid">
-              <RiStackLine /> Cards
-            </Radio.Button>
-            <Radio.Button value="plot">
-              <RiGridLine /> Matrix
-            </Radio.Button>
-          </Radio.Group>
-          <br />
-          <br />
-          Strategic prompt:&nbsp;
-          <Search
-            ref={promptRef}
-            placeholder="enter a prompt and press enter to generate scenarios"
-            className="fs-unmask"
-            onSearch={onSubmitPrompt}
-            style={{ width: 500, color: "white" }}
-            disabled={isLoading}
-            value={prompt}
-            onChange={(e, v) => {
-              setPrompt(e.target.value);
-            }}
-            enterButton={
-              <div>
-                <span>Go</span>
-              </div>
-            }
-          />
-          &nbsp; Generate{" "}
-          <Select
-            defaultValue={"5"}
-            onChange={handleSelectChange}
-            style={{ width: 150 }}
-            disabled={isLoading}
-            options={[
-              { value: "1", label: "1 scenario" },
-              { value: "3", label: "3 scenarios" },
-              { value: "5", label: "5 scenarios" },
-              { value: "10", label: "10 scenarios" },
-            ]}
-          ></Select>
-          &nbsp;&nbsp;
-          <Checkbox onChange={handleDetailCheck} disabled={isLoading} /> Add
-          details (signals, threats, opportunties) &nbsp;
-          {isLoading ? <Spin /> : <></>}
-          <div style={{ marginTop: 10 }}>
-            <div style={{ marginLeft: 105, display: "inline-block" }}>
-              &nbsp;
+        <div className="prompt-chat-container">
+          <div className="prompt-chat-options-container">
+            <div className="prompt-chat-options-section">
+              <h1>Scenarios</h1>
             </div>
-            <Select
-              defaultValue={"10-year"}
-              onChange={handleSelectTimeHorizonChange}
-              style={{ width: 150 }}
-              disabled={isLoading}
-              options={[
-                { value: "5-year", label: "5-year horizon" },
-                { value: "10-year", label: "10-year horizon" },
-                { value: "100-year", label: "100-year horizon" },
-              ]}
-            ></Select>
-            &nbsp;&nbsp; &nbsp;
-            <Select
-              defaultValue={"optimistic"}
-              onChange={handleSelectOptimismChange}
-              style={{ width: 150 }}
-              disabled={isLoading}
-              options={[
-                {
-                  value: "optimistic",
-                  label: (
-                    <div>
-                      <span className="config-icon">
-                        <RiThumbUpLine />
-                      </span>{" "}
-                      Optimistic
-                    </div>
-                  ),
-                },
-                {
-                  value: "pessimistic",
-                  label: (
-                    <div>
-                      <span className="config-icon">
-                        <RiThumbDownLine />
-                      </span>{" "}
-                      Pessimistic
-                    </div>
-                  ),
-                },
-              ]}
-            ></Select>
-            &nbsp;&nbsp;
-            <Select
-              defaultValue={"futuristic sci-fi"}
-              onChange={handleSelectRealismChange}
-              style={{ width: 150 }}
-              disabled={isLoading}
-              options={[
-                {
-                  value: "realistic",
-                  label: (
-                    <div>
-                      <span className="config-icon">
-                        <RiFileImageLine />
-                      </span>{" "}
-                      Realistic
-                    </div>
-                  ),
-                },
-                {
-                  value: "futuristic sci-fi",
-                  label: (
-                    <div>
-                      <span className="config-icon">
-                        <RiRocket2Line />
-                      </span>{" "}
-                      Sci-fi Future
-                    </div>
-                  ),
-                },
-                {
-                  value: "bizarre",
-                  label: (
-                    <div>
-                      <span className="config-icon">
-                        <RiAliensLine />
-                      </span>{" "}
-                      Bizarre
-                    </div>
-                  ),
-                },
-              ]}
-            ></Select>
-            &nbsp;&nbsp;
-            {isLoading && (
-              <Button type="primary" danger onClick={abortLoad}>
-                Stop
-              </Button>
-            )}
-          </div>
-        </div>
-        {modelOutputNotParseable && (
-          <Space direction="vertical" style={{ width: "100%" }}>
-            <Alert
-              message="Model failed to respond rightly"
-              description="Please rewrite your message and try again"
-              type="warning"
-            />
-          </Space>
-        )}
-        <div className={"scenarios-collection " + displayMode + "-display"}>
-          {scenarios.map((scenario, i) => {
-            return (
-              <Card
-                key={i}
-                className="scenario"
-                title={<>{scenario.title}</>}
-                actions={[
+            <div className="prompt-chat-options-section">
+              <div className="user-input">
+                Generate{" "}
+                <Select
+                  defaultValue={"5"}
+                  onChange={handleSelectChange}
+                  style={{ width: 150 }}
+                  disabled={isLoading}
+                  options={[
+                    { value: "1", label: "1 scenario" },
+                    { value: "3", label: "3 scenarios" },
+                    { value: "5", label: "5 scenarios" },
+                    { value: "10", label: "10 scenarios" },
+                  ]}
+                ></Select>
+              </div>
+              <div className="user-input">
+                <Checkbox onChange={handleDetailCheck} disabled={isLoading} />{" "}
+                Add details (signals, threats, opportunties) &nbsp;
+              </div>
+              <div className="user-input">
+                <Select
+                  defaultValue={"10-year"}
+                  onChange={handleSelectTimeHorizonChange}
+                  style={{ width: 150 }}
+                  disabled={isLoading}
+                  options={[
+                    { value: "5-year", label: "5-year horizon" },
+                    { value: "10-year", label: "10-year horizon" },
+                    { value: "100-year", label: "100-year horizon" },
+                  ]}
+                ></Select>
+              </div>
+              <div className="user-input">
+                <Select
+                  defaultValue={"optimistic"}
+                  onChange={handleSelectOptimismChange}
+                  style={{ width: 150 }}
+                  disabled={isLoading}
+                  options={[
+                    {
+                      value: "optimistic",
+                      label: (
+                        <div>
+                          <span className="config-icon">
+                            <RiThumbUpLine />
+                          </span>{" "}
+                          Optimistic
+                        </div>
+                      ),
+                    },
+                    {
+                      value: "pessimistic",
+                      label: (
+                        <div>
+                          <span className="config-icon">
+                            <RiThumbDownLine />
+                          </span>{" "}
+                          Pessimistic
+                        </div>
+                      ),
+                    },
+                  ]}
+                ></Select>
+              </div>
+              <div className="user-input">
+                <Select
+                  defaultValue={"futuristic sci-fi"}
+                  onChange={handleSelectRealismChange}
+                  style={{ width: 150 }}
+                  disabled={isLoading}
+                  options={[
+                    {
+                      value: "realistic",
+                      label: (
+                        <div>
+                          <span className="config-icon">
+                            <RiFileImageLine />
+                          </span>{" "}
+                          Realistic
+                        </div>
+                      ),
+                    },
+                    {
+                      value: "futuristic sci-fi",
+                      label: (
+                        <div>
+                          <span className="config-icon">
+                            <RiRocket2Line />
+                          </span>{" "}
+                          Sci-fi Future
+                        </div>
+                      ),
+                    },
+                    {
+                      value: "bizarre",
+                      label: (
+                        <div>
+                          <span className="config-icon">
+                            <RiAliensLine />
+                          </span>{" "}
+                          Bizarre
+                        </div>
+                      ),
+                    },
+                  ]}
+                ></Select>
+              </div>
+              <div className="user-input">
+                Strategic prompt
+                <TextArea
+                  ref={promptRef}
+                  disabled={isLoading}
+                  value={prompt}
+                  onChange={(e, v) => {
+                    setPrompt(e.target.value);
+                  }}
+                  rows="4"
+                />
+                <Button
+                  type="primary"
+                  onClick={onSubmitPrompt}
+                  className="go-button"
+                  disabled={isLoading}
+                >
+                  GENERATE
+                </Button>
+              </div>
+              <div className="user-input">
+                {isLoading ? <Spin /> : <></>}
+                {isLoading && (
                   <Button
-                    type="link"
-                    key="explore"
-                    onClick={() => onExplore(i)}
+                    type="primary"
+                    danger
+                    onClick={abortLoad}
+                    style={{ marginLeft: "1em" }}
                   >
-                    Explore
-                  </Button>,
-                ]}
-              >
-                <div className="scenario-card-content">
-                  <div className="scenario-summary">{scenario.summary}</div>
-                  {scenario.horizon && (
-                    <div className="card-prop stackable">
-                      <div className="card-prop-name">Horizon</div>
-                      <div className="card-prop-value">{scenario.horizon}</div>
-                    </div>
-                  )}
-                  {scenario.plausibility && (
-                    <div className="card-prop stackable">
-                      <div className="card-prop-name">Plausibility</div>
-                      <div className="card-prop-value">
-                        {scenario.plausibility}
-                      </div>
-                    </div>
-                  )}
-                  {scenario.probability && (
-                    <div className="card-prop stackable">
-                      <div className="card-prop-name">Probability</div>
-                      <div className="card-prop-value">
-                        {scenario.probability}
-                      </div>
-                    </div>
-                  )}
-                  {scenario.signals && (
-                    <div className="card-prop">
-                      <div className="card-prop-name">
-                        Signals/Driving Forces
-                      </div>
-                      <div className="card-prop-value">
-                        {(scenario.signals || []).join(", ")}
-                      </div>
-                    </div>
-                  )}
-                  {scenario.threats && (
-                    <div className="card-prop">
-                      <div className="card-prop-name">Threats</div>
-                      <div className="card-prop-value">
-                        {(scenario.threats || []).join(", ")}
-                      </div>
-                    </div>
-                  )}
-                  {scenario.opportunities && (
-                    <div className="card-prop">
-                      <div className="card-prop-name">Opportunities</div>
-                      <div className="card-prop-value">
-                        {(scenario.opportunities || []).join(", ")}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </Card>
-            );
-          })}
-        </div>
+                    Stop
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
 
-        <div
-          className="scenarios-plot-container"
-          style={{ display: displayMode == "plot" ? "block" : "none" }}
-        >
-          <ScenariosPlot
-            scenarios={scenarios}
-            visible={displayMode == "plot"}
-          />
+          {modelOutputNotParseable && (
+            <Space direction="vertical" style={{ width: "100%" }}>
+              <Alert
+                message="Model failed to respond rightly"
+                description="Please rewrite your message and try again"
+                type="warning"
+              />
+            </Space>
+          )}
+
+          <div className={"scenarios-collection " + displayMode + "-display"}>
+            <div>
+              <Radio.Group
+                className="display-mode"
+                onChange={onSelectDisplayMode}
+                defaultValue="grid"
+                style={{ float: "right" }}
+              >
+                <Radio.Button value="grid">
+                  <RiStackLine /> Cards
+                </Radio.Button>
+                <Radio.Button value="plot">
+                  <RiGridLine /> Matrix
+                </Radio.Button>
+              </Radio.Group>
+            </div>
+            <div className="cards-container">
+              {scenarios.map((scenario, i) => {
+                return (
+                  <Card
+                    key={i}
+                    className="scenario"
+                    title={<>{scenario.title}</>}
+                    actions={[
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onExplore(i)}
+                      >
+                        Explore
+                      </Button>,
+                    ]}
+                  >
+                    <div className="scenario-card-content">
+                      <div className="scenario-summary">{scenario.summary}</div>
+                      {scenario.horizon && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Horizon</div>
+                          <div className="card-prop-value">
+                            {scenario.horizon}
+                          </div>
+                        </div>
+                      )}
+                      {scenario.plausibility && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Plausibility</div>
+                          <div className="card-prop-value">
+                            {scenario.plausibility}
+                          </div>
+                        </div>
+                      )}
+                      {scenario.probability && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Probability</div>
+                          <div className="card-prop-value">
+                            {scenario.probability}
+                          </div>
+                        </div>
+                      )}
+                      {scenario.signals && (
+                        <div className="card-prop">
+                          <div className="card-prop-name">
+                            Signals/Driving Forces
+                          </div>
+                          <div className="card-prop-value">
+                            {(scenario.signals || []).join(", ")}
+                          </div>
+                        </div>
+                      )}
+                      {scenario.threats && (
+                        <div className="card-prop">
+                          <div className="card-prop-name">Threats</div>
+                          <div className="card-prop-value">
+                            {(scenario.threats || []).join(", ")}
+                          </div>
+                        </div>
+                      )}
+                      {scenario.opportunities && (
+                        <div className="card-prop">
+                          <div className="card-prop-name">Opportunities</div>
+                          <div className="card-prop-value">
+                            {(scenario.opportunities || []).join(", ")}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+            <div
+              className="scenarios-plot-container"
+              style={{ display: displayMode == "plot" ? "block" : "none" }}
+            >
+              <ScenariosPlot
+                scenarios={scenarios}
+                visible={displayMode == "plot"}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </>

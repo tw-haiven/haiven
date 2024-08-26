@@ -134,6 +134,7 @@ body {
   vertical-align: top;
   margin: 0.3em;
   padding-top: 0.8em;
+  height: 380px;
 }
 
 .scenario .scenario-card-content {
@@ -155,20 +156,29 @@ body {
   }
 }
 
-.scenario-card-content .ant-card-head-title {
-  font-weight: var(--font-weight-semi-bold);
-  white-space: normal;
-  min-height: 55px;
-  display: contents;
+.ant-card {
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.scenario-card-content .card-prop {
-  margin: 5px 0;
+.ant-card-head {
+  border-bottom: 1px solid var(--color-light-gray) !important;
+  min-height: 55px;
+  justify-content: top  !important;
+}
+
+.ant-card-head-title {
+  font-weight: var(--font-weight-semi-bold);
+  white-space: normal !important;
+}
+
+.ant-card-actions {
+  background-color: transparent !important;
 }
 
 .scenario-card-content .card-prop-name {
   font-weight: var(--font-weight-semi-bold);
-}
+} 
 
 .generated-text-results {
   padding: 0 var(--standard-left-padding);
@@ -176,7 +186,6 @@ body {
   margin-left: var(--standard-left-padding);
   max-width: 600px;
 }
-
 
 .generated-text-results .icon-button {
   float: right;
@@ -193,7 +202,17 @@ body {
 }
 
 .scenarios-collection {
-  padding: 0 var(--standard-left-padding);
+  padding: var(--standard-left-padding) var(--standard-left-padding);
+  flex-direction: column;
+  flex: 3;
+}
+
+.scenarios-collection .cards-container {
+  margin-top: 1em;
+}
+
+.scenarios-collection .ant-card-body {
+  padding-top: 10px;
 }
 
 .scenarios-collection.equal-display .scenario-card-content {
@@ -275,6 +294,7 @@ textarea.answer-overwrite {
   padding: 5px;
   cursor: pointer;
   color: white;
+  max-width: 150px;
 }
 
 .boba-matrix .matrix-item .matrix-item-title {
@@ -349,10 +369,6 @@ textarea.answer-overwrite {
   text-align: right;
   font-weight: normal;
   font-size: small;
-}
-
-.scenarios-collection .ant-card-body {
-  padding-top: 10px;
 }
 
 .config-icon {
@@ -555,26 +571,21 @@ textarea.answer-overwrite {
 }
 
 .dashboard-tile {
-  width: 300px;
-  max-height: 300px;
-  min-height: 300px;
+  width: 250px;
+  height: 250px;
   padding-top: 0.5em;
 }
 
 .dashboard-tile .ant-card-body {
-  max-height: 180px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 80%;
 }
 
 .dashboard-tile .tile-tags {
-  margin-right: -1.5em;
+  margin-top: auto;
 }
-
-.dashboard-tile .tile-tags span {
-  float: right;
-  margin: 0.2em;
-}
-
 
 .header {
   background-color: var(--color-dark-blue);
