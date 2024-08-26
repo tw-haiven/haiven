@@ -455,22 +455,22 @@ input.select-scenario {
   height: 100vh;
 }
 
-.sidebar .ant-menu-submenu-inline .ant-menu-submenu-title {
-  padding-left: 10px !important;
+.sidebar .ant-menu-submenu-inline .ant-menu-submenu-title, .sidebar .ant-menu-item {
+  padding-left: 0.8em !important;
   font-size: 90%;
 }
 
 .sidebar .ant-menu-submenu-inline .ant-menu-submenu-title svg {
-  margin-right: 0.5em;
+  margin-right: -0.2em;
 }
 
 .sidebar .ant-menu-inline .ant-menu-item {
-  padding-left: 3.1em !important;
+  padding-left: 2.6em !important;
   font-size: 90%;
 }
 
 .sidebar .ant-menu-inline .ant-menu-item svg {
-  margin-right: 0.2em;
+  margin-right: -0.3em;
 }
 
 
