@@ -1,13 +1,10 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
-import { Alert, Input, Button, Spin, Select, Space, Popover } from "antd";
+import { Alert, Input, Button, Spin, Select, Space } from "antd";
+const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
-import {
-  AiOutlineBorderInner,
-  AiOutlinePicture,
-  AiOutlineRocket,
-} from "react-icons/ai";
 import { fetchSSE } from "../app/_fetch_sse";
+
 let ctrl;
 
 const CreativeMatrix = () => {
@@ -172,244 +169,183 @@ const CreativeMatrix = () => {
 
   return (
     <div id="canvas">
-      <h1 style={{ marginTop: 0 }}>
-        Creative Matrix &nbsp;&nbsp;
-        <Select
-          defaultValue={templates[0].name}
-          style={{ width: 350 }}
-          onChange={onChangeTemplate}
-          options={templates.map((t) => ({ value: t.name, label: t.name }))}
-        ></Select>
-      </h1>
+      <div className="prompt-chat-container">
+        <div className="prompt-chat-options-container">
+          <h1 style={{ marginTop: 0 }}>
+            Creative Matrix &nbsp;&nbsp;
+            <Select
+              defaultValue={templates[0].name}
+              onChange={onChangeTemplate}
+              options={templates.map((t) => ({ value: t.name, label: t.name }))}
+            ></Select>
+          </h1>
 
-      <div style={{ marginTop: 20 }}>
-        {/* DIMENSIONS */}
-        <div id="dim-config">
-          <div style={{ display: "inline-block", width: 100 }}>Prompt:</div>
-          <Input
-            placeholder="Prompt for the intersection of row and column"
-            value={prompt}
-            style={{ width: "95%" }}
-            onChange={onChangePrompt}
-            disabled={isLoading}
-          />
-          <br />
-          <div style={{ display: "inline-block", width: 100, marginTop: 10 }}>
-            Rows:
-          </div>
-          <Input
-            placeholder="Comma-separated list of values"
-            value={rowsCSV}
-            style={{ width: "95%" }}
-            onChange={onChangeRowsCSV}
-            disabled={isLoading}
-          />
-          <br />
-          <div style={{ display: "inline-block", width: 100, marginTop: 10 }}>
-            Columns:
-          </div>
-          <Input
-            placeholder="Comma-separated list of values"
-            value={columnsCSV}
-            style={{ width: "95%", marginBottom: 5 }}
-            onChange={onChangeColumnsCSV}
-            disabled={isLoading}
-          />
-          <br />
-          Generate{" "}
-          <Select
-            defaultValue={"3"}
-            onChange={handleSelectChange}
-            style={{ width: 100 }}
-            disabled={isLoading}
-            options={[
-              { value: "1", label: "1 idea" },
-              { value: "2", label: "2 ideas" },
-              { value: "3", label: "3 ideas" },
-              { value: "4", label: "4 ideas" },
-              { value: "5", label: "5 ideas" },
-            ]}
-          ></Select>
-          &nbsp; per combination &nbsp; | &nbsp; Each idea must be &nbsp;
-          {/* <Input placeholder="Comma-separated list of adjectives" value={ideaQualifiers} style={{width: 300 }} onChange={onChangeIdeaQualifiers} disabled={isLoading}/>&nbsp;&nbsp; */}
-          <Select
-            mode="tags"
-            style={{
-              width: 400,
-            }}
-            placeholder="List of adjectives/qualifiers"
-            onChange={onChangeIdeaQualifiers}
-            disabled={isLoading}
-            options={[
-              { value: "utopian", label: "Utopian" },
-              { value: "dystopian", label: "Dystopian" },
-              {
-                value: "inspired by science fiction",
-                label: "Inspired by science fiction",
-              },
-              { value: "funny and bizarre", label: "Funny and bizarre" },
-              {
-                value: "written in the style of Shakespear",
-                label: "Written in the style of Shakespear",
-              },
-            ]}
-          />
-          &nbsp;&nbsp;
-          {!isLoading && (
-            <Button
-              type="primary"
-              style={{ marginTop: 10 }}
-              onClick={onGenerateMatrix}
-            >
-              Generate Matrix
-            </Button>
-          )}
-          {isLoading && (
-            <Button
-              type="primary"
-              style={{ marginTop: 10 }}
-              danger
-              onClick={abortLoad}
-            >
-              Stop
-            </Button>
-          )}
-          &nbsp;
-          {isLoading ? <Spin /> : <></>}
-        </div>
-        {modelOutputFailed && (
-          <Space
-            direction="vertical"
-            style={{ width: "100%", marginTop: "5px" }}
-          >
-            <Alert
-              message="Model failed to respond rightly"
-              description="Please rewrite your message and try again"
-              type="warning"
+          <div className="user-input">
+            <p>Prompt:</p>
+            <TextArea
+              placeholder="Prompt for the intersection of row and column"
+              value={prompt}
+              onChange={onChangePrompt}
+              disabled={isLoading}
             />
-          </Space>
-        )}
-        <br />
-        <br />
+          </div>
+          <div className="user-input">
+            <p>Rows:</p>
+            <TextArea
+              placeholder="Comma-separated list of values"
+              value={rowsCSV}
+              onChange={onChangeRowsCSV}
+              disabled={isLoading}
+            />
+          </div>
+          <div className="user-input">
+            <p>Columns:</p>
+
+            <TextArea
+              placeholder="Comma-separated list of values"
+              value={columnsCSV}
+              onChange={onChangeColumnsCSV}
+              disabled={isLoading}
+            />
+          </div>
+          <div className="user-input">
+            Generate{" "}
+            <Select
+              defaultValue={"3"}
+              onChange={handleSelectChange}
+              disabled={isLoading}
+              options={[
+                { value: "1", label: "1 idea" },
+                { value: "2", label: "2 ideas" },
+                { value: "3", label: "3 ideas" },
+                { value: "4", label: "4 ideas" },
+                { value: "5", label: "5 ideas" },
+              ]}
+            ></Select>
+            &nbsp; per combination.
+          </div>
+          <div className="user-input">
+            <p>Each idea must be...</p>
+            <Select
+              style={{ width: "100%" }}
+              mode="tags"
+              placeholder="List of adjectives/qualifiers"
+              onChange={onChangeIdeaQualifiers}
+              disabled={isLoading}
+              options={[
+                { value: "utopian", label: "Utopian" },
+                { value: "dystopian", label: "Dystopian" },
+                {
+                  value: "inspired by science fiction",
+                  label: "Inspired by science fiction",
+                },
+                { value: "funny and bizarre", label: "Funny and bizarre" },
+                {
+                  value: "written in the style of Shakespear",
+                  label: "Written in the style of Shakespear",
+                },
+              ]}
+            />
+          </div>
+          <div className="user-input">
+            {!isLoading && (
+              <Button
+                type="primary"
+                onClick={onGenerateMatrix}
+                className="go-button"
+                disabled={isLoading}
+              >
+                GENERATE MATRIX
+              </Button>
+            )}
+          </div>
+          <div className="user-input">
+            {isLoading ? <Spin /> : <></>}
+            {isLoading && (
+              <Button
+                type="primary"
+                danger
+                onClick={abortLoad}
+                style={{ marginLeft: "1em" }}
+              >
+                Stop
+              </Button>
+            )}
+          </div>
+
+          {modelOutputFailed && (
+            <Space
+              direction="vertical"
+              style={{ width: "100%", marginTop: "5px" }}
+            >
+              <Alert
+                message="Model failed to respond rightly"
+                description="Please rewrite your message and try again"
+                type="warning"
+              />
+            </Space>
+          )}
+        </div>
+
         {/* MATRIX */}
-        <div>
-          <table style={{ width: "95%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th></th>
-                {columns.map((columnValue, index) => {
-                  return <th>{columnValue}</th>;
-                })}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((rowValue, rowIndex) => {
-                return (
-                  <tr style={{ height: 50 }}>
-                    <td
-                      style={{
-                        background: "#fefefe",
-                        textAlign: "center",
-                        width: "10%",
-                      }}
-                    >
-                      <b>{rowValue}</b>
-                    </td>
-                    {columns.map((columnValue, columnIndex) => {
-                      return (
-                        <td
-                          style={{
-                            textAlign: "center",
-                            border: "1px solid #e1e1e1",
-                            width: 85 / columns.length + "%",
-                          }}
-                        >
-                          <ul style={{ textAlign: "left", paddingLeft: 20 }}>
-                            {getMatrixCellValues(rowIndex, columnIndex).map(
-                              (idea) => {
-                                return (
-                                  <li
-                                    key={"" + rowIndex + "-" + columnIndex}
-                                    style={{ marginBottom: 10, cursor: "auto" }}
-                                  >
-                                    <Popover
-                                      trigger={null}
-                                      content={
-                                        <>
-                                          <a
-                                            href={
-                                              "/concepts?strategic_prompt=" +
-                                              encodeURIComponent(
-                                                prompt +
-                                                  ": " +
-                                                  idea.title +
-                                                  ": " +
-                                                  idea.description,
-                                              )
-                                            }
-                                            target="_blank"
-                                            style={{
-                                              display: "block",
-                                              marginBottom: 10,
-                                            }}
-                                          >
-                                            <AiOutlineRocket /> Generate
-                                            concepts for this idea
-                                          </a>
-                                          <a
-                                            href={
-                                              "/strategies?strategic_prompt=" +
-                                              encodeURIComponent(
-                                                prompt +
-                                                  ": " +
-                                                  idea.title +
-                                                  ": " +
-                                                  idea.description,
-                                              )
-                                            }
-                                            target="_blank"
-                                            style={{
-                                              display: "block",
-                                              marginBottom: 10,
-                                            }}
-                                          >
-                                            <AiOutlineBorderInner /> Generate
-                                            strategies for this idea
-                                          </a>
-                                          <a
-                                            href={
-                                              "/storyboard?prompt=" +
-                                              encodeURIComponent(
-                                                prompt +
-                                                  ": " +
-                                                  idea.title +
-                                                  ": " +
-                                                  idea.description,
-                                              )
-                                            }
-                                            target="_blank"
-                                          >
-                                            <AiOutlinePicture /> Generate
-                                            storyboard for this idea
-                                          </a>
-                                        </>
-                                      }
+        <div class="matrix-container">
+          <div className="">
+            <table style={{ width: "95%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr>
+                  <th></th>
+                  {columns.map((columnValue, index) => {
+                    return <th>{columnValue}</th>;
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((rowValue, rowIndex) => {
+                  return (
+                    <tr style={{ height: 50 }}>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          width: "10%",
+                        }}
+                      >
+                        <b>{rowValue}</b>
+                      </td>
+                      {columns.map((columnValue, columnIndex) => {
+                        return (
+                          <td
+                            style={{
+                              textAlign: "center",
+                              border: "1px solid #e1e1e1",
+                              width: 85 / columns.length + "%",
+                            }}
+                          >
+                            <ul style={{ textAlign: "left", paddingLeft: 20 }}>
+                              {getMatrixCellValues(rowIndex, columnIndex).map(
+                                (idea) => {
+                                  return (
+                                    <li
+                                      key={"" + rowIndex + "-" + columnIndex}
+                                      style={{
+                                        marginBottom: 10,
+                                        cursor: "auto",
+                                      }}
                                     >
                                       <b>{idea.title}:</b> {idea.description}
-                                    </Popover>
-                                  </li>
-                                );
-                              },
-                            )}
-                          </ul>
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                                    </li>
+                                  );
+                                },
+                              )}
+                            </ul>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

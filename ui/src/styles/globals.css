@@ -206,6 +206,12 @@ body {
   margin-top: 1em;
 }
 
+.matrix-container {
+  flex: 5;
+  margin-top: 1em;
+  padding-left: 1em;
+}
+
 .scenarios-collection .ant-card-body {
   padding-top: 10px;
 }
