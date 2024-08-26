@@ -2,8 +2,8 @@
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
-import { Input, Select, Button, Tooltip, Radio, Tabs } from "antd";
-import { RiQuestionLine } from "react-icons/ri";
+import { useSearchParams } from "next/navigation";
+import { Input, Select, Button } from "antd";
 
 const { TextArea } = Input;
 import ChatWidget from "../app/_chat";
@@ -12,6 +12,7 @@ import { getPrompts, getContextSnippets, getDocuments } from "../app/_boba_api";
 
 const PromptChat = () => {
   const chatRef = useRef();
+  const searchParams = useSearchParams();
 
   const [prompts, setPrompts] = useState([]);
   const [selectedPrompt, setPromptSelection] = useState("");
@@ -109,12 +110,11 @@ const PromptChat = () => {
   }, []);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const prompt = params.get("prompt");
+    const prompt = searchParams.get("prompt");
     if (prompt) {
       handlePromptSelection(prompt);
     }
-  }, [prompts]);
+  }, [prompts, searchParams]);
 
   const startChat = async () => {
     if (chatRef.current) {
@@ -203,45 +203,6 @@ const PromptChat = () => {
       </div>
     </div>
   );
-
-  const plain_chat = (
-    <div className="prompt-center">
-      <div className="prompt-chat-options-section">
-        <div>
-          <div className="user-input">
-            <b>Start your chat with a message:</b>
-            <TextArea
-              value={promptInput}
-              rows={4}
-              onChange={(e, v) => {
-                setPromptInput(e.target.value);
-              }}
-            />
-          </div>
-          {image_description_user_input}
-          {documents && document_choice_user_input}
-        </div>
-      </div>
-      <div className="prompt-chat-options-section">
-        <Button type="primary" onClick={startChat}>
-          Go
-        </Button>
-      </div>
-    </div>
-  );
-
-  const tabItems = [
-    {
-      key: "tab-prompts-chat",
-      label: "Use existing prompts",
-      children: prompt_options,
-    },
-    {
-      key: "tab-chat",
-      label: "Just chat",
-      children: plain_chat,
-    },
-  ];
 
   return (
     <>

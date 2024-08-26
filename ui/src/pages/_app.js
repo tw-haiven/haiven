@@ -1,9 +1,10 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+"use client";
 import { Layout, ConfigProvider } from "antd";
 import Head from "next/head";
 import Header from "./_header";
 import "../styles/globals.css";
-import React, { useState } from "react";
+import { useState } from "react";
 import Sidebar from "./_sidebar";
 
 export default function App({
@@ -13,7 +14,7 @@ export default function App({
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState();
 
-  const useLayout = true; //router.pathname !== "/" && router.pathname !== "/dashboard";
+  const useLayout = true;
 
   return (
     <>
@@ -29,10 +30,16 @@ export default function App({
             colorSuccess: "#6B9E78",
             colorLink: "#f2617aff",
             fontFamilyCode: "Inter, Noto Sans SC, sans-serif",
+            fontSize: "13px",
             lineType: "none",
             motion: "false",
             // Alias Token
             colorBgContainer: "#edf1f3",
+          },
+          components: {
+            Menu: {
+              itemHeight: "30px",
+            },
           },
         }}
       >
