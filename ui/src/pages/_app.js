@@ -68,7 +68,6 @@ export default function App({
                 collapsible
                 collapsed={collapsed}
                 onCollapse={(value) => setCollapsed(value)}
-                style={{ height: "100vh" }}
                 width={250}
               >
                 <Sidebar selectedKey={selectedKey} collapse={true} />
