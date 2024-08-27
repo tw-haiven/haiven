@@ -15,7 +15,6 @@ const Home = () => {
   const [promptInput, setPromptInput] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("Explore requirement");
-  const [drawerHeader, setDrawerHeader] = useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
   const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const router = useRouter();
@@ -27,7 +26,6 @@ const Home = () => {
 
   const onExplore = (id) => {
     setDrawerTitle("Explore requirement: " + scenarios[id].title);
-    setDrawerHeader(scenarios[id].summary);
     setChatContext({
       id: id,
       originalPrompt: promptInput,
@@ -77,20 +75,6 @@ const Home = () => {
       },
     );
   };
-
-  const query = router.query;
-  const params = query;
-  const initialStrategicPrompt = params.strategic_prompt;
-  // const promptRef = useRef();
-  const [initialLoadDone, setInitialLoad] = useState(false);
-
-  useEffect(() => {
-    if (!initialStrategicPrompt) return;
-    if (!router.isReady) return;
-    if (initialLoadDone) return;
-    setPromptInput(initialStrategicPrompt);
-    setInitialLoad(true);
-  });
 
   return (
     <>

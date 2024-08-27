@@ -158,20 +158,6 @@ const Home = () => {
     );
   };
 
-  const query = router.query;
-  const params = query;
-  const initialStrategicPrompt = params.strategic_prompt;
-  const promptRef = useRef();
-  const [initialLoadDone, setInitialLoad] = useState(false);
-
-  useEffect(() => {
-    if (!initialStrategicPrompt) return;
-    if (!router.isReady) return;
-    if (initialLoadDone) return;
-    setPrompt(initialStrategicPrompt);
-    setInitialLoad(true);
-  });
-
   return (
     <>
       <Drawer
