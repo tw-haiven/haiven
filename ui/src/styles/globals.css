@@ -86,6 +86,85 @@ h1 {
   vertical-align: bottom;
 }
 
+/***** HEADER **********/
+
+.header {
+  background-color: var(--color-dark-blue);
+  height: 65px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  color: white;
+}
+
+.header .left-section {
+  display: flex;
+  align-items: center;
+}
+
+.header .logo {
+  display: flex;
+  align-items: center;
+}
+
+.header .logo img {
+  height: 20px;
+  margin-right: 10px;
+}
+
+.header .separator {
+  width: 1px;
+  height: 24px;
+  background-color: white;
+  margin: 0 15px;
+}
+
+.header .title {
+  font-size: 16px;
+}
+
+.header .mode-switch {
+  display: flex;
+  align-items: center;
+}
+
+.header .mode-switch span {
+  margin-right: 10px;
+}
+
+.header .mode-button {
+  border: none;
+  padding: 5px 10px;
+}
+
+.header .mode-selected {
+  background-color: white;
+  color: black;
+  cursor: none;
+}
+
+.header .mode-other {
+  background-color: #2d2d2d;
+  color: grey;
+  cursor: pointer;
+}
+
+.header .mode-other a {
+  text-decoration: none !important;
+  color: grey;
+}
+
+.header .mode-right {
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.header .mode-left {
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+
 /**** INPUT --> GENERATION RESULTS COLUMN LAYOUT *****/
 .prompt-chat-container {
   display: flex;
@@ -410,82 +489,6 @@ h1 {
   margin-top: auto;
 }
 
-.header {
-  background-color: var(--color-dark-blue);
-  height: 65px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  color: white;
-}
-
-.left-section {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-}
-
-.logo img {
-  height: 20px;
-  margin-right: 10px;
-}
-
-.separator {
-  width: 1px;
-  height: 24px;
-  background-color: white;
-  margin: 0 15px;
-}
-
-.title {
-  font-size: 16px;
-}
-
-.mode-switch {
-  display: flex;
-  align-items: center;
-}
-
-.mode-switch span {
-  margin-right: 10px;
-}
-
-.mode-button {
-  border: none;
-  padding: 5px 10px;
-}
-
-.mode-selected {
-  background-color: white;
-  color: black;
-  cursor: none;
-}
-
-.mode-other {
-  background-color: #2d2d2d;
-  color: grey;
-  cursor: pointer;
-}
-
-.mode-other a {
-  text-decoration: none !important;
-  color: grey;
-}
-
-.mode-right {
-  border-top-right-radius: 15px;
-  border-bottom-right-radius: 15px;
-}
-
-.mode-left {
-  border-top-left-radius: 15px;
-  border-bottom-left-radius: 15px;
-}
 
 /******* CLIPBOARD ******/
 .btn-clipboard {
