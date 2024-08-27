@@ -7,15 +7,9 @@ import { Input, Select, Button } from "antd";
 const { TextArea } = Input;
 import ChatWidget from "./_chat";
 import DescribeImage from "./_image_description";
-import { getPrompts, getContextSnippets, getDocuments } from "./_boba_api";
 
-const PromptChat = ({ promptId }) => {
+const PromptChat = ({ promptId, prompts, contexts, documents }) => {
   const chatRef = useRef();
-
-  // Value lists
-  const [prompts, setPrompts] = useState([]);
-  const [contexts, setContexts] = useState([]);
-  const [documents, setDocuments] = useState([]);
 
   // User inputs
   const [selectedPrompt, setPromptSelection] = useState(promptId); // via query parameter
@@ -91,29 +85,8 @@ const PromptChat = ({ promptId }) => {
   };
 
   useEffect(() => {
-    getPrompts(setPrompts);
-    getContextSnippets((data) => {
-      const labelValuePairs = data.map((context) => {
-        if (context.context === "base") {
-          return {
-            label: "none",
-            value: "base",
-          };
-        } else {
-          return {
-            label: context.context,
-            value: context.context,
-          };
-        }
-      });
-      setContexts(labelValuePairs);
-    });
-    getDocuments(setDocuments);
-  }, []);
-
-  useEffect(() => {
     handlePromptSelection(promptId);
-  }, [promptId]);
+  }, [promptId, prompts]);
 
   const startChat = async () => {
     if (chatRef.current) {
