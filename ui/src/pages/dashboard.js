@@ -3,6 +3,7 @@ import { Card, Space, Tag } from "antd";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getPrompts } from "../app/_boba_api";
+import { staticFeaturesForDashboard } from "../app/_navigation_items";
 
 export default function ChatDashboard() {
   const [prompts, setPrompts] = useState([]);
@@ -31,6 +32,14 @@ export default function ChatDashboard() {
 
   useEffect(() => {
     getPrompts((data) => {
+      data.forEach((prompt) => {
+        prompt.type = "chat";
+        prompt.link = "/chat?prompt=" + prompt.identifier;
+      });
+
+      // add the "static" features
+      data = data.concat(staticFeaturesForDashboard());
+
       setPrompts(data);
       setFilteredPrompts(data);
 
@@ -58,11 +67,11 @@ export default function ChatDashboard() {
 
   return (
     <div className="dashboard">
-      <h1>Chat center dashboard</h1>
+      <h1>Hello!</h1>
       <p>These are all the prompts available in your current knowledge pack.</p>
 
       <p className="dashboard-filters">
-        <b>Filter:</b>
+        <b>Filter by category:</b>
         {allCategories.map((tag) => {
           return (
             <Tag.CheckableTag
@@ -81,10 +90,7 @@ export default function ChatDashboard() {
       <Space direction="horizontal" wrap>
         {filteredPrompts.map((prompt, index) => {
           return (
-            <Link
-              href={"/chat?prompt=" + prompt.identifier}
-              key={prompt.identifier + "-href"}
-            >
+            <Link href={prompt.link || "#"} key={prompt.identifier + "-href"}>
               <Card
                 key={prompt.identifier}
                 title={prompt.title}

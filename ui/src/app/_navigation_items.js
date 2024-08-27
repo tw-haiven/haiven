@@ -1,0 +1,138 @@
+// © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+import Link from "next/link";
+import {
+  RiFlaskLine,
+  RiLightbulbLine,
+  RiCodeBoxLine,
+  RiBookReadLine,
+  RiChat2Line,
+  RiCompasses2Line,
+  RiTable2,
+  RiDashboardHorizontalLine,
+} from "react-icons/ri";
+
+// Keeping the implementation of menu items for the "static" features in one place
+// Will usually be enhanced by the dynamically loaded prompts afterwards
+
+export const initialiseMenuCategoriesForSidebar = () => {
+  return {
+    dashboard: {
+      key: "dashboard",
+      label: <Link href="/dashboard">Dashboard</Link>,
+      icon: <RiDashboardHorizontalLine style={{ fontSize: "large" }} />,
+    },
+    ideate: {
+      key: "ideate",
+      label: "Ideate",
+      icon: <RiLightbulbLine style={{ fontSize: "large" }} />,
+      children: [
+        {
+          key: "creative-matrix",
+          label: <Link href="/creative-matrix">Creative Matrix</Link>,
+          icon: <RiTable2 />,
+        },
+        {
+          key: "scenarios",
+          label: <Link href="/scenarios">Scenario design</Link>,
+          icon: <RiTable2 />,
+        },
+      ],
+    },
+    analysis: {
+      key: "analyse",
+      label: "Analyse",
+      icon: <RiBookReadLine style={{ fontSize: "large" }} />,
+      children: [
+        {
+          key: "requirements",
+          label: <Link href="/requirements">Requirements breakdown</Link>,
+          icon: <RiTable2 />,
+        },
+        {
+          key: "story-validation",
+          label: <Link href="/story-validation">Story validation</Link>,
+          icon: <RiTable2 />,
+        },
+      ],
+    },
+    coding: {
+      key: "coding",
+      label: "Coding",
+      icon: <RiCodeBoxLine style={{ fontSize: "large" }} />,
+      children: [],
+    },
+    testing: {
+      key: "testing",
+      label: "Testing",
+      icon: <RiFlaskLine style={{ fontSize: "large" }} />,
+      children: [],
+    },
+    architecture: {
+      key: "architecture",
+      label: "Architecture",
+      icon: <RiCompasses2Line style={{ fontSize: "large" }} />,
+      children: [
+        {
+          key: "threat-modelling",
+          label: <Link href="/threat-modelling">Threat modelling: STRIDE</Link>,
+          icon: <RiTable2 />,
+        },
+      ],
+    },
+    other: {
+      key: "other",
+      label: "Other",
+      icon: <RiChat2Line style={{ fontSize: "large" }} />,
+      children: [],
+    },
+  };
+};
+
+export const staticFeaturesForDashboard = () => {
+  return [
+    {
+      identifier: "boba-creative-matrix",
+      title: "Creative Matrix",
+      help_prompt_description: "TODO ...",
+      categories: ["ideate"],
+      type: "static",
+      link: "/creative-matrix",
+    },
+    {
+      identifier: "boba-scenarios",
+      title: "Scenario design",
+      help_prompt_description:
+        "Brainstorm a range of scenarios for your product domain based on criteria like time horizon, realism, and optimism.",
+      categories: ["ideate"],
+      type: "static",
+      link: "/scenarios",
+    },
+    {
+      identifier: "boba-requirements-breakdown",
+      title: "Requirements breakdown",
+      help_prompt_description:
+        "Break down your requirement into multiple scenarios, based on a high level description.",
+      categories: ["analysis"],
+      type: "static",
+      link: "/requirements",
+    },
+    {
+      identifier: "boba-story-validation",
+      title: "Story validation",
+      help_prompt_description:
+        "Get asked questions about your requirement to discover gaps. In a second step, you can generate a draft for a user story.",
+      categories: ["analysis"],
+      type: "static",
+      link: "/story-validation",
+    },
+    {
+      identifier: "boba-threat-modelling",
+      title: "Threat modelling",
+      help_prompt_description:
+        "Brainstorm threat modelling scenarios based on the STRIDE approach.",
+      categories: ["architecture"],
+      type: "static",
+      link: "/threat-modelling",
+    },
+  ];
+};

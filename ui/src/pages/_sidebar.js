@@ -4,16 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { getPrompts } from "../app/_boba_api";
+import { initialiseMenuCategoriesForSidebar } from "../app/_navigation_items";
 
-import {
-  RiFlaskLine,
-  RiLightbulbLine,
-  RiCodeBoxLine,
-  RiBookReadLine,
-  RiChat2Line,
-  RiCompasses2Line,
-  RiTable2,
-} from "react-icons/ri";
+import { RiChat2Line } from "react-icons/ri";
 
 const Sidebar = () => {
   const pathToKey = {
@@ -34,74 +27,7 @@ const Sidebar = () => {
   }, []);
 
   useEffect(() => {
-    const menuCategories = {
-      ideate: {
-        key: "ideate",
-        label: "Ideate",
-        icon: <RiLightbulbLine style={{ fontSize: "large" }} />,
-        children: [
-          {
-            key: "creative-matrix",
-            label: <Link href="/creative-matrix">Creative Matrix</Link>,
-            icon: <RiTable2 />,
-          },
-          {
-            key: "scenarios",
-            label: <Link href="/scenarios">Scenario design</Link>,
-            icon: <RiTable2 />,
-          },
-        ],
-      },
-      analysis: {
-        key: "analyse",
-        label: "Analyse",
-        icon: <RiBookReadLine style={{ fontSize: "large" }} />,
-        children: [
-          {
-            key: "requirements",
-            label: <Link href="/requirements">Requirements breakdown</Link>,
-            icon: <RiTable2 />,
-          },
-          {
-            key: "story-validation",
-            label: <Link href="/story-validation">Story validation</Link>,
-            icon: <RiTable2 />,
-          },
-        ],
-      },
-      coding: {
-        key: "coding",
-        label: "Coding",
-        icon: <RiCodeBoxLine style={{ fontSize: "large" }} />,
-        children: [],
-      },
-      testing: {
-        key: "testing",
-        label: "Testing",
-        icon: <RiFlaskLine style={{ fontSize: "large" }} />,
-        children: [],
-      },
-      architecture: {
-        key: "architecture",
-        label: "Architecture",
-        icon: <RiCompasses2Line style={{ fontSize: "large" }} />,
-        children: [
-          {
-            key: "threat-modelling",
-            label: (
-              <Link href="/threat-modelling">Threat modelling: STRIDE</Link>
-            ),
-            icon: <RiTable2 />,
-          },
-        ],
-      },
-      other: {
-        key: "other",
-        label: "Other",
-        icon: <RiChat2Line style={{ fontSize: "large" }} />,
-        children: [],
-      },
-    };
+    const menuCategories = initialiseMenuCategoriesForSidebar();
 
     prompts.forEach((prompt) => {
       prompt.categories.forEach((category) => {
@@ -124,7 +50,9 @@ const Sidebar = () => {
 
     const finalMenuItems = [];
     Object.keys(menuCategories).forEach((key) => {
-      if (menuCategories[key].children.length > 0) {
+      if (key === "dashboard") {
+        finalMenuItems.push(menuCategories[key]);
+      } else if (menuCategories[key].children.length > 0) {
         menuCategories[key].children.sort((a, b) => {
           return a.label.props.children.localeCompare(b.label.props.children);
         });
