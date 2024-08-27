@@ -24,16 +24,17 @@ export default function App({
     getPrompts(setPrompts);
     getContextSnippets((data) => {
       const labelValuePairs = data.map((context) => {
+        const contextCopy = { ...context };
         if (context.context === "base") {
-          return {
-            label: "none",
-            value: "base",
-          };
+          contextCopy.label = "none";
+          contextCopy.value = "base";
+
+          return contextCopy;
         } else {
-          return {
-            label: context.context,
-            value: context.context,
-          };
+          contextCopy.label = context.context;
+          contextCopy.value = context.context;
+
+          return contextCopy;
         }
       });
       setContexts(labelValuePairs);

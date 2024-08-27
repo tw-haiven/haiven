@@ -39,8 +39,19 @@ h1, h2, h3, h4 {
 }
 
 h1 {
+  font-size: 1.7em;
+}
+
+h2 {
   font-size: 1.5em;
 }
+h3 {
+  font-size: 1.3em;
+}
+h4, h5 {
+  font-size: 1.1em;
+}
+
 
 /**** CHAT *****/
 .ant-pro-chat {
@@ -533,6 +544,30 @@ h1 {
     } */
   }
 
+}
+
+/****** KNOWLEDGE OVERVIEW ******/
+.knowledge-overview {
+  padding: var(--standard-left-padding)
+}
+.knowledge-overview .snippet {
+  background: white;
+  cursor: pointer;
+  padding: 1em;
+  margin: 1em 4em;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);  
+}
+
+.knowledge-overview .snippet-title {
+  margin-left: 3em;
+}
+
+.knowledge-overview .snippets-list {
+  border-top: 1px solid var(--color-light-gray)
+}
+
+.snippet h1, .snippet h2, .snippet h3 {
+  font-size: 1.1em;
 }
 
 /******* CLIPBOARD ******/
