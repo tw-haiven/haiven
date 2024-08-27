@@ -1,4 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+import json
 import unittest
 from unittest.mock import MagicMock, patch, ANY
 from fastapi.testclient import TestClient
@@ -20,6 +21,57 @@ class TestApi(unittest.TestCase):
     def tearDown(self):
         # Clean up code to run after each test
         pass
+
+    def test_get_documents(self):
+        mock_knowledge_manager = MagicMock()
+        mock_knowledge_manager.get_all_context_keys.return_value = [
+            "context1",
+            "context2",
+        ]
+
+        mock_kb_documents = MagicMock()
+        mock_doc_base = MagicMock(key="some-document-base", title="Some title base")
+        mock_doc_1 = MagicMock(key="some-document-1", title="Some title 1")
+        mock_doc_2 = MagicMock(key="some-document-2", title="Some title 2")
+        mock_kb_documents.get_documents.side_effect = [
+            [mock_doc_base],
+            [mock_doc_1],
+            [mock_doc_2],
+        ]
+        mock_knowledge_manager.knowledge_base_documents = mock_kb_documents
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_key="some_model_key",
+            prompts_guided=MagicMock(),
+            knowledge_manager=mock_knowledge_manager,
+            prompts_chat=MagicMock(),
+            image_service=MagicMock(),
+        )
+
+        response = self.client.get("/api/knowledge/documents")
+
+        # Assert the response
+        assert response.status_code == 200
+
+        assert mock_kb_documents.get_documents.call_count == 3
+        args, context_1_kwargs = mock_kb_documents.get_documents.call_args_list[0]
+        assert context_1_kwargs["context"] == "context1"
+        args, context_2_kwargs = mock_kb_documents.get_documents.call_args_list[1]
+        assert context_2_kwargs["context"] == "context2"
+        args, base_kwargs = mock_kb_documents.get_documents.call_args_list[2]
+        assert base_kwargs["context"] is None
+
+        response_data = json.loads(response.content)
+        assert isinstance(response_data, list)
+        assert len(response_data) == 3
+        assert response_data[0]["key"] == mock_doc_base.key
+        assert response_data[0]["title"] == mock_doc_base.title
+        assert response_data[1]["key"] == mock_doc_1.key
+        assert response_data[1]["title"] == mock_doc_1.title
+        assert response_data[2]["key"] == mock_doc_2.key
+        assert response_data[2]["title"] == mock_doc_2.title
 
     @patch("llms.chats.StreamingChat")
     @patch("llms.chats.ChatManager")

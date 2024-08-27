@@ -117,9 +117,7 @@ class ApiBasics(HaivenBaseApi):
 
         @app.get("/api/knowledge/snippets")
         def get_knowledge_snippets(request: Request):
-            all_contexts = (
-                knowledge_manager.knowledge_base_markdown.get_all_contexts_keys()
-            )
+            all_contexts = knowledge_manager.get_all_context_keys()
 
             response_data = []
             for context in all_contexts:
@@ -132,13 +130,20 @@ class ApiBasics(HaivenBaseApi):
 
         @app.get("/api/knowledge/documents")
         def get_knowledge_documents(request: Request):
-            documents: List[KnowledgeDocument] = (
-                knowledge_manager.knowledge_base_documents.get_documents(context=None)
-            )
+            base_context = None
+            all_contexts = knowledge_manager.get_all_context_keys()
 
+            all_contexts.append(base_context)
             response_data = []
-            for document in documents:
-                response_data.append({"key": document.key, "title": document.title})
+            for context in all_contexts:
+                documents: List[KnowledgeDocument] = (
+                    knowledge_manager.knowledge_base_documents.get_documents(
+                        context=context, include_base_context=False
+                    )
+                )
+
+                for document in documents:
+                    response_data.append({"key": document.key, "title": document.title})
 
             return JSONResponse(response_data)
 

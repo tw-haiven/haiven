@@ -104,3 +104,6 @@ class KnowledgeManager:
         self.active_knowledge_context = context_name
 
         return self.active_knowledge_context
+
+    def get_all_context_keys(self):
+        return self.knowledge_base_markdown.get_all_contexts_keys()
