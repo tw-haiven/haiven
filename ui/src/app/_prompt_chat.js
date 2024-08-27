@@ -87,10 +87,12 @@ const PromptChat = ({ promptId, prompts, contexts, documents }) => {
     handlePromptSelection(promptId);
   }, [promptId, prompts]);
 
-  const startChat = async () => {
+  const startNewChat = async () => {
     if (chatRef.current) {
       // the ProChat controls the flow - let it know we have a new message,
       // the ultimate request will come back to "onSubmitPrompt" function here
+      setChatSessionId(undefined);
+      setConversationStarted(false);
 
       let userInput = promptInput;
       if (imageDescription && imageDescription !== "") {
@@ -168,7 +170,7 @@ const PromptChat = ({ promptId, prompts, contexts, documents }) => {
         </div>
       </div>
       <div className="prompt-chat-options-section">
-        <Button type="primary" onClick={startChat} className="go-button">
+        <Button type="primary" onClick={startNewChat} className="go-button">
           START CHAT
         </Button>
       </div>
