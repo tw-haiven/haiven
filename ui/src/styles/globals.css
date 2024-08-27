@@ -139,22 +139,15 @@ body {
 }
 
 .scenario .scenario-card-content {
-  height: 200px;
+  height: 245px;
   overflow-y: auto;
   font-size: small;
 
-  &.large {
-    height: 300px;
-  }
 }
 
 .scenario .q-a-card-content {
-  height: 200px;
+  height: 235px;
   font-size: small;
-
-  &.large {
-    height: 300px;
-  }
 }
 
 .ant-card {
@@ -164,13 +157,14 @@ body {
 
 .ant-card-head {
   border-bottom: 1px solid var(--color-light-gray) !important;
-  min-height: 55px;
+  height: 60px;
   justify-content: top  !important;
 }
 
 .ant-card-head-title {
   font-weight: var(--font-weight-semi-bold);
   white-space: normal !important;
+  height: 60px;
 }
 
 .ant-card-actions {
@@ -213,7 +207,9 @@ body {
 }
 
 .scenarios-collection .ant-card-body {
-  padding-top: 10px;
+  padding-top: 0.5em;
+  padding-bottom: 0;
+  padding-right: 0.5em;
 }
 
 .scenarios-collection.equal-display .scenario-card-content {
