@@ -6,6 +6,7 @@ import {
   RiCodeBoxLine,
   RiBookReadLine,
   RiChat2Line,
+  RiChatQuoteLine,
   RiCompasses2Line,
   RiTable2,
   RiDashboardHorizontalLine,
@@ -20,6 +21,11 @@ export const initialiseMenuCategoriesForSidebar = () => {
       key: "dashboard",
       label: <Link href="/dashboard">Dashboard</Link>,
       icon: <RiDashboardHorizontalLine style={{ fontSize: "large" }} />,
+    },
+    knowledgeChat: {
+      key: "knowledgeChat",
+      label: <Link href="/knowledge-chat">Chat with documents</Link>,
+      icon: <RiChatQuoteLine style={{ fontSize: "large" }} />,
     },
     ideate: {
       key: "ideate",

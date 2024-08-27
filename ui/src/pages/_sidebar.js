@@ -44,7 +44,7 @@ const Sidebar = ({ prompts }) => {
 
     const finalMenuItems = [];
     Object.keys(menuCategories).forEach((key) => {
-      if (key === "dashboard") {
+      if (!menuCategories[key].children) {
         finalMenuItems.push(menuCategories[key]);
       } else if (menuCategories[key].children.length > 0) {
         menuCategories[key].children.sort((a, b) => {

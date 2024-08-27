@@ -95,13 +95,14 @@ class Server:
         @app.middleware("http")
         async def boba_middleware(request: Request, call_next):
             allowed_boba_paths = [
-                "scenarios",
+                "dashboard",
+                "knowledge-chat",
                 "chat",
+                "scenarios",
                 "threat-modelling",
                 "creative-matrix",
                 "requirements",
                 "story-validation",
-                "dashboard",
             ]
             paths = request.url.path.split("/")
             if (

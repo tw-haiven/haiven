@@ -16,6 +16,8 @@ const PromptChat = ({
   showImageDescription = true,
   showTextSnippets = true,
   showDocuments = true,
+  pageTitle,
+  pageIntro,
 }) => {
   const chatRef = useRef();
 
@@ -110,38 +112,75 @@ const PromptChat = ({
     }
   };
 
-  const image_description_user_input = (
+  const imageDescriptionUserInput = showImageDescription ? (
     <div className="user-input">
-      Include an image description
+      Add image description
       <DescribeImage onImageDescriptionChange={setImageDescription} />
       {imageDescription && <TextArea value={imageDescription} rows={6} />}
     </div>
+  ) : (
+    <></>
   );
 
-  const document_choice_user_input = (
-    <div className="user-input">
-      Include a document
-      <br />
-      <Select
-        onChange={setSelectedDocument}
-        style={{ width: 300 }}
-        options={documents}
-        value={selectedDocument?.key}
-      ></Select>
-    </div>
-  );
+  const documentChoiceUserInput =
+    showDocuments && documents ? (
+      <div className="user-input">
+        Document
+        <br />
+        <Select
+          onChange={setSelectedDocument}
+          style={{ width: 300 }}
+          options={documents}
+          value={selectedDocument?.key}
+        ></Select>
+      </div>
+    ) : (
+      <></>
+    );
+
+  const textSnippetsUserInput =
+    showTextSnippets && contexts ? (
+      <div className="user-input">
+        Text snippets
+        <br />
+        <Select
+          onChange={handleContextSelection}
+          style={{ width: 300 }}
+          options={contexts}
+          value={selectedContext?.key}
+          defaultValue="base"
+        ></Select>
+      </div>
+    ) : (
+      <></>
+    );
+
+  const contextSection =
+    showTextSnippets || showDocuments ? (
+      <div className="prompt-chat-options-section">
+        <div>
+          <h2>{selectedPrompt ? "Add context" : ""}</h2>
+        </div>
+        <div>
+          {textSnippetsUserInput}
+          {documentChoiceUserInput}
+        </div>
+      </div>
+    ) : (
+      <></>
+    );
 
   const prompt_options = (
     <div className="prompt-chat-options-container">
       {/* <ClipboardButton toggleClipboardDrawer={setClipboardDrawerOpen} /> */}
       <div className="prompt-chat-options-section">
-        <h1>{selectedPrompt?.title}</h1>
-        <p>{selectedPrompt?.help_prompt_description}</p>
+        <h1>{selectedPrompt?.title || pageTitle}</h1>
+        <p>{selectedPrompt?.help_prompt_description || pageIntro}</p>
       </div>
 
       <div className="prompt-chat-options-section">
         <div>
-          <h2>Your input</h2>
+          <h2>{selectedPrompt ? "Your input" : "What is your question?"}</h2>
           <div className="user-input">{selectedPrompt?.help_user_input}</div>
 
           <div className="user-input">
@@ -153,30 +192,10 @@ const PromptChat = ({
               }}
             />
           </div>
-          {image_description_user_input}
+          {imageDescriptionUserInput}
         </div>
       </div>
-      <div className="prompt-chat-options-section">
-        <div>
-          <h2>Add some context</h2>
-        </div>
-        <div>
-          {contexts && (
-            <div className="user-input">
-              Include text snippets
-              <br />
-              <Select
-                onChange={handleContextSelection}
-                style={{ width: 300 }}
-                options={contexts}
-                value={selectedContext?.key}
-                defaultValue="base"
-              ></Select>
-            </div>
-          )}
-          {documents && document_choice_user_input}
-        </div>
-      </div>
+      {contextSection}
       <div className="prompt-chat-options-section">
         <Button type="primary" onClick={startNewChat} className="go-button">
           START CHAT
