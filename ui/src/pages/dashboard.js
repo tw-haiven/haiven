@@ -11,12 +11,13 @@ export default function ChatDashboard() {
   const [allCategories, setAllCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
+  // !! If changed, also needs to be changed in CSS, for the filter selection colors
   const categoryColors = {
     analysis: "#f2617aff",
     coding: "#CC850A",
     testing: "#47a1ad",
     architecture: "#634F7D",
-    ideation: "#6B9E78",
+    ideate: "#6B9E78",
     other: "#666666ff",
   };
 
@@ -46,6 +47,7 @@ export default function ChatDashboard() {
       const categories = [
         ...new Set(data.flatMap((prompt) => prompt.categories)),
       ];
+      categories.push("other");
       setAllCategories(categories);
     });
   }, []);
@@ -68,7 +70,10 @@ export default function ChatDashboard() {
   return (
     <div className="dashboard">
       <h1>Hello!</h1>
-      <p>These are all the prompts available in your current knowledge pack.</p>
+      <p>
+        These are all the prompts available in Haiven and in your current
+        knowledge pack.
+      </p>
 
       <p className="dashboard-filters">
         <b>Filter by category:</b>
@@ -79,7 +84,7 @@ export default function ChatDashboard() {
               checked={selectedCategories.includes(tag)}
               onChange={(checked) => filter(tag, checked)}
               color="gray"
-              className="dashboard-filter-category"
+              className={"dashboard-filter-category " + tag}
             >
               {tag}
             </Tag.CheckableTag>

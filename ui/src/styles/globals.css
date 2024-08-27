@@ -489,6 +489,40 @@ h1 {
   margin-top: auto;
 }
 
+.ant-tag {
+  padding: 0.4em 0.8em;
+}
+
+.dashboard-filter-category {
+  background-color: var(--color-light-gray);
+  color: black;
+  margin-left: 0.5em;
+
+  &.ant-tag-checkable-checked {
+    color: white;
+    background-color: var(--color-dark-gray);
+
+    &.analysis {
+      background-color: var(--color-flamingo);
+    }
+    &.coding {
+      background-color: var(--color-turmeric-yellow);
+    }
+    &.testing {
+      background-color: var(--color-sapphire);
+    }
+    &.architecture {
+      background-color: var(--color-amethyst-purple);
+    }
+    &.ideate {
+      background-color: var(--color-jade-green);
+    }
+    /* &.other {
+      background-color: var(--color-dark-gray)
+    } */
+  }
+
+}
 
 /******* CLIPBOARD ******/
 .btn-clipboard {
@@ -496,7 +530,6 @@ h1 {
   float: right;
   fill: white;
   background-color: var(--color-dark-blue)
-
 }
 
 .btn-clipboard svg {
