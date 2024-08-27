@@ -548,7 +548,17 @@ h4, h5 {
 
 /****** KNOWLEDGE OVERVIEW ******/
 .knowledge-overview {
-  padding: var(--standard-left-padding)
+  padding: var(--standard-left-padding);
+}
+.knowledge-columns-container {
+  display: flex;
+  flex-direction: row;
+}
+.knowledge-list {
+  flex: 1;
+  margin-right: 1em;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);  
+  padding: 1em;
 }
 .knowledge-overview .snippet {
   background: white;
@@ -560,10 +570,6 @@ h4, h5 {
 
 .knowledge-overview .snippet-title {
   margin-left: 3em;
-}
-
-.knowledge-overview .snippets-list {
-  border-top: 1px solid var(--color-light-gray)
 }
 
 .snippet h1, .snippet h2, .snippet h3 {

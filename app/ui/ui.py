@@ -4,7 +4,6 @@ from typing import List
 import gradio as gr
 from dotenv import load_dotenv
 from knowledge_manager import KnowledgeManager
-from embeddings.documents import DocumentsUtils
 from llms.clients import ChatClientConfig
 from knowledge.pack import KnowledgePack
 from prompts.prompts import PromptList
@@ -128,7 +127,7 @@ class UIBaseComponents:
                                 f"""
     ### {embbedding_document.title}
 
-    **File:** {DocumentsUtils.get_source_title_link(vars(embbedding_document))}
+    **File:** {embbedding_document.get_source_title_link()}
 
     **Description:** {embbedding_document.description}
 
@@ -159,7 +158,7 @@ class UIBaseComponents:
                                 gr.Markdown(f"""
     ### {embbedding_document.title}
 
-    **File:** {DocumentsUtils.get_source_title_link(vars(embbedding_document))}
+    **File:** {embbedding_document.get_source_title_link()}
 
     **Description:** {embbedding_document.description}
                                 """)

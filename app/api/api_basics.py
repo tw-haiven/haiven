@@ -143,7 +143,14 @@ class ApiBasics(HaivenBaseApi):
                 )
 
                 for document in documents:
-                    response_data.append({"key": document.key, "title": document.title})
+                    response_data.append(
+                        {
+                            "key": document.key,
+                            "title": document.title,
+                            "description": document.description,
+                            "source": document.get_source_title_link(),
+                        }
+                    )
 
             return JSONResponse(response_data)
 

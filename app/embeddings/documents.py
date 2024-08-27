@@ -25,6 +25,10 @@ class KnowledgeDocument:
         self.provider = provider
         self.context = context
 
+    def get_source_title_link(self) -> str:
+        document_metadata = vars(self)
+        return DocumentsUtils.get_source_title_link(document_metadata)
+
 
 class DocumentsUtils:
     @staticmethod

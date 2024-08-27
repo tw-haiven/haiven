@@ -30,9 +30,20 @@ class TestApi(unittest.TestCase):
         ]
 
         mock_kb_documents = MagicMock()
-        mock_doc_base = MagicMock(key="some-document-base", title="Some title base")
-        mock_doc_1 = MagicMock(key="some-document-1", title="Some title 1")
-        mock_doc_2 = MagicMock(key="some-document-2", title="Some title 2")
+        mock_doc_base = MagicMock(
+            key="some-document-base",
+            title="Some title base",
+            description="Some description",
+        )
+        mock_doc_base.get_source_title_link.return_value = "some source title link"
+        mock_doc_1 = MagicMock(
+            key="some-document-1", title="Some title 1", description="Some description"
+        )
+        mock_doc_1.get_source_title_link.return_value = "some source title link"
+        mock_doc_2 = MagicMock(
+            key="some-document-2", title="Some title 2", description="Some description"
+        )
+        mock_doc_2.get_source_title_link.return_value = "some source title link"
         mock_kb_documents.get_documents.side_effect = [
             [mock_doc_base],
             [mock_doc_1],

@@ -4,7 +4,6 @@ from typing import List
 import gradio as gr
 from dotenv import load_dotenv
 from knowledge_manager import KnowledgeManager
-from embeddings.documents import DocumentsUtils
 from llms.clients import ChatClientConfig
 from llms.chats import ChatOptions, ChatManager
 from ui.chat_context import ChatContext
@@ -123,7 +122,7 @@ def enable_knowledge_chat(
                 if knowledge_document_selected == "all":
                     info_text = "All documents are loaded."
                 elif knowledge_document_selected:
-                    info_text = f'"{knowledge.title}" is loaded.\n\n**Source:** {DocumentsUtils.get_source_title_link(vars(knowledge))}\n\n**Sample question:** {knowledge.sample_question}'
+                    info_text = f'"{knowledge.title}" is loaded.\n\n**Source:** {knowledge.get_source_title_link()}\n\n**Sample question:** {knowledge.sample_question}'
                 return {
                     ui_loaded_file_label: info_text,
                     state_chat_session_key: chat_session_key_value,
