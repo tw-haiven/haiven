@@ -1,6 +1,5 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import React, { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/router";
+import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
 import {
   Alert,
@@ -47,7 +46,6 @@ const Home = () => {
   const [drawerTitle, setDrawerTitle] = useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
   const [modelOutputNotParseable, setModelOutputNotParseable] = useState(false);
-  const router = useRouter();
 
   function abortLoad() {
     ctrl && ctrl.abort("User aborted");
@@ -295,7 +293,6 @@ const Home = () => {
               <div className="user-input">
                 Strategic prompt
                 <TextArea
-                  ref={promptRef}
                   disabled={isLoading}
                   value={prompt}
                   onChange={(e, v) => {
