@@ -86,6 +86,13 @@ h1 {
   vertical-align: bottom;
 }
 
+.tooltip-help {
+  margin-left: 0.3em;
+  fill: var(--color-sapphire);
+  font-size: large;
+  /* vertical-align: middle; */
+}
+
 /***** HEADER **********/
 
 .header {
@@ -197,6 +204,10 @@ h1 {
 
 .prompt-chat-options-container .user-input {
   padding: 0.5em 0;
+}
+
+.prompt-chat-options-container .user-input p {
+  margin: 0.2em 0;
 }
 
 .prompt-chat-options-container .user-input label {

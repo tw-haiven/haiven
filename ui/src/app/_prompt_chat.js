@@ -2,11 +2,12 @@
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
-import { Input, Select, Button } from "antd";
+import { Input, Select, Button, Tooltip } from "antd";
 
 const { TextArea } = Input;
 import ChatWidget from "./_chat";
 import DescribeImage from "./_image_description";
+import HelpTooltip from "./_help_tooltip";
 
 const PromptChat = ({
   promptId,
@@ -114,7 +115,10 @@ const PromptChat = ({
 
   const imageDescriptionUserInput = showImageDescription ? (
     <div className="user-input">
-      Add image description
+      <p>
+        Add image description
+        <HelpTooltip text="Get an AI diagram description to help with your input. You can edit this description before you start the chat." />
+      </p>
       <DescribeImage onImageDescriptionChange={setImageDescription} />
       {imageDescription && <TextArea value={imageDescription} rows={6} />}
     </div>
@@ -125,8 +129,10 @@ const PromptChat = ({
   const documentChoiceUserInput =
     showDocuments && documents ? (
       <div className="user-input">
-        Document
-        <br />
+        <p>
+          Document
+          <HelpTooltip text="Select a document from your knowledge pack that might have useful information for your context. Haiven will try to find useful information in this document during the first chat interaction." />
+        </p>
         <Select
           onChange={setSelectedDocument}
           style={{ width: 300 }}
@@ -141,8 +147,10 @@ const PromptChat = ({
   const textSnippetsUserInput =
     showTextSnippets && contexts ? (
       <div className="user-input">
-        Text snippets
-        <br />
+        <p>
+          Text snippets
+          <HelpTooltip text="You can define text snippets describing your domain and architecture in your knowledge pack, and pull them into the prompt here." />
+        </p>
         <Select
           onChange={handleContextSelection}
           style={{ width: 300 }}
