@@ -96,6 +96,7 @@ class Server:
         async def boba_middleware(request: Request, call_next):
             allowed_boba_paths = [
                 "dashboard",
+                "knowledge",
                 "knowledge-chat",
                 "chat",
                 "scenarios",
