@@ -1,11 +1,13 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 "use client";
+import { useEffect, useState } from "react";
 import { Layout, ConfigProvider } from "antd";
 import Head from "next/head";
 import Header from "./_header";
 import "../styles/globals.css";
-import { useState } from "react";
 import Sidebar from "./_sidebar";
+
+import { getPrompts, getContextSnippets, getDocuments } from "../app/_boba_api";
 
 export default function App({
   Component,
@@ -14,7 +16,30 @@ export default function App({
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState();
 
-  const useLayout = true;
+  const [prompts, setPrompts] = useState([]);
+  const [contexts, setContexts] = useState([]);
+  const [documents, setDocuments] = useState([]);
+
+  useEffect(() => {
+    getPrompts(setPrompts);
+    getContextSnippets((data) => {
+      const labelValuePairs = data.map((context) => {
+        if (context.context === "base") {
+          return {
+            label: "none",
+            value: "base",
+          };
+        } else {
+          return {
+            label: context.context,
+            value: context.context,
+          };
+        }
+      });
+      setContexts(labelValuePairs);
+    });
+    getDocuments(setDocuments);
+  }, []);
 
   return (
     <>
@@ -48,37 +73,43 @@ export default function App({
         <Head>
           <title>Haiven</title>
         </Head>
-        {useLayout && (
+        <Layout style={{ minHeight: "100vh" }}>
+          <Layout.Header
+            style={{
+              position: "sticky",
+              margin: 0,
+              padding: 0,
+              top: 0,
+              zIndex: 1,
+              width: "100%",
+            }}
+          >
+            <Header />
+          </Layout.Header>
           <Layout style={{ minHeight: "100vh" }}>
-            <Layout.Header
-              style={{
-                position: "sticky",
-                margin: 0,
-                padding: 0,
-                top: 0,
-                zIndex: 1,
-                width: "100%",
-              }}
+            <Layout.Sider
+              theme="light"
+              collapsible
+              collapsed={collapsed}
+              onCollapse={(value) => setCollapsed(value)}
+              width={250}
             >
-              <Header />
-            </Layout.Header>
-            <Layout style={{ minHeight: "100vh" }}>
-              <Layout.Sider
-                theme="light"
-                collapsible
-                collapsed={collapsed}
-                onCollapse={(value) => setCollapsed(value)}
-                width={250}
-              >
-                <Sidebar selectedKey={selectedKey} collapse={true} />
-              </Layout.Sider>
-              <Layout.Content style={{ margin: 0, background: "white" }}>
-                <Component {...pageProps} />
-              </Layout.Content>
-            </Layout>
+              <Sidebar
+                selectedKey={selectedKey}
+                collapse={true}
+                prompts={prompts}
+              />
+            </Layout.Sider>
+            <Layout.Content style={{ margin: 0, background: "white" }}>
+              <Component
+                {...pageProps}
+                prompts={prompts}
+                contexts={contexts}
+                documents={documents}
+              />
+            </Layout.Content>
           </Layout>
-        )}
-        {!useLayout && <Component {...pageProps} />}
+        </Layout>
       </ConfigProvider>
     </>
   );

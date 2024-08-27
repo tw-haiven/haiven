@@ -3,12 +3,11 @@ import { Menu } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { getPrompts } from "../app/_boba_api";
 import { initialiseMenuCategoriesForSidebar } from "../app/_navigation_items";
 
 import { RiChat2Line } from "react-icons/ri";
 
-const Sidebar = () => {
+const Sidebar = ({ prompts }) => {
   const pathToKey = {
     "/scenarios": "scenarios",
     "/creative-matrix": "creative-matrix",
@@ -19,12 +18,7 @@ const Sidebar = () => {
   const router = useRouter();
   const currentSelectedKey = pathToKey[router.pathname];
 
-  const [prompts, setPrompts] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
-
-  useEffect(() => {
-    getPrompts(setPrompts);
-  }, []);
 
   useEffect(() => {
     const menuCategories = initialiseMenuCategoriesForSidebar();

@@ -8,7 +8,15 @@ const { TextArea } = Input;
 import ChatWidget from "./_chat";
 import DescribeImage from "./_image_description";
 
-const PromptChat = ({ promptId, prompts, contexts, documents }) => {
+const PromptChat = ({
+  promptId,
+  prompts,
+  contexts,
+  documents,
+  showImageDescription = true,
+  showTextSnippets = true,
+  showDocuments = true,
+}) => {
   const chatRef = useRef();
 
   // User inputs
