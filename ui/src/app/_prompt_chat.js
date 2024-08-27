@@ -35,7 +35,7 @@ const PromptChat = ({ promptId, prompts, contexts, documents }) => {
 
       const requestData = {
         userinput: userInput?.content,
-        promptid: selectedPrompt.identifier,
+        promptid: selectedPrompt?.identifier,
         chatSessionId: chatSessionId,
         document: selectedDocument,
       };
@@ -65,7 +65,6 @@ const PromptChat = ({ promptId, prompts, contexts, documents }) => {
         },
         body: JSON.stringify({
           userinput: lastMessage?.content,
-          promptid: selectedPrompt.identifier,
           chatSessionId: chatSessionId,
         }),
       });
