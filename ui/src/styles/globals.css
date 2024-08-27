@@ -87,7 +87,7 @@ body {
 /* Cannot put a class on the root div of the chat (which is probably from ProChatProvider component) */
 .prompt-chat-container > :nth-child(2) {
   display: flex;
-  flex: 4;
+  flex: 3;
 }
 
 .prompt-chat-options-container .go-button {
