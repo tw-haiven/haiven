@@ -15,6 +15,8 @@
   --font-weight-semi-bold: 630;
 }
 
+/**** GENERAL ****/
+
 html {
   line-height: 1.5;
   font-family:
@@ -25,6 +27,12 @@ html {
   font-variation-settings: normal;
 }
 
+body {
+  margin: 0;
+  padding: 0;
+}
+
+
 h1, h2, h3, h4 {
   margin: 0.5em 0;
   font-weight: var(--font-weight-semi-bold)
@@ -32,6 +40,15 @@ h1, h2, h3, h4 {
 
 h1 {
   font-size: 1.5em;
+}
+
+/**** CHAT *****/
+.ant-pro-chat {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: 80%;
+  overflow: auto; /* Adds scrollbars to ant-pro-chat if content overflows */
 }
 
 .ant-pro-chat p {
@@ -47,27 +64,29 @@ h1 {
   height: 1em;
 }
 
-.prompt-choice {
-  padding: 0.5em;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-}
+/* ************************* */
 
 #canvas {
   padding-left: 5px;
   margin-bottom: 20px;
-  /* margin-left: 250px; */
-  /* width: calc(100% - 250px); */
+
+  overflow-x: hidden;
+  height: 100%;
 }
 
-/* .chat-tabs .ant-tabs-nav-wrap {
-  padding-left: var(--standard-left-padding);
-  font-weight: var(--font-weight-semi-bold);
-} */
 
+.section-header .tooltip-help {
+  margin-left: 0.5em;
+  fill: var(--color-sapphire)
+}
+
+.config-icon {
+  display: inline-block;
+  font-size: 15px;
+  vertical-align: bottom;
+}
+
+/**** INPUT --> GENERATION RESULTS COLUMN LAYOUT *****/
 .prompt-chat-container {
   display: flex;
   flex-direction: row;
@@ -97,99 +116,22 @@ body {
   margin-top: 2em;
 }
 
-.section-header .tooltip-help {
-  margin-left: 0.5em;
-  fill: var(--color-sapphire)
-}
-
-.user-input {
+.prompt-chat-options-container .user-input {
   padding: 0.5em 0;
 }
 
-.user-input label {
+.prompt-chat-options-container .user-input label {
   margin-right: 0.3em;
   font-weight: var(--font-weight-semi-bold);
 }
 
-.user-input textarea, .user-input input {
+.prompt-chat-options-container .user-input textarea, .prompt-chat-options-container .user-input input {
   max-width: 600px;
   display: block;
   padding: 0.6em;
 }
 
-.login-button {
-  top: -0.7em;
-}
-
-.ant-pro-chat {
-  max-width: 100%;
-  max-height: 100%;
-  width: 100%;
-  height: 80%;
-  overflow: auto; /* Adds scrollbars to ant-pro-chat if content overflows */
-}
-
-.scenario {
-  width: 250px;
-  display: inline-block;
-  vertical-align: top;
-  margin: 0.3em;
-  padding-top: 0.8em;
-  height: 380px;
-}
-
-.scenario .scenario-card-content {
-  height: 245px;
-  overflow-y: auto;
-  font-size: small;
-
-}
-
-.scenario .q-a-card-content {
-  height: 235px;
-  font-size: small;
-}
-
-.ant-card {
-  background-color: white;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
-.ant-card-head {
-  border-bottom: 1px solid var(--color-light-gray) !important;
-  height: 60px;
-  justify-content: top  !important;
-}
-
-.ant-card-head-title {
-  font-weight: var(--font-weight-semi-bold);
-  white-space: normal !important;
-  height: 60px;
-}
-
-.ant-card-actions {
-  background-color: transparent !important;
-}
-
-.scenario-card-content .card-prop-name {
-  font-weight: var(--font-weight-semi-bold);
-} 
-
-.generated-text-results {
-  padding: 0 var(--standard-left-padding);
-  border: 1px solid var(--color-light-gray);
-  /* max-width: 600px; */
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
-.generated-text-results .icon-button {
-  float: right;
-  background: transparent;
-  box-shadow: none;
-  border: none;
-  margin-top: 1em;
-}
-
+/****** SCENARIO CARDS *******/
 .scenarios-collection {
   padding: var(--standard-left-padding) var(--standard-left-padding);
   flex-direction: column;
@@ -198,12 +140,6 @@ body {
 
 .scenarios-collection .cards-container {
   margin-top: 1em;
-}
-
-.matrix-container {
-  flex: 5;
-  margin-top: 1em;
-  padding-left: 1em;
 }
 
 .scenarios-collection .ant-card-body {
@@ -258,14 +194,80 @@ body {
   display: block;
 }
 
-input.select-scenario {
+.scenario {
+  width: 250px;
   display: inline-block;
-  margin-top: 10px;
+  vertical-align: top;
+  margin: 0.3em;
+  padding-top: 0.8em;
+  height: 380px;
 }
 
-.generate-instructions {
-  padding: 1em var(--standard-left-padding);
+.scenario .scenario-card-content {
+  height: 245px;
+  overflow-y: auto;
+  font-size: small;
+
 }
+
+.scenario .q-a-card-content {
+  height: 235px;
+  font-size: small;
+}
+
+.ant-card {
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.ant-card-head {
+  border-bottom: 1px solid var(--color-light-gray) !important;
+  height: 60px;
+  justify-content: top  !important;
+}
+
+.ant-card-head-title {
+  font-weight: var(--font-weight-semi-bold);
+  white-space: normal !important;
+  height: 60px;
+}
+
+.ant-card-actions {
+  background-color: transparent !important;
+}
+
+.scenario-card-content .card-prop-name {
+  font-weight: var(--font-weight-semi-bold);
+} 
+
+.display-mode {
+  position:relative;
+  z-index: 0;
+}
+
+/**** STORY VALIDATION ******/
+.generated-text-results {
+  padding: 0 var(--standard-left-padding);
+  border: 1px solid var(--color-light-gray);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.generated-text-results .icon-button {
+  float: right;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  margin-top: 1em;
+}
+
+/*** CREATIVE MATRIX ****/
+
+.matrix-container {
+  flex: 5;
+  margin-top: 1em;
+  padding-left: 1em;
+}
+
 
 .boba-matrix,
 .boba-matrix table {
@@ -295,6 +297,7 @@ input.select-scenario {
   
 }
 
+/**** EXPLORATION CHAT ****/
 .chat-exploration-drawer {
   width: 500px;
 }
@@ -321,55 +324,6 @@ input.select-scenario {
   font-size: 85%;
 }
 
-.chat-log {
-  width: 100%;
-}
-
-.company-dashboard {
-  margin-top: 10px;
-  margin-left: 10px;
-}
-
-.company-dashboard-section {
-  min-height: 625px;
-  border: 1px solid #f1f1f1;
-  margin-bottom: 10px;
-  padding: 0 5px;
-}
-
-.company-dashboard-section.small {
-  min-height: 200px;
-}
-
-.company-dashboard-section h3 {
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
-.company-dashboard-section .scenario {
-  width: 100%;
-}
-
-.company-dashboard-section .scenario .card-prop {
-  margin: 0 0 10px 0;
-}
-
-.toggle-answers {
-  position: absolute;
-  top: 11px;
-  right: 5px;
-  font-size: initial;
-  text-align: right;
-  font-weight: normal;
-  font-size: small;
-}
-
-.config-icon {
-  display: inline-block;
-  font-size: 15px;
-  vertical-align: bottom;
-}
-
 .ant-drawer-header {
   padding: 10px !important;
 }
@@ -385,10 +339,6 @@ input.select-scenario {
   flex-direction: column;
   height: 100%;
 }
-.chat-log {
-  flex: 1;
-  overflow-y: auto;
-}
 
 .chat-exploration .bottom {
   margin-top: auto;
@@ -396,56 +346,7 @@ input.select-scenario {
   bottom: 0;
 }
 
-.btn-clipboard {
-  margin-left: 1em;
-  float: right;
-  fill: white;
-  background-color: var(--color-dark-blue)
-
-}
-
-.btn-clipboard svg {
-  fill: white;
-}
-
-.clipboard {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-.clipboard-contents {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.clipboard .bottom {
-  margin-top: auto;
-  /* padding-bottom: 10px; */
-  bottom: 0;
-}
-
-.clipboard .snippet {
-  background: white;
-  cursor: pointer;
-  padding: 0.5em;
-  margin: 1em 0;
-}
-
-.clipboard .snippet:hover {
-  background: var(--color-sapphire-light)
-}
-
-.clipboard .snippet p {
-  margin: 0;
-}
-
-.clipboard .snippet h1, h2, h3, h4 {
-  font-size: 1.2em;
-}
-
-.prompt-suggestions {
-  margin-top: 10px;
-}
+/******* SIDEBAR ******/
 
 .sidebar {
   height: 100vh;
@@ -468,78 +369,6 @@ input.select-scenario {
 .sidebar .ant-menu-inline .ant-menu-item svg {
   margin-right: -0.3em;
 }
-
-
-.prompt-list {
-  border: 1px solid #f5f5f5;
-  padding: 5px;
-  overflow-y: scroll;
-  margin-right: 10px;
-}
-
-.results-section {
-  min-height: 500px;
-}
-
-.prompt-list .ant-table-expanded-row .ant-table-cell p {
-  margin: 0;
-  padding-left: 10px;
-}
-.prompt-list .ant-table-cell {
-  cursor: pointer;
-  padding: 0 10px;
-}
-
-#eval-results table {
-  min-height: 500px;
-}
-#eval-results .scenario-header {
-  font-weight: var(--font-weight-semi-bold);
-  height: 50px;
-}
-#eval-results .strategy-header {
-  font-weight: var(--font-weight-semi-bold);
-  min-height: 100px;
-}
-
-.eval-result {
-  text-align: center;
-  background: #f1f1f1;
-  border: 1px solid white;
-}
-.eval-result-score {
-  font-weight: var(--font-weight-semi-bold);
-}
-
-.subprompt-entry {
-  margin-bottom: 10px;
-}
-.subprompt-entry-label {
-  padding-left: 2px;
-}
-.prompt-list-section {
-  /* border: 1px solid #f1f1f1; */
-  height: 100%;
-  overflow-y: scroll;
-  padding-right: 20px;
-}
-.results-section {
-  padding-right: 10px;
-}
-
-#canvas {
-  overflow-x: hidden;
-  height: 100%;
-}
-#storyboard {
-  overflow-x: scroll;
-}
-
-.display-mode {
-  position:relative;
-  z-index: 0;
-}
-
 
 /* LANDING PAGE */
 
@@ -658,3 +487,50 @@ input.select-scenario {
   border-bottom-left-radius: 15px;
 }
 
+/******* CLIPBOARD ******/
+.btn-clipboard {
+  margin-left: 1em;
+  float: right;
+  fill: white;
+  background-color: var(--color-dark-blue)
+
+}
+
+.btn-clipboard svg {
+  fill: white;
+}
+
+.clipboard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.clipboard-contents {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.clipboard .bottom {
+  margin-top: auto;
+  /* padding-bottom: 10px; */
+  bottom: 0;
+}
+
+.clipboard .snippet {
+  background: white;
+  cursor: pointer;
+  padding: 0.5em;
+  margin: 1em 0;
+}
+
+.clipboard .snippet:hover {
+  background: var(--color-sapphire-light)
+}
+
+.clipboard .snippet p {
+  margin: 0;
+}
+
+.clipboard .snippet h1, h2, h3, h4 {
+  font-size: 1.2em;
+}
