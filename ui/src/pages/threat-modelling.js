@@ -21,7 +21,6 @@ const Home = () => {
   const [explorationDrawerOpen, setExplorationDrawerOpen] = useState(false);
   const [explorationDrawerTitle, setExplorationDrawerTitle] =
     useState("Explore scenario");
-  const [explorationDrawerHeader, setExplorationDrawerHeader] = useState("");
   const [chatContext, setChatContext] = useState({});
   const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const router = useRouter();
@@ -44,14 +43,12 @@ const Home = () => {
 
   const onExplore = (id) => {
     setExplorationDrawerTitle("Explore scenario: " + scenarios[id].title);
-    setExplorationDrawerHeader(scenarios[id].summary);
     setChatContext({
       id: id,
       originalPrompt: concatUserInput(),
       type: "threat-modelling",
       ...scenarios[id],
     });
-    setExplorationDrawerOpen(true);
     setExplorationDrawerOpen(true);
   };
 
@@ -106,20 +103,6 @@ const Home = () => {
     );
   };
 
-  const query = router.query;
-  const params = query;
-  const initialStrategicPrompt = params.strategic_prompt;
-  // const promptRef = useRef();
-  const [initialLoadDone, setInitialLoad] = useState(false);
-
-  useEffect(() => {
-    if (!initialStrategicPrompt) return;
-    if (!router.isReady) return;
-    if (initialLoadDone) return;
-    setPromptDataFlow(initialStrategicPrompt);
-    setInitialLoad(true);
-  });
-
   return (
     <>
       <Drawer
@@ -143,144 +126,163 @@ const Home = () => {
           ]}
         />
       </Drawer>
+
       <div id="canvas">
-        <div id="prompt-center">
-          <b style={{ fontSize: 20, display: "inline-block" }}>
-            Threat Modelling
-          </b>
-          &nbsp;
-          <Radio.Group
-            className="display-mode"
-            onChange={onSelectDisplayMode}
-            defaultValue="grid"
-            style={{ float: "right" }}
-          >
-            <Radio.Button value="grid">
-              <RiStackLine /> Cards
-            </Radio.Button>
-            <Radio.Button value="plot">
-              <RiGridLine /> Matrix
-            </Radio.Button>
-          </Radio.Group>
-          <br />
-          <br />
-          <div className="user-inputs">
-            <div className="user-input">
-              <label>Users</label>{" "}
-              <Input
-                placeholder="Describe the user base, e.g. if it's B2C, B2B, internal, ..."
-                value={promptUserBase}
-                onChange={(e, v) => {
-                  setPromptUserBase(e.target.value);
-                }}
-              />
+        <div className="prompt-chat-container">
+          <div className="prompt-chat-options-container">
+            <div className="prompt-chat-options-section">
+              <h1>Threat Modelling</h1>
             </div>
-            <div className="user-input">
-              <label>Assets</label>{" "}
-              <Input
-                placeholder="Describe any important assets that need to be protected"
-                value={promptAssets}
-                onChange={(e, v) => {
-                  setPromptAssets(e.target.value);
-                }}
-              />
-            </div>
-            <div className="user-input">
-              <label>Data flow</label>
-              <TextArea
-                placeholder="Describe how data flows through your system"
-                value={promptDataFlow}
-                onChange={(e, v) => {
-                  setPromptDataFlow(e.target.value);
-                }}
-                rows={5}
-              />
-            </div>
-            <Button type="primary" onClick={onSubmitPrompt}>
-              Go
-            </Button>
-            {modelOutputFailed && (
-              <Space
-                direction="vertical"
-                style={{ width: "100%", marginTop: "5px" }}
-              >
-                <Alert
-                  message="Model failed to respond rightly"
-                  description="Please rewrite your message and try again"
-                  type="warning"
+
+            <div className="prompt-chat-options-section">
+              <div className="user-input">
+                <label>Users</label>{" "}
+                <Input
+                  placeholder="Describe the user base, e.g. if it's B2C, B2B, internal, ..."
+                  value={promptUserBase}
+                  onChange={(e, v) => {
+                    setPromptUserBase(e.target.value);
+                  }}
                 />
-              </Space>
-            )}
-          </div>
-          &nbsp;
-          {isLoading && (
-            <div style={{ marginTop: 10 }}>
-              <Spin />
-              <div style={{ marginLeft: 105, display: "inline-block" }}>
-                &nbsp;
+              </div>
+              <div className="user-input">
+                <label>Assets</label>{" "}
+                <Input
+                  placeholder="Describe any important assets that need to be protected"
+                  value={promptAssets}
+                  onChange={(e, v) => {
+                    setPromptAssets(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="user-input">
+                <label>Data flow</label>
+                <TextArea
+                  placeholder="Describe how data flows through your system"
+                  value={promptDataFlow}
+                  onChange={(e, v) => {
+                    setPromptDataFlow(e.target.value);
+                  }}
+                  rows={5}
+                />
+              </div>
+              <div className="user-input">
+                <Button
+                  type="primary"
+                  onClick={onSubmitPrompt}
+                  className="go-button"
+                  disabled={isLoading}
+                >
+                  GENERATE
+                </Button>
+              </div>
+              <div className="user-input">
+                {isLoading && (
+                  <div>
+                    <Spin />
+                    <Button
+                      type="primary"
+                      danger
+                      onClick={abortLoad}
+                      style={{ marginLeft: "1em" }}
+                    >
+                      Stop
+                    </Button>
+                  </div>
+                )}
               </div>
 
-              <Button type="primary" danger onClick={abortLoad}>
-                Stop
-              </Button>
+              {modelOutputFailed && (
+                <Space
+                  direction="vertical"
+                  style={{ width: "100%", marginTop: "5px" }}
+                >
+                  <Alert
+                    message="Model failed to respond rightly"
+                    description="Please rewrite your message and try again"
+                    type="warning"
+                  />
+                </Space>
+              )}
             </div>
-          )}
-        </div>
+          </div>
 
-        <div className={"scenarios-collection " + displayMode + "-display"}>
-          {scenarios.map((scenario, i) => {
-            return (
-              <Card
-                key={i}
-                className="scenario"
-                title={<>{scenario.title}</>}
-                actions={[
-                  <Button
-                    type="link"
-                    key="explore"
-                    onClick={() => onExplore(i)}
-                  >
-                    Explore
-                  </Button>,
-                ]}
+          <div className={"scenarios-collection " + displayMode + "-display"}>
+            <div>
+              <Radio.Group
+                className="display-mode"
+                onChange={onSelectDisplayMode}
+                defaultValue="grid"
+                style={{ float: "right" }}
               >
-                <div className="scenario-card-content large">
-                  {scenario.category && (
-                    <div className="card-prop stackable">
-                      <div className="card-prop-name">Category</div>
-                      <div className="card-prop-value">{scenario.category}</div>
+                <Radio.Button value="grid">
+                  <RiStackLine /> Cards
+                </Radio.Button>
+                <Radio.Button value="plot">
+                  <RiGridLine /> Matrix
+                </Radio.Button>
+              </Radio.Group>
+            </div>
+            <div className="cards-container">
+              {scenarios.map((scenario, i) => {
+                return (
+                  <Card
+                    key={i}
+                    className="scenario"
+                    title={<>{scenario.title}</>}
+                    actions={[
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onExplore(i)}
+                      >
+                        Explore
+                      </Button>,
+                    ]}
+                  >
+                    <div className="scenario-card-content">
+                      {scenario.category && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Category</div>
+                          <div className="card-prop-value">
+                            {scenario.category}
+                          </div>
+                        </div>
+                      )}
+                      <div className="card-prop-name">Description</div>
+                      <div className="scenario-summary">{scenario.summary}</div>
+                      {scenario.probability && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Probability</div>
+                          <div className="card-prop-value">
+                            {scenario.probability}
+                          </div>
+                        </div>
+                      )}
+                      {scenario.impact && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Potential impact</div>
+                          <div className="card-prop-value">
+                            {scenario.impact}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  <div className="card-prop-name">Description</div>
-                  <div className="scenario-summary">{scenario.summary}</div>
-                  {scenario.probability && (
-                    <div className="card-prop stackable">
-                      <div className="card-prop-name">Probability</div>
-                      <div className="card-prop-value">
-                        {scenario.probability}
-                      </div>
-                    </div>
-                  )}
-                  {scenario.impact && (
-                    <div className="card-prop stackable">
-                      <div className="card-prop-name">Potential impact</div>
-                      <div className="card-prop-value">{scenario.impact}</div>
-                    </div>
-                  )}
-                </div>
-              </Card>
-            );
-          })}
-        </div>
+                  </Card>
+                );
+              })}
 
-        <div
-          className="scenarios-plot-container"
-          style={{ display: displayMode == "plot" ? "block" : "none" }}
-        >
-          <ScenariosPlotProbabilityImpact
-            scenarios={scenarios}
-            visible={displayMode == "plot"}
-          />
+              <div
+                className="scenarios-plot-container"
+                style={{ display: displayMode == "plot" ? "block" : "none" }}
+              >
+                <ScenariosPlotProbabilityImpact
+                  scenarios={scenarios}
+                  visible={displayMode == "plot"}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
