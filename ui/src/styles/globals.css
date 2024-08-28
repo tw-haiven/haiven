@@ -217,30 +217,41 @@ h4, h5 {
   padding: 0.5em 0;
 }
 
-.prompt-chat-options-container .user-input p {
-  margin: 0.2em 0;
-}
-
 .prompt-chat-options-container .user-input label {
   margin-right: 0.3em;
+  margin-bottom: 0.3em;
+  display: block;
   font-weight: var(--font-weight-semi-bold);
+
+  &.inline, &.ant-checkbox-wrapper {
+    display: inline;
+    font-weight: normal;
+  }
 }
 
-.prompt-chat-options-container .user-input textarea, .prompt-chat-options-container .user-input input {
-  max-width: 600px;
+.prompt-chat-options-container .user-input textarea, 
+.prompt-chat-options-container .user-input input {
+  max-width: 300px;
   padding: 0.6em;
 }
 
+.prompt-chat-options-container button,
+.prompt-chat-options-container .ant-select {
+  max-width: 300px;
+}
+
 .prompt-chat-options-container .image-uploader {
-  margin: 1em 0;
+  margin: 0.5em 0;
   display: block;
   width: 100%;
 }
 
-.prompt-chat-options-container .image-uploader button {
-  height: 70px;
-  width: 280px;
+.prompt-chat-options-container .image-uploader .ant-upload button {
+  height: 50px;
+  width: 300px;
   border: 1px dashed var(--color-dark-gray);
+  background-color: var(--color-light-gray);
+  color: var(--color-dark-gray);
 }
 
 /****** SCENARIO CARDS *******/

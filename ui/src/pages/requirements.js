@@ -124,7 +124,6 @@ const Home = () => {
               </div>
               <div className="user-input">
                 <Button
-                  type="primary"
                   onClick={onSubmitPrompt}
                   className="go-button"
                   disabled={isLoading}

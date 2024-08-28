@@ -113,10 +113,10 @@ const PromptChat = ({
 
   const imageDescriptionUserInput = showImageDescription ? (
     <div className="user-input">
-      <p>
+      <label>
         Add image description
         <HelpTooltip text="Get an AI diagram description to help with your input. You can edit this description before you start the chat." />
-      </p>
+      </label>
       <DescribeImage onImageDescriptionChange={setImageDescription} />
       {imageDescription && <TextArea value={imageDescription} rows={6} />}
     </div>
@@ -127,10 +127,10 @@ const PromptChat = ({
   const documentChoiceUserInput =
     showDocuments && documents ? (
       <div className="user-input">
-        <p>
+        <label>
           Document
           <HelpTooltip text="Select a document from your knowledge pack that might have useful information for your context. Haiven will try to find useful information in this document during the first chat interaction." />
-        </p>
+        </label>
         <Select
           onChange={setSelectedDocument}
           style={{ width: 300 }}
@@ -145,10 +145,10 @@ const PromptChat = ({
   const textSnippetsUserInput =
     showTextSnippets && contexts ? (
       <div className="user-input">
-        <p>
+        <label>
           Text snippets
           <HelpTooltip text="You can define text snippets describing your domain and architecture in your knowledge pack, and pull them into the prompt here." />
-        </p>
+        </label>
         <Select
           onChange={handleContextSelection}
           style={{ width: 300 }}
@@ -164,9 +164,6 @@ const PromptChat = ({
   const contextSection =
     showTextSnippets || showDocuments ? (
       <div className="prompt-chat-options-section">
-        <div>
-          <h2>{selectedPrompt ? "Add context" : ""}</h2>
-        </div>
         <div>
           {textSnippetsUserInput}
           {documentChoiceUserInput}
@@ -195,7 +192,7 @@ const PromptChat = ({
           <div className="user-input">
             <TextArea
               value={promptInput}
-              rows={4}
+              rows={10}
               onChange={(e, v) => {
                 setPromptInput(e.target.value);
               }}
@@ -206,7 +203,7 @@ const PromptChat = ({
       </div>
       {contextSection}
       <div className="prompt-chat-options-section">
-        <Button type="primary" onClick={startNewChat} className="go-button">
+        <Button onClick={startNewChat} className="go-button">
           START CHAT
         </Button>
       </div>

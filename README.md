@@ -149,18 +149,24 @@ Prerequisites:
 - Node and yarn
 - While you don't have OAuth integration and credentials set up yet, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
 
-Run backend and chat mode UI (GradIO):
+Create the UI code (React):
+```
+cd ui
+yarn install
+yarn copy
+```
+
+Run Python backend:
 
 ```
 poetry run init
 poetry run app
 ```
 
-Run guided mode UI in addition (React):
+Run UI code in hot reload mode:
 ```
 cd ui
-yarn install
-yarn copy
+yarn dev
 ```
 
 Test:

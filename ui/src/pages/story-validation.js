@@ -146,7 +146,6 @@ const Home = () => {
                 />
               </div>
               <Button
-                type="primary"
                 onClick={onSubmitPrompt}
                 className="go-button"
                 disabled={isLoading}
@@ -186,7 +185,6 @@ const Home = () => {
                 Once you're happy with the selected answers, you can generate
                 given/when/then scenarios for this story <br />
                 <Button
-                  type="primary"
                   onClick={onGenerateScenarios}
                   className="go-button"
                   disabled={isLoading}

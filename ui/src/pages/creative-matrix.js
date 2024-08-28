@@ -182,7 +182,7 @@ const CreativeMatrix = () => {
           </div>
 
           <div className="user-input">
-            <p>Prompt:</p>
+            <label>Prompt</label>
             <TextArea
               placeholder="Prompt for the intersection of row and column"
               value={prompt}
@@ -191,7 +191,7 @@ const CreativeMatrix = () => {
             />
           </div>
           <div className="user-input">
-            <p>Rows:</p>
+            <label>Rows</label>
             <TextArea
               placeholder="Comma-separated list of values"
               value={rowsCSV}
@@ -200,7 +200,7 @@ const CreativeMatrix = () => {
             />
           </div>
           <div className="user-input">
-            <p>Columns:</p>
+            <label>Columns</label>
 
             <TextArea
               placeholder="Comma-separated list of values"
@@ -226,7 +226,7 @@ const CreativeMatrix = () => {
             &nbsp; per combination.
           </div>
           <div className="user-input">
-            <p>Each idea must be...</p>
+            <label>Each idea must be...</label>
             <Select
               style={{ width: "100%" }}
               mode="tags"
@@ -251,7 +251,6 @@ const CreativeMatrix = () => {
           <div className="user-input">
             {!isLoading && (
               <Button
-                type="primary"
                 onClick={onGenerateMatrix}
                 className="go-button"
                 disabled={isLoading}

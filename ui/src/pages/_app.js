@@ -68,6 +68,10 @@ export default function App({
             Menu: {
               itemHeight: "30px",
             },
+            Button: {
+              defaultBg: "#f2617aff",
+              defaultColor: "white",
+            },
           },
         }}
       >

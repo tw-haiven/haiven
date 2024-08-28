@@ -184,7 +184,7 @@ const Home = () => {
             </div>
             <div className="prompt-chat-options-section">
               <div className="user-input">
-                Generate{" "}
+                <label className="inline">Generate </label>
                 <Select
                   defaultValue={"5"}
                   onChange={handleSelectChange}
@@ -199,14 +199,10 @@ const Home = () => {
                 ></Select>
               </div>
               <div className="user-input">
-                <Checkbox onChange={handleDetailCheck} disabled={isLoading} />{" "}
-                Add details (signals, threats, opportunties) &nbsp;
-              </div>
-              <div className="user-input">
                 <Select
                   defaultValue={"10-year"}
                   onChange={handleSelectTimeHorizonChange}
-                  style={{ width: 150 }}
+                  style={{ width: 215 }}
                   disabled={isLoading}
                   options={[
                     { value: "5-year", label: "5-year horizon" },
@@ -219,7 +215,7 @@ const Home = () => {
                 <Select
                   defaultValue={"optimistic"}
                   onChange={handleSelectOptimismChange}
-                  style={{ width: 150 }}
+                  style={{ width: 215 }}
                   disabled={isLoading}
                   options={[
                     {
@@ -251,7 +247,7 @@ const Home = () => {
                 <Select
                   defaultValue={"futuristic sci-fi"}
                   onChange={handleSelectRealismChange}
-                  style={{ width: 150 }}
+                  style={{ width: 215 }}
                   disabled={isLoading}
                   options={[
                     {
@@ -291,6 +287,13 @@ const Home = () => {
                 ></Select>
               </div>
               <div className="user-input">
+                <Checkbox onChange={handleDetailCheck} disabled={isLoading} />
+                <label className="inline">
+                  Add details (signals, threats, opportunties)
+                </label>
+              </div>
+
+              <div className="user-input">
                 Strategic prompt
                 <TextArea
                   disabled={isLoading}
@@ -301,7 +304,6 @@ const Home = () => {
                   rows="4"
                 />
                 <Button
-                  type="primary"
                   onClick={onSubmitPrompt}
                   className="go-button"
                   disabled={isLoading}
