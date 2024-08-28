@@ -9,6 +9,7 @@ let ctrl;
 const DescribeImage = ({ onImageDescriptionChange }) => {
   const [image, setImage] = useState();
   const [descriptionLoading, setDescriptionLoading] = useState(false);
+  const [fileList, setFileList] = useState([]);
 
   const beforeUpload = async (file) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -77,21 +78,23 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
   const handleChange = (info) => {
     if (info.file.status === "uploading") {
       setImage(info.file.originFileObj);
+      setFileList([{ ...info.file, status: "done" }]);
     }
   };
 
   return (
     <Flex gap="middle" wrap>
       <Upload
-        name="image"
+        name="file"
         className="image-uploader"
         beforeUpload={beforeUpload}
         onChange={handleChange}
         disabled={descriptionLoading}
+        fileList={fileList}
       >
         <Button
           icon={
-            <RiImageAddLine style={{ fontSize: "3em", color: "#666666ff" }} />
+            <RiImageAddLine style={{ fontSize: "2em", color: "#666666ff" }} />
           }
         >
           Click to Upload
