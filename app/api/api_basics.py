@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import io
 from typing import List
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi import File, Form, UploadFile
 from PIL import Image
@@ -17,7 +17,7 @@ from prompts.prompts import PromptList
 
 
 class PromptRequestBody(BaseModel):
-    userinput: str
+    userinput: str = None
     promptid: str = None
     chatSessionId: str = None
     context: str = None
@@ -157,7 +157,7 @@ class ApiBasics(HaivenBaseApi):
         @app.post("/api/prompt")
         def chat(prompt_data: PromptRequestBody):
             if prompt_data.promptid:
-                rendered_prompt = prompts_chat.render_prompt(
+                rendered_prompt, _ = prompts_chat.render_prompt(
                     active_knowledge_context=prompt_data.context,
                     prompt_choice=prompt_data.promptid,
                     user_input=prompt_data.userinput,
@@ -173,6 +173,24 @@ class ApiBasics(HaivenBaseApi):
                 prompt_data.chatSessionId,
                 prompt_data.document,
             )
+
+        @app.post("/api/prompt/render")
+        def render_prompt(prompt_data: PromptRequestBody):
+            if prompt_data.promptid:
+                rendered_prompt, template = prompts_chat.render_prompt(
+                    active_knowledge_context=prompt_data.context,
+                    prompt_choice=prompt_data.promptid,
+                    user_input=prompt_data.userinput,
+                    additional_vars={},
+                    warnings=[],
+                )
+                return JSONResponse(
+                    {"prompt": rendered_prompt, "template": template.template}
+                )
+            else:
+                raise HTTPException(
+                    status_code=500, detail="Server error: promptid is required"
+                )
 
         @app.post("/api/prompt/image")
         async def describe_image(prompt: str = Form(...), file: UploadFile = File(...)):

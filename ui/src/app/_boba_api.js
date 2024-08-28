@@ -50,3 +50,18 @@ export const getDocuments = async (onSuccess) => {
     });
   });
 };
+
+export const getRenderedPrompt = async (body, onSuccess) => {
+  fetch("/api/prompt/render", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  }).then((response) => {
+    response.json().then((data) => {
+      onSuccess(data);
+    });
+  });
+};

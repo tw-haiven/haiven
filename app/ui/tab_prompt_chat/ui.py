@@ -51,7 +51,7 @@ def enable_chat(
             return ""
 
         warnings = []
-        rendered_prompt = prompt_list.render_prompt(
+        rendered_prompt, _ = prompt_list.render_prompt(
             active_knowledge_context=active_knowledge_context,
             prompt_choice=prompt_choice,
             user_input=user_input,

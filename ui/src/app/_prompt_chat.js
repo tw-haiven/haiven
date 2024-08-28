@@ -9,6 +9,9 @@ import ChatWidget from "./_chat";
 import DescribeImage from "./_image_description";
 import HelpTooltip from "./_help_tooltip";
 
+import { getRenderedPrompt } from "../app/_boba_api";
+import RenderedPromptModal from "./_rendered_prompt";
+
 const PromptChat = ({
   promptId,
   prompts,
@@ -34,23 +37,52 @@ const PromptChat = ({
   const [chatSessionId, setChatSessionId] = useState();
   const [showChat, setShowChat] = useState(false);
 
+  // Rendered prompt
+  const [renderedPromptData, setRenderedPromptData] = useState({});
+  const [showRenderedPrompt, setShowRenderedPrompt] = useState(false);
+
   useEffect(() => setShowChat(false), []);
+
+  const buildUserInput = () => {
+    let userInput = promptInput;
+    if (imageDescription && imageDescription !== "") {
+      userInput += "\n\n" + imageDescription;
+    }
+    return userInput;
+  };
+
+  const buildRequestBody = (userInput) => {
+    const requestData = {
+      userinput: userInput,
+      promptid: selectedPrompt?.identifier,
+      chatSessionId: chatSessionId,
+      document: selectedDocument,
+    };
+    if (selectedContext !== "base") {
+      requestData.context = selectedContext;
+    }
+    return requestData;
+  };
+
+  const startNewChat = async () => {
+    if (chatRef.current) {
+      // the ProChat controls the flow - let it know we have a new message,
+      // the ultimate request will come back to "submitPromptToBackend" function here
+      setChatSessionId(undefined);
+      setConversationStarted(false);
+
+      let userInput = buildUserInput();
+      chatRef.current.startNewConversation(userInput);
+    }
+  };
 
   const submitPromptToBackend = async (messages) => {
     if (conversationStarted !== true) {
       // start a new chat session with the selected prompt
 
-      const userInput = messages[messages.length - 1];
+      const lastMessage = messages[messages.length - 1];
 
-      const requestData = {
-        userinput: userInput?.content,
-        promptid: selectedPrompt?.identifier,
-        chatSessionId: chatSessionId,
-        document: selectedDocument,
-      };
-      if (selectedContext !== "base") {
-        requestData.context = selectedContext;
-      }
+      const requestData = buildRequestBody(lastMessage?.content);
       const response = await fetch("/api/prompt", {
         method: "POST",
         credentials: "include",
@@ -92,24 +124,25 @@ const PromptChat = ({
     setSelectedContext(value);
   };
 
+  const onRenderPrompt = () => {
+    const requestData = buildRequestBody(buildUserInput());
+    getRenderedPrompt(requestData, (response) => {
+      console.log(response);
+      setRenderedPromptData({
+        renderedPrompt: response.prompt,
+        template: response.template,
+      });
+      setShowRenderedPrompt(true);
+    });
+  };
+
+  const onCloseRenderedPrompt = () => {
+    setShowRenderedPrompt(false);
+  };
+
   useEffect(() => {
     handlePromptSelection(promptId);
   }, [promptId, prompts]);
-
-  const startNewChat = async () => {
-    if (chatRef.current) {
-      // the ProChat controls the flow - let it know we have a new message,
-      // the ultimate request will come back to "onSubmitPrompt" function here
-      setChatSessionId(undefined);
-      setConversationStarted(false);
-
-      let userInput = promptInput;
-      if (imageDescription && imageDescription !== "") {
-        userInput += "\n\n" + imageDescription;
-      }
-      chatRef.current.startNewConversation(userInput);
-    }
-  };
 
   const imageDescriptionUserInput = showImageDescription ? (
     <div className="user-input">
@@ -203,6 +236,19 @@ const PromptChat = ({
       </div>
       {contextSection}
       <div className="prompt-chat-options-section">
+        <RenderedPromptModal
+          open={showRenderedPrompt}
+          promptData={renderedPromptData}
+          onClose={onCloseRenderedPrompt}
+        />
+        <Button
+          className="prompt-preview-btn"
+          type="link"
+          onClick={onRenderPrompt}
+        >
+          Preview prompt
+        </Button>
+
         <Button onClick={startNewChat} className="go-button">
           START CHAT
         </Button>

@@ -209,10 +209,8 @@ h4, h5 {
 }
 
 .prompt-chat-options-container .go-button {
-  width: 100%;
   font-weight: var(--font-weight-semi-bold);
   font-size: 90%;
-  margin-top: 2em;
 }
 
 .prompt-chat-options-container .user-input {
@@ -241,7 +239,7 @@ h4, h5 {
 .prompt-chat-options-container .go-button,
 .prompt-chat-options-container .ant-select {
   width: 100%;
-  max-width: 300px;
+  /* max-width: 300px; */
   &.small {
     width: 30%;
   }
@@ -261,11 +259,27 @@ h4, h5 {
   color: var(--color-dark-gray);
 }
 
+.prompt-preview {
+  background-color: var(--color-light-gray);
+  padding: 1em;
+}
+
+.prompt-preview-btn {
+  padding-left: 0;
+  margin-top: 1em;
+}
+
+.prompt-preview-copy-btn {
+  background-color: var(--color-dark-gray);
+  float: right;
+  margin: 1em;
+}
+
 /****** SCENARIO CARDS *******/
 .scenarios-collection {
   padding: var(--standard-left-padding) var(--standard-left-padding);
   flex-direction: column;
-  flex: 2 !important;
+  flex: 3 !important;
 }
 
 .scenarios-collection .cards-container {

@@ -116,7 +116,7 @@ class PromptList:
                         warnings.append(message)
 
         rendered = template.format(**knowledge_and_input)
-        return template, rendered
+        return rendered, template
 
     def filter(self, filter_categories: List[str]):
         if filter_categories is not None:
@@ -144,11 +144,11 @@ class PromptList:
         if prompt_choice is not None:
             vars = additional_vars
             vars["user_input"] = user_input
-            _, rendered = self.create_and_render_template(
+            rendered, template = self.create_and_render_template(
                 active_knowledge_context, prompt_choice, vars, warnings=warnings
             )
-            return rendered
-        return ""
+            return rendered, template
+        return "", None
 
     def get_knowledge_used_keys(self, active_knowledge_context: str, identifier: str):
         if identifier is not None:

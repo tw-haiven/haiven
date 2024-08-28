@@ -98,7 +98,7 @@ class TestApi(unittest.TestCase):
             "some_key",
             mock_streaming_chat,
         )
-        mock_prompt_list.render_prompt.return_value = "some prompt"
+        mock_prompt_list.render_prompt.return_value = "some prompt", None
         ApiBasics(
             self.app,
             chat_manager=mock_chat_manager,

@@ -104,7 +104,7 @@ def enable_image_chat(
             return ""
 
         warnings = []
-        rendered_prompt = prompt_list.render_prompt(
+        rendered_prompt, _ = prompt_list.render_prompt(
             active_knowledge_context,
             prompt_choice,
             "",

@@ -98,7 +98,7 @@ def test_create_and_render_template():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    template, rendered = prompt_list.create_and_render_template(
+    rendered, template = prompt_list.create_and_render_template(
         ACTIVE_KNOWLEDGE_CONTEXT, "uuid-3", {"user_input": "Some User Input"}
     )
     assert template.template == "Content: {user_input} | Business: {business}"
@@ -112,7 +112,7 @@ def test_create_and_render_template_with_missing_variables():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    _, rendered = prompt_list.create_and_render_template(
+    rendered, _ = prompt_list.create_and_render_template(
         None,
         "uuid-3",
         {"user_input": "Some User Input"},
@@ -127,7 +127,7 @@ def test_create_and_render_template_overwrite_knowledge_base():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    _, rendered = prompt_list.create_and_render_template(
+    rendered, _ = prompt_list.create_and_render_template(
         ACTIVE_KNOWLEDGE_CONTEXT,
         "uuid-3",
         {"user_input": "Some User Input", "business": "Overwritten Business"},
@@ -139,7 +139,7 @@ def test_render_prompt_with_additional_vars():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    rendered = prompt_list.render_prompt(
+    rendered, _ = prompt_list.render_prompt(
         ACTIVE_KNOWLEDGE_CONTEXT,
         "uuid-4",
         "Some User Input",
@@ -167,7 +167,7 @@ def test_filter_should_filter_by_multiple_categories():
 def test_render_prompt_without_prompt_choice():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    rendered = prompt_list.render_prompt(
+    rendered, _ = prompt_list.render_prompt(
         ACTIVE_KNOWLEDGE_CONTEXT, None, "Some User Input"
     )
     assert rendered == ""
