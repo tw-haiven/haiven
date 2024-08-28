@@ -199,13 +199,13 @@ h4, h5 {
   flex-direction: column;
   flex: 1;
   box-shadow: 5px 0px 5px rgba(0, 0, 0, 0.1);
-  z-index: 10;
 }
 
 /* Cannot put a class on the root div of the chat (which is probably from ProChatProvider component) */
 .prompt-chat-container > :nth-child(2) {
   display: flex;
   flex: 3;
+  z-index: -1;
 }
 
 .prompt-chat-options-container .go-button {
@@ -266,6 +266,7 @@ h4, h5 {
   padding: var(--standard-left-padding) var(--standard-left-padding);
   flex-direction: column;
   flex: 2 !important;
+  z-index: -1;
 }
 
 .scenarios-collection .cards-container {
