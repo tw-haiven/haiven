@@ -37,7 +37,6 @@ const Sidebar = ({ prompts }) => {
               {prompt.title}
             </Link>
           ),
-          icon: <RiChat2Line />,
         });
       });
     });

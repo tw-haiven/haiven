@@ -35,12 +35,10 @@ export const initialiseMenuCategoriesForSidebar = () => {
         {
           key: "creative-matrix",
           label: <Link href="/creative-matrix">Creative Matrix</Link>,
-          icon: <RiTable2 />,
         },
         {
           key: "scenarios",
           label: <Link href="/scenarios">Scenario design</Link>,
-          icon: <RiTable2 />,
         },
       ],
     },
@@ -52,12 +50,10 @@ export const initialiseMenuCategoriesForSidebar = () => {
         {
           key: "requirements",
           label: <Link href="/requirements">Requirements breakdown</Link>,
-          icon: <RiTable2 />,
         },
         {
           key: "story-validation",
           label: <Link href="/story-validation">Story validation</Link>,
-          icon: <RiTable2 />,
         },
       ],
     },
@@ -81,7 +77,6 @@ export const initialiseMenuCategoriesForSidebar = () => {
         {
           key: "threat-modelling",
           label: <Link href="/threat-modelling">Threat modelling: STRIDE</Link>,
-          icon: <RiTable2 />,
         },
       ],
     },

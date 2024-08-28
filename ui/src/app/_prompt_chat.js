@@ -2,7 +2,7 @@
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
-import { Input, Select, Button, Tooltip } from "antd";
+import { Input, Select, Button } from "antd";
 
 const { TextArea } = Input;
 import ChatWidget from "./_chat";
@@ -33,8 +33,6 @@ const PromptChat = ({
   const [conversationStarted, setConversationStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
   const [showChat, setShowChat] = useState(false);
-
-  const [clipboardDrawerOpen, setClipboardDrawerOpen] = useState(false);
 
   useEffect(() => setShowChat(false), []);
 
@@ -180,9 +178,12 @@ const PromptChat = ({
 
   const prompt_options = (
     <div className="prompt-chat-options-container">
-      {/* <ClipboardButton toggleClipboardDrawer={setClipboardDrawerOpen} /> */}
       <div className="prompt-chat-options-section">
-        <h1>{selectedPrompt?.title || pageTitle}</h1>
+        <h1>
+          {selectedPrompt?.title || pageTitle}
+          <HelpTooltip text="This prompt comes from the connected knowledge pack, where you can customize it if you don't like the results." />
+        </h1>
+
         <p>{selectedPrompt?.help_prompt_description || pageIntro}</p>
       </div>
 
