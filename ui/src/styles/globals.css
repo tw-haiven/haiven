@@ -1,5 +1,6 @@
 :root {
   --color-light-gray: #edf1f3;
+  --color-medium-gray: #d9dfe1ff;
 
   --color-flamingo: #f2617aff;
   --color-dark-blue: #003d4f;
@@ -497,6 +498,10 @@ h4, h5 {
   height: 100vh;
 }
 
+.sidebar .ant-menu-inline {
+  background-color: none;
+}
+
 .sidebar .ant-menu-submenu-inline .ant-menu-submenu-title, .sidebar .ant-menu-item {
   padding-left: 0.8em !important;
   font-size: 90%;
@@ -513,6 +518,16 @@ h4, h5 {
 
 .sidebar .ant-menu-inline .ant-menu-item svg {
   margin-right: -0.3em;
+}
+
+.sidebar .ant-menu-submenu-selected .ant-menu-submenu-title,
+.sidebar .ant-menu-item-selected {
+  font-weight: var(--font-weight-semi-bold);
+  color: black;
+}
+
+.sidebar .ant-menu-item-selected {
+  background-color: var(--color-medium-gray);
 }
 
 /* LANDING PAGE */
