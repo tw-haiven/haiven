@@ -28,7 +28,7 @@ const ChatWidget = forwardRef(
           .ant-pro-chat-list-item-message-content h3 {
             font-size: 1.3em;
           }
-          .ant-pro-chat-list-item-message-content h3, h4, h5 {
+          .ant-pro-chat-list-item-message-content h4, h5 {
             font-size: 1.1em;
           }
       `),
