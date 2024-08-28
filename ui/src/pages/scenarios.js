@@ -294,7 +294,7 @@ const Home = () => {
               </div>
 
               <div className="user-input">
-                Strategic prompt
+                <label>Strategic prompt</label>
                 <TextArea
                   disabled={isLoading}
                   value={prompt}
@@ -303,6 +303,8 @@ const Home = () => {
                   }}
                   rows="4"
                 />
+              </div>
+              <div className="user-input">
                 <Button
                   onClick={onSubmitPrompt}
                   className="go-button"
