@@ -228,8 +228,19 @@ h4, h5 {
 
 .prompt-chat-options-container .user-input textarea, .prompt-chat-options-container .user-input input {
   max-width: 600px;
-  display: block;
   padding: 0.6em;
+}
+
+.prompt-chat-options-container .image-uploader {
+  margin: 1em 0;
+  display: block;
+  width: 100%;
+}
+
+.prompt-chat-options-container .image-uploader button {
+  height: 70px;
+  width: 280px;
+  border: 1px dashed var(--color-dark-gray);
 }
 
 /****** SCENARIO CARDS *******/

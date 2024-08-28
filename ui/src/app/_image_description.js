@@ -1,21 +1,14 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState, useEffect } from "react";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Flex, message, Upload, Button, Spin } from "antd";
 import { fetchSSE } from "./_fetch_sse";
+import { RiImageAddLine } from "react-icons/ri";
 
 let ctrl;
 
 const DescribeImage = ({ onImageDescriptionChange }) => {
-  const [previewImageDataUrl, setPreviewImageDataUrl] = useState();
   const [image, setImage] = useState();
   const [descriptionLoading, setDescriptionLoading] = useState(false);
-
-  const getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => callback(reader.result));
-    reader.readAsDataURL(img);
-  };
 
   const beforeUpload = async (file) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -82,61 +75,41 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
   }, [image]);
 
   const handleChange = (info) => {
-    getBase64(info.file.originFileObj, (url) => {
-      setPreviewImageDataUrl(url);
-    });
-    setImage(info.file.originFileObj);
+    if (info.file.status === "uploading") {
+      setImage(info.file.originFileObj);
+    }
   };
-
-  const uploadButton = (
-    <button
-      style={{
-        border: 0,
-        background: "none",
-      }}
-      type="button"
-    >
-      <PlusOutlined />
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </button>
-  );
 
   return (
     <Flex gap="middle" wrap>
       <Upload
         name="image"
-        listType="picture-card"
         className="image-uploader"
-        showUploadList={false}
         beforeUpload={beforeUpload}
         onChange={handleChange}
         disabled={descriptionLoading}
       >
-        {previewImageDataUrl ? (
-          <img
-            src={previewImageDataUrl}
-            alt="Preview of the image uploaded as input for the chat conversation"
-            style={{
-              width: "100%",
-            }}
-          />
-        ) : (
-          uploadButton
-        )}
+        <Button
+          icon={
+            <RiImageAddLine style={{ fontSize: "3em", color: "#666666ff" }} />
+          }
+        >
+          Click to Upload
+        </Button>
       </Upload>
+
       {descriptionLoading && (
-        <>
+        <div style={{ marginBottom: "1em", marginTop: "-1em" }}>
           <Spin />
-          <Button type="primary" danger onClick={abortDescriptionLoad}>
+          <Button
+            type="primary"
+            danger
+            onClick={abortDescriptionLoad}
+            style={{ marginLeft: "1em" }}
+          >
             Stop
           </Button>
-        </>
+        </div>
       )}
     </Flex>
   );
