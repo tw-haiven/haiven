@@ -19,7 +19,7 @@ export const initialiseMenuCategoriesForSidebar = () => {
   return {
     dashboard: {
       key: "dashboard",
-      label: <Link href="/dashboard">Dashboard</Link>,
+      label: <Link href="/">Dashboard</Link>,
       icon: <RiDashboardHorizontalLine style={{ fontSize: "large" }} />,
     },
     knowledgeChat: {
