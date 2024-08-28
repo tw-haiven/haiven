@@ -344,12 +344,13 @@ const Home = () => {
                 onChange={onSelectDisplayMode}
                 defaultValue="grid"
                 style={{ float: "right" }}
+                size="small"
               >
                 <Radio.Button value="grid">
-                  <RiStackLine /> Cards
+                  <RiStackLine /> CARD VIEW
                 </Radio.Button>
                 <Radio.Button value="plot">
-                  <RiGridLine /> Matrix
+                  <RiGridLine /> MATRIX VIEW
                 </Radio.Button>
               </Radio.Group>
             </div>

@@ -372,6 +372,22 @@ h4, h5 {
 .display-mode {
   position:relative;
   z-index: 0;
+  
+}
+
+.display-mode span {
+  font-size: 0.8em;
+  margin-left: 0.2em;
+}
+
+.display-mode label {
+
+  border: none;
+  
+  &.ant-radio-button-wrapper-checked {
+    background-color: var(--color-flamingo);
+    color: white;
+  }
 }
 
 /**** STORY VALIDATION ******/
