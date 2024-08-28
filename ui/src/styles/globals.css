@@ -456,6 +456,11 @@ h4, h5 {
   padding: 0.5em 0;
 }
 
+.suggestions-list button {
+  background-color: var(--color-light-gray);
+  color: black;
+}
+
 .suggestions-title {
   font-weight: var(--font-weight-semi-bold);
   font-size: 85%;
