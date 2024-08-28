@@ -198,6 +198,7 @@ h4, h5 {
   flex-direction: column;
   flex: 1;
   box-shadow: 5px 0px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
 }
 
 /* Cannot put a class on the root div of the chat (which is probably from ProChatProvider component) */
@@ -231,13 +232,18 @@ h4, h5 {
 
 .prompt-chat-options-container .user-input textarea, 
 .prompt-chat-options-container .user-input input {
-  max-width: 300px;
+  width: 100%;
+  max-width: 350px;
   padding: 0.6em;
 }
 
-.prompt-chat-options-container button,
+.prompt-chat-options-container .go-button,
 .prompt-chat-options-container .ant-select {
+  width: 100%;
   max-width: 300px;
+  &.small {
+    width: 30%;
+  }
 }
 
 .prompt-chat-options-container .image-uploader {
@@ -258,7 +264,7 @@ h4, h5 {
 .scenarios-collection {
   padding: var(--standard-left-padding) var(--standard-left-padding);
   flex-direction: column;
-  flex: 3 !important;
+  flex: 2 !important;
 }
 
 .scenarios-collection .cards-container {

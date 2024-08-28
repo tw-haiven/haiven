@@ -215,6 +215,7 @@ const CreativeMatrix = () => {
               defaultValue={"3"}
               onChange={handleSelectChange}
               disabled={isLoading}
+              className="small"
               options={[
                 { value: "1", label: "1 idea" },
                 { value: "2", label: "2 ideas" },
