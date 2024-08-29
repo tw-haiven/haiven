@@ -144,12 +144,17 @@ If you want to use Azure, GCP or AWS, you need to set the corresponding environm
 #### Option 2: Run the code locally
 
 Prerequisites:
-- Python3
+- Python (3.11)
 - [Poetry](https://python-poetry.org/)
-- Node and yarn
-- While you don't have OAuth integration and credentials set up yet, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
+- Node 20 and yarn
+- If you don't have OAuth integration and credentials set up yet, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
 
-Create the UI code (React):
+Set up all other dependencies with this script (MacOS only):
+```
+./install_dev_dependencies.sh
+```
+
+Package the UI code (React):
 ```
 cd ui
 yarn install
