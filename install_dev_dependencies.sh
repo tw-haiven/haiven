@@ -18,6 +18,7 @@ fi
 
 printf "\nInstalling Poetry scripts..."
 poetry install
+poetry run init
 
 printf "\nInstalling Haiven CLI..."
 poetry run cli-init
@@ -29,6 +30,14 @@ rm haiven_wheel_path.txt
 haiven-cli --install-completion --show-completion
 printf "\nhaiven-cli is installed at %s" "$CLI_EXEC_PATH"
 
+printf "\nInstalling node dependencies..."
+cd ui
+yarn install
+
+printf "\nBuilding the ui..."
+yarn copy
+
+cd ..
 
 printf "\nChecking if Gitleaks is installed..."
 if ! command -v gitleaks &> /dev/null; then
