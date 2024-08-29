@@ -37,7 +37,7 @@ class ApiRequirementsBreakdown(HaivenBaseApi):
 
         @app.get("/api/requirements")
         def requirements(request: Request):
-            prompt = prompt_list.render_prompt(
+            prompt, _ = prompt_list.render_prompt(
                 active_knowledge_context=None,
                 prompt_choice="guided-requirements",
                 user_input=request.query_params.get("input"),

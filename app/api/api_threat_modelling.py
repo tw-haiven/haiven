@@ -39,7 +39,7 @@ class ApiThreatModelling(HaivenBaseApi):
                 "userBase": request.query_params.get("userBase"),
             }
 
-            prompt = prompt_list.render_prompt(
+            prompt, _ = prompt_list.render_prompt(
                 active_knowledge_context=None,
                 prompt_choice="guided-threat-modelling",
                 user_input="",

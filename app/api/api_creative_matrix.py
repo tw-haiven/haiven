@@ -17,7 +17,7 @@ class ApiCreativeMatrix(HaivenBaseApi):
                 "num_ideas": request.query_params.get("num_ideas", "3"),
             }
 
-            prompt = prompt_list.render_prompt(
+            prompt, _ = prompt_list.render_prompt(
                 active_knowledge_context=None,
                 prompt_choice="guided-creative-matrix",
                 user_input="",

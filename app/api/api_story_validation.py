@@ -76,7 +76,7 @@ class ApiStoryValidation(HaivenBaseApi):
 
         @app.post("/api/story-validation/questions")
         def story_validation(body: StoryValidationQuestions):
-            prompt = prompt_list.render_prompt(
+            prompt, _ = prompt_list.render_prompt(
                 active_knowledge_context=None,
                 prompt_choice="guided-story-validation",
                 user_input=body.input,
