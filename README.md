@@ -171,6 +171,7 @@ Run UI code in hot reload mode:
 ```
 cd ui
 yarn dev
+# "hot reload" ui will run on localhost:3000, but connect to localhost:8080 backend
 ```
 
 Test:
