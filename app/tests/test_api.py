@@ -140,7 +140,7 @@ class TestApi(unittest.TestCase):
             "some_key",
             mock_json_chat,
         )
-        mock_prompt_list.render_prompt.return_value = "some prompt"
+        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
         ApiScenarios(self.app, mock_chat_manager, "some_model_key", mock_prompt_list)
 
         # Make the request to the endpoint
@@ -186,7 +186,7 @@ class TestApi(unittest.TestCase):
             "some_key",
             mock_streaming_chat,
         )
-        mock_prompt_list.render_prompt.return_value = "some prompt"
+        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
         ApiScenarios(self.app, mock_chat_manager, "some_model_key", mock_prompt_list)
 
         # Make the request to the endpoint
@@ -220,7 +220,7 @@ class TestApi(unittest.TestCase):
             "some_key",
             mock_json_chat,
         )
-        mock_prompt_list.render_prompt.return_value = "some prompt"
+        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
         ApiThreatModelling(
             self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
@@ -261,7 +261,7 @@ class TestApi(unittest.TestCase):
             "some_key",
             mock_streaming_chat,
         )
-        mock_prompt_list.render_prompt.return_value = "some prompt"
+        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
         ApiThreatModelling(
             self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
@@ -300,7 +300,7 @@ class TestApi(unittest.TestCase):
             "some_key",
             mock_json_chat,
         )
-        mock_prompt_list.render_prompt.return_value = "some prompt"
+        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
         ApiRequirementsBreakdown(
             self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
@@ -336,7 +336,7 @@ class TestApi(unittest.TestCase):
             "some_key",
             mock_streaming_chat,
         )
-        mock_prompt_list.render_prompt.return_value = "some prompt"
+        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
         ApiRequirementsBreakdown(
             self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
@@ -375,7 +375,7 @@ class TestApi(unittest.TestCase):
             "some_key",
             mock_json_chat,
         )
-        mock_prompt_list.render_prompt.return_value = "some prompt"
+        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
         ApiStoryValidation(
             self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
@@ -417,7 +417,7 @@ class TestApi(unittest.TestCase):
             mock_streaming_chat,
         )
 
-        mock_prompt_list.render_prompt.return_value = "some prompt"
+        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
         ApiStoryValidation(
             self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
@@ -460,7 +460,7 @@ class TestApi(unittest.TestCase):
             "some_key",
             mock_json_chat,
         )
-        mock_prompt_list.render_prompt.return_value = "some prompt"
+        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
         ApiCreativeMatrix(
             self.app, mock_chat_manager, "some_model_key", mock_prompt_list
         )
