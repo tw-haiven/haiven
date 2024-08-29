@@ -81,8 +81,7 @@ cd haiven
 git clone git@github.com:tw-haiven/haiven-tw-knowledge-pack.git
 # The TW knowledge pack is private, you can use our sample pack if you don't have access
 # git clone git@github.com:tw-haiven/haiven-sample-knowledge-pack.git
-# As long as the repo is private, you'll need to log in (see doc link above)
-echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
+
 docker run \
         -v ./haiven-tw-knowledge-pack:/knowledge-pack \
         -e KNOWLEDGE_PACK_PATH=/knowledge-pack \
