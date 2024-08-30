@@ -356,13 +356,13 @@ const Home = () => {
                 </Radio.Button>
               </Radio.Group>
             </div>
-            <div className="cards-container">
+            <div className="cards-container with-display-mode">
               {scenarios.map((scenario, i) => {
                 return (
                   <Card
                     key={i}
                     className="scenario"
-                    title={<>{scenario.title}</>}
+                    // title={<>{}</>}
                     actions={[
                       <Button
                         type="link"
@@ -374,6 +374,7 @@ const Home = () => {
                     ]}
                   >
                     <div className="scenario-card-content">
+                      <h3>{scenario.title}</h3>
                       <div className="scenario-summary">{scenario.summary}</div>
                       {scenario.horizon && (
                         <div className="card-prop stackable">

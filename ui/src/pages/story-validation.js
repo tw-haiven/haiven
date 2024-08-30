@@ -207,8 +207,8 @@ const Home = () => {
                 </div>
               </>
             )}
+            {questions.length > 0 && <h2>Questions</h2>}
             <div className="cards-container">
-              {questions.length > 0 && <h2>Questions</h2>}
               {questions.map((question, i) => {
                 return (
                   <Card

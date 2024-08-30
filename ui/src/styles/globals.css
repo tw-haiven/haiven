@@ -283,18 +283,24 @@ h4, h5 {
 /****** SCENARIO CARDS *******/
 .scenarios-collection {
   padding: var(--standard-left-padding) var(--standard-left-padding);
-  flex-direction: column;
+  display: block !important;
   flex: 3 !important;
 }
 
 .scenarios-collection .cards-container {
   margin-top: 1em;
+  display:flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  &.with-display-mode {
+    margin-top: 2.5em;
+  }
 }
 
 .scenarios-collection .ant-card-body {
   padding-top: 0.5em;
   padding-bottom: 0;
-  padding-right: 0.5em;
 }
 
 .scenarios-collection.equal-display .scenario-card-content {
@@ -345,15 +351,15 @@ h4, h5 {
 
 .scenario {
   width: 250px;
-  display: inline-block;
-  vertical-align: top;
+  display: flex;
+  flex-direction: column;
   margin: 0.3em;
   padding-top: 0.8em;
   height: 380px;
 }
 
 .scenario .scenario-card-content {
-  height: 245px;
+  height: 300px;
   overflow-y: auto;
   font-size: small;
 
@@ -367,18 +373,18 @@ h4, h5 {
 .ant-card {
   background-color: white;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  min-height: auto;
 }
 
 .ant-card-head {
   border-bottom: 1px solid var(--color-light-gray) !important;
-  height: 60px;
   justify-content: top  !important;
 }
 
 .ant-card-head-title {
   font-weight: var(--font-weight-semi-bold);
   white-space: normal !important;
-  height: 60px;
+  padding-bottom: 1em;
 }
 
 .ant-card-actions {
