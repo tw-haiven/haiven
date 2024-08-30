@@ -127,7 +127,6 @@ const PromptChat = ({
   const onRenderPrompt = () => {
     const requestData = buildRequestBody(buildUserInput());
     getRenderedPrompt(requestData, (response) => {
-      console.log(response);
       setRenderedPromptData({
         renderedPrompt: response.prompt,
         template: response.template,

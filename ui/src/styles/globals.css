@@ -275,6 +275,11 @@ h4, h5 {
   margin: 1em;
 }
 
+.prompt-preview-diff-highlight {
+  color: var(--color-flamingo);
+  font-style: italic;
+}
+
 /****** SCENARIO CARDS *******/
 .scenarios-collection {
   padding: var(--standard-left-padding) var(--standard-left-padding);
