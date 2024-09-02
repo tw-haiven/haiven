@@ -20,6 +20,17 @@ export default function App({
   const [contexts, setContexts] = useState([]);
   const [documents, setDocuments] = useState([]);
 
+  const colorlightgray = "#edf1f3";
+  const colormediumgray = "#d9dfe1ff";
+
+  const colorflamingo = "#f2617aff";
+  const colordarkblue = "#003d4f";
+  const colorsapphire = "#47a1ad";
+  const coloramethystpurple = "#634F7D";
+  const colorjadegreen = "#6B9E78";
+  const colorturmericyellow = "#CC850A";
+  const colordarkgray = "#666666ff";
+
   useEffect(() => {
     getPrompts(setPrompts);
     getContextSnippets((data) => {
@@ -51,26 +62,33 @@ export default function App({
             // Seed Token
             borderRadius: 0,
 
-            colorPrimary: "#003d4f",
-            colorError: "#f2617aff",
-            colorWarning: "#CC850A",
-            colorSuccess: "#6B9E78",
-            colorLink: "#f2617aff",
+            colorPrimary: colordarkblue,
+            colorError: colorflamingo,
+            colorWarning: colorturmericyellow,
+            colorSuccess: colorjadegreen,
+            colorLink: colorflamingo,
 
             fontFamilyCode: "Inter, Noto Sans SC, sans-serif",
 
             lineType: "none",
             motion: "false",
             // Alias Token
-            colorBgContainer: "#edf1f3",
+            colorBgContainer: colorlightgray,
           },
           components: {
             Menu: {
               itemHeight: "30px",
             },
             Button: {
-              defaultBg: "#f2617aff",
+              defaultBg: colorflamingo,
               defaultColor: "white",
+            },
+            Tabs: {
+              itemColor: colorsapphire,
+              inkBarColor: colorsapphire,
+              itemActiveColor: colorsapphire,
+              itemSelectedColor: colorsapphire,
+              lineType: "solid",
             },
           },
         }}
