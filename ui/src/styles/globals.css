@@ -36,6 +36,7 @@ body {
 
 h1, h2, h3, h4 {
   margin: 0.5em 0;
+  margin-bottom: 0.3em;
   font-weight: var(--font-weight-semi-bold)
 }
 
@@ -100,9 +101,10 @@ h4, h5 {
 
 .tooltip-help {
   margin-left: 0.3em;
+  margin-bottom: 0.1em;
   fill: var(--color-sapphire);
   font-size: large;
-  /* vertical-align: middle; */
+  vertical-align: middle;
 }
 
 /***** HEADER **********/
@@ -246,7 +248,6 @@ h4, h5 {
 }
 
 .prompt-chat-options-container .image-uploader {
-  margin: 0.5em 0;
   display: block;
   width: 100%;
 }
@@ -353,7 +354,7 @@ h4, h5 {
   width: 250px;
   display: flex;
   flex-direction: column;
-  margin: 0.3em;
+  margin: 0.8em;
   padding-top: 0.8em;
   height: 380px;
 }
@@ -587,6 +588,8 @@ h4, h5 {
   width: 250px;
   height: 250px;
   padding-top: 0.5em;
+  margin-right: 1em;
+  margin-bottom: 1em;
 }
 
 .dashboard-tile .ant-card-body {
@@ -598,6 +601,7 @@ h4, h5 {
 
 .dashboard-tile .tile-tags {
   margin-top: auto;
+  text-transform: capitalize;
 }
 
 .ant-tag {
@@ -608,6 +612,7 @@ h4, h5 {
   background-color: var(--color-light-gray);
   color: black;
   margin-left: 0.5em;
+  text-transform: capitalize;
 
   &.ant-tag-checkable-checked {
     color: white;

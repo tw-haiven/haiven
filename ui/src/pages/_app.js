@@ -85,7 +85,7 @@ export default function App({
               margin: 0,
               padding: 0,
               top: 0,
-              zIndex: 1,
+              zIndex: 20,
               width: "100%",
             }}
           >

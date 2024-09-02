@@ -97,7 +97,7 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
             <RiImageAddLine style={{ fontSize: "2em", color: "#666666ff" }} />
           }
         >
-          Click to Upload
+          Click or drag to upload
         </Button>
       </Upload>
 

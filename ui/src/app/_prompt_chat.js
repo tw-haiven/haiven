@@ -213,17 +213,19 @@ const PromptChat = ({
           <HelpTooltip text="This prompt comes from the connected knowledge pack, where you can customize it if you don't like the results." />
         </h1>
 
-        <p>{selectedPrompt?.help_prompt_description || pageIntro}</p>
+        <div>{selectedPrompt?.help_prompt_description || pageIntro}</div>
       </div>
 
       <div className="prompt-chat-options-section">
         <div>
-          <h2>{selectedPrompt ? "Your input" : "What is your question?"}</h2>
-          <div className="user-input">{selectedPrompt?.help_user_input}</div>
-
           <div className="user-input">
+            <label>
+              {selectedPrompt ? "Your input" : "What is your question?"}
+            </label>
+
             <TextArea
               value={promptInput}
+              placeholder={selectedPrompt?.help_user_input}
               rows={10}
               onChange={(e, v) => {
                 setPromptInput(e.target.value);

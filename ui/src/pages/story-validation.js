@@ -212,6 +212,7 @@ const Home = () => {
               {questions.map((question, i) => {
                 return (
                   <Card
+                    hoverable
                     key={i}
                     className="scenario"
                     title={<>{question.question}</>}

@@ -70,10 +70,10 @@ export default function ChatDashboard() {
   return (
     <div className="dashboard">
       <h1>Hello!</h1>
-      <p>
+      <div>
         These are all the prompts available in Haiven and in your current
         knowledge pack.
-      </p>
+      </div>
 
       <p className="dashboard-filters">
         <b>Filter by category:</b>
@@ -97,6 +97,7 @@ export default function ChatDashboard() {
           return (
             <Link href={prompt.link || "#"} key={prompt.identifier + "-href"}>
               <Card
+                hoverable
                 key={prompt.identifier}
                 title={prompt.title}
                 className="dashboard-tile scenario-card-content"
