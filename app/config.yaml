@@ -141,7 +141,7 @@ models:
     name: Local - Ollama Llava
     provider: ollama
     features:
-      - text-generation
+      - image-to-text
     config:
       base_url: ${OLLAMA_HOST}
       model: llava:7b

@@ -18,20 +18,7 @@ from config_service import ConfigService
 
 class App:
     def create_image_service(self, config_service):
-        available_vision_models = [
-            (available_model.name, available_model.id)
-            for available_model in config_service.load_enabled_models(
-                features=["image-to-text"],
-            )
-        ]
-
-        model_id = (
-            config_service.load_default_models().vision or available_vision_models[0][1]
-            if len(available_vision_models) > 0
-            else None
-        )
-
-        model: Model = config_service.get_model(model_id)
+        model: Model = config_service.get_image_model()
 
         return ImageDescriptionService(model)
 
@@ -47,6 +34,8 @@ class App:
         chat_manager = ChatManager(
             config_service, chat_session_memory, llm_chat_factory, knowledge_manager
         )
+
+        image_service = self.create_image_service(config_service)
 
         self.ui_factory = UIFactory(
             ui_base_components=UIBaseComponents(config_service),
@@ -67,6 +56,7 @@ class App:
                 knowledge_manager,
                 chat_manager,
                 config_service,
+                image_service,
             ),
         ).create()
 

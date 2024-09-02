@@ -104,6 +104,22 @@ class ConfigService:
 
         return model
 
+    def get_image_model(self) -> Model:
+        available_vision_models = [
+            (available_model.name, available_model.id)
+            for available_model in self.load_enabled_models(
+                features=["image-to-text"],
+            )
+        ]
+
+        image_model_id = (
+            self.load_default_models().vision or available_vision_models[0][1]
+            if len(available_vision_models) > 0
+            else None
+        )
+
+        return self.get_model(image_model_id)
+
     def load_knowledge_pack_path(self) -> str:
         """
         Load the knowledge pack path from a YAML config file.
@@ -175,6 +191,8 @@ class ConfigService:
                 return "google-gemini"
             case "aws":
                 return "aws-claude-v3"
+            case "ollama":
+                return "ollama-local-llama3"
 
     def _load_yaml(self, path: str) -> dict:
         """

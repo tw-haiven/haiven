@@ -11,7 +11,6 @@ from llms.chats import (
 )
 from knowledge_manager import KnowledgeManager
 from llms.image_description_service import ImageDescriptionService
-from llms.model import Model
 from prompts.prompts_factory import PromptsFactory
 from config_service import ConfigService
 
@@ -23,6 +22,7 @@ class BobaApi:
         knowledge_manager: KnowledgeManager,
         chat_manager: ChatManager,
         config_service: ConfigService,
+        image_service: ImageDescriptionService,
     ):
         self.knowledge_manager = knowledge_manager
         self.chat_manager = chat_manager
@@ -38,8 +38,7 @@ class BobaApi:
 
         self.model = self.config_service.get_default_guided_mode_model()
 
-        image_model: Model = config_service.get_model("azure-gpt4-with-vision")
-        self.image_service = ImageDescriptionService(image_model)
+        self.image_service = image_service
 
         print(f"Model used for guided mode: {self.model}")
 
