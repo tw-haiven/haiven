@@ -24,7 +24,7 @@ export const initialiseMenuCategoriesForSidebar = () => {
     },
     knowledgeChat: {
       key: "knowledgeChat",
-      label: <Link href="/knowledge-chat">Chat with documents</Link>,
+      label: <Link href="/knowledge-chat">Chat with Haiven</Link>,
       icon: <RiChatQuoteLine style={{ fontSize: "large" }} />,
     },
     ideate: {

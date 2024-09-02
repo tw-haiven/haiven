@@ -21,8 +21,8 @@ const KnowledgeChatPage = ({ prompts, documents }) => {
       documents={documents}
       showTextSnippets={false}
       showImageDescription={false}
-      pageTitle="Chat with a document"
-      pageIntro="Ask a question and select a document"
+      pageTitle="Chat with Haiven"
+      pageIntro="Ask for help with a task, ask a question and select a document, ..."
     />
   );
 };

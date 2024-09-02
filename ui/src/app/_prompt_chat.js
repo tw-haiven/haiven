@@ -213,19 +213,19 @@ const PromptChat = ({
           <HelpTooltip text="This prompt comes from the connected knowledge pack, where you can customize it if you don't like the results." />
         </h1>
 
-        <div>{selectedPrompt?.help_prompt_description || pageIntro}</div>
+        <div>{selectedPrompt?.help_prompt_description}</div>
       </div>
 
       <div className="prompt-chat-options-section">
         <div>
           <div className="user-input">
             <label>
-              {selectedPrompt ? "Your input" : "What is your question?"}
+              {selectedPrompt ? "Your input" : "What do you want help with?"}
             </label>
 
             <TextArea
               value={promptInput}
-              placeholder={selectedPrompt?.help_user_input}
+              placeholder={selectedPrompt?.help_user_input || pageIntro}
               rows={10}
               onChange={(e, v) => {
                 setPromptInput(e.target.value);
@@ -242,13 +242,15 @@ const PromptChat = ({
           promptData={renderedPromptData}
           onClose={onCloseRenderedPrompt}
         />
-        <Button
-          className="prompt-preview-btn"
-          type="link"
-          onClick={onRenderPrompt}
-        >
-          Preview prompt
-        </Button>
+        {showTextSnippets && (
+          <Button
+            className="prompt-preview-btn"
+            type="link"
+            onClick={onRenderPrompt}
+          >
+            Preview prompt
+          </Button>
+        )}
 
         <Button onClick={startNewChat} className="go-button">
           START CHAT
