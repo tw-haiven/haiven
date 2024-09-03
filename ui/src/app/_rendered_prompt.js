@@ -36,13 +36,14 @@ export default function RenderedPromptModal({ open, promptData, onClose }) {
 
       const snippets = [];
 
+      const marker = "~"; // using strikethrough marker to mark the diff, based on assumption that it won't show up in prompt markdown
+
       diff.forEach((part) => {
         if (part.value && part.value !== "") {
           if (part.added) {
             // a diff in the template, do nothing
           } else if (part.removed) {
             // a diff in the rendered prompt, highlight
-            const marker = "~"; // using strikethrough marker to mark the diff, based on assumption that it won't show up in prompt markdown
             let boldedLines =
               marker +
               part.value.replace(/\n/g, marker + "\n" + marker) +
@@ -62,7 +63,19 @@ export default function RenderedPromptModal({ open, promptData, onClose }) {
           }
         }
       });
-      setPromptWithDiffHighlights(snippets.join(""));
+      let processedPrompt = snippets.join("");
+      processedPrompt = processedPrompt.replace(
+        new RegExp(marker + marker, "g"),
+        "",
+      );
+      processedPrompt = processedPrompt.replace(
+        new RegExp(marker + "\n" + marker, "g"),
+        "",
+      );
+      // setPromptWithDiffHighlights(processedPrompt);
+
+      // Switch off the highlighted diff for now, it's too error-prone
+      setPromptWithDiffHighlights(promptData.renderedPrompt);
     }
   };
 
