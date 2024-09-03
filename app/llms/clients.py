@@ -1,6 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import json
-from langchain_community.chat_models import ChatOllama
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
@@ -137,8 +136,8 @@ class ChatClientFactory:
                 model_kwargs = {}
                 if stop is not None:
                     model_kwargs["stop"] = [stop]
-                return ChatOllama(
-                    base_url=model.config.get("base_url"),
+                return ChatOpenAI(
+                    base_url=model.config.get("base_url") + "/v1",
                     model=model.config.get("model"),
                     temperature=client_config.temperature,
                     model_kwargs=model_kwargs,
