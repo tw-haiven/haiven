@@ -14,6 +14,8 @@ const Sidebar = ({ prompts }) => {
     "/threat-modelling": "threat-modelling",
     "/requirements": "requirements",
     "/story-validation": "story-validation",
+    "/knowledge-chat": "knowledgeChat",
+    "/": "dashboard",
   };
   const router = useRouter();
   const currentSelectedKey = pathToKey[router.pathname];

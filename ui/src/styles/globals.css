@@ -547,6 +547,9 @@ h4, h5 {
 .sidebar .ant-menu-submenu-inline .ant-menu-submenu-title svg {
   margin-right: -0.2em;
 }
+.sidebar .ant-menu-item svg {
+  margin-right: -0.2em;
+}
 
 .sidebar .ant-menu-inline .ant-menu-item {
   padding-left: 2.6em !important;
