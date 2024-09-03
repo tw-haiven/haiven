@@ -667,12 +667,11 @@ h4, h5 {
   background: white;
   cursor: pointer;
   padding: 1em;
-  margin: 1em 4em;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);  
+  margin: 1em 1.5em;
 }
 
 .knowledge-overview .snippet-title {
-  margin-left: 3em;
+  margin-left: 1.5em;
 }
 
 .snippet h1, .snippet h2, .snippet h3 {
