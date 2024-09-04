@@ -7,8 +7,9 @@ categories: ["guided"]
 help_prompt_description: "To be used and rendered only by the application for the 'guided' mode, not to offer to the user directly"
 ---
 
-# TASK
-        Based on the application description, help me to brainstorm for a threat modelling analysis all the things that could go wrong from a security perspective. Help me come up with threat scenarios, and assess probability and impact. Describe each scenario as a markdown table, with columns
+## TASK
+Based on the application description, help me to brainstorm for a threat modelling analysis all the things that could go wrong from a security perspective. Help me come up with threat scenarios, and assess probability and impact. Describe each scenario as a markdown table, with columns
+
 - Scenario title
 - Description
 - STRIDE category
@@ -23,26 +24,27 @@ I want you to help me brainstorm scenarios in multiple categories according to t
 - D Category "Denial of service": Scenarios for the question "Can someone break a system so valid users are unable to use it?" Denial of service attacks work by flooding, wiping or otherwise breaking a particular service or system.
 - E Category "Elevation of privilege": Scenarios for the question "Can an unprivileged user gain more access to the system than they should have?" Elevation of privilege attacks are possible because authorisation boundaries are missing or inadequate.
 
-# CONTEXT
+## CONTEXT
 
-**High level description of our architecture as general context:**
+~High level description of our architecture as general context:~
 
 {architecture}
 
-**Application properties relevant to threat modelling:**
+~Application properties relevant to threat modelling:~
 
 {user_input}
 
-# INSTRUCTIONS
+## INSTRUCTIONS
 You will create at least one scenario for each category. 
 Give me at least 5 scenarios.
 
 You will respond with only a valid JSON array of scenario objects. Each scenario object will have the following schema:
-    "title": <string>,
-    "category": <string>,
-    "summary": <string>,
-    "probability": <string>,
-    "impact": <string>,
+    
+    - "title": <string>,
+    - "category": <string>,
+    - "summary": <string>,
+    - "probability": <string>,
+    - "impact": <string>,
 
 Make sure to apply each scenario category to the CONTEXT, and give me scenarios that are relevant to my particular application CONTEXT.
 

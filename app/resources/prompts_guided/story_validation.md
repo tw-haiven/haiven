@@ -31,6 +31,7 @@ Come up with 5-10 questions that you would ask to clarify the user story:
 - The answer you suggest for the question
 
 You will respond with only a valid JSON array of question-answer objects. Each object will have the following schema:
-    "thought": <string>,
-    "question": <string>,
-    "answer": <string>,
+
+    - "thought": <string>,
+    - "question": <string>,
+    - "answer": <string>,

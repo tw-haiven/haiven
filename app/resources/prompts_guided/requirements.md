@@ -47,5 +47,6 @@ Prioritize user stories for each sprint duration, tackling high-priority items f
 You will create at least 5 user story suggestions, start with the most essential ones. If you have more ideas, give me up to 10 user stories.
 
 You will respond with only a valid JSON array of story objects. Each story object will have the following schema:
-    "title": <string>,
-    "summary": <string>,
+
+    - "title": <string>,
+    - "summary": <string>,
