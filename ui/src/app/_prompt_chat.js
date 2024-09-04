@@ -10,8 +10,7 @@ import DescribeImage from "./_image_description";
 import HelpTooltip from "./_help_tooltip";
 import ContextChoice from "./_context_choice";
 
-import { getRenderedPrompt } from "../app/_boba_api";
-import RenderedPromptModal from "./_rendered_prompt";
+import PromptPreview from "./_prompt_preview";
 
 const PromptChat = ({
   promptId,
@@ -125,19 +124,8 @@ const PromptChat = ({
     setSelectedContext(value);
   };
 
-  const onRenderPrompt = () => {
-    const requestData = buildRequestBody(buildUserInput());
-    getRenderedPrompt(requestData, (response) => {
-      setRenderedPromptData({
-        renderedPrompt: response.prompt,
-        template: response.template,
-      });
-      setShowRenderedPrompt(true);
-    });
-  };
-
-  const onCloseRenderedPrompt = () => {
-    setShowRenderedPrompt(false);
+  const buildRenderPromptRequest = () => {
+    return buildRequestBody(buildUserInput());
   };
 
   useEffect(() => {
@@ -229,21 +217,9 @@ const PromptChat = ({
       </div>
       {contextSection}
       <div className="prompt-chat-options-section">
-        <RenderedPromptModal
-          open={showRenderedPrompt}
-          promptData={renderedPromptData}
-          onClose={onCloseRenderedPrompt}
-        />
         {showTextSnippets && (
-          <Button
-            className="prompt-preview-btn"
-            type="link"
-            onClick={onRenderPrompt}
-          >
-            Preview prompt
-          </Button>
+          <PromptPreview buildRenderPromptRequest={buildRenderPromptRequest} />
         )}
-
         <Button onClick={startNewChat} className="go-button">
           START CHAT
         </Button>

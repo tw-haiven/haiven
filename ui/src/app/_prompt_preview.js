@@ -5,14 +5,21 @@ import remarkGfm from "remark-gfm";
 import { Modal, Button } from "antd";
 import { RiClipboardLine } from "react-icons/ri";
 import * as Diff from "diff";
+import { getRenderedPrompt } from "./_boba_api";
 
-export default function RenderedPromptModal({ open, promptData, onClose }) {
+/*
+ * buildRenderPromptRequest: function that returns an object with
+      - userinput
+      - promptid
+      - document
+*/
+export default function PromptPreview({ buildRenderPromptRequest }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [promptWithDiffHighlights, setPromptWithDiffHighlights] = useState("");
+  const [promptData, setPromptData] = useState({});
 
   const closeModal = () => {
     setIsModalOpen(false);
-    onClose();
   };
 
   const logDiff = (diff) => {
@@ -79,14 +86,21 @@ export default function RenderedPromptModal({ open, promptData, onClose }) {
     }
   };
 
+  const onRenderPrompt = () => {
+    const requestData = buildRenderPromptRequest();
+    getRenderedPrompt(requestData, (response) => {
+      setPromptData({
+        renderedPrompt: response.prompt,
+        template: response.template,
+      });
+      setIsModalOpen(true);
+    });
+  };
+
   const highlightDiffs = (props) => {
     const { node, ...rest } = props;
     return <span className="prompt-preview-diff-highlight" {...rest} />;
   };
-
-  useEffect(() => {
-    setIsModalOpen(open);
-  }, [open]);
 
   useEffect(() => {
     formatPromptForPreview(promptData);
@@ -97,48 +111,58 @@ export default function RenderedPromptModal({ open, promptData, onClose }) {
   };
 
   return (
-    <Modal
-      title="Prompt preview"
-      open={isModalOpen}
-      onOk={closeModal}
-      onCancel={closeModal}
-      width={800}
-      okButtonProps={{
-        style: { display: "none" },
-      }}
-      cancelButtonProps={{
-        style: { display: "none" },
-      }}
-    >
-      <p>
-        This is the text that will be sent to the AI model. It includes your
-        input and any contexts you selected.{" "}
-        {/* <span className="prompt-preview-diff-highlight">
-          Your input, and any contexts you selected, are highlighted
-        </span> */}
-        .
-      </p>
-
-      <Button className="prompt-preview-copy-btn" onClick={handleCopy}>
-        <RiClipboardLine
-          style={{
-            fontSize: "large",
-          }}
-        />{" "}
-        COPY
+    <>
+      <Button
+        className="prompt-preview-btn"
+        type="link"
+        onClick={onRenderPrompt}
+      >
+        Preview prompt
       </Button>
 
-      <ReactMarkdown
-        className="prompt-preview"
-        remarkPlugins={[[remarkGfm]]}
-        components={{
-          del(props) {
-            return highlightDiffs(props);
-          },
+      <Modal
+        title="Prompt preview"
+        open={isModalOpen}
+        onOk={closeModal}
+        onCancel={closeModal}
+        width={800}
+        okButtonProps={{
+          style: { display: "none" },
+        }}
+        cancelButtonProps={{
+          style: { display: "none" },
         }}
       >
-        {promptWithDiffHighlights}
-      </ReactMarkdown>
-    </Modal>
+        <p>
+          This is the text that will be sent to the AI model. It includes your
+          input and any contexts you selected.{" "}
+          {/* <span className="prompt-preview-diff-highlight">
+            Your input, and any contexts you selected, are highlighted
+          </span> */}
+          .
+        </p>
+
+        <Button className="prompt-preview-copy-btn" onClick={handleCopy}>
+          <RiClipboardLine
+            style={{
+              fontSize: "large",
+            }}
+          />{" "}
+          COPY
+        </Button>
+
+        <ReactMarkdown
+          className="prompt-preview"
+          remarkPlugins={[[remarkGfm]]}
+          components={{
+            del(props) {
+              return highlightDiffs(props);
+            },
+          }}
+        >
+          {promptWithDiffHighlights}
+        </ReactMarkdown>
+      </Modal>
+    </>
   );
 }
