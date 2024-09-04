@@ -23,14 +23,23 @@ export default function ChatDashboard() {
   };
 
   const filter = (tag, checked) => {
+    const isSelected = selectedCategories.includes(tag);
+    const isAllSelected =
+      selectedCategories.length === allCategories.length;
+
     if (checked) {
       setSelectedCategories([...selectedCategories, tag]);
+    } else if (isSelected && selectedCategories.length === 1) {
+      setSelectedCategories(allCategories);
+    } else if (!checked && isAllSelected) {
+      setSelectedCategories([tag]);
     } else {
       setSelectedCategories(
-        selectedCategories.filter((category) => category !== tag),
+        selectedCategories.filter((category) => category !== tag)
       );
     }
   };
+
 
   useEffect(() => {
     getPrompts((data) => {
@@ -50,6 +59,7 @@ export default function ChatDashboard() {
       ];
       categories.push("other");
       setAllCategories(categories);
+      setSelectedCategories(categories);
     });
   }, []);
 
