@@ -320,6 +320,11 @@ h4, h5 {
   overflow-y: visible;
 }
 
+.scenario-card-content {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-light-gray) white;
+}
+
 .scenarios-collection.plot-display .scenario {
   display: none;
 }
