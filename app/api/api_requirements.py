@@ -1,7 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from api.models.explore_request import ExploreRequest
-from fastapi import Request
-from api.api_basics import HaivenBaseApi
+from api.api_basics import HaivenBaseApi, PromptRequestBody
 
 
 def get_explore_kickoff_prompt(originalInput, item, user_message):
@@ -9,7 +8,7 @@ def get_explore_kickoff_prompt(originalInput, item, user_message):
     ## ROLE
     
     You are an expert agile coach and will help me, the product owner and analyst, refine the user stories. 
-    
+
     I'm currently trying to refine REQUIREMENTS in the following area:
 
     {originalInput}
@@ -35,12 +34,12 @@ class ApiRequirementsBreakdown(HaivenBaseApi):
     def __init__(self, app, chat_session_memory, model_key, prompt_list):
         super().__init__(app, chat_session_memory, model_key, prompt_list)
 
-        @app.get("/api/requirements")
-        def requirements(request: Request):
+        @app.post("/api/requirements")
+        def requirements(request: PromptRequestBody):
             prompt, _ = prompt_list.render_prompt(
-                active_knowledge_context=None,
+                active_knowledge_context=request.context,
                 prompt_choice="guided-requirements",
-                user_input=request.query_params.get("input"),
+                user_input=request.userinput,
                 additional_vars={},
                 warnings=[],
             )

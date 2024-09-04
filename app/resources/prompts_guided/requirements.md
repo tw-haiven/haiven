@@ -35,6 +35,10 @@ Prioritize user stories for each sprint duration, tackling high-priority items f
 - Cross-cutting Concerns: Recognize overarching attributes required for every feature. Separate out concerns such as security, validation, and exception handling.
 
 # CONTEXT
+This is the application we're working on, as context:
+
+{domain}
+
 Here is the epic description:
 
 {user_input}

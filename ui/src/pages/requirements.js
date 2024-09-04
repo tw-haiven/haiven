@@ -2,16 +2,18 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
-import { Alert, Button, Card, Drawer, Input, Space, Spin, Radio } from "antd";
+import { Alert, Button, Card, Drawer, Input, Space, Spin, Select } from "antd";
 const { TextArea } = Input;
 import ChatExploration from "./_chat_exploration";
+import HelpTooltip from "../app/_help_tooltip";
 import { parse } from "best-effort-json-parser";
 
 let ctrl;
 
-const Home = () => {
+const RequirementsBreakdown = ({ contexts }) => {
   const [scenarios, setScenarios] = useState([]);
   const [isLoading, setLoading] = useState(false);
+  const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("Explore requirement");
@@ -24,6 +26,10 @@ const Home = () => {
     setLoading(false);
   }
 
+  const handleContextSelection = (value) => {
+    setSelectedContext(value);
+  };
+
   const onExplore = (id) => {
     setDrawerTitle("Explore requirement: " + scenarios[id].title);
     setChatContext({
@@ -35,21 +41,48 @@ const Home = () => {
     setDrawerOpen(true);
   };
 
+  const textSnippetsUserInput = contexts ? (
+    <div className="user-input">
+      <label>
+        Text snippets
+        <HelpTooltip text="You can define text snippets describing your domain and architecture in your knowledge pack, and pull them into the prompt here." />
+      </label>
+      <Select
+        onChange={handleContextSelection}
+        style={{ width: 300 }}
+        options={contexts}
+        value={selectedContext?.key}
+        defaultValue="base"
+      ></Select>
+    </div>
+  ) : (
+    <></>
+  );
+
   const onSubmitPrompt = (event) => {
     setModelOutputFailed(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
 
-    const uri =
-      "/api/requirements" + "?input=" + encodeURIComponent(promptInput);
+    const uri = "/api/requirements"; // + "?input=" + encodeURIComponent(promptInput);
+
+    const requestData = {
+      userinput: promptInput,
+      context: selectedContext,
+    };
 
     let ms = "";
     let output = [];
 
     fetchSSE(
       uri,
-      { method: "GET", signal: ctrl.signal },
+      {
+        method: "POST",
+        credentials: "include",
+        signal: ctrl.signal,
+        body: JSON.stringify(requestData),
+      },
       {
         json: true,
         onErrorHandle: () => {
@@ -122,6 +155,7 @@ const Home = () => {
                   rows={5}
                 />
               </div>
+              {textSnippetsUserInput}
               <div className="user-input">
                 <Button
                   onClick={onSubmitPrompt}
@@ -169,7 +203,6 @@ const Home = () => {
                     hoverable
                     key={i}
                     className="scenario"
-                    title={<>{scenario.title}</>}
                     actions={[
                       <Button
                         type="link"
@@ -181,14 +214,7 @@ const Home = () => {
                     ]}
                   >
                     <div className="scenario-card-content">
-                      {scenario.category && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Category</div>
-                          <div className="card-prop-value">
-                            {scenario.category}
-                          </div>
-                        </div>
-                      )}
+                      <h3>{scenario.title}</h3>
                       <div className="card-prop-name">Description</div>
                       <div className="scenario-summary">{scenario.summary}</div>
                       {scenario.probability && (
@@ -219,4 +245,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default RequirementsBreakdown;
