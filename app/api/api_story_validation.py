@@ -5,7 +5,8 @@ from api.api_basics import HaivenBaseApi
 
 
 class StoryValidationQuestions(BaseModel):
-    input: str
+    userinput: str
+    context: str = None
 
 
 class QuestionAnswer(BaseModel):
@@ -75,11 +76,11 @@ class ApiStoryValidation(HaivenBaseApi):
         super().__init__(app, chat_session_memory, model_key, prompt_list)
 
         @app.post("/api/story-validation/questions")
-        def story_validation(body: StoryValidationQuestions):
+        def story_validation(request: StoryValidationQuestions):
             prompt, _ = prompt_list.render_prompt(
-                active_knowledge_context=None,
+                active_knowledge_context=request.context,
                 prompt_choice="guided-story-validation",
-                user_input=body.input,
+                user_input=request.userinput,
                 additional_vars={},
                 warnings=[],
             )

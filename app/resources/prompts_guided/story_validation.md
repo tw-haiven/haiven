@@ -12,7 +12,11 @@ You are a developer on a software engineering team.
 Help me refine the necessary requirements and details of a user story. My ultimate goal is to have a list of Given/When/Then scenarios
 
 # CONTEXT
-Here is my input that describes my application and user story:
+This is the application we're working on, as context:
+
+{domain}
+
+# USER STORY
 
 {user_input}
 
@@ -21,7 +25,7 @@ Think about details that are not mentioned or unclear about this user story.
 Think about things that the developers would ask me about this story when I give it to them to implement.
 
 Come up with 5-10 questions that you would ask to clarify the user story:
-- Thought: Think about what is still uncertain about defining the user story. Ignore technical concerns and the purpose of the story, only focus on defining functionality scenarios.
+- Thought: Think about what is still uncertain about defining the user story, or what is missing based on the context. Ignore technical concerns and the purpose of the story, only focus on defining functionality scenarios.
 - Question: a question to ask to clarify the user story
 - The answer you suggest for the question
 

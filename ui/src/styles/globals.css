@@ -320,34 +320,6 @@ h4, h5 {
   overflow-y: visible;
 }
 
-.scenarios-collection.stack-display .scenario-card-content {
-  height: auto;
-  overflow-y: visible;
-}
-
-.scenarios-collection.stack-display .scenario {
-  width: 100%;
-}
-
-.scenarios-collection.stack-display .ant-card-body {
-  width: 100%;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.scenarios-collection.stack-display .scenario .card-prop.stackable,
-.scenarios-collection.stack-display
-  .scenario
-  .card-prop.stackable
-  .card-prop-name,
-.scenarios-collection.stack-display
-  .scenario
-  .card-prop.stackable
-  .card-prop-value {
-  display: inline-block;
-  padding-right: 5px;
-}
-
 .scenarios-collection.plot-display .scenario {
   display: none;
 }
@@ -398,8 +370,9 @@ h4, h5 {
   background-color: transparent !important;
 }
 
-.scenario-card-content .card-prop-name {
+.card-prop-name {
   font-weight: var(--font-weight-semi-bold);
+  margin-bottom: 0.2em;
 } 
 
 .display-mode {

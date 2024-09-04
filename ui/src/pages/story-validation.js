@@ -1,16 +1,18 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import { Alert, Button, Card, Input, Space, Spin } from "antd";
+import { Alert, Button, Card, Input, Space, Spin, Select } from "antd";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import ReactMarkdown from "react-markdown";
 import { RiFileCopyLine } from "react-icons/ri";
+import HelpTooltip from "../app/_help_tooltip";
 
-const Home = () => {
+const StoryValidation = ({ contexts }) => {
   const [questions, setQuestions] = useState([]);
   const [storyScenarios, setStoryScenarios] = useState();
   const [isLoading, setLoading] = useState(false);
+  const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
   const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const [currentAbortController, setCurrentAbortController] = useState();
@@ -24,6 +26,10 @@ const Home = () => {
     setLoading(false);
     currentAbortController && currentAbortController.abort("User aborted");
   }
+
+  const handleContextSelection = (value) => {
+    setSelectedContext(value);
+  };
 
   const onSubmitPrompt = () => {
     setModelOutputFailed(false);
@@ -42,7 +48,8 @@ const Home = () => {
       uri,
       {
         body: JSON.stringify({
-          input: promptInput,
+          userinput: promptInput,
+          context: selectedContext,
         }),
         signal: ctrl.signal,
       },
@@ -76,6 +83,24 @@ const Home = () => {
       },
     );
   };
+
+  const textSnippetsUserInput = contexts ? (
+    <div className="user-input">
+      <label>
+        Text snippets
+        <HelpTooltip text="You can define text snippets describing your domain and architecture in your knowledge pack, and pull them into the prompt here." />
+      </label>
+      <Select
+        onChange={handleContextSelection}
+        style={{ width: 300 }}
+        options={contexts}
+        value={selectedContext?.key}
+        defaultValue="base"
+      ></Select>
+    </div>
+  ) : (
+    <></>
+  );
 
   const onGenerateScenarios = () => {
     abortCurrentLoad();
@@ -135,16 +160,17 @@ const Home = () => {
             </div>
             <div className="user-inputs">
               <div className="user-input">
-                <p>Give a high level description of your requirement:</p>
+                <label>High level description of your requirement</label>
                 <TextArea
                   placeholder="What do you have so far?"
                   value={promptInput}
                   onChange={(e, v) => {
                     setPromptInput(e.target.value);
                   }}
-                  rows={5}
+                  rows={10}
                 />
               </div>
+              {textSnippetsUserInput}
               <Button
                 onClick={onSubmitPrompt}
                 className="go-button"
@@ -180,10 +206,14 @@ const Home = () => {
             {questions.length > 0 && (
               <div className="user-inputs" style={{ marginTop: "1em" }}>
                 <h3>Get a draft</h3>
-                Go through the questions and refine the answers.
-                <br />
-                Once you're happy with the selected answers, you can generate
-                given/when/then scenarios for this story <br />
+                <div>
+                  Go through the questions and refine the answers.
+                  <br />
+                  Once you're happy with the selected answers, you can generate
+                  given/when/then scenarios for this story.
+                  <br />
+                  <br />
+                </div>
                 <Button
                   onClick={onGenerateScenarios}
                   className="go-button"
@@ -247,4 +277,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default StoryValidation;

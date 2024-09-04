@@ -307,7 +307,13 @@ class TestApi(unittest.TestCase):
 
         # Make the request to the endpoint
         user_input = "some user input"
-        response = self.client.get(f"/api/requirements?input={user_input}")
+        response = self.client.post(
+            "/api/requirements",
+            json={
+                "userinput": user_input,
+                "context": "some context",
+            },
+        )
 
         # Assert the response
         assert response.status_code == 200
@@ -383,7 +389,8 @@ class TestApi(unittest.TestCase):
         # Make the request to the endpoint
         user_input = "some user input"
         response = self.client.post(
-            "/api/story-validation/questions", json={"input": user_input}
+            "/api/story-validation/questions",
+            json={"userinput": user_input, "context": ""},
         )
 
         # Assert the response
