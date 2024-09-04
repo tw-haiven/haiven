@@ -24,10 +24,12 @@ I want you to help me brainstorm scenarios in multiple categories according to t
 - E Category "Elevation of privilege": Scenarios for the question "Can an unprivileged user gain more access to the system than they should have?" Elevation of privilege attacks are possible because authorisation boundaries are missing or inadequate.
 
 # CONTEXT
-High level description of our architecture as general context:
+
+**High level description of our architecture as general context:**
+
 {architecture}
 
-More input that describes application properties relevant to threat modelling:
+**Application properties relevant to threat modelling:**
 
 {user_input}
 

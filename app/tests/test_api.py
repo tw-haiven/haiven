@@ -129,6 +129,54 @@ class TestApi(unittest.TestCase):
     @patch("llms.chats.JSONChat")
     @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
+    def test_prompting_guided(
+        self,
+        mock_prompt_list,
+        mock_chat_manager,
+        mock_json_chat,
+    ):
+        mock_json_chat.run.return_value = "some response from the model"
+        mock_chat_manager.json_chat.return_value = (
+            "some_key",
+            mock_json_chat,
+        )
+        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
+        ApiBasics(
+            self.app,
+            chat_manager=mock_chat_manager,
+            model_key="some_model_key",
+            prompts_guided=mock_prompt_list,
+            knowledge_manager=MagicMock(),
+            prompts_chat=MagicMock(),
+            image_service=MagicMock(),
+        )
+
+        # Make the request to the endpoint
+        user_input = "some user input"
+        response = self.client.post(
+            "/api/prompt",
+            json={
+                "userinput": user_input,
+                "context": "some context",
+                "promptid": "guided-requirements",
+            },
+        )
+
+        # Assert the response
+        assert response.status_code == 200
+        streamed_content = response.content.decode("utf-8")
+        assert streamed_content == "some response from the model"
+        mock_prompt_list.render_prompt.assert_called_with(
+            active_knowledge_context="some context",
+            prompt_choice="guided-requirements",
+            user_input=user_input,
+            additional_vars={},
+            warnings=ANY,
+        )
+
+    @patch("llms.chats.JSONChat")
+    @patch("llms.chats.ChatManager")
+    @patch("prompts.prompts.PromptList")
     def test_scenarios(
         self,
         mock_prompt_list,
@@ -279,47 +327,6 @@ class TestApi(unittest.TestCase):
         args, kwargs = mock_chat_manager.streaming_chat.call_args
         assert kwargs["options"].category == "threat-modelling-explore"
         assert kwargs["session_id"] is None
-
-    @patch("llms.chats.JSONChat")
-    @patch("llms.chats.ChatManager")
-    @patch("prompts.prompts.PromptList")
-    def test_requirements(
-        self,
-        mock_prompt_list,
-        mock_chat_manager,
-        mock_json_chat,
-    ):
-        mock_json_chat.run.return_value = "some response from the model"
-        mock_chat_manager.json_chat.return_value = (
-            "some_key",
-            mock_json_chat,
-        )
-        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
-        ApiRequirementsBreakdown(
-            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
-        )
-
-        # Make the request to the endpoint
-        user_input = "some user input"
-        response = self.client.post(
-            "/api/requirements",
-            json={
-                "userinput": user_input,
-                "context": "some context",
-            },
-        )
-
-        # Assert the response
-        assert response.status_code == 200
-        streamed_content = response.content.decode("utf-8")
-        assert streamed_content == "some response from the model"
-        mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_context="some context",
-            prompt_choice="guided-requirements",
-            user_input=user_input,
-            additional_vars={},
-            warnings=ANY,
-        )
 
     @patch("llms.chats.StreamingChat")
     @patch("llms.chats.ChatManager")

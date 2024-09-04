@@ -12,11 +12,11 @@ You are a developer on a software engineering team.
 Help me refine the necessary requirements and details of a user story. My ultimate goal is to have a list of Given/When/Then scenarios
 
 # CONTEXT
-This is the application we're working on, as context:
 
+~This is the application we're working on, as context:~
 {domain}
 
-# USER STORY
+~This is the user story I'm working on:~
 
 {user_input}
 

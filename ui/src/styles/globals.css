@@ -284,7 +284,7 @@ h4, h5 {
 
 .prompt-preview-diff-highlight {
   color: var(--color-flamingo);
-  font-style: italic;
+  font-weight: var(--font-weight-semi-bold);
 }
 
 /****** SCENARIO CARDS *******/

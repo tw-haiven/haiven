@@ -48,7 +48,9 @@ class HaivenBaseApi:
         self.model_key = model_key
         self.prompt_list = prompt_list
 
-    def stream_json_chat(self, prompt, chat_category, chat_session_key_value=None):
+    def stream_json_chat(
+        self, prompt, chat_category, chat_session_key_value=None, document_key=None
+    ):
         chat_session_key_value, chat_session = self.chat_manager.json_chat(
             client_config=ChatClientConfig(self.model_key, 0.5),
             session_id=chat_session_key_value,
@@ -156,28 +158,42 @@ class ApiBasics(HaivenBaseApi):
 
         @app.post("/api/prompt")
         def chat(prompt_data: PromptRequestBody):
+            stream_fn = self.stream_text_chat
             if prompt_data.promptid:
-                rendered_prompt, _ = prompts_chat.render_prompt(
+                prompts = (
+                    prompts_guided
+                    if prompt_data.promptid.startswith("guided-")
+                    else prompts_chat
+                )
+                rendered_prompt, _ = prompts.render_prompt(
                     active_knowledge_context=prompt_data.context,
                     prompt_choice=prompt_data.promptid,
                     user_input=prompt_data.userinput,
                     additional_vars={},
                     warnings=[],
                 )
+                if prompt_data.promptid.startswith("guided-"):
+                    stream_fn = self.stream_json_chat
             else:
                 rendered_prompt = prompt_data.userinput
 
-            return self.stream_text_chat(
-                rendered_prompt,
-                "boba-chat",
-                prompt_data.chatSessionId,
-                prompt_data.document,
+            return stream_fn(
+                prompt=rendered_prompt,
+                chat_category="boba-chat",
+                chat_session_key_value=prompt_data.chatSessionId,
+                document_key=prompt_data.document,
             )
 
         @app.post("/api/prompt/render")
         def render_prompt(prompt_data: PromptRequestBody):
             if prompt_data.promptid:
-                rendered_prompt, template = prompts_chat.render_prompt(
+                prompts = (
+                    prompts_guided
+                    if prompt_data.promptid.startswith("guided-")
+                    else prompts_chat
+                )
+
+                rendered_prompt, template = prompts.render_prompt(
                     active_knowledge_context=prompt_data.context,
                     prompt_choice=prompt_data.promptid,
                     user_input=prompt_data.userinput,

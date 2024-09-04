@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
+import { parse } from "best-effort-json-parser";
 import { Alert, Button, Card, Drawer, Input, Space, Spin, Select } from "antd";
 const { TextArea } = Input;
+import { RiChat2Line, RiCheckboxMultipleBlankFill } from "react-icons/ri";
+
 import ChatExploration from "./_chat_exploration";
 import ContextChoice from "../app/_context_choice";
-import { parse } from "best-effort-json-parser";
-
-import { RiChat2Line, RiCheckboxMultipleBlankFill } from "react-icons/ri";
+import PromptPreview from "../app/_prompt_preview";
 
 let ctrl;
 
@@ -49,18 +50,23 @@ const RequirementsBreakdown = ({ contexts }) => {
     );
   };
 
+  const buildRequestData = () => {
+    return {
+      userinput: promptInput,
+      context: selectedContext,
+      promptid: "guided-requirements",
+    };
+  };
+
   const onSubmitPrompt = (event) => {
     setModelOutputFailed(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
 
-    const uri = "/api/requirements"; // + "?input=" + encodeURIComponent(promptInput);
+    const uri = "/api/prompt";
 
-    const requestData = {
-      userinput: promptInput,
-      context: selectedContext,
-    };
+    const requestData = buildRequestData();
 
     let ms = "";
     let output = [];
@@ -151,6 +157,7 @@ const RequirementsBreakdown = ({ contexts }) => {
                 value={selectedContext?.key}
               />
               <div className="user-input">
+                <PromptPreview buildRenderPromptRequest={buildRequestData} />
                 <Button
                   onClick={onSubmitPrompt}
                   className="go-button"

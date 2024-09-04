@@ -1,6 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from api.models.explore_request import ExploreRequest
-from api.api_basics import HaivenBaseApi, PromptRequestBody
+from api.api_basics import HaivenBaseApi
 
 
 def get_explore_kickoff_prompt(originalInput, item, user_message):
@@ -33,18 +33,6 @@ def get_explore_kickoff_prompt(originalInput, item, user_message):
 class ApiRequirementsBreakdown(HaivenBaseApi):
     def __init__(self, app, chat_session_memory, model_key, prompt_list):
         super().__init__(app, chat_session_memory, model_key, prompt_list)
-
-        @app.post("/api/requirements")
-        def requirements(request: PromptRequestBody):
-            prompt, _ = prompt_list.render_prompt(
-                active_knowledge_context=request.context,
-                prompt_choice="guided-requirements",
-                user_input=request.userinput,
-                additional_vars={},
-                warnings=[],
-            )
-
-            return self.stream_json_chat(prompt, "requirements-breakdown")
 
         @app.post("/api/requirements/explore")
         def chat(explore_request: ExploreRequest):
