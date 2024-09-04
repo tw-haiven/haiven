@@ -1,7 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from api.models.explore_request import ExploreRequest
-from fastapi import Request
-from api.api_basics import HaivenBaseApi
+from api.api_basics import HaivenBaseApi, PromptRequestBody
 
 
 def get_explore_kickoff_prompt(originalInput, item, user_message):
@@ -31,19 +30,13 @@ class ApiThreatModelling(HaivenBaseApi):
     def __init__(self, app, chat_session_memory, model_key, prompt_list):
         super().__init__(app, chat_session_memory, model_key, prompt_list)
 
-        @app.get("/api/threat-modelling")
-        def threat_modelling(request: Request):
-            variables = {
-                "dataFlow": request.query_params.get("dataFlow"),
-                "assets": request.query_params.get("assets"),
-                "userBase": request.query_params.get("userBase"),
-            }
-
+        @app.post("/api/threat-modelling")
+        def threat_modelling(request: PromptRequestBody):
             prompt, _ = prompt_list.render_prompt(
-                active_knowledge_context=None,
+                active_knowledge_context=request.context,
                 prompt_choice="guided-threat-modelling",
-                user_input="",
-                additional_vars=variables,
+                user_input=request.userinput,
+                additional_vars={},
                 warnings=[],
             )
 

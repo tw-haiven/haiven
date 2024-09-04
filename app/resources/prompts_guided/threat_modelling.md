@@ -24,16 +24,12 @@ I want you to help me brainstorm scenarios in multiple categories according to t
 - E Category "Elevation of privilege": Scenarios for the question "Can an unprivileged user gain more access to the system than they should have?" Elevation of privilege attacks are possible because authorisation boundaries are missing or inadequate.
 
 # CONTEXT
-Here is my input that describes my application:
+High level description of our architecture as general context:
+{architecture}
 
-Users using the application - consider this when you assess the probability and impact: 
-=> {userBase}
+More input that describes application properties relevant to threat modelling:
 
-Assets I want to protect - consider this in particular when you assess the impact of a scenario:
-=> {assets}
-
-How data flows through the application: 
-=> {dataFlow}
+{user_input}
 
 # INSTRUCTIONS
 You will create at least one scenario for each category. 

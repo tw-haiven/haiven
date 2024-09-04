@@ -2,22 +2,32 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
-import { Alert, Drawer, Card, Space, Spin, Button, Radio, Input } from "antd";
+import {
+  Alert,
+  Drawer,
+  Card,
+  Space,
+  Spin,
+  Button,
+  Radio,
+  Input,
+  Select,
+} from "antd";
 const { TextArea } = Input;
 import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 import { RiStackLine, RiGridLine } from "react-icons/ri";
+import HelpTooltip from "../app/_help_tooltip";
 
 let ctrl;
 
-const Home = () => {
+const ThreatModelling = ({ contexts }) => {
   const [scenarios, setScenarios] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [displayMode, setDisplayMode] = useState("grid");
-  const [promptDataFlow, setPromptDataFlow] = useState("");
-  const [promptUserBase, setPromptUserBase] = useState("");
-  const [promptAssets, setPromptAssets] = useState("");
+  const [selectedContext, setSelectedContext] = useState("");
+  const [promptInput, setPromptInput] = useState("");
   const [explorationDrawerOpen, setExplorationDrawerOpen] = useState(false);
   const [explorationDrawerTitle, setExplorationDrawerTitle] =
     useState("Explore scenario");
@@ -30,22 +40,15 @@ const Home = () => {
     setLoading(false);
   }
 
-  function concatUserInput() {
-    return (
-      "**Userbase:** " +
-      promptUserBase +
-      "|| **Assets:** " +
-      promptAssets +
-      "|| **Dataflow:** " +
-      promptDataFlow
-    );
-  }
+  const handleContextSelection = (value) => {
+    setSelectedContext(value);
+  };
 
   const onExplore = (id) => {
     setExplorationDrawerTitle("Explore scenario: " + scenarios[id].title);
     setChatContext({
       id: id,
-      originalPrompt: concatUserInput(),
+      originalPrompt: promptInput,
       type: "threat-modelling",
       ...scenarios[id],
     });
@@ -62,21 +65,23 @@ const Home = () => {
     ctrl = new AbortController();
     setLoading(true);
 
-    const uri =
-      "/api/threat-modelling" +
-      "?dataFlow=" +
-      encodeURIComponent(promptDataFlow) +
-      "?assets=" +
-      encodeURIComponent(promptAssets) +
-      "?userBase=" +
-      encodeURIComponent(promptUserBase);
+    const uri = "/api/threat-modelling";
+
+    const requestData = {
+      userinput: promptInput,
+      context: selectedContext,
+    };
 
     let ms = "";
     let output = [];
 
     fetchSSE(
       uri,
-      { method: "GET", signal: ctrl.signal },
+      {
+        method: "POST",
+        signal: ctrl.signal,
+        body: JSON.stringify(requestData),
+      },
       {
         json: true,
         onErrorHandle: () => {
@@ -102,6 +107,27 @@ const Home = () => {
       },
     );
   };
+
+  const textSnippetsUserInput = contexts ? (
+    <div className="user-input">
+      <label>
+        Text snippets
+        <HelpTooltip text="You can define text snippets describing your domain and architecture in your knowledge pack, and pull them into the prompt here." />
+      </label>
+      <Select
+        onChange={handleContextSelection}
+        style={{ width: 300 }}
+        options={contexts}
+        value={selectedContext?.key}
+        defaultValue="base"
+      ></Select>
+    </div>
+  ) : (
+    <></>
+  );
+
+  const placeholderHelp =
+    "Describe who the users are, what assets you need to protect, and how data flows through your system";
 
   return (
     <>
@@ -136,36 +162,17 @@ const Home = () => {
 
             <div className="prompt-chat-options-section">
               <div className="user-input">
-                <label>Users</label>{" "}
-                <Input
-                  placeholder="Describe the user base, e.g. if it's B2C, B2B, internal, ..."
-                  value={promptUserBase}
-                  onChange={(e, v) => {
-                    setPromptUserBase(e.target.value);
-                  }}
-                />
-              </div>
-              <div className="user-input">
-                <label>Assets</label>{" "}
-                <Input
-                  placeholder="Describe any important assets that need to be protected"
-                  value={promptAssets}
-                  onChange={(e, v) => {
-                    setPromptAssets(e.target.value);
-                  }}
-                />
-              </div>
-              <div className="user-input">
-                <label>Data flow</label>
+                <label>Your input</label>
                 <TextArea
-                  placeholder="Describe how data flows through your system"
-                  value={promptDataFlow}
+                  placeholder={placeholderHelp}
+                  value={promptInput}
                   onChange={(e, v) => {
-                    setPromptDataFlow(e.target.value);
+                    setPromptInput(e.target.value);
                   }}
-                  rows={5}
+                  rows={18}
                 />
               </div>
+              {textSnippetsUserInput}
               <div className="user-input">
                 <Button
                   onClick={onSubmitPrompt}
@@ -223,14 +230,13 @@ const Home = () => {
                 </Radio.Button>
               </Radio.Group>
             </div>
-            <div className="cards-container">
+            <div className="cards-container  with-display-mode">
               {scenarios.map((scenario, i) => {
                 return (
                   <Card
                     hoverable
                     key={i}
                     className="scenario"
-                    title={<>{scenario.title}</>}
                     actions={[
                       <Button
                         type="link"
@@ -242,6 +248,7 @@ const Home = () => {
                     ]}
                   >
                     <div className="scenario-card-content">
+                      <h3>{scenario.title}</h3>
                       {scenario.category && (
                         <div className="card-prop stackable">
                           <div className="card-prop-name">Category</div>
@@ -290,4 +297,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default ThreatModelling;

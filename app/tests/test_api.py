@@ -226,11 +226,9 @@ class TestApi(unittest.TestCase):
         )
 
         # Make the request to the endpoint
-        dataFlow = "some data flow"
-        assets = "some assets"
-        userBase = "some user description"
-        response = self.client.get(
-            f"/api/threat-modelling?dataFlow={dataFlow}&assets={assets}&userBase={userBase}"
+        userInput = "some data flow"
+        response = self.client.post(
+            "/api/threat-modelling", json={"userinput": userInput, "context": ""}
         )
 
         # Assert the response
@@ -238,14 +236,10 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
         mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_context=ANY,
+            active_knowledge_context="",
             prompt_choice="guided-threat-modelling",
-            user_input=ANY,
-            additional_vars={
-                "dataFlow": dataFlow,
-                "assets": assets,
-                "userBase": userBase,
-            },
+            user_input=userInput,
+            additional_vars={},
             warnings=ANY,
         )
 
@@ -320,7 +314,7 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
         mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_context=ANY,
+            active_knowledge_context="some context",
             prompt_choice="guided-requirements",
             user_input=user_input,
             additional_vars={},
