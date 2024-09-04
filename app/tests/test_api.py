@@ -257,40 +257,6 @@ class TestApi(unittest.TestCase):
         assert kwargs["options"].category == "scenarios-explore"
         assert kwargs["session_id"] is None
 
-    @patch("llms.chats.JSONChat")
-    @patch("llms.chats.ChatManager")
-    @patch("prompts.prompts.PromptList")
-    def test_threat_modelling(
-        self, mock_prompt_list, mock_chat_manager, mock_json_chat
-    ):
-        mock_json_chat.run.return_value = "some response from the model"
-        mock_chat_manager.json_chat.return_value = (
-            "some_key",
-            mock_json_chat,
-        )
-        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
-        ApiThreatModelling(
-            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
-        )
-
-        # Make the request to the endpoint
-        userInput = "some data flow"
-        response = self.client.post(
-            "/api/threat-modelling", json={"userinput": userInput, "context": ""}
-        )
-
-        # Assert the response
-        assert response.status_code == 200
-        streamed_content = response.content.decode("utf-8")
-        assert streamed_content == "some response from the model"
-        mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_context="",
-            prompt_choice="guided-threat-modelling",
-            user_input=userInput,
-            additional_vars={},
-            warnings=ANY,
-        )
-
     @patch("llms.chats.StreamingChat")
     @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")

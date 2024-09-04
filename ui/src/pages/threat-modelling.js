@@ -18,7 +18,9 @@ import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 import { RiStackLine, RiGridLine } from "react-icons/ri";
+
 import ContextChoice from "../app/_context_choice";
+import PromptPreview from "../app/_prompt_preview";
 
 let ctrl;
 
@@ -59,18 +61,21 @@ const ThreatModelling = ({ contexts }) => {
     setDisplayMode(event.target.value);
   };
 
+  const buildRequestData = () => {
+    return {
+      userinput: promptInput,
+      context: selectedContext,
+      promptid: "guided-threat-modelling",
+    };
+  };
+
   const onSubmitPrompt = (event) => {
     setModelOutputFailed(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
 
-    const uri = "/api/threat-modelling";
-
-    const requestData = {
-      userinput: promptInput,
-      context: selectedContext,
-    };
+    const uri = "/api/prompt";
 
     let ms = "";
     let output = [];
@@ -80,7 +85,7 @@ const ThreatModelling = ({ contexts }) => {
       {
         method: "POST",
         signal: ctrl.signal,
-        body: JSON.stringify(requestData),
+        body: JSON.stringify(buildRequestData()),
       },
       {
         json: true,
@@ -160,6 +165,7 @@ const ThreatModelling = ({ contexts }) => {
                 value={selectedContext?.key}
               />
               <div className="user-input">
+                <PromptPreview buildRenderPromptRequest={buildRequestData} />
                 <Button
                   onClick={onSubmitPrompt}
                   className="go-button"
