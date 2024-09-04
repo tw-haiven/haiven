@@ -5,7 +5,7 @@ import { fetchSSE } from "../app/_fetch_sse";
 import { Alert, Button, Card, Drawer, Input, Space, Spin, Select } from "antd";
 const { TextArea } = Input;
 import ChatExploration from "./_chat_exploration";
-import HelpTooltip from "../app/_help_tooltip";
+import ContextChoice from "../app/_context_choice";
 import { parse } from "best-effort-json-parser";
 
 import { RiChat2Line, RiCheckboxMultipleBlankFill } from "react-icons/ri";
@@ -48,24 +48,6 @@ const RequirementsBreakdown = ({ contexts }) => {
       "## " + scenarios[id].title + "\n\n" + scenarios[id].summary,
     );
   };
-
-  const textSnippetsUserInput = contexts ? (
-    <div className="user-input">
-      <label>
-        Text snippets
-        <HelpTooltip text="You can define text snippets describing your domain and architecture in your knowledge pack, and pull them into the prompt here." />
-      </label>
-      <Select
-        onChange={handleContextSelection}
-        style={{ width: 300 }}
-        options={contexts}
-        value={selectedContext?.key}
-        defaultValue="base"
-      ></Select>
-    </div>
-  ) : (
-    <></>
-  );
 
   const onSubmitPrompt = (event) => {
     setModelOutputFailed(false);
@@ -163,7 +145,11 @@ const RequirementsBreakdown = ({ contexts }) => {
                   rows={20}
                 />
               </div>
-              {textSnippetsUserInput}
+              <ContextChoice
+                onChange={handleContextSelection}
+                contexts={contexts}
+                value={selectedContext?.key}
+              />
               <div className="user-input">
                 <Button
                   onClick={onSubmitPrompt}

@@ -6,7 +6,7 @@ const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import ReactMarkdown from "react-markdown";
 import { RiFileCopyLine } from "react-icons/ri";
-import HelpTooltip from "../app/_help_tooltip";
+import ContextChoice from "../app/_context_choice";
 
 const StoryValidation = ({ contexts }) => {
   const [questions, setQuestions] = useState([]);
@@ -84,24 +84,6 @@ const StoryValidation = ({ contexts }) => {
     );
   };
 
-  const textSnippetsUserInput = contexts ? (
-    <div className="user-input">
-      <label>
-        Text snippets
-        <HelpTooltip text="You can define text snippets describing your domain and architecture in your knowledge pack, and pull them into the prompt here." />
-      </label>
-      <Select
-        onChange={handleContextSelection}
-        style={{ width: 300 }}
-        options={contexts}
-        value={selectedContext?.key}
-        defaultValue="base"
-      ></Select>
-    </div>
-  ) : (
-    <></>
-  );
-
   const onGenerateScenarios = () => {
     abortCurrentLoad();
     const ctrl = new AbortController();
@@ -170,7 +152,11 @@ const StoryValidation = ({ contexts }) => {
                   rows={10}
                 />
               </div>
-              {textSnippetsUserInput}
+              <ContextChoice
+                onChange={handleContextSelection}
+                contexts={contexts}
+                value={selectedContext?.key}
+              />
               <Button
                 onClick={onSubmitPrompt}
                 className="go-button"

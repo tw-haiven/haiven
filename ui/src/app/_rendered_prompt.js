@@ -111,10 +111,11 @@ export default function RenderedPromptModal({ open, promptData, onClose }) {
       }}
     >
       <p>
-        This is the text that will be sent to the AI model.{" "}
-        <span className="prompt-preview-diff-highlight">
-          Your input, and any text snippets you selected, are highlighted
-        </span>
+        This is the text that will be sent to the AI model. It includes your
+        input and any contexts you selected.{" "}
+        {/* <span className="prompt-preview-diff-highlight">
+          Your input, and any contexts you selected, are highlighted
+        </span> */}
         .
       </p>
 

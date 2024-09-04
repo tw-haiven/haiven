@@ -18,7 +18,7 @@ import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 import { RiStackLine, RiGridLine } from "react-icons/ri";
-import HelpTooltip from "../app/_help_tooltip";
+import ContextChoice from "../app/_context_choice";
 
 let ctrl;
 
@@ -108,24 +108,6 @@ const ThreatModelling = ({ contexts }) => {
     );
   };
 
-  const textSnippetsUserInput = contexts ? (
-    <div className="user-input">
-      <label>
-        Text snippets
-        <HelpTooltip text="You can define text snippets describing your domain and architecture in your knowledge pack, and pull them into the prompt here." />
-      </label>
-      <Select
-        onChange={handleContextSelection}
-        style={{ width: 300 }}
-        options={contexts}
-        value={selectedContext?.key}
-        defaultValue="base"
-      ></Select>
-    </div>
-  ) : (
-    <></>
-  );
-
   const placeholderHelp =
     "Describe who the users are, what assets you need to protect, and how data flows through your system";
 
@@ -172,7 +154,11 @@ const ThreatModelling = ({ contexts }) => {
                   rows={18}
                 />
               </div>
-              {textSnippetsUserInput}
+              <ContextChoice
+                onChange={handleContextSelection}
+                contexts={contexts}
+                value={selectedContext?.key}
+              />
               <div className="user-input">
                 <Button
                   onClick={onSubmitPrompt}

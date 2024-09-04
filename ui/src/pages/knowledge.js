@@ -73,13 +73,13 @@ const KnowledgePackPage = ({ contexts, documents }) => {
         </p>
         <div className="knowledge-columns-container">
           <div className="knowledge-list">
-            <h2>Text snippets</h2>
+            <h2>Contexts</h2>
             <p>
-              These text snippets are getting pulled into your prompts
-              automatically when you have chosen a context. This way, you don't
-              have to repeat to the AI over and over again what the domain or
-              technical context is. Which of the snippets get pulled in depends
-              on the definition of the prompt.
+              You can pull these descriptions into your prompts when you chose a
+              context. This way, you don't have to repeat to the AI over and
+              over again what the domain or technical context is. Which of the
+              descriptions get pulled in depends on the definition of the
+              prompt.
             </p>
             <Collapse accordion items={renderedSnippets}></Collapse>
           </div>

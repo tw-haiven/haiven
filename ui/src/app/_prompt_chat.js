@@ -8,6 +8,7 @@ const { TextArea } = Input;
 import ChatWidget from "./_chat";
 import DescribeImage from "./_image_description";
 import HelpTooltip from "./_help_tooltip";
+import ContextChoice from "./_context_choice";
 
 import { getRenderedPrompt } from "../app/_boba_api";
 import RenderedPromptModal from "./_rendered_prompt";
@@ -174,24 +175,15 @@ const PromptChat = ({
       <></>
     );
 
-  const textSnippetsUserInput =
-    showTextSnippets && contexts ? (
-      <div className="user-input">
-        <label>
-          Text snippets
-          <HelpTooltip text="You can define text snippets describing your domain and architecture in your knowledge pack, and pull them into the prompt here." />
-        </label>
-        <Select
-          onChange={handleContextSelection}
-          style={{ width: 300 }}
-          options={contexts}
-          value={selectedContext?.key}
-          defaultValue="base"
-        ></Select>
-      </div>
-    ) : (
-      <></>
-    );
+  const textSnippetsUserInput = showTextSnippets ? (
+    <ContextChoice
+      onChange={handleContextSelection}
+      contexts={contexts}
+      value={selectedContext?.key}
+    />
+  ) : (
+    <></>
+  );
 
   const contextSection =
     showTextSnippets || showDocuments ? (
