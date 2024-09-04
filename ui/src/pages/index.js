@@ -24,8 +24,7 @@ export default function ChatDashboard() {
 
   const filter = (tag, checked) => {
     const isSelected = selectedCategories.includes(tag);
-    const isAllSelected =
-      selectedCategories.length === allCategories.length;
+    const isAllSelected = selectedCategories.length === allCategories.length;
 
     if (checked) {
       setSelectedCategories([...selectedCategories, tag]);
@@ -35,11 +34,10 @@ export default function ChatDashboard() {
       setSelectedCategories([tag]);
     } else {
       setSelectedCategories(
-        selectedCategories.filter((category) => category !== tag)
+        selectedCategories.filter((category) => category !== tag),
       );
     }
   };
-
 
   useEffect(() => {
     getPrompts((data) => {
