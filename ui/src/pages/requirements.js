@@ -153,14 +153,14 @@ const RequirementsBreakdown = ({ contexts }) => {
             </div>
             <div className="prompt-chat-options-section">
               <div className="user-input">
-                <p>Give a high level description of your requirement:</p>
+                <label>High level description of your requirement</label>
                 <TextArea
                   placeholder="Describe the high level requirements to break down"
                   value={promptInput}
                   onChange={(e, v) => {
                     setPromptInput(e.target.value);
                   }}
-                  rows={5}
+                  rows={20}
                 />
               </div>
               {textSnippetsUserInput}
