@@ -8,7 +8,7 @@ import {
   RiChat2Line,
   RiChatQuoteLine,
   RiCompasses2Line,
-  RiTable2,
+  RiBook2Line,
   RiDashboardHorizontalLine,
 } from "react-icons/ri";
 
@@ -26,6 +26,12 @@ export const initialiseMenuCategoriesForSidebar = () => {
       key: "knowledgeChat",
       label: <Link href="/knowledge-chat">Chat with Haiven</Link>,
       icon: <RiChatQuoteLine style={{ fontSize: "large" }} />,
+    },
+    research: {
+      key: "research",
+      label: "Research",
+      icon: <RiBook2Line style={{ fontSize: "large" }} />,
+      children: [],
     },
     ideate: {
       key: "ideate",

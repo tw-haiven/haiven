@@ -14,6 +14,7 @@ export default function ChatDashboard() {
   // !! If changed, also needs to be changed in CSS, for the filter selection colors
   const categoryColors = {
     ideate: "#6B9E78",
+    research: "#003d4f",
     analysis: "#f2617aff",
     coding: "#CC850A",
     testing: "#47a1ad",

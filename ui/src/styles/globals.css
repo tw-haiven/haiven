@@ -642,6 +642,9 @@ h4, h5 {
     &.ideate {
       background-color: var(--color-jade-green);
     }
+    &.research {
+      background-color: var(--color-dark-blue);
+    }
     /* &.other {
       background-color: var(--color-dark-gray)
     } */
