@@ -6,7 +6,9 @@ const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import ReactMarkdown from "react-markdown";
 import { RiFileCopyLine } from "react-icons/ri";
+
 import ContextChoice from "../app/_context_choice";
+import PromptPreview from "../app/_prompt_preview";
 
 const StoryValidation = ({ contexts }) => {
   const [questions, setQuestions] = useState([]);
@@ -31,6 +33,14 @@ const StoryValidation = ({ contexts }) => {
     setSelectedContext(value);
   };
 
+  const buildRequestData = () => {
+    return {
+      userinput: promptInput,
+      context: selectedContext,
+      promptid: "guided-story-validation",
+    };
+  };
+
   const onSubmitPrompt = () => {
     setModelOutputFailed(false);
     abortCurrentLoad();
@@ -39,7 +49,7 @@ const StoryValidation = ({ contexts }) => {
     setCurrentAbortController(ctrl);
     setLoading(true);
 
-    const uri = "/api/story-validation/questions";
+    const uri = "/api/prompt";
 
     let ms = "";
     let output = [];
@@ -47,10 +57,7 @@ const StoryValidation = ({ contexts }) => {
     fetchSSE(
       uri,
       {
-        body: JSON.stringify({
-          userinput: promptInput,
-          context: selectedContext,
-        }),
+        body: JSON.stringify(buildRequestData()),
         signal: ctrl.signal,
       },
       {
@@ -157,6 +164,7 @@ const StoryValidation = ({ contexts }) => {
                 contexts={contexts}
                 value={selectedContext?.key}
               />
+              <PromptPreview buildRenderPromptRequest={buildRequestData} />
               <Button
                 onClick={onSubmitPrompt}
                 className="go-button"

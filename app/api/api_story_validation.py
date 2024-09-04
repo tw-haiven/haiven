@@ -75,18 +75,6 @@ class ApiStoryValidation(HaivenBaseApi):
     def __init__(self, app, chat_session_memory, model_key, prompt_list):
         super().__init__(app, chat_session_memory, model_key, prompt_list)
 
-        @app.post("/api/story-validation/questions")
-        def story_validation(request: StoryValidationQuestions):
-            prompt, _ = prompt_list.render_prompt(
-                active_knowledge_context=request.context,
-                prompt_choice="guided-story-validation",
-                user_input=request.userinput,
-                additional_vars={},
-                warnings=[],
-            )
-
-            return self.stream_json_chat(prompt, "story-validation")
-
         @app.post("/api/story-validation/scenarios")
         def generate_scenarios(body: StoryValidationScenarios):
             prompt = get_story_generation_prompt(body)

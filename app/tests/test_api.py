@@ -368,48 +368,6 @@ class TestApi(unittest.TestCase):
         assert kwargs["options"].category == "requirements-breakdown-explore"
         assert kwargs["session_id"] == "some session id"
 
-    @patch("llms.chats.JSONChat")
-    @patch("llms.chats.ChatManager")
-    @patch("prompts.prompts.PromptList")
-    def test_story_validation(
-        self,
-        mock_prompt_list,
-        mock_chat_manager,
-        mock_json_chat,
-    ):
-        mock_json_chat.run.return_value = "some response from the model"
-        mock_chat_manager.json_chat.return_value = (
-            "some_key",
-            mock_json_chat,
-        )
-        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
-        ApiStoryValidation(
-            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
-        )
-
-        # Make the request to the endpoint
-        user_input = "some user input"
-        response = self.client.post(
-            "/api/story-validation/questions",
-            json={"userinput": user_input, "context": ""},
-        )
-
-        # Assert the response
-        assert response.status_code == 200
-        streamed_content = response.content.decode("utf-8")
-        assert streamed_content == "some response from the model"
-        mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_context=ANY,
-            prompt_choice="guided-story-validation",
-            user_input=user_input,
-            additional_vars={},
-            warnings=ANY,
-        )
-
-        args, kwargs = mock_chat_manager.json_chat.call_args
-        assert kwargs["options"].category == "story-validation"
-        assert kwargs["session_id"] is None
-
     @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
     @patch("llms.chats.StreamingChat")
