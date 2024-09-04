@@ -8,6 +8,8 @@ import ChatExploration from "./_chat_exploration";
 import HelpTooltip from "../app/_help_tooltip";
 import { parse } from "best-effort-json-parser";
 
+import { RiChat2Line, RiCheckboxMultipleBlankFill } from "react-icons/ri";
+
 let ctrl;
 
 const RequirementsBreakdown = ({ contexts }) => {
@@ -39,6 +41,12 @@ const RequirementsBreakdown = ({ contexts }) => {
       ...scenarios[id],
     });
     setDrawerOpen(true);
+  };
+
+  const onCopy = (id) => {
+    navigator.clipboard.writeText(
+      "## " + scenarios[id].title + "\n\n" + scenarios[id].summary,
+    );
   };
 
   const textSnippetsUserInput = contexts ? (
@@ -209,7 +217,16 @@ const RequirementsBreakdown = ({ contexts }) => {
                         key="explore"
                         onClick={() => onExplore(i)}
                       >
-                        Explore
+                        <RiChat2Line style={{ fontSize: "large" }} />
+                      </Button>,
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onCopy(i)}
+                      >
+                        <RiCheckboxMultipleBlankFill
+                          style={{ fontSize: "large" }}
+                        />
                       </Button>,
                     ]}
                   >
