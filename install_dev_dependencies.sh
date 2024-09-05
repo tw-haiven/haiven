@@ -35,6 +35,7 @@ printf "\nhaiven-cli is installed at %s" "$CLI_EXEC_PATH"
 cd app
 python3 -m venv .venv
 source .venv/bin/activate
+poetry install
 
 # PRE-COMMIT
 
