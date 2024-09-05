@@ -15,12 +15,14 @@
         "scss": true,
         "terraform": true
     },
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.autoComplete.extraPaths": ["app"],
+    "python.analysis.extraPaths": [
+        "app"
+    ],
     "python.testing.pytestArgs": [
         "app"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "github-actions.workflows.pinned.workflows": [
-        ".github/workflows/main.yml"
-    ]
+    "python.testing.pytestEnabled": true
 }

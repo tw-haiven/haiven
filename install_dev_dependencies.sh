@@ -20,6 +20,7 @@ printf "\nInstalling Poetry scripts..."
 poetry install
 poetry run init
 
+## CLI
 printf "\nInstalling Haiven CLI..."
 poetry run cli-init
 poetry run cli-build
@@ -30,21 +31,18 @@ rm haiven_wheel_path.txt
 haiven-cli --install-completion --show-completion
 printf "\nhaiven-cli is installed at %s" "$CLI_EXEC_PATH"
 
-printf "\nInstalling node dependencies..."
-cd ui
-yarn install
+# APP
+cd app
+python3 -m venv .venv
+source .venv/bin/activate
 
-printf "\nBuilding the ui..."
-yarn copy
-
-cd ..
+# PRE-COMMIT
 
 printf "\nChecking if Gitleaks is installed..."
 if ! command -v gitleaks &> /dev/null; then
     echo "Gitleaks is not installed. Installing Gitleaks using Homebrew..."
     brew install gitleaks
 fi
-
 
 printf "\nChecking if Pre-commit is installed..."
 if ! command -v pre-commit &> /dev/null; then
