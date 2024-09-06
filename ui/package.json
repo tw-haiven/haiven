@@ -8,6 +8,8 @@
     "copy": "next build; rm -rf ../app/resources/static/out; cp -r ./out ../app/resources/static/",
     "start": "next start -p $PORT",
     "lint": "next lint",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
     "update": "node update_packages.js"
   },
   "engines": {
@@ -43,9 +45,16 @@
     "tailwindcss": "^3.4.10"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
     "@types/node": "22.5.0",
     "@types/react": "^18.3.4",
+    "@vitejs/plugin-react": "^4.3.1",
+    "jsdom": "^25.0.0",
     "prettier": "3.3.3",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
   }
 }
