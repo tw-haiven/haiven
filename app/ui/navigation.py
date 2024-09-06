@@ -1,10 +1,10 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-from ui.url import Url
+from ui.url import HaivenUrl
 
 
 class NavigationManager:
     def __init__(self):
-        self.path = Url()
+        self.path = HaivenUrl()
         self.navigation = {
             "items": [
                 {

@@ -1,5 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-class Url:
+class HaivenUrl:
     def __init__(self):
         self.PATH_ABOUT = "about"
         self.PATH_ANALYSIS = "analysis"
@@ -11,6 +11,7 @@ class Url:
         self.PATH_LOGIN = "login"
         self.PATH_LOGOUT = "logout"
         self.PATH_TESTING = "testing"
+        self.PATH_BOBA = "boba"
 
     def about(self):
         return f"/{self.PATH_ABOUT}"
@@ -41,3 +42,6 @@ class Url:
 
     def testing(self):
         return f"/{self.PATH_TESTING}"
+
+    def boba(self):
+        return f"/{self.PATH_BOBA}"

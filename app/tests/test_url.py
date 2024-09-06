@@ -1,11 +1,11 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import unittest
-from ui.url import Url
+from ui.url import HaivenUrl
 
 
 class TestPath(unittest.TestCase):
     def setUp(self):
-        self.path = Url()
+        self.path = HaivenUrl()
 
     def test_path_about(self):
         self.assertEqual(self.path.PATH_ABOUT, "about")

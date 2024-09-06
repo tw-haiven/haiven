@@ -17,7 +17,7 @@ from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.base_client import OAuthError
 from jinja2 import Environment, FileSystemLoader
-from ui.url import Url
+from ui.url import HaivenUrl
 import time
 import os
 
@@ -31,7 +31,7 @@ class Server:
         config_service: ConfigService,
         boba_api: BobaApi = None,
     ):
-        self.url = Url()
+        self.url = HaivenUrl()
         self.chat_manager = chat_manager
         self.config_service = config_service
         self.boba_api = boba_api
@@ -83,9 +83,34 @@ class Server:
             return RedirectResponse(url="/")
 
         @app.get(self.url.general())
-        async def teamai(request: Request):
+        async def backwards_teamai(request: Request):
             # backwards compatibility from when "/teamai" was the main entry path
             return RedirectResponse(url=self.url.analysis())
+
+        @app.get(self.url.analysis())
+        async def backwards_analysis(request: Request):
+            # backwards compatibility
+            return RedirectResponse(url=self.url.boba())
+
+        @app.get(self.url.testing())
+        async def backwards_testing(request: Request):
+            # backwards compatibility
+            return RedirectResponse(url=self.url.boba())
+
+        @app.get(self.url.coding())
+        async def backwards_coding(request: Request):
+            # backwards compatibility
+            return RedirectResponse(url=self.url.boba())
+
+        @app.get(self.url.about())
+        async def backwards_about(request: Request):
+            # backwards compatibility
+            return RedirectResponse(url=self.url.boba() + "/about")
+
+        @app.get(self.url.knowledge())
+        async def backwards_knowledge(request: Request):
+            # backwards compatibility
+            return RedirectResponse(url=self.url.boba() + "/knowledge")
 
         @app.get(self.url.logout())
         async def logout(request: Request):
