@@ -17,7 +17,13 @@ const { TextArea } = Input;
 import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
-import { RiStackLine, RiGridLine } from "react-icons/ri";
+import {
+  RiStackLine,
+  RiGridLine,
+  RiChat2Line,
+  RiCheckboxMultipleBlankLine,
+  RiCheckboxMultipleBlankFill,
+} from "react-icons/ri";
 
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
@@ -59,6 +65,30 @@ const ThreatModelling = ({ contexts }) => {
 
   const onSelectDisplayMode = (event) => {
     setDisplayMode(event.target.value);
+  };
+
+  const scenarioToText = (scenario) => {
+    return (
+      "# Title: " +
+      scenario.title +
+      "\n\nCategory: " +
+      scenario.category +
+      "\nDescription: " +
+      scenario.summary +
+      "\nProbability: " +
+      scenario.probability +
+      "\nImpact: " +
+      scenario.impact
+    );
+  };
+
+  const onCopyAll = () => {
+    const allScenarios = scenarios.map(scenarioToText);
+    navigator.clipboard.writeText(allScenarios.join("\n\n"));
+  };
+
+  const onCopyOne = (id) => {
+    navigator.clipboard.writeText(scenarioToText(scenarios[id]));
   };
 
   const buildRequestData = () => {
@@ -206,23 +236,31 @@ const ThreatModelling = ({ contexts }) => {
           </div>
 
           <div className={"scenarios-collection " + displayMode + "-display"}>
-            <div>
-              <Radio.Group
-                className="display-mode"
-                onChange={onSelectDisplayMode}
-                defaultValue="grid"
-                style={{ float: "right" }}
-                size="small"
-              >
-                <Radio.Button value="grid">
-                  <RiStackLine /> CARD VIEW
-                </Radio.Button>
-                <Radio.Button value="plot">
-                  <RiGridLine /> MATRIX VIEW
-                </Radio.Button>
-              </Radio.Group>
-            </div>
-            <div className="cards-container  with-display-mode">
+            {scenarios && scenarios.length > 0 && (
+              <div className="scenarios-actions">
+                <Button
+                  className="prompt-preview-copy-btn"
+                  onClick={onCopyAll}
+                  size="small"
+                >
+                  <RiCheckboxMultipleBlankLine /> COPY ALL
+                </Button>
+                <Radio.Group
+                  className="display-mode-choice"
+                  onChange={onSelectDisplayMode}
+                  defaultValue="grid"
+                  size="small"
+                >
+                  <Radio.Button value="grid">
+                    <RiStackLine /> CARD VIEW
+                  </Radio.Button>
+                  <Radio.Button value="plot">
+                    <RiGridLine /> MATRIX VIEW
+                  </Radio.Button>
+                </Radio.Group>
+              </div>
+            )}
+            <div className="cards-container with-display-mode">
               {scenarios.map((scenario, i) => {
                 return (
                   <Card
@@ -235,7 +273,16 @@ const ThreatModelling = ({ contexts }) => {
                         key="explore"
                         onClick={() => onExplore(i)}
                       >
-                        Explore
+                        <RiChat2Line style={{ fontSize: "large" }} />
+                      </Button>,
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onCopyOne(i)}
+                      >
+                        <RiCheckboxMultipleBlankFill
+                          style={{ fontSize: "large" }}
+                        />
                       </Button>,
                     ]}
                   >

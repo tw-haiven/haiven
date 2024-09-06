@@ -380,18 +380,18 @@ h4, h5 {
   margin-bottom: 0.2em;
 } 
 
-.display-mode {
+.display-mode-choice {
   position:relative;
   z-index: 0;
-  
+  float:right;
 }
 
-.display-mode span {
+.display-mode-choice span {
   font-size: 0.8em;
   margin-left: 0.2em;
 }
 
-.display-mode label {
+.display-mode-choice label {
 
   border: none;
   
@@ -399,6 +399,21 @@ h4, h5 {
     background-color: var(--color-flamingo);
     color: white;
   }
+}
+
+.scenarios-actions {
+  height: 1em;
+}
+
+.scenarios-actions button {
+  position:relative;
+  z-index: 0;
+  float: left;
+  margin-top: 0;
+  background-color: var(--color-flamingo);
+  color: white;
+  font-size: 0.8em;
+  margin-left: 0.2em;
 }
 
 /**** STORY VALIDATION ******/
@@ -547,24 +562,6 @@ h4, h5 {
 .sidebar .ant-menu-item-selected {
   background-color: var(--color-medium-gray);
 }
-
-/* LANDING PAGE */
-
-.landing-page {
-  padding: 1em 2em;
-}
-
-.landing-page .sample-screenshot {
-  width: 70%;
-  height: 70%;
-  color: #364d79;
-  line-height: 160px;
-  text-align: center;
-  background: #f1f1f1;
-  border: 1px solid #f1f1f1;
-  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
-}
-
 
 /* DASHBOARD - not used at the moment, hidden experiment */
 .dashboard {

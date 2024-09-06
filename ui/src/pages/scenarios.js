@@ -342,7 +342,7 @@ const Home = () => {
           <div className={"scenarios-collection " + displayMode + "-display"}>
             <div>
               <Radio.Group
-                className="display-mode"
+                className="display-mode-choice"
                 onChange={onSelectDisplayMode}
                 defaultValue="grid"
                 style={{ float: "right" }}
