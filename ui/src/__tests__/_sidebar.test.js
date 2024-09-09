@@ -1,3 +1,4 @@
+// © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { render, screen } from "@testing-library/react";
 import { act } from "react";
 import Sidebar from "../pages/_sidebar";
@@ -28,7 +29,7 @@ describe("Sidebar Component", () => {
   ];
 
   it("should render default menu items", async () => {
-    (useRouter).mockReturnValue({
+    useRouter.mockReturnValue({
       pathname: "/scenarios",
     });
 
@@ -36,15 +37,19 @@ describe("Sidebar Component", () => {
       render(<Sidebar prompts={[]} />);
     });
 
-    expect(screen.getByRole("link", { name: /Dashboard/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Chat with Haiven/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Dashboard/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Chat with Haiven/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/Ideate/i)).toBeInTheDocument();
     expect(screen.getByText(/Analyse/i)).toBeInTheDocument();
     expect(screen.getByText(/Architecture/i)).toBeInTheDocument();
   });
 
   it("should render menu items with prompts", async () => {
-    (useRouter).mockReturnValue({
+    useRouter.mockReturnValue({
       pathname: "/scenarios",
     });
 
@@ -63,7 +68,7 @@ describe("Sidebar Component", () => {
   });
 
   it("should show sub menu items if clicked menu item", async () => {
-    (useRouter).mockReturnValue({
+    useRouter.mockReturnValue({
       pathname: "/scenarios",
     });
 
