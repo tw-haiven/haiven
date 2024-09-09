@@ -66,7 +66,6 @@ const Sidebar = ({ prompts }) => {
       style={{ paddingTop: 10 }}
       items={menuItems}
       defaultSelectedKeys={[currentSelectedKey]}
-      defaultOpenKeys={["ideate", "analyse"]}
     ></Menu>
   );
 };
