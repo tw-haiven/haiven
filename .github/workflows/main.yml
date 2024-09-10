@@ -47,10 +47,25 @@ jobs:
         run: |
           cd cli && \
           poetry install --no-interaction --no-root
-      - name: Run tests
+      - name: Run Backend tests
         run: |
           cd cli && \
           poetry run pytest tests/
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+      - name: Install Yarn
+        run:
+          npm install yarn
+      - name: Install Node.js dependencies
+        run: |
+          cd ui
+          yarn install
+      - name: Run Frontend tests
+        run: |
+          cd ui
+          yarn test
 
   Build:
     if: github.ref == 'refs/heads/main'
