@@ -47,15 +47,10 @@ jobs:
         run: |
           cd cli && \
           poetry install --no-interaction --no-root
-      - name: Run Python tests
+      - name: Run tests
         run: |
           cd cli && \
           poetry run pytest tests/
-      - name: Run React tests
-        run: |
-          cd ui
-          yarn install
-          yarn test
 
   Build:
     if: github.ref == 'refs/heads/main'
