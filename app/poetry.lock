@@ -2507,13 +2507,13 @@ files = [
 
 [[package]]
 name = "ollama"
-version = "0.3.2"
+version = "0.3.3"
 description = "The official Python client for Ollama."
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "ollama-0.3.2-py3-none-any.whl", hash = "sha256:ed2a6f752bd91c49b477d84a259c5657785d7777689d4a27ffe0a4d5b5dd3cae"},
-    {file = "ollama-0.3.2.tar.gz", hash = "sha256:7deb3287cdefa1c39cc046163096f8597b83f59ca31a1f8ae78e71eccb7af95f"},
+    {file = "ollama-0.3.3-py3-none-any.whl", hash = "sha256:ca6242ce78ab34758082b7392df3f9f6c2cb1d070a9dede1a4c545c929e16dba"},
+    {file = "ollama-0.3.3.tar.gz", hash = "sha256:f90a6d61803117f40b0e8ff17465cab5e1eb24758a473cfe8101aff38bc13b51"},
 ]
 
 [package.dependencies]
@@ -4095,4 +4095,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "101e348055a2d1a7f5b935ec2af3272e37aa63c4b6593d1a43f6ce9796076519"
+content-hash = "16b7827cfc3d697a1f5716921867af9cc725c088246b57cf8d6623c8310218ac"
