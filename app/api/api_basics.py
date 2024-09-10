@@ -128,6 +128,8 @@ class ApiBasics(HaivenBaseApi):
                 )
                 response_data.append({"context": context, "snippets": snippets})
 
+            response_data.sort(key=lambda x: x["context"])
+
             return JSONResponse(response_data)
 
         @app.get("/api/knowledge/documents")
