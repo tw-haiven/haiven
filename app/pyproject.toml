@@ -35,7 +35,7 @@ python-dotenv = "^1.0.1"
 toml = "^0.10.2"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.2"
+pytest = "^8.3.3"
 pytest-mock = "^3.14.0"
 pytest-cov = "^5.0.0"
 
