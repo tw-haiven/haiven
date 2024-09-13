@@ -56,19 +56,57 @@ class HaivenBaseChat:
         summary = self.chat_client(copy_of_history)
         return summary.content
 
+    def _similarity_query(self, summary, message):
+        system_message = f"""You are a helpful assistant.
+        Your task is create a single search query to find relevant information, based on the conversation summary and the current user message.
+        Rules: 
+        - Search query should find relevant information for the current user message only.
+        - Include important key words and phrases that would help find relevant information from the summary.
+        - If the current user message does not need to search for additional information, return NONE.
+        - Only return the single standalone search query or NONE. No explanations needed.
+        
+        Conversation Summary:
+        {summary}
+        """
+        prompt = [SystemMessage(content=system_message)]
+        prompt.append(
+            HumanMessage(content=f"Current user message: {message} \n Query:")
+        )
+        query = self.chat_client(prompt)
+        print("Query:", query.content)
+
+        if "none" in query.content.lower():
+            return None
+        elif "query:" in query.content.lower():
+            return query.content.split("query:")[1].strip()
+        else:
+            return query.content
+
     def _similarity_search_based_on_history(
-        self, message, knowledge_document_key, knowledge_context
+        self, message, user_input, knowledge_document_key, knowledge_context
     ):
-        if len(self.memory) > 2:
+        if len(self.memory) > 4:
             summary = self._summarise_conversation()
         else:
             summary = "\n".join([message.content for message in self.memory])
 
-        similarity_query = f"""
-            {summary}
+        # similarity_query = f"""
+        #     {summary}
 
-            {message or ""}
-        """
+        #     {message or ""}
+        # """
+
+        print("Memory:", self.memory)
+
+        if message == user_input:
+            similarity_query = self._similarity_query(summary, user_input)
+        else:
+            similarity_query = user_input
+
+        print("Similarity query:", similarity_query)
+
+        if similarity_query is None:
+            return None, None
 
         if knowledge_document_key == "all":
             context_documents = (
@@ -117,12 +155,13 @@ class StreamingChat(HaivenBaseChat):
         super().__init__(chat_client, knowledge_manager, system_message)
         self.stream_in_chunks = stream_in_chunks
 
-    def run(self, message: str):
+    def run(self, message: str, user_input: str = None):
         self.memory.append(HumanMessage(content=message))
         self.log_run()
 
         for i, chunk in enumerate(self.chat_client.stream(self.memory)):
             if i == 0:
+                self.memory[-1].content = user_input or message
                 self.memory.append(AIMessage(content=""))
             self.memory[-1].content += chunk.content
             yield chunk.content
@@ -132,9 +171,10 @@ class StreamingChat(HaivenBaseChat):
         knowledge_document_key: str,
         knowledge_context: str,
         message: str = None,
+        user_input: str = None,
     ):
         context_for_prompt, sources_markdown = self._similarity_search_based_on_history(
-            message, knowledge_document_key, knowledge_context
+            message, user_input, knowledge_document_key, knowledge_context
         )
 
         user_request = (
@@ -146,15 +186,14 @@ class StreamingChat(HaivenBaseChat):
         
         {user_request}
 
-        ---- Here is some additional CONTEXT that might be relevant to this:
-        {context_for_prompt}
+        {'---- Here is some additional CONTEXT that might be relevant to this:' + context_for_prompt if context_for_prompt else ''}
 
         -------
         Do not provide any advice that is outside of the CONTEXT I provided.
         """
 
         # ask the LLM for the advice
-        for chunk in self.run(prompt):
+        for chunk in self.run(prompt, user_input):
             yield chunk, sources_markdown
 
 

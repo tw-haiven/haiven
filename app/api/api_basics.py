@@ -49,7 +49,12 @@ class HaivenBaseApi:
         self.prompt_list = prompt_list
 
     def stream_json_chat(
-        self, prompt, chat_category, chat_session_key_value=None, document_key=None
+        self,
+        user_input,
+        prompt,
+        chat_category,
+        chat_session_key_value=None,
+        document_key=None,
     ):
         chat_session_key_value, chat_session = self.chat_manager.json_chat(
             client_config=ChatClientConfig(self.model_key, 0.5),
@@ -64,15 +69,20 @@ class HaivenBaseApi:
         )
 
     def stream_text_chat(
-        self, prompt, chat_category, chat_session_key_value=None, document_key=None
+        self,
+        user_input,
+        prompt,
+        chat_category,
+        chat_session_key_value=None,
+        document_key=None,
     ):
         def stream(chat_session: StreamingChat, prompt):
             if document_key:
                 sources = ""
                 for chunk, sources in chat_session.run_with_document(
-                    document_key, None, prompt
+                    document_key, None, prompt, user_input
                 ):
-                    sources = sources
+                    sources = sources if sources else ""
                     yield chunk
                 yield "\n\n" + sources
             else:
@@ -180,6 +190,7 @@ class ApiBasics(HaivenBaseApi):
                 rendered_prompt = prompt_data.userinput
 
             return stream_fn(
+                user_input=prompt_data.userinput,
                 prompt=rendered_prompt,
                 chat_category="boba-chat",
                 chat_session_key_value=prompt_data.chatSessionId,

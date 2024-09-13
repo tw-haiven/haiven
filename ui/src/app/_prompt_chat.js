@@ -107,6 +107,7 @@ const PromptChat = ({
         body: JSON.stringify({
           userinput: lastMessage?.content,
           chatSessionId: chatSessionId,
+          document: selectedDocument,
         }),
       });
       return response;
