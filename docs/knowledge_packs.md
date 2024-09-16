@@ -66,9 +66,7 @@ Each team's knowledge pack needs to have the following folder structure:
     + prompts
         + chat
             - prompt_1.md
-        + diagrams
             - prompt_2.md
-        + brainstorming
             - prompt_3.md
     + contexts
         + team_1
@@ -93,9 +91,9 @@ Each team's knowledge pack needs to have the following folder structure:
             
 ```
 
-### 1. Change "business_context" and "architecture" knowledge snippets
+### 1. Add and change contexts
 
-The minimum of knowledge you should set up for prompts to work are the static snippets for `business_context.md` and `architecture.md`. These should describe the team's domain context and the team's architecture at a high level, in 2, maybe max 3 paragraphs.
+The minimum of knowledge you should set up for prompts to work are the static context snippets for `domain.md` and `architecture.md`. These should describe the team's domain context and the team's architecture at a high level, in 2, maybe max 3 paragraphs.
 
 These snippets will be included in every prompt that references them, so they will be a part of the prompt size every time! Therefore you should think about how to concisely describe the business context and architecture, and use the important key words to give the AI good pointers about what you're working on.
 
@@ -107,21 +105,7 @@ You can try and sanity check if the AI "understands" your knowledge by going int
 
 ### 2. Add your own prompts
 
-#### Pick an interaction pattern
-
-Haiven currently supports 3 different prompt interaction patterns: Chat, diagrams, or brainstorming.
-
-Which interaction pattern to choose depends e.g. on what the user typically has available as input, at what level of detail, or how experienced a user is at a task.
-
-- **Chat**: This is the most straightforward interaction with the AI - you start the user off with a prepared prompt and one piece of input from the user. This is a good choice if you expect that the user usually has a good description of their input ready, or you want to do something that doesn't need detailed input. E.g., a high level version of an artifact that you want to refine with the prompt.
-
-- **Brainstorming**: This interaction pattern is turning the tables, the AI will ask the user questions, instead of the other way around. After a few questions, the AI will then provide an outcome based on the user's answers, and the user can continue the chat conversation if they want. This is a good choice if you want to help the user to fill in gaps, i.e. you want the AI to lead them through what input they need to create to get to their goal. It's also often more useful for users who have little experience with the task at hand, whereas it might be annoying for experts in the task. **!! this interaction pattern works best with models who are good at reasoning, like GPT-4. It might not work at all with some models.**
-
-- **Diagrams**: In this interaction pattern, the user in put is not provided in form of text, but in form of an image. The image is then described by AI, and used as part of the prompt. This is useful if you expect that users have images describing their situation, rather than text. (E.g., an architecture diagram, or a user flow diagram).
-
-#### Define the prompt
-
-Create a markdown file and put it into the respective folder - `prompts/chat`, `prompts/diagrams`, or `prompts/brainstorming`. Use one of the existing prompt files in that folder as an example. This is especially important for the brainstorming prompts, as they have a specific structure that the AI expects.
+Create a markdown file and put it into the `prompts/chat` folder. Use one of the existing prompt files in that folder as an example to define the metadata. The new prompt will automatically be loaded into the sidebar menu and the dashboard.
 
 **Prompt metadata**
 
@@ -136,20 +120,18 @@ Every prompt file has a frontmatter block that defines metadata about the prompt
 
 **Prompt content**
 
-Inside of the prompt text, you can reference the static knowledge snippets that are defined in a team's `knowledge` folder. Use the `{domain}` and `{architecture}` variables to reference the business context and architecture snippets. Those two are the default knowledge snippets that are used in many of the prepared prompts. But you can add your own if you need to. E.g., you could add an additional snippet for "Frontend coding patterns". You can define the name of the reference variable in the metadata of the knowledge snippet file (see `business_context.md` as an example)
+Inside of the prompt text, you can reference the static knowledge snippets that are defined in a team's `knowledge` folder. Use the `{domain}` and `{architecture}` variables to reference the business context and architecture snippets. Those two are the default knowledge snippets that are used in many of the prepared prompts. But you can add your own if you need to. E.g., you could add an additional snippet for "Frontend coding patterns". You can define the name of the reference variable in the metadata of the knowledge snippet file (see `domain.md` as an example)
 
-### Add knowledge sources
+### 3. Add documents
 
 The previous section only touched on one form of knowledge source, the context description text snippets.
 
 The application also supports retrieval-augmented generation with a more advanced form of knowledge sources. Those can be used in 2 ways:
-- Users can ask them questions directly on the **Knowledge Chat** tab
-- Users can use them to enhance their chat conversations - e.g., while they are using a prompt to prepare threat modelling, they could ask for additional relevant context from security or compliance documents.
-
-#### Deciding what knowledge sources to use
-
-
+- Users can ask them questions directly on the **Chat with Haiven** section
+- Users can use them to enhance their conversations - e.g., while they are using a prompt to prepare threat modelling, they could ask for additional relevant context from security or compliance documents.
 
 #### Creating a knowledge source
 
 You will find a utility CLI in the `[./cli](cli)` folder with more documentation.
+
+The new documents will be accessible to the user in the "Documents" dropdowns in the application.

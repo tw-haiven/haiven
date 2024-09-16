@@ -40,7 +40,7 @@ this should result in a context structure being created within your knowledge pa
 └──contexts
   └──<CONTEXT_NAME>
     ├── architecture.md
-    ├── business_context.md
+    ├── domain.md
     └── embeddings
 ```
 
@@ -74,7 +74,7 @@ For each file in the source directory a markdown file and a .kb folder should be
 └──contexts
   └──<CONTEXT_NAME>
     ├── architecture.md
-    ├── business_context.md
+    ├── domain.md
     └── embeddings
       ├── file1.md
       └── file1.kb
