@@ -100,7 +100,8 @@ export const staticFeaturesForDashboard = () => {
     {
       identifier: "boba-creative-matrix",
       title: "Creative Matrix",
-      help_prompt_description: "TODO ...",
+      help_prompt_description:
+        'Create a "Creative Matrix" to generate new ideas across dimensions that you can define yourself.',
       categories: ["ideate"],
       type: "static",
       link: "/creative-matrix",
