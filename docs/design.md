@@ -78,7 +78,7 @@ graph TD;
     
 ```
 
-We currently have two consumers of those main components, the Gradio UI, and the API used by the "Guided mode" React frontend:
+We currently have one consumer of those main components, which is the API used by the React frontend.
 
 ```mermaid
 %%{init: {'theme': 'neutral' } }%%
@@ -91,25 +91,12 @@ graph TD;
         BobaApi --> |creates| Api...
     end
 
-    subgraph GradioUI
-        UIFactory
-        UIFactory --> |creates| UIPrompts[UI for prompts chat]
-        UIFactory --> |creates| UIBrains[UI for brainstorming chat]
-        UIFactory --> |creates| UIMore[UI for ...]
-    end
-
-    subgraph Shared
+    subgraph Main
 
         BobaApi --> PromptsFactory
         BobaApi --> KnowledgeManager
         BobaApi --> ChatManager
         BobaApi --> ConfigService
-
-        UIFactory --> PromptsFactory
-        UIFactory --> KnowledgeManager
-        UIFactory --> ChatManager
-        
-        UIFactory --> ImageDescriptionService
 
     end
 ```

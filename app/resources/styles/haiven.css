@@ -52,11 +52,6 @@
   font-size: var(--body-text-size) !important;
 }
 
-.gradio-container {
-  padding: 0 !important;
-  max-width: 100% !important;
-}
-
 .haiven-content {
   padding: 0 3em;
 
