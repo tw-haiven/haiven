@@ -19,6 +19,7 @@ def backwards_compat_env_vars():
 def create_server():
     load_dotenv()
     backwards_compat_env_vars()
+    os.environ["GRADIO_ANALYTICS_ENABLED"] = "false"
     DEFAULT_CONFIG_PATH = "config.yaml"
 
     HaivenLogger.get().logger.info("Starting Haiven...")

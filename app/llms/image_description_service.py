@@ -23,10 +23,10 @@ class ImageDescriptionService:
         model (Model): Configuration of the model to be used for generating image descriptions. This includes the provider (GCP, Azure, AWS Anthropic) and necessary credentials and endpoints.
 
     Methods:
-        prompt_with_image(image: Image, prompt: str) -> str:
+        prompt_with_image(image_from_gradio: Image, prompt: str) -> str:
             A static method that serves as the entry point for clients to get descriptions of images. It delegates the actual processing to an instance method.
 
-        _prompt_with_image(image: Image, user_input: str) -> str:
+        _prompt_with_image(image_from_gradio: Image, user_input: str) -> str:
             Determines the appropriate cloud provider based on the `model_definition` and forwards the request to the corresponding method for processing.
 
         _describe_with_gcp(image: Image.Image, user_input: str) -> str:
@@ -59,8 +59,8 @@ class ImageDescriptionService:
         self.model_definition = model
         self.model_client = None  # will be instantiated based on the provider
 
-    def prompt_with_image(self, image: Image, user_input: str) -> str:
-        if image is None:
+    def prompt_with_image(self, image_from_gradio: Image, user_input: str) -> str:
+        if image_from_gradio is None:
             return ""
 
         if user_input == "":
@@ -68,15 +68,17 @@ class ImageDescriptionService:
 
         match self.model_definition.provider.lower():
             case "gcp":
-                return self._describe_with_gcp(image, user_input)
+                return self._describe_with_gcp(image_from_gradio, user_input)
             case "azure":
-                return self._describe_image_with_azure(image, user_input)
+                return self._describe_image_with_azure(image_from_gradio, user_input)
             case "aws":
-                return self._describe_image_with_aws_anthropic(image, user_input)
+                return self._describe_image_with_aws_anthropic(
+                    image_from_gradio, user_input
+                )
             case "ollama":
-                return self._describe_image_with_ollama(image, user_input)
+                return self._describe_image_with_ollama(image_from_gradio, user_input)
             case "openai":
-                return self._describe_image_with_openai(image, user_input)
+                return self._describe_image_with_openai(image_from_gradio, user_input)
             case _:
                 return "Provider not supported"
 
@@ -190,14 +192,14 @@ class ImageDescriptionService:
             print("A client error occured: " + format(message))
             yield "Error: " + message
 
-    def _describe_image_with_ollama(self, image: Image.Image, user_input: str):
+    def _describe_image_with_ollama(self, gradio_image: Image.Image, user_input: str):
         res = ollama.chat(
             model=self.model_definition.config.get("model"),
             messages=[
                 {
                     "role": "user",
                     "content": user_input,
-                    "images": [self._get_image_bytes(image)],
+                    "images": [self._get_image_bytes(gradio_image)],
                 }
             ],
         )

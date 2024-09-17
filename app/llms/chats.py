@@ -511,3 +511,53 @@ class ChatManager:
             chat_category=options.category if options else None,
             # TODO: Pass user identifier from session
         )
+
+
+# Temporary class to wrap the StreamingChat for the GradioUI, which needs the chat_history as return value
+# This is not needed for other clients, who might handle chat history display in their interface elsewhere
+class UIStreamingChatWrapper:
+    @staticmethod
+    def start_with_prompt(
+        chat_client: StreamingChat,
+        prompt: str,
+        initial_display_message: str = "Let's get started!",
+    ):
+        chat_history = [[initial_display_message, ""]]
+        for chunk in chat_client.run(prompt):
+            chat_history[-1][1] += chunk
+            yield chat_history
+
+    @staticmethod
+    def next(chat_client: StreamingChat, human_message, chat_history=[]):
+        chat_history += [[human_message, ""]]
+        for chunk in chat_client.run(human_message):
+            chat_history[-1][1] += chunk
+            yield chat_history
+
+    @staticmethod
+    def next_advice_from_knowledge(
+        chat_client: StreamingChat,
+        chat_history,
+        knowledge_document_key: str,
+        knowledge_context: str,
+        message: str = None,
+    ):
+        for i, (chunk, sources_markdown) in enumerate(
+            chat_client.run_with_document(
+                knowledge_document_key, knowledge_context, message
+            )
+        ):
+            if i == 0:
+                chat_history += [
+                    [
+                        f"""{message}
+                        
+                        (with input from '{knowledge_document_key}')
+                        """,
+                        "",
+                    ],
+                ]
+                chat_history[-1][1] += sources_markdown
+                yield chat_history
+            chat_history[-1][1] += chunk
+            yield chat_history
