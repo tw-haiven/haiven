@@ -96,14 +96,14 @@ class HaivenBaseChat:
         #     {message or ""}
         # """
 
-        print("Memory:", self.memory)
+        print("Memory: ", self.memory)
 
         if message == user_input:
             similarity_query = self._similarity_query(summary, user_input)
         else:
             similarity_query = user_input
 
-        print("Similarity query:", similarity_query)
+        print("Similarity query: ", similarity_query)
 
         if similarity_query is None:
             return None, None
@@ -115,6 +115,25 @@ class HaivenBaseChat:
                 )
             )
         else:
+            if knowledge_document_key == "semantic_router":
+                knowledge_document = (
+                    self.knowledge_manager.knowledge_base_documents.get_document(
+                        "semantic_router"
+                    )
+                )
+                semantic_route = self.knowledge_manager.knowledge_base_documents.similarity_search_on_single_document(
+                    query=similarity_query,
+                    document_key=knowledge_document.key,
+                    context=knowledge_document.context,
+                    k=1,
+                    score_threshold=0.35,
+                )
+                print("Semantic route", semantic_route)
+                if len(semantic_route) > 0:
+                    knowledge_document_key = semantic_route[0].metadata["key"]
+                else:
+                    return None, None
+
             knowledge_document = (
                 self.knowledge_manager.knowledge_base_documents.get_document(
                     knowledge_document_key
@@ -156,12 +175,13 @@ class StreamingChat(HaivenBaseChat):
         self.stream_in_chunks = stream_in_chunks
 
     def run(self, message: str, user_input: str = None):
-        self.memory.append(HumanMessage(content=message))
+        if len(self.memory) == 1:
+            self.memory[-1].content += "\n" + message
+        self.memory.append(HumanMessage(content=user_input))
         self.log_run()
 
         for i, chunk in enumerate(self.chat_client.stream(self.memory)):
             if i == 0:
-                self.memory[-1].content = user_input or message
                 self.memory.append(AIMessage(content=""))
             self.memory[-1].content += chunk.content
             yield chunk.content
