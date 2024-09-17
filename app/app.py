@@ -6,8 +6,11 @@ from llms.image_description_service import ImageDescriptionService
 from llms.clients import ChatClientFactory
 from llms.model import Model
 from prompts.prompts_factory import PromptsFactory
+from prompts.prompts_testing_ui import PromptsTestingUI
 from server import Server
 from config_service import ConfigService
+
+import gradio as gr
 
 
 class App:
@@ -31,6 +34,8 @@ class App:
 
         image_service = self.create_image_service(config_service)
 
+        self.prompts_testing_ui = PromptsTestingUI(chat_manager)
+
         self.server = Server(
             chat_manager,
             config_service,
@@ -44,4 +49,11 @@ class App:
         ).create()
 
     def launch_via_fastapi_wrapper(self):
+        gr.mount_gradio_app(
+            self.server,
+            self.prompts_testing_ui.create_gradio_ui(),
+            path="/prompting",
+            root_path="/prompting",
+        )
+
         return self.server
