@@ -1,5 +1,10 @@
 # ADR 2: Use Gradio as UI framework
 
+## Status
+**_SUPERCEDED_**
+
+We have since migrated from Gradio to React.
+
 ## Context
 
 We need a framework to implement the user interface.
