@@ -54,7 +54,7 @@ const ChatWidget = forwardRef(
 
     return (
       <div
-        style={{ background: theme.colorBgLayout }}
+        style={{ background: theme.colorBgLayout, height: "100%" }}
         className={ChatStylingClass}
       >
         {chatIsVisible && (
