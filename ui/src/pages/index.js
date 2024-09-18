@@ -56,6 +56,19 @@ export default function ChatDashboard() {
         ...new Set(data.flatMap((prompt) => prompt.categories)),
       ];
       categories.push("other");
+
+      const categoryOrder = [
+        "research",
+        "ideate",
+        "analysis",
+        "coding",
+        "testing",
+        "architecture",
+        "other",
+      ];
+      categories.sort(
+        (a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b),
+      );
       setAllCategories(categories);
       setSelectedCategories(categories);
     });
