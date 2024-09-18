@@ -13,7 +13,7 @@
     "update": "node update_packages.js"
   },
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "dependencies": {
     "@ant-design/pro-chat": "^1.15.2",
