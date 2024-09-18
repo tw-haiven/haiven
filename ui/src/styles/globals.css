@@ -421,10 +421,26 @@ z-index: 0;
 }
 
 /**** STORY VALIDATION ******/
+
+.second-step-collapsable .ant-collapse-header {
+  background-color: var(--color-light-gray);
+  font-weight: var(--font-weight-semi-bold);
+  
+}
+
+.second-step-collapsable .ant-collapse-content {
+  background-color: white;
+}
+
+.second-step-section p {
+  margin-top: 0;
+}
+
 .generated-text-results {
   padding: 0 var(--standard-left-padding);
   border: 1px solid var(--color-light-gray);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  margin-top: 1em;
 }
 
 .generated-text-results .icon-button {
@@ -434,6 +450,12 @@ z-index: 0;
   border: none;
   margin-top: 1em;
 }
+
+.generated-text-results h1 {
+  font-size: 1.2em;
+}
+
+
 
 /*** CREATIVE MATRIX ****/
 

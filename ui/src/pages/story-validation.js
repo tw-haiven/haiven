@@ -1,7 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import { Alert, Button, Card, Input, Space, Spin, Select } from "antd";
+import { Alert, Button, Card, Input, Space, Spin, Collapse } from "antd";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import ReactMarkdown from "react-markdown";
@@ -13,6 +13,8 @@ import PromptPreview from "../app/_prompt_preview";
 const StoryValidation = ({ contexts }) => {
   const [questions, setQuestions] = useState([]);
   const [storyScenarios, setStoryScenarios] = useState();
+  const [storySummary, setStorySummary] = useState();
+  const [scopeCritique, setScopeCritique] = useState();
   const [isLoading, setLoading] = useState(false);
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
@@ -33,6 +35,13 @@ const StoryValidation = ({ contexts }) => {
     setSelectedContext(value);
   };
 
+  const clearAll = () => {
+    setStoryScenarios("");
+    setStorySummary("");
+    setScopeCritique("");
+    setQuestions([]);
+  };
+
   const buildRequestData = () => {
     return {
       userinput: promptInput,
@@ -41,9 +50,10 @@ const StoryValidation = ({ contexts }) => {
     };
   };
 
-  const onSubmitPrompt = () => {
+  const onGenerateQuestions = () => {
     setModelOutputFailed(false);
     abortCurrentLoad();
+    clearAll();
 
     const ctrl = new AbortController();
     setCurrentAbortController(ctrl);
@@ -91,18 +101,16 @@ const StoryValidation = ({ contexts }) => {
     );
   };
 
-  const onGenerateScenarios = () => {
+  const onSecondStep = (apiEndpoint, onData) => {
     abortCurrentLoad();
     const ctrl = new AbortController();
     setCurrentAbortController(ctrl);
     setLoading(true);
 
-    const uri = "/api/story-validation/scenarios";
-
     let ms = "";
 
     fetchSSE(
-      uri,
+      apiEndpoint,
       {
         body: JSON.stringify({
           input: promptInput,
@@ -118,7 +126,7 @@ const StoryValidation = ({ contexts }) => {
           try {
             ms += data;
 
-            setStoryScenarios(ms);
+            onData(ms);
           } catch (error) {
             console.log("error", error, "data received", "'" + data + "'");
           }
@@ -130,9 +138,119 @@ const StoryValidation = ({ contexts }) => {
     );
   };
 
+  const onGenerateScenarios = () => {
+    onSecondStep("/api/story-validation/scenarios", setStoryScenarios);
+  };
+
+  const onGenerateSummary = () => {
+    onSecondStep("/api/story-validation/summary", setStorySummary);
+  };
+
+  const onGenerateScopeCritique = () => {
+    onSecondStep("/api/story-validation/invest", setScopeCritique);
+  };
+
   const copyScenarios = () => {
     navigator.clipboard.writeText(storyScenarios);
   };
+
+  const copySummary = () => {
+    navigator.clipboard.writeText(storySummary);
+  };
+
+  const copyScopeCritique = () => {
+    navigator.clipboard.writeText(scopeCritique);
+  };
+
+  const secondStepItems = [
+    {
+      key: "summary",
+      label: "Summary",
+      children: (
+        <div className="second-step-section">
+          <p>
+            Generate a high level summary of all the aspects of the story known
+            based on the questions and answers.
+          </p>
+          <Button
+            onClick={onGenerateSummary}
+            className="go-button"
+            disabled={isLoading}
+          >
+            GENERATE SUMMARY
+          </Button>
+
+          {storySummary && (
+            <>
+              <div className="generated-text-results">
+                <Button onClick={copySummary} className="icon-button">
+                  <RiFileCopyLine />
+                </Button>
+                <ReactMarkdown>{storySummary}</ReactMarkdown>
+              </div>
+            </>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "acceptance-criteria",
+      label: "Acceptance criteria",
+      children: (
+        <div className="second-step-section">
+          <p>
+            Generate scenarios in given/when/then style, considering happy paths
+            as well as failures and exceptions.
+          </p>
+          <Button
+            onClick={onGenerateScenarios}
+            className="go-button"
+            disabled={isLoading}
+          >
+            GENERATE ACs
+          </Button>
+
+          {storyScenarios && (
+            <div className="generated-text-results">
+              <Button onClick={copyScenarios} className="icon-button">
+                <RiFileCopyLine />
+              </Button>
+              <ReactMarkdown>{storyScenarios}</ReactMarkdown>
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "scope-check",
+      label: "Is this a good scope for a user story?",
+      children: (
+        <div className="second-step-section">
+          <p>
+            Generate a critique of the size of these requirements, and their
+            suitability for a thinly sliced user story.
+          </p>
+          <Button
+            onClick={onGenerateScopeCritique}
+            className="go-button"
+            disabled={isLoading}
+          >
+            EVALUATE USER STORY SCOPE
+          </Button>
+          {scopeCritique && (
+            <>
+              <div className="generated-text-results">
+                <Button onClick={copyScopeCritique} className="icon-button">
+                  <RiFileCopyLine />
+                </Button>
+                <ReactMarkdown>{scopeCritique}</ReactMarkdown>
+              </div>
+            </>
+          )}
+        </div>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -166,7 +284,7 @@ const StoryValidation = ({ contexts }) => {
               />
               <PromptPreview buildRenderPromptRequest={buildRequestData} />
               <Button
-                onClick={onSubmitPrompt}
+                onClick={onGenerateQuestions}
                 className="go-button"
                 disabled={isLoading}
               >
@@ -196,41 +314,9 @@ const StoryValidation = ({ contexts }) => {
                 </Button>
               </div>
             )}
-
-            {questions.length > 0 && (
-              <div className="user-inputs" style={{ marginTop: "1em" }}>
-                <h3>Get a draft</h3>
-                <div>
-                  Go through the questions and refine the answers.
-                  <br />
-                  Once you're happy with the selected answers, you can generate
-                  given/when/then scenarios for this story.
-                  <br />
-                  <br />
-                </div>
-                <Button
-                  onClick={onGenerateScenarios}
-                  className="go-button"
-                  disabled={isLoading}
-                >
-                  GIVEN/WHEN/THEN
-                </Button>
-              </div>
-            )}
           </div>
 
           <div className={"scenarios-collection cards-display"}>
-            {storyScenarios && (
-              <>
-                <h2>Draft </h2>
-                <div className="generated-text-results">
-                  <Button onClick={copyScenarios} className="icon-button">
-                    <RiFileCopyLine />
-                  </Button>
-                  <ReactMarkdown>{storyScenarios}</ReactMarkdown>
-                </div>
-              </>
-            )}
             {questions.length > 0 && <h2>Questions</h2>}
             <div className="cards-container">
               {questions.map((question, i) => {
@@ -264,6 +350,33 @@ const StoryValidation = ({ contexts }) => {
                 );
               })}
             </div>
+
+            {questions.length > 0 && (
+              <>
+                <div className="user-inputs" style={{ marginTop: "1em" }}>
+                  <h3>What do you want to generate next?</h3>
+                  <div>
+                    Go through the questions and refine the answers.
+                    <br />
+                    Once you're happy with the selected answers, you can
+                    generate different forms of summaries or further critique
+                    for your story.
+                    <br />
+                    <br />
+                  </div>
+                </div>
+                <Collapse
+                  defaultActiveKey={[
+                    "summary",
+                    "acceptance-criteria",
+                    "scope-check",
+                  ]}
+                  // defaultActiveKey={secondStepItems.map((i) => i.key)}
+                  items={secondStepItems}
+                  className="second-step-collapsable"
+                />
+              </>
+            )}
           </div>
         </div>
       </div>
