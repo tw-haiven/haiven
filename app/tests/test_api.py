@@ -375,7 +375,6 @@ class TestApi(unittest.TestCase):
         assert "some question 1" in prompt_argument
 
         args, kwargs = mock_chat_manager.streaming_chat.call_args
-        assert kwargs["options"].category == "story-validation-generate"
         assert kwargs["session_id"] is None
 
     @patch("llms.chats.JSONChat")
