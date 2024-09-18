@@ -96,11 +96,13 @@ export default function App({
         <Head>
           <title>Haiven</title>
         </Head>
-        <Layout style={{ minHeight: "100vh" }}>
+        <Layout
+          style={{ height: "100vh", display: "flex", flexDirection: "column" }}
+        >
           <Layout.Header
             style={{
-              position: "sticky",
-              margin: 0,
+              position: "fixed",
+              height: "65px",
               padding: 0,
               top: 0,
               zIndex: 20,
@@ -109,7 +111,7 @@ export default function App({
           >
             <Header />
           </Layout.Header>
-          <Layout style={{ minHeight: "100vh" }}>
+          <Layout style={{ marginTop: "64px", flex: 1, overflow: "hidden" }}>
             <Layout.Sider
               theme="light"
               collapsible
@@ -123,7 +125,7 @@ export default function App({
                 prompts={prompts}
               />
             </Layout.Sider>
-            <Layout.Content style={{ margin: 0, background: "white" }}>
+            <Layout.Content style={{ overflow: "auto", background: "white" }}>
               <Component
                 {...pageProps}
                 prompts={prompts}

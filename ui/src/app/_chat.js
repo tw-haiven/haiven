@@ -61,7 +61,7 @@ const ChatWidget = forwardRef(
           <ProChat
             style={{
               backgroundColor: theme.colorBgContainer,
-              height: "100vh", // this is important for the chat_exploration styling!
+              height: "100%", // this is important for the chat_exploration styling!
             }}
             showTitle
             assistantMeta={{
