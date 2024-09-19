@@ -71,22 +71,27 @@ class HaivenBaseApi:
     def stream_text_chat(
         self,
         user_input,
-        prompt,
+        prompt_rendered,
         chat_category,
         chat_session_key_value=None,
         document_key=None,
+        prompt_definition=None,
     ):
         def stream(chat_session: StreamingChat, prompt):
             if document_key:
                 sources = ""
                 for chunk, sources in chat_session.run_with_document(
-                    document_key, None, prompt, user_input
+                    document_key,
+                    None,
+                    prompt,
+                    user_input,
+                    prompt_definition=prompt_definition,
                 ):
                     sources = sources if sources else ""
                     yield chunk
                 yield "\n\n" + sources
             else:
-                for chunk in chat_session.run(prompt):
+                for chunk in chat_session.run(prompt, user_input):
                     yield chunk
 
         chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
@@ -96,7 +101,7 @@ class HaivenBaseApi:
         )
 
         return StreamingResponse(
-            stream(chat_session, prompt),
+            stream(chat_session, prompt_rendered),
             media_type=streaming_media_type(),
             headers=streaming_headers(chat_session_key_value),
         )
@@ -177,6 +182,7 @@ class ApiBasics(HaivenBaseApi):
                     if prompt_data.promptid.startswith("guided-")
                     else prompts_chat
                 )
+                chosen_prompt = prompts.get(prompt_data.promptid)
                 rendered_prompt, _ = prompts.render_prompt(
                     active_knowledge_context=prompt_data.context,
                     prompt_choice=prompt_data.promptid,
@@ -191,10 +197,11 @@ class ApiBasics(HaivenBaseApi):
 
             return stream_fn(
                 user_input=prompt_data.userinput,
-                prompt=rendered_prompt,
+                prompt_rendered=rendered_prompt,
                 chat_category="boba-chat",
                 chat_session_key_value=prompt_data.chatSessionId,
                 document_key=prompt_data.document,
+                prompt_definition=chosen_prompt,
             )
 
         @app.post("/api/prompt/render")

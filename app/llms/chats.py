@@ -83,7 +83,12 @@ class HaivenBaseChat:
             return query.content
 
     def _similarity_search_based_on_history(
-        self, message, user_input, knowledge_document_key, knowledge_context
+        self,
+        message,
+        user_input,
+        knowledge_document_key,
+        knowledge_context,
+        prompt_definition=None,
     ):
         if len(self.memory) > 4:
             summary = self._summarise_conversation()
@@ -101,7 +106,7 @@ class HaivenBaseChat:
         if message == user_input:
             similarity_query = self._similarity_query(summary, user_input)
         else:
-            similarity_query = user_input
+            similarity_query = f"{prompt_definition.metadata['title']} {prompt_definition.metadata['help_prompt_description']} {user_input}"
 
         print("Similarity query: ", similarity_query)
 
@@ -192,9 +197,14 @@ class StreamingChat(HaivenBaseChat):
         knowledge_context: str,
         message: str = None,
         user_input: str = None,
+        prompt_definition=None,
     ):
         context_for_prompt, sources_markdown = self._similarity_search_based_on_history(
-            message, user_input, knowledge_document_key, knowledge_context
+            message,
+            user_input,
+            knowledge_document_key,
+            knowledge_context,
+            prompt_definition=prompt_definition,
         )
 
         user_request = (
