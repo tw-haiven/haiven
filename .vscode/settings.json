@@ -15,6 +15,11 @@
         "scss": true,
         "terraform": true
     },
+    "github.copilot.chat.experimental.codeGeneration.instructions": [
+        {
+            "file": ".vscode/copilot-instructions.md"
+          }
+    ],
     "python.envFile": "${workspaceFolder}/.env",
     "python.autoComplete.extraPaths": ["app"],
     "python.analysis.extraPaths": [
