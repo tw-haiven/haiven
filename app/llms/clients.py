@@ -137,6 +137,7 @@ class ChatClientFactory:
                 if stop is not None:
                     model_kwargs["stop"] = [stop]
                 return ChatOpenAI(
+                    api_key="",
                     base_url=model.config.get("base_url") + "/v1",
                     model=model.config.get("model"),
                     temperature=client_config.temperature,
