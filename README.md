@@ -82,7 +82,7 @@ docker run \
         -e AUTH_SWITCHED_OFF=true \
         -e ENABLED_PROVIDERS=ollama \
         -e ENABLED_EMBEDDINGS_MODEL=ollama-mxbai-embed-large \
-        -e ENABLED_VISION_MODEL=llava:7b \
+        -e ENABLED_VISION_MODEL=ollama-local-llava \
         -e OLLAMA_HOST=http://host.docker.internal:11434 \
         -p 8080:8080 \
         ghcr.io/tw-haiven/haiven:v0.3
@@ -139,7 +139,7 @@ If you want to use Azure, GCP or AWS, you need to set the corresponding environm
 Prerequisites:
 - Python (3.11)
 - [Poetry](https://python-poetry.org/)
-- Node 20 and yarn
+- Node 22 and yarn
 - If you don't have OAuth integration and credentials set up yet, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
 
 Set up all other dependencies with this script (MacOS only):
