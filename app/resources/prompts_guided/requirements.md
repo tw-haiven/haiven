@@ -10,31 +10,19 @@ help_prompt_description: "To be used and rendered only by the application for th
 You are a member of a software engineering team and are assisting me in requirements analysis.
 
 ## TASK
-In Agile, an epic is a large user story that encompasses several smaller, related user stories. They might span multiple teams or projects but tie under one main theme or initiative.
 
-Please break down the epic provided by the user to produce multiple user stories, each with a clear name and concise description.
+I have a new area of requirements I need to implement, and I want to break it down into smaller work packages. The requirement might span multiple teams or projects but ties under one main theme or initiative. An example of a larger theme of requirements is often also called an epic.
 
-------
+Please break down the requirements provided by the user to produce multiple smaller packages that I could ultimately turn into user stories, each with a clear name and concise description.
 
-When breaking down an epic, consider the following strategies:
+Use the following strategy:
 
-- Storytelling Approach: Visualize the epic's journey from start to finish. What are the main events or sequences?
+{variation}
 
-- Workflow Breakdown: List the specific tasks or activities that need to be completed. Example: For a product launch epic, you might have design, prototyping, manufacturing, marketing, and distribution.
-
-- Role-Based Breakdown: Identify the stakeholders or roles involved.
-Allocate tasks or stories based on their expertise or responsibility within the epic.
-
-- Timeline-Based Breakdown: Divide the epic into phases or milestones.
-Prioritize user stories for each sprint duration, tackling high-priority items first.
-
-- Data Boundaries: Separate the epic based on varying data or information needs. Example: One story might tackle displaying company stats, while another handles company contacts.
-
-- Operational Boundaries: Determine the epic's core functionality or minimum viable feature. Sequentially add slices of extended functionality.
-
-- Cross-cutting Concerns: Recognize overarching attributes required for every feature. Separate out concerns such as security, validation, and exception handling.
+Do not pull out cross-functional or non-functional requirements into separate work packages, they should be implemented as each part of the work package. For example, do not create separate packages to "improve performance", or "make mobile ready", instead mention those in the work package description, if relevant.
 
 ## CONTEXT
+
 ~This is the application we're working on, as context:~
 
 {domain}
@@ -44,9 +32,19 @@ Prioritize user stories for each sprint duration, tackling high-priority items f
 {user_input}
 
 ## INSTRUCTIONS
-You will create at least 5 user story suggestions, start with the most essential ones. If you have more ideas, give me up to 10 user stories.
+You will create at least 5 work package suggestions, start with the most essential ones. If you have more ideas, give me up to 10 packages.
 
-You will respond with only a valid JSON array of story objects. Each story object will have the following schema:
+For the summaries, consider the following structure and make it easily readable by adding markdown formatting:
+========
+**Description**
+
+<High level description of the work package. Consider starting with "As a <user>..." and mention the end user who mainly benefits from the implementation of this feature / work package>
+
+**Cross-functionals**
+<If relevant, call out cross-functional concerns separately, in a bullet list>
+========
+
+You will respond with only a valid JSON array of work package objects. Each work package object will have the following schema:
 
     - "title": <string>,
     - "summary": <string>,

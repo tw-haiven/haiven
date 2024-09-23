@@ -6,10 +6,12 @@ import { parse } from "best-effort-json-parser";
 import { Alert, Button, Card, Drawer, Input, Space, Spin, Select } from "antd";
 const { TextArea } = Input;
 import { RiChat2Line, RiCheckboxMultipleBlankFill } from "react-icons/ri";
+import ReactMarkdown from "react-markdown";
 
 import ChatExploration from "./_chat_exploration";
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
+import HelpTooltip from "../app/_help_tooltip";
 
 let ctrl;
 
@@ -22,16 +24,20 @@ const RequirementsBreakdown = ({ contexts }) => {
   const [drawerTitle, setDrawerTitle] = useState("Explore requirement");
   const [chatContext, setChatContext] = useState({});
   const [modelOutputFailed, setModelOutputFailed] = useState(false);
+  const [variations, setVariations] = useState([
+    { value: "workflow", label: "By workflow" },
+    { value: "timeline", label: "By timeline" },
+    { value: "data-boundaries", label: "By data boundaries" },
+    { value: "operational-boundaries", label: "By operational boundaries" },
+  ]);
+  const [selectedVariation, setSelectedVariation] = useState(variations[0]);
+
   const router = useRouter();
 
   function abortLoad() {
     ctrl && ctrl.abort();
     setLoading(false);
   }
-
-  const handleContextSelection = (value) => {
-    setSelectedContext(value);
-  };
 
   const onExplore = (id) => {
     setDrawerTitle("Explore requirement: " + scenarios[id].title);
@@ -58,13 +64,13 @@ const RequirementsBreakdown = ({ contexts }) => {
     };
   };
 
-  const onSubmitPrompt = (event) => {
+  const onSubmitPrompt = () => {
     setModelOutputFailed(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
 
-    const uri = "/api/prompt";
+    const uri = "/api/requirements?variation=" + selectedVariation;
 
     const requestData = buildRequestData();
 
@@ -136,7 +142,7 @@ const RequirementsBreakdown = ({ contexts }) => {
               <h1>Requirements breakdown</h1>
               <p>
                 Haiven will help you break down your requirement into multiple
-                scenarios.
+                work packages.
               </p>
             </div>
             <div className="prompt-chat-options-section">
@@ -152,12 +158,23 @@ const RequirementsBreakdown = ({ contexts }) => {
                 />
               </div>
               <ContextChoice
-                onChange={handleContextSelection}
+                onChange={setSelectedContext}
                 contexts={contexts}
                 value={selectedContext?.key}
               />
               <div className="user-input">
-                <PromptPreview buildRenderPromptRequest={buildRequestData} />
+                {/* <PromptPreview buildRenderPromptRequest={buildRequestData} /> */}
+                <label>
+                  Style of breakdown
+                  <HelpTooltip text="There are different approaches to breaking down a requirement into smaller work packages, try different ones and see which one fits your situation best." />
+                </label>
+                <Select
+                  onChange={setSelectedVariation}
+                  style={{ width: 300, marginBottom: "1em" }}
+                  options={variations}
+                  value={selectedVariation}
+                  defaultValue="workflow"
+                />
                 <Button
                   onClick={onSubmitPrompt}
                   className="go-button"
@@ -225,24 +242,9 @@ const RequirementsBreakdown = ({ contexts }) => {
                   >
                     <div className="scenario-card-content">
                       <h3>{scenario.title}</h3>
-                      <div className="card-prop-name">Description</div>
-                      <div className="scenario-summary">{scenario.summary}</div>
-                      {scenario.probability && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Probability</div>
-                          <div className="card-prop-value">
-                            {scenario.probability}
-                          </div>
-                        </div>
-                      )}
-                      {scenario.impact && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Potential impact</div>
-                          <div className="card-prop-value">
-                            {scenario.impact}
-                          </div>
-                        </div>
-                      )}
+                      <ReactMarkdown className="scenario-summary">
+                        {scenario.summary}
+                      </ReactMarkdown>
                     </div>
                   </Card>
                 );
