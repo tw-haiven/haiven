@@ -1,4 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+import os
 from langchain_community.embeddings import BedrockEmbeddings, OllamaEmbeddings
 from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
 from haiven_cli.models.embedding_model import EmbeddingModel
@@ -83,13 +84,9 @@ def _load_aws_embeddings(model: EmbeddingModel):
 
 
 def _load_ollama_embeddings(model: EmbeddingModel):
-    if "base_url" not in model.config or _value_empty_in_model_config(
-        "base_url", model.config
-    ):
-        raise ValueError(f"base_url is not defined in config for {model.id}")
-
     return OllamaEmbeddings(
-        base_url=model.config["base_url"], model=model.config["model"]
+        base_url=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
+        model=model.config["model"],
     )
 
 
