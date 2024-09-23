@@ -51,7 +51,7 @@ export default function ChatDashboard() {
 
   function sortCategoriesByOrder(categories) {
     categories.sort(
-      (a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b)
+      (a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b),
     );
   }
 
@@ -82,7 +82,7 @@ export default function ChatDashboard() {
         ...new Set(data.flatMap((prompt) => prompt.categories)),
       ];
       categories.push("other");
-    
+
       sortCategoriesByOrder(categories);
       setAllCategories(categories);
       setSelectedCategories(categories);
@@ -164,11 +164,4 @@ export default function ChatDashboard() {
       </Space>
     </div>
   );
-
 }
-function sortCategoriesByOrder(categories, categoryOrder) {
-  categories.sort(
-    (a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b)
-  );
-}
-
