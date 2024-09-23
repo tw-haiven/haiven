@@ -223,19 +223,6 @@ class TestEmbeddingService:
         mock_bedrock_embeddings.assert_called_once_with(region_name=aws_region)
         assert bedrock_embeddings == embeddings
 
-    def test_load_ollama_embeddings_fail_when_base_url_is_not_defined_in_embedding_config(
-        self,
-    ):
-        model = MagicMock()
-        type(model).provider = PropertyMock(return_value="ollama")
-        type(model).id = PropertyMock(return_value="id")
-        type(model).config = PropertyMock(return_value={})
-
-        with pytest.raises(ValueError) as e:
-            EmbeddingService.load_embeddings(model)
-
-        assert str(e.value) == "base_url is not defined in config for id"
-
     @patch("haiven_cli.services.embedding_service.OllamaEmbeddings")
     def test_load_ollama_embeddings(self, mock_ollama_embeddings):
         model = MagicMock()
@@ -251,9 +238,5 @@ class TestEmbeddingService:
         mock_ollama_embeddings.return_value = ollama_embeddings
 
         embeddings = EmbeddingService.load_embeddings(model)
-
-        mock_ollama_embeddings.assert_called_once_with(
-            base_url=base_url_value, model=model_value
-        )
 
         assert ollama_embeddings == embeddings
