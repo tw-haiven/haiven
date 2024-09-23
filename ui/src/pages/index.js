@@ -22,6 +22,16 @@ export default function ChatDashboard() {
     other: "#666666ff",
   };
 
+  const categoryOrder = [
+    "research",
+    "ideate",
+    "analysis",
+    "coding",
+    "testing",
+    "architecture",
+    "other",
+  ];
+
   const filter = (tag, checked) => {
     const isSelected = selectedCategories.includes(tag);
     const isAllSelected = selectedCategories.length === allCategories.length;
@@ -39,6 +49,12 @@ export default function ChatDashboard() {
     }
   };
 
+  function sortCategoriesByOrder(categories) {
+    categories.sort(
+      (a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b)
+    );
+  }
+
   useEffect(() => {
     getPrompts((data) => {
       data.forEach((prompt) => {
@@ -49,6 +65,16 @@ export default function ChatDashboard() {
       // add the "static" features
       data = data.concat(staticFeaturesForDashboard());
 
+      data.forEach((prompt) => {
+        sortCategoriesByOrder(prompt.categories);
+      });
+      data.sort((a, b) => {
+        return (
+          categoryOrder.indexOf(a.categories[0]) -
+          categoryOrder.indexOf(b.categories[0])
+        );
+      });
+
       setPrompts(data);
       setFilteredPrompts(data);
 
@@ -56,19 +82,8 @@ export default function ChatDashboard() {
         ...new Set(data.flatMap((prompt) => prompt.categories)),
       ];
       categories.push("other");
-
-      const categoryOrder = [
-        "research",
-        "ideate",
-        "analysis",
-        "coding",
-        "testing",
-        "architecture",
-        "other",
-      ];
-      categories.sort(
-        (a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b),
-      );
+    
+      sortCategoriesByOrder(categories);
       setAllCategories(categories);
       setSelectedCategories(categories);
     });
@@ -149,4 +164,11 @@ export default function ChatDashboard() {
       </Space>
     </div>
   );
+
 }
+function sortCategoriesByOrder(categories, categoryOrder) {
+  categories.sort(
+    (a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b)
+  );
+}
+
