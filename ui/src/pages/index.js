@@ -107,7 +107,10 @@ export default function ChatDashboard() {
   return (
     <div className="dashboard">
       <h1>What would you like to do today?</h1>
-      <div className="subline">Haiven is your intelligent AI assistant, here to assist you to kick-start your software delivery activities</div>
+      <div className="subline">
+        Haiven is your intelligent AI assistant, here to assist you to
+        kick-start your software delivery activities
+      </div>
       <h2>Start with a prompt from your knowledge pack</h2>
 
       <p className="dashboard-filters">
