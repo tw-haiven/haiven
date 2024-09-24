@@ -201,6 +201,9 @@ const PromptChat = ({
           <div className="user-input">
             <label>
               {selectedPrompt ? "Your input" : "What do you want help with?"}
+              <HelpTooltip
+                text={selectedPrompt?.help_user_input || pageIntro}
+              />
             </label>
 
             <TextArea

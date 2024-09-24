@@ -27,6 +27,7 @@ import {
 
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
+import HelpTooltip from "../app/_help_tooltip";
 
 let ctrl;
 
@@ -179,7 +180,10 @@ const ThreatModelling = ({ contexts }) => {
 
             <div className="prompt-chat-options-section">
               <div className="user-input">
-                <label>Your input</label>
+                <label>
+                  Your input
+                  <HelpTooltip text={placeholderHelp} />
+                </label>
                 <TextArea
                   placeholder={placeholderHelp}
                   value={promptInput}

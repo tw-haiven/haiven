@@ -9,6 +9,7 @@ import { RiFileCopyLine } from "react-icons/ri";
 
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
+import HelpTooltip from "../app/_help_tooltip";
 
 const StoryValidation = ({ contexts }) => {
   const [questions, setQuestions] = useState([]);
@@ -20,6 +21,7 @@ const StoryValidation = ({ contexts }) => {
   const [promptInput, setPromptInput] = useState("");
   const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const [currentAbortController, setCurrentAbortController] = useState();
+  const placeholderHelp = "What do you have so far?";
 
   function abortLoad(abortController) {
     setLoading(false);
@@ -267,9 +269,12 @@ const StoryValidation = ({ contexts }) => {
             </div>
             <div className="user-inputs">
               <div className="user-input">
-                <label>High level description of your requirement</label>
+                <label>
+                  High level description of your requirement
+                  <HelpTooltip text={placeholderHelp} />
+                </label>
                 <TextArea
-                  placeholder="What do you have so far?"
+                  placeholder={placeholderHelp}
                   value={promptInput}
                   onChange={(e, v) => {
                     setPromptInput(e.target.value);

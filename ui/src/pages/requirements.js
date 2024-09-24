@@ -31,6 +31,7 @@ const RequirementsBreakdown = ({ contexts }) => {
     { value: "operational-boundaries", label: "By operational boundaries" },
   ]);
   const [selectedVariation, setSelectedVariation] = useState(variations[0]);
+  const placeholderHelp = "Describe the high level requirements to break down";
 
   const router = useRouter();
 
@@ -147,9 +148,12 @@ const RequirementsBreakdown = ({ contexts }) => {
             </div>
             <div className="prompt-chat-options-section">
               <div className="user-input">
-                <label>High level description of your requirement</label>
+                <label>
+                  High level description of your requirement
+                  <HelpTooltip text={placeholderHelp} />
+                </label>
                 <TextArea
-                  placeholder="Describe the high level requirements to break down"
+                  placeholder={placeholderHelp}
                   value={promptInput}
                   onChange={(e, v) => {
                     setPromptInput(e.target.value);
