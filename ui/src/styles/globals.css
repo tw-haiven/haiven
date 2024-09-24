@@ -594,6 +594,20 @@ z-index: 0;
   padding: 2em;
 }
 
+.dashboard .subline {
+  font-size: 18px;
+}
+
+.dashboard h2 {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.dashboard h1 {
+  font-size: 44px;
+  font-weight: semi-bold;
+}
+
 .dashboard-tile {
   width: 250px;
   height: 250px;
