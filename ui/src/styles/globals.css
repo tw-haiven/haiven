@@ -596,16 +596,22 @@ z-index: 0;
 
 .dashboard .subline {
   font-size: 18px;
+  text-align: center;
 }
 
 .dashboard h2 {
   font-weight: bold;
   font-size: 18px;
+  text-align: center;
 }
 
 .dashboard h1 {
   font-size: 44px;
   font-weight: semi-bold;
+  text-align: center;
+}
+.dashboard-filters {
+  text-align: center;
 }
 
 .dashboard-tile {
