@@ -54,7 +54,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22.x'
+          node-version: '22.6'
       - name: Install Yarn
         run:
           npm install yarn
