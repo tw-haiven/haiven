@@ -173,7 +173,7 @@ class ConfigService:
 
         return default_models
 
-    def get_default_chat_model(self) -> str:
+    def get_default_guided_mode_model(self) -> str:
         """
         Get the default chat model from the config file.
 
@@ -183,19 +183,16 @@ class ConfigService:
         Returns:
             str: The default chat model.
         """
-        default_chat_model = self.load_default_models().chat
-        if default_chat_model is None:
-            enabled_provider = self.load_enabled_providers()[0]
-            match enabled_provider:
-                case "azure":
-                    default_chat_model = "azure-gpt4"
-                case "gcp":
-                    default_chat_model = "google-gemini"
-                case "aws":
-                    default_chat_model = "aws-claude-v3"
-                case "ollama":
-                    default_chat_model = "ollama-local-llama3"
-        return default_chat_model
+        enabled_provider = self.load_enabled_providers()[0]
+        match enabled_provider:
+            case "azure":
+                return "azure-gpt4"
+            case "gcp":
+                return "google-gemini"
+            case "aws":
+                return "aws-claude-v3"
+            case "ollama":
+                return "ollama-local-llama3"
 
     def _load_yaml(self, path: str) -> dict:
         """

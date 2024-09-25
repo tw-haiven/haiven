@@ -19,7 +19,7 @@ def setup_class(request):
     request.cls.temp_dir = tempfile.TemporaryDirectory()
     request.cls.knowledge_pack_path = request.cls.temp_dir.name
     request.cls.active_model_providers = "Azure,GCP,some_provider"
-    request.cls.model_id = "some-chat-model"
+    request.cls.model_id = "azure-gpt35"
     request.cls.name = "GPT-3.5 on Azure"
     request.cls.provider = "some_provider"
     request.cls.feature = "text-generation"
@@ -166,34 +166,6 @@ class TestConfigService:
         assert knowledge_pack_path == knowledge_pack_path
 
         os.remove(config_path)
-
-    def test_load_configured_default_chat_model(self):
-        config_service = ConfigService(self.config_path)
-
-        chat_model: str = config_service.get_default_chat_model()
-        assert chat_model == "some-chat-model"
-
-    def test_load_hard_coded_default_chat_model_if_not_set_in_config(self):
-        config_content = """
-enabled_providers: azure
-default_models: 
-  chat:
-  vision: some-vision-model
-models:
-  - id: azure-gpt4
-    name: GPT-4
-    provider: azure
-          """
-        config_path = "test-env-config.yaml"
-        with open(get_test_data_path() + "/" + config_path, "w") as f:
-            f.write(config_content)
-            f.flush()
-
-            config_service = ConfigService(get_test_data_path() + "/" + config_path)
-            config_service.get_default_chat_model()
-
-        chat_model: str = config_service.get_default_chat_model()
-        assert chat_model == "azure-gpt4"
 
     def test_should_raise_error_when_knowledge_pack_not_found(self):
         exception_raised = False
