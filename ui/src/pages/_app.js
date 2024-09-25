@@ -98,7 +98,7 @@ export default function App({
           {/* Social Preview Image */}
           <meta
             property="og:image"
-            content="thoughtworks-logo-short-version.jpg"
+            content="/boba/thoughtworks-logo-short-version.jpg"
           />
           <meta property="og:title" content="Haiven team assistant" />
           <meta
