@@ -13,7 +13,7 @@
     "update": "node update_packages.js"
   },
   "engines": {
-    "node": "22.x"
+    "node": "22.6"
   },
   "dependencies": {
     "@ant-design/pro-chat": "^1.15.2",
@@ -27,7 +27,7 @@
     "google-search-results-nodejs": "^2.1.0",
     "hnswlib-node": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
-    "next": "^14.2.12",
+    "next": "^14.2.13",
     "partial-json-parser": "^1.2.2",
     "postcss": "8.4.47",
     "react": "^18.3.1",
