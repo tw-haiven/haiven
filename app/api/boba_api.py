@@ -36,7 +36,7 @@ class BobaApi:
             self.knowledge_manager.knowledge_base_markdown
         )
 
-        self.model = self.config_service.get_default_guided_mode_model()
+        self.model = self.config_service.get_default_chat_model()
 
         self.image_service = image_service
 
