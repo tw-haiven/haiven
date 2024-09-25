@@ -95,6 +95,17 @@ export default function App({
       >
         <Head>
           <title>Haiven</title>
+          {/* Social Preview Image */}
+          <meta
+            property="og:image"
+            content="thoughtworks-logo-short-version.jpg"
+          />
+          <meta property="og:title" content="Haiven team assistant" />
+          <meta
+            property="og:description"
+            content="Haiven is your intelligent AI assistant, here to assist you to kick-start your software delivery activities"
+          />
+          <meta property="og:image:alt" content="Thoughtworks logo" />
         </Head>
         <Layout
           style={{ height: "100vh", display: "flex", flexDirection: "column" }}
