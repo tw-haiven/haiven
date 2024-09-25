@@ -5,7 +5,7 @@ knowledge_pack_path: ${KNOWLEDGE_PACK_PATH}
 enabled_providers: ${ENABLED_PROVIDERS}
 
 default_models:
-  chat:
+  chat: ${ENABLED_CHAT_MODEL}
   vision: ${ENABLED_VISION_MODEL}
   embeddings: ${ENABLED_EMBEDDINGS_MODEL}
 
