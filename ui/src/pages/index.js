@@ -130,39 +130,41 @@ export default function ChatDashboard() {
         })}
       </p>
 
-      <Space direction="horizontal" wrap>
-        {filteredPrompts.map((prompt, index) => {
-          return (
-            <Link href={prompt.link || "#"} key={prompt.identifier + "-href"}>
-              <Card
-                hoverable
-                key={prompt.identifier}
-                title={prompt.title}
-                className="dashboard-tile scenario-card-content"
-              >
-                <div className="card-contents">
-                  <div className="card-prop-value">
-                    {prompt.help_prompt_description}
+      <div className="dashboard-scenarios">
+        <Space direction="horizontal" wrap>
+          {filteredPrompts.map((prompt, index) => {
+            return (
+              <Link href={prompt.link || "#"} key={prompt.identifier + "-href"}>
+                <Card
+                  hoverable
+                  key={prompt.identifier}
+                  title={prompt.title}
+                  className="dashboard-tile scenario-card-content"
+                >
+                  <div className="card-contents">
+                    <div className="card-prop-value">
+                      {prompt.help_prompt_description}
+                    </div>
                   </div>
-                </div>
-                <div className="tile-tags">
-                  {prompt.categories.map((category) => {
-                    return (
-                      <Tag
-                        color={
-                          categoryColors[category] || categoryColors["other"]
-                        }
-                      >
-                        {category}
-                      </Tag>
-                    );
-                  })}
-                </div>
-              </Card>
-            </Link>
-          );
-        })}
-      </Space>
+                  <div className="tile-tags">
+                    {prompt.categories.map((category) => {
+                      return (
+                        <Tag
+                          color={
+                            categoryColors[category] || categoryColors["other"]
+                          }
+                        >
+                          {category}
+                        </Tag>
+                      );
+                    })}
+                  </div>
+                </Card>
+              </Link>
+            );
+          })}
+        </Space>
+      </div>
     </div>
   );
 }

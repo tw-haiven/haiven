@@ -151,7 +151,7 @@ z-index: 0;
 
 .header .header-links a {
   color: white;
-  display: inline-block;
+  display: inline;
   padding: 1em;
 }
 
@@ -610,6 +610,22 @@ z-index: 0;
   font-weight: semi-bold;
   text-align: center;
 }
+
+.dashboard-scenarios {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-left: 5em;
+}
+
+.dashboard .ant-space {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: start;
+  flex-wrap: wrap;
+}
+
 .dashboard-filters {
   text-align: center;
 }
