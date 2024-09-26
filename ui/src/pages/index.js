@@ -69,10 +69,19 @@ export default function ChatDashboard() {
         sortCategoriesByOrder(prompt.categories);
       });
       data.sort((a, b) => {
-        return (
-          categoryOrder.indexOf(a.categories[0]) -
-          categoryOrder.indexOf(b.categories[0])
-        );
+        for (
+          let i = 0;
+          i < Math.min(a.categories.length, b.categories.length);
+          i++
+        ) {
+          const comparison =
+            categoryOrder.indexOf(a.categories[i]) -
+            categoryOrder.indexOf(b.categories[i]);
+          if (comparison !== 0) {
+            return comparison;
+          }
+        }
+        return a.categories.length - b.categories.length;
       });
 
       setPrompts(data);
