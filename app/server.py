@@ -149,10 +149,10 @@ class Server:
                 "/logout",
                 "/index.html",
                 "/static/main.css",
+                "/static/logohun.jpg",
                 "/static/thoughtworks_logo_grey.png",
-                "static/thoughtworks_logo_short_version.jpg",
-                "static/logo.jpg",
-                "static/logohun.jpg",
+                "/static/thoughtworks_logo_short_version.jpg",
+                "/static/logo.jpg",
                 "/favicon.ico",
             ]
 
