@@ -95,7 +95,6 @@ export default function App({
       >
         <Head>
           <title>Haiven</title>
-          {/* Social Preview Image */}
           <meta
             property="og:image"
             content="/boba/thoughtworks-logo-short-version.jpg"
@@ -105,8 +104,15 @@ export default function App({
             property="og:description"
             content="Haiven is your intelligent AI assistant, here to assist you to kick-start your software delivery activities"
           />
-          <meta property="og:image:alt" content="Thoughtworks logo" />
+          <meta property="og:image:alt" content="haiven" />
         </Head>
+        <div className="social-preview">
+          <img
+            className="social-preview-image"
+            src="/boba/thoughtworks-logo-short-version.jpg"
+            alt="haiven"
+          />
+        </div>
         <Layout
           style={{ height: "100vh", display: "flex", flexDirection: "column" }}
         >
