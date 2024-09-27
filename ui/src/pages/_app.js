@@ -98,25 +98,21 @@ export default function App({
       >
         <Head>
           <title>Haiven</title>
-          <meta property="og:image" content="/boba/logohun.jpg" />
-          <meta
-            property="og:image:url"
-            content="https://team-ai-owd2wjctzq-uc.a.run.app/boba/logohun.jpg"
-          />
+
+          <meta property="og:image" content="/boba/social-preview-image.jpg" />
           <meta property="og:title" content="Haiven team assistant" />
           <meta
             property="og:description"
             content="Haiven is your intelligent AI assistant, here to assist you to kick-start your software delivery activities"
           />
-          <meta property="og:image:alt" content="haiven" />
-          <meta property="og:type" content="website" />
+          <meta property="og:image:alt" content="Haiven" />
           <meta property="og:image:width" content="1200" />
           <meta property="og:image:height" content="630" />
         </Head>
         <div className="social-preview">
           <img
             className="social-preview-image"
-            src="/boba/logohun.jpg"
+            src="/boba/social-preview-image.jpg"
             alt="haiven"
           />
         </div>
