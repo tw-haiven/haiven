@@ -52,16 +52,13 @@ const PromptChat = ({
   };
 
   const buildRequestBody = (userInput) => {
-    const requestData = {
+    return {
       userinput: userInput,
       promptid: selectedPrompt?.identifier,
       chatSessionId: chatSessionId,
-      document: selectedDocument,
+      ...(selectedContext !== "base" && { context: selectedContext }),
+      ...(selectedDocument !== "base" && { document: selectedDocument }),
     };
-    if (selectedContext !== "base") {
-      requestData.context = selectedContext;
-    }
-    return requestData;
   };
 
   const startNewChat = async () => {
@@ -157,6 +154,7 @@ const PromptChat = ({
           style={{ width: 300 }}
           options={documents}
           value={selectedDocument?.key}
+          defaultValue={"base"}
         ></Select>
       </div>
     ) : (

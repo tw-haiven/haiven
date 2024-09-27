@@ -37,7 +37,7 @@ export default function App({
       const labelValuePairs = data.map((context) => {
         const contextCopy = { ...context };
         if (context.context === "base") {
-          contextCopy.label = "none";
+          contextCopy.label = "None";
           contextCopy.value = "base";
 
           return contextCopy;
@@ -50,7 +50,10 @@ export default function App({
       });
       setContexts(labelValuePairs);
     });
-    getDocuments(setDocuments);
+    getDocuments((data) => {
+      const updatedDocuments = [{ label: "None", value: "base" }, ...data];
+      setDocuments(updatedDocuments);
+    });
   }, []);
 
   return (
