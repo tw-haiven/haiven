@@ -98,9 +98,10 @@ export default function App({
       >
         <Head>
           <title>Haiven</title>
+          <meta property="og:image" content="/boba/logohun.jpg" />
           <meta
-            property="og:image"
-            content="https://team-ai-owd2wjctzq-uc.a.run.app/boba/thoughtworks-logo-short-version.jpg"
+            property="og:image:url"
+            content="https://team-ai-owd2wjctzq-uc.a.run.app/boba/logohun.jpg"
           />
           <meta property="og:title" content="Haiven team assistant" />
           <meta
@@ -108,11 +109,14 @@ export default function App({
             content="Haiven is your intelligent AI assistant, here to assist you to kick-start your software delivery activities"
           />
           <meta property="og:image:alt" content="haiven" />
+          <meta property="og:type" content="website" />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
         </Head>
         <div className="social-preview">
           <img
             className="social-preview-image"
-            src="/boba/thoughtworks-logo-short-version.jpg"
+            src="/boba/logo.jpg"
             alt="haiven"
           />
         </div>

@@ -150,6 +150,9 @@ class Server:
                 "/index.html",
                 "/static/main.css",
                 "/static/thoughtworks_logo_grey.png",
+                "static/thoughtworks_logo_short_version.jpg",
+                "static/logo.jpg",
+                "static/logohun.jpg",
                 "/favicon.ico",
             ]
 
