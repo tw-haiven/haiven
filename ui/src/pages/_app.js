@@ -100,7 +100,7 @@ export default function App({
           <title>Haiven</title>
           <meta
             property="og:image"
-            content="/boba/thoughtworks-logo-short-version.jpg"
+            content="https://team-ai-owd2wjctzq-uc.a.run.app/boba/thoughtworks-logo-short-version.jpg"
           />
           <meta property="og:title" content="Haiven team assistant" />
           <meta
