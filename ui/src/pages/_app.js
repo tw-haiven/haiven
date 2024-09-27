@@ -116,7 +116,7 @@ export default function App({
         <div className="social-preview">
           <img
             className="social-preview-image"
-            src="/boba/logo.jpg"
+            src="/boba/logohun.jpg"
             alt="haiven"
           />
         </div>
