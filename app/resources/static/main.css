@@ -547,8 +547,8 @@ tr, td, th { vertical-align: middle; }
 
 .masthead__menu { float: left; margin-left: 0; margin-right: 0; width: 100%; clear: both; }
 .masthead__menu .site-nav { margin-left: 0; }
-.masthead__menu .social-preview { max-width: 0px; max-height: 0px; visibility: hidden; }
-.masthead__menu .social-preview-image { max-width: 0px; max-height: 0px; visibility: hidden; }
+.masthead__menu .social-preview { max-width: 0px !important; max-height: 0px !important; visibility: hidden !important; }
+.masthead__menu .social-preview-image { max-width: 0px !important; max-height: 0px !important; visibility: hidden !important; }
 
 @media (min-width: 37.5em) { .masthead__menu .site-nav { float: right; } }
 .masthead__menu ul { margin: 0; padding: 0; clear: both; list-style-type: none; }
