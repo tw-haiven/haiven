@@ -189,6 +189,9 @@ img { /* Responsive images (ensure images don't scale beyond their parents) */ m
 /* Prevent max-width from affecting Google Maps */
 #map_canvas img, .google-maps img { max-width: none; }
 
+.social-preview { max-height: 0; }
+.social-preview-image { max-width: 0; max-height: 0; visibility: hidden; }
+
 /* Consistent form font size in all browsers, margin changes, misc */
 button, input, select, textarea { margin: 0; font-size: 100%; vertical-align: middle; }
 
@@ -547,8 +550,6 @@ tr, td, th { vertical-align: middle; }
 
 .masthead__menu { float: left; margin-left: 0; margin-right: 0; width: 100%; clear: both; }
 .masthead__menu .site-nav { margin-left: 0; }
-.masthead__menu .social-preview { max-width: 0px !important; max-height: 0px !important; visibility: hidden !important; }
-.masthead__menu .social-preview-image { max-width: 0px !important; max-height: 0px !important; visibility: hidden !important; }
 
 @media (min-width: 37.5em) { .masthead__menu .site-nav { float: right; } }
 .masthead__menu ul { margin: 0; padding: 0; clear: both; list-style-type: none; }
