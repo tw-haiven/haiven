@@ -2,6 +2,8 @@
 import { ProChat, useProChat } from "@ant-design/pro-chat";
 import { css, cx, useTheme } from "antd-style";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { ProChatProvider } from "@ant-design/pro-chat";
 
 const ChatWidget = forwardRef(
@@ -77,6 +79,19 @@ const ChatWidget = forwardRef(
             locale="en-US"
             helloMessage={helloMessage}
             request={onSubmit}
+            chatItemRenderConfig={{
+              contentRender: (props, _defaultDom) => {
+                return (
+                  <div
+                    className={"chat-message" + (props.primary ? " user" : "")}
+                  >
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {props.message}
+                    </ReactMarkdown>
+                  </div>
+                );
+              },
+            }}
             inputAreaProps={{
               style: {
                 borderRadius: "0",

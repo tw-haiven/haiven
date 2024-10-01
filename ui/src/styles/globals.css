@@ -81,6 +81,36 @@ z-index: 0;
   height: 1em;
 }
 
+.chat-message {
+  background-color: white;
+  line-height: 1.5;
+  padding: 10px;
+  max-width: 800px;
+  overflow: auto;
+}
+
+.chat-message p {
+  margin: 0;
+  margin-bottom: 1em;
+}
+
+.chat-message.user p {
+  margin: 0;
+}
+
+.chat-message pre {
+  background-color:  #f8f8f8;
+  padding: 10px;            
+  overflow-x: auto;
+  font-size: 14px; 
+}
+
+.chat-message code {
+  background-color:  #f8f8f8;
+  padding: 2px 4px;
+  font-size: 14px;
+}
+
 /* ************************* */
 
 #canvas {
