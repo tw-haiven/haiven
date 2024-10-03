@@ -324,14 +324,16 @@ z-index: 0;
 }
 
 .prompt-chat-options-container.collapsed {
-  font-size: 13px;
-  padding-top: 4px;
   padding-bottom: 0px;
-  padding-left: 10px;
+  background-color: inherit !important;
 }
 
 .prompt-chat-container .ant-collapse-content-box {
   padding-top: 0px !important;
+}
+
+.prompt-chat-options-container .ant-collapse-header {
+  color: #666666 !important;
 }
 
 .title-for-collapsed-panel.hide {
@@ -341,7 +343,7 @@ z-index: 0;
 .title-for-collapsed-panel.show {
   display: block;
   margin-top: 7px;
-  margin-left: 21px;
+  margin-left: 34px;
   margin-bottom: 0px;
 }
 
