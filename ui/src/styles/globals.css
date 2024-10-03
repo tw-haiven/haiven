@@ -398,11 +398,6 @@ z-index: 0;
   overflow-y: scroll;
 }
 
-.scenarios-collection.list-display .scenario-card-content {
-  height: auto;
-  overflow-y: visible;
-}
-
 .scenario-card-content {
   scrollbar-width: thin;
   scrollbar-color: var(--color-light-gray) white;
