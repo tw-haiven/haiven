@@ -1,6 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
-import { Alert, Input, Button, Spin, Select, Space } from "antd";
+import { Alert, Input, Button, Spin, Select, Space, Collapse } from "antd";
+import { MenuFoldOutlined } from "@ant-design/icons";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import { fetchSSE } from "../app/_fetch_sse";
@@ -8,6 +9,7 @@ import { fetchSSE } from "../app/_fetch_sse";
 let ctrl;
 
 const CreativeMatrix = () => {
+  const [isExpanded, setIsExpanded] = useState(true);
   const [rowsCSV, setRowsCSV] = useState("For Customers, For Employees");
   const [columnsCSV, setColumnsCSV] = useState(
     "For Tactical or Operational Tasks, For Creative or Strategic Tasks",
@@ -77,6 +79,10 @@ const CreativeMatrix = () => {
     setPrompt(e.target.value);
   };
 
+  const onCollapsibleIconClick = (e) => {
+    setIsExpanded(!isExpanded);
+  };
+
   const onChangeTemplate = (e) => {
     const template = templates.find((t) => t.name === e);
     setPrompt(template.prompt);
@@ -142,6 +148,7 @@ const CreativeMatrix = () => {
           },
           onFinish: () => {
             setLoading(false);
+            setIsExpanded(false);
           },
           onMessageHandle: (data) => {
             if (!isLoadingXhr) {
@@ -167,10 +174,12 @@ const CreativeMatrix = () => {
     }
   };
 
-  return (
-    <div id="canvas">
-      <div className="prompt-chat-container">
-        <div className="prompt-chat-options-container">
+  const collapseItem = [
+    {
+      key: "1",
+      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
+      children: (
+        <div>
           <h1>Creative Matrix</h1>
 
           <div className="user-input">
@@ -287,7 +296,27 @@ const CreativeMatrix = () => {
             </Space>
           )}
         </div>
+      ),
+    },
+  ];
 
+  return (
+    <div id="canvas">
+      <div className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}>
+        <Collapse
+          className={`prompt-chat-options-container ${isExpanded ? "" : "collapsed"}`}
+          items={collapseItem}
+          defaultActiveKey={["1"]}
+          ghost={isExpanded}
+          activeKey={isExpanded ? "1" : ""}
+          onChange={onCollapsibleIconClick}
+          expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
+        />
+        <h1
+          className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
+        >
+          Creative Matrix
+        </h1>
         {/* MATRIX */}
         <div class="matrix-container">
           <div className="">

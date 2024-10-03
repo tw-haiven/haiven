@@ -323,6 +323,32 @@ z-index: 0;
   color: var(--color-dark-gray);
 }
 
+.prompt-chat-options-container.collapsed {
+  font-size: 13px;
+  padding-top: 4px;
+  padding-bottom: 0px;
+  padding-left: 10px;
+}
+
+.prompt-chat-container .ant-collapse-content-box {
+  padding-top: 0px !important;
+}
+
+.title-for-collapsed-panel.hide {
+  display: none;
+}
+
+.title-for-collapsed-panel.show {
+  display: block;
+  margin-top: 7px;
+  margin-left: 21px;
+  margin-bottom: 0px;
+}
+
+.prompt-chat-container.collapsed {
+  display: block;
+}
+
 .prompt-preview {
   background-color: var(--color-light-gray);
   padding: 1em;
