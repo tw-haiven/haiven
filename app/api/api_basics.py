@@ -12,8 +12,8 @@ from knowledge_manager import KnowledgeManager
 from llms.chats import ChatManager, ChatOptions, StreamingChat
 from llms.clients import ChatClientConfig
 from llms.image_description_service import ImageDescriptionService
-from llms.model import Model
 from prompts.prompts import PromptList
+from config_service import ConfigService
 
 
 class PromptRequestBody(BaseModel):
@@ -102,14 +102,22 @@ class ApiBasics(HaivenBaseApi):
         knowledge_manager: KnowledgeManager,
         prompts_chat: PromptList,
         image_service: ImageDescriptionService,
+        config_service: ConfigService,
     ):
         super().__init__(app, chat_manager, model_key, prompts_guided)
 
         @app.get("/api/models")
         def get_models(request: Request):
-            models: List[Model] = self.config_service.load_enabled_models()
+            print("Loading default models")
+            models = config_service.load_default_models()
             return JSONResponse(
-                [{"id": model.id, "name": model.name} for model in models]
+                {
+                    "chat": models.chat
+                    if models.chat
+                    else config_service.get_default_chat_model(),
+                    "vision": models.vision,
+                    "embeddings": models.embeddings,
+                }
             )
 
         @app.get("/api/prompts")

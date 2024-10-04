@@ -17,6 +17,7 @@ const PromptChat = ({
   prompts,
   contexts,
   documents,
+  models,
   showImageDescription = true,
   showTextSnippets = true,
   showDocuments = true,
@@ -142,6 +143,12 @@ const PromptChat = ({
     <></>
   );
 
+  function formatModel(model) {
+    if (model === "azure-gpt4") {
+      return "GPT-4";
+    }
+    return model;
+  }
   const documentChoiceUserInput =
     showDocuments && documents ? (
       <div className="user-input">
@@ -232,15 +239,26 @@ const PromptChat = ({
     <>
       <div className="prompt-chat-container">
         {prompt_options}
-
-        <ProChatProvider>
-          <ChatWidget
-            onSubmitMessage={submitPromptToBackend}
-            ref={chatRef}
-            visible={showChat}
-            helloMessage={"Fill in some input on the left and hit 'Generate'"}
-          />
-        </ProChatProvider>
+        <div
+          style={{ height: "100%", display: "flex", flexDirection: "column" }}
+        >
+          <div className="disclaimer">
+            AI model: <b>{formatModel(models.chat)}</b>&nbsp;|&nbsp;AI-generated
+            content may be incorrect. Validate important information.
+          </div>
+          <div style={{ height: "95%" }}>
+            <ProChatProvider>
+              <ChatWidget
+                onSubmitMessage={submitPromptToBackend}
+                ref={chatRef}
+                visible={showChat}
+                helloMessage={
+                  "Fill in some input on the left and hit 'Generate'"
+                }
+              />
+            </ProChatProvider>
+          </div>
+        </div>
       </div>
     </>
   );

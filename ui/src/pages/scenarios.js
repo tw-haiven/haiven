@@ -30,7 +30,7 @@ import {
 
 let ctrl;
 
-const Home = () => {
+const Home = ({ models }) => {
   const [numOfScenarios, setNumOfScenarios] = useState("6");
   const [scenarios, setScenarios] = useState([]);
   const [isLoading, setLoading] = useState(false);
@@ -70,6 +70,13 @@ const Home = () => {
   function handleSelectRealismChange(value) {
     setRealism(value);
     setLoading(false);
+  }
+
+  function formatModel(model) {
+    if (model === "azure-gpt4") {
+      return "GPT-4";
+    }
+    return model;
   }
 
   const onExplore = (id) => {
@@ -339,107 +346,121 @@ const Home = () => {
             </Space>
           )}
 
-          <div className={"scenarios-collection " + displayMode + "-display"}>
-            <div>
-              <Radio.Group
-                className="display-mode-choice"
-                onChange={onSelectDisplayMode}
-                defaultValue="grid"
-                style={{ float: "right" }}
-                size="small"
-              >
-                <Radio.Button value="grid">
-                  <RiStackLine /> CARD VIEW
-                </Radio.Button>
-                <Radio.Button value="plot">
-                  <RiGridLine /> MATRIX VIEW
-                </Radio.Button>
-              </Radio.Group>
-            </div>
-            <div className="cards-container with-display-mode">
-              {scenarios.map((scenario, i) => {
-                return (
-                  <Card
-                    hoverable
-                    key={i}
-                    className="scenario"
-                    // title={<>{}</>}
-                    actions={[
-                      <Button
-                        type="link"
-                        key="explore"
-                        onClick={() => onExplore(i)}
-                      >
-                        Explore
-                      </Button>,
-                    ]}
-                  >
-                    <div className="scenario-card-content">
-                      <h3>{scenario.title}</h3>
-                      <div className="scenario-summary">{scenario.summary}</div>
-                      {scenario.horizon && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Horizon</div>
-                          <div className="card-prop-value">
-                            {scenario.horizon}
-                          </div>
-                        </div>
-                      )}
-                      {scenario.plausibility && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Plausibility</div>
-                          <div className="card-prop-value">
-                            {scenario.plausibility}
-                          </div>
-                        </div>
-                      )}
-                      {scenario.probability && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Probability</div>
-                          <div className="card-prop-value">
-                            {scenario.probability}
-                          </div>
-                        </div>
-                      )}
-                      {scenario.signals && (
-                        <div className="card-prop">
-                          <div className="card-prop-name">
-                            Signals/Driving Forces
-                          </div>
-                          <div className="card-prop-value">
-                            {(scenario.signals || []).join(", ")}
-                          </div>
-                        </div>
-                      )}
-                      {scenario.threats && (
-                        <div className="card-prop">
-                          <div className="card-prop-name">Threats</div>
-                          <div className="card-prop-value">
-                            {(scenario.threats || []).join(", ")}
-                          </div>
-                        </div>
-                      )}
-                      {scenario.opportunities && (
-                        <div className="card-prop">
-                          <div className="card-prop-name">Opportunities</div>
-                          <div className="card-prop-value">
-                            {(scenario.opportunities || []).join(", ")}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-                );
-              })}
+          <div
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+          >
+            <div className="disclaimer">
+              AI model: <b>{formatModel(models.chat)}</b>
+              &nbsp;|&nbsp;AI-generated content may be incorrect. Validate
+              important information.
             </div>
             <div
-              className="scenarios-plot-container"
-              style={{ display: displayMode == "plot" ? "block" : "none" }}
+              className={"scenarios-collection " + displayMode + "-display"}
+              style={{ height: "95%", background: "#F5F5F5" }}
             >
-              <ScenariosPlot
-                scenarios={scenarios}
-                visible={displayMode == "plot"}
-              />
+              <div>
+                <Radio.Group
+                  className="display-mode-choice"
+                  onChange={onSelectDisplayMode}
+                  defaultValue="grid"
+                  style={{ float: "right" }}
+                  size="small"
+                >
+                  <Radio.Button value="grid">
+                    <RiStackLine /> CARD VIEW
+                  </Radio.Button>
+                  <Radio.Button value="plot">
+                    <RiGridLine /> MATRIX VIEW
+                  </Radio.Button>
+                </Radio.Group>
+              </div>
+              <div className="cards-container with-display-mode">
+                {scenarios.map((scenario, i) => {
+                  return (
+                    <Card
+                      hoverable
+                      key={i}
+                      className="scenario"
+                      // title={<>{}</>}
+                      actions={[
+                        <Button
+                          type="link"
+                          key="explore"
+                          onClick={() => onExplore(i)}
+                        >
+                          Explore
+                        </Button>,
+                      ]}
+                    >
+                      <div className="scenario-card-content">
+                        <h3>{scenario.title}</h3>
+                        <div className="scenario-summary">
+                          {scenario.summary}
+                        </div>
+                        {scenario.horizon && (
+                          <div className="card-prop stackable">
+                            <div className="card-prop-name">Horizon</div>
+                            <div className="card-prop-value">
+                              {scenario.horizon}
+                            </div>
+                          </div>
+                        )}
+                        {scenario.plausibility && (
+                          <div className="card-prop stackable">
+                            <div className="card-prop-name">Plausibility</div>
+                            <div className="card-prop-value">
+                              {scenario.plausibility}
+                            </div>
+                          </div>
+                        )}
+                        {scenario.probability && (
+                          <div className="card-prop stackable">
+                            <div className="card-prop-name">Probability</div>
+                            <div className="card-prop-value">
+                              {scenario.probability}
+                            </div>
+                          </div>
+                        )}
+                        {scenario.signals && (
+                          <div className="card-prop">
+                            <div className="card-prop-name">
+                              Signals/Driving Forces
+                            </div>
+                            <div className="card-prop-value">
+                              {(scenario.signals || []).join(", ")}
+                            </div>
+                          </div>
+                        )}
+                        {scenario.threats && (
+                          <div className="card-prop">
+                            <div className="card-prop-name">Threats</div>
+                            <div className="card-prop-value">
+                              {(scenario.threats || []).join(", ")}
+                            </div>
+                          </div>
+                        )}
+                        {scenario.opportunities && (
+                          <div className="card-prop">
+                            <div className="card-prop-name">Opportunities</div>
+                            <div className="card-prop-value">
+                              {(scenario.opportunities || []).join(", ")}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+              <div
+                className="scenarios-plot-container"
+                style={{ display: displayMode == "plot" ? "block" : "none" }}
+              >
+                <ScenariosPlot
+                  scenarios={scenarios}
+                  visible={displayMode == "plot"}
+                />
+              </div>
             </div>
           </div>
         </div>

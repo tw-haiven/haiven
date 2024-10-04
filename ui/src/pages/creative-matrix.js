@@ -8,7 +8,7 @@ import { fetchSSE } from "../app/_fetch_sse";
 
 let ctrl;
 
-const CreativeMatrix = () => {
+const CreativeMatrix = ({ models }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [rowsCSV, setRowsCSV] = useState("For Customers, For Employees");
   const [columnsCSV, setColumnsCSV] = useState(
@@ -114,6 +114,13 @@ const CreativeMatrix = () => {
   function abortLoad() {
     ctrl && ctrl.abort();
     setLoading(false);
+  }
+
+  function formatModel(model) {
+    if (model === "azure-gpt4") {
+      return "GPT-4";
+    }
+    return model;
   }
 
   const onGenerateMatrix = () => {
@@ -318,63 +325,76 @@ const CreativeMatrix = () => {
           Creative Matrix
         </h1>
         {/* MATRIX */}
-        <div class="matrix-container">
-          <div className="">
-            <table style={{ width: "95%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr>
-                  <th></th>
-                  {columns.map((columnValue, index) => {
-                    return <th>{columnValue}</th>;
+        <div
+          style={{ height: "100%", display: "flex", flexDirection: "column" }}
+        >
+          <div className="disclaimer">
+            AI model: <b>{formatModel(models.chat)}</b>&nbsp;|&nbsp;AI-generated
+            content may be incorrect. Validate important information.
+          </div>
+          <div
+            class="matrix-container"
+            style={{ height: "95%", background: "#F5F5F5" }}
+          >
+            <div className="">
+              <table style={{ width: "95%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr>
+                    <th></th>
+                    {columns.map((columnValue, index) => {
+                      return <th>{columnValue}</th>;
+                    })}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((rowValue, rowIndex) => {
+                    return (
+                      <tr style={{ height: 50 }}>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            width: "10%",
+                          }}
+                        >
+                          <b>{rowValue}</b>
+                        </td>
+                        {columns.map((columnValue, columnIndex) => {
+                          return (
+                            <td
+                              style={{
+                                textAlign: "center",
+                                border: "1px solid #e1e1e1",
+                                width: 85 / columns.length + "%",
+                              }}
+                            >
+                              <ul
+                                style={{ textAlign: "left", paddingLeft: 20 }}
+                              >
+                                {getMatrixCellValues(rowIndex, columnIndex).map(
+                                  (idea) => {
+                                    return (
+                                      <li
+                                        key={"" + rowIndex + "-" + columnIndex}
+                                        style={{
+                                          marginBottom: 10,
+                                          cursor: "auto",
+                                        }}
+                                      >
+                                        <b>{idea.title}:</b> {idea.description}
+                                      </li>
+                                    );
+                                  },
+                                )}
+                              </ul>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
                   })}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((rowValue, rowIndex) => {
-                  return (
-                    <tr style={{ height: 50 }}>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          width: "10%",
-                        }}
-                      >
-                        <b>{rowValue}</b>
-                      </td>
-                      {columns.map((columnValue, columnIndex) => {
-                        return (
-                          <td
-                            style={{
-                              textAlign: "center",
-                              border: "1px solid #e1e1e1",
-                              width: 85 / columns.length + "%",
-                            }}
-                          >
-                            <ul style={{ textAlign: "left", paddingLeft: 20 }}>
-                              {getMatrixCellValues(rowIndex, columnIndex).map(
-                                (idea) => {
-                                  return (
-                                    <li
-                                      key={"" + rowIndex + "-" + columnIndex}
-                                      style={{
-                                        marginBottom: 10,
-                                        cursor: "auto",
-                                      }}
-                                    >
-                                      <b>{idea.title}:</b> {idea.description}
-                                    </li>
-                                  );
-                                },
-                              )}
-                            </ul>
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
