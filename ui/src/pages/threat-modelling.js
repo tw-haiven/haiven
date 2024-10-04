@@ -31,7 +31,7 @@ import HelpTooltip from "../app/_help_tooltip";
 
 let ctrl;
 
-const ThreatModelling = ({ contexts, models }) => {
+const ThreatModelling = ({ contexts }) => {
   const [scenarios, setScenarios] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [displayMode, setDisplayMode] = useState("grid");
@@ -47,13 +47,6 @@ const ThreatModelling = ({ contexts, models }) => {
   function abortLoad() {
     ctrl && ctrl.abort("User aborted");
     setLoading(false);
-  }
-
-  function formatModel(model) {
-    if (model === "azure-gpt4") {
-      return "GPT-4";
-    }
-    return model;
   }
 
   const handleContextSelection = (value) => {
@@ -246,113 +239,98 @@ const ThreatModelling = ({ contexts, models }) => {
             </div>
           </div>
 
-          <div
-            style={{ height: "100%", display: "flex", flexDirection: "column" }}
-          >
-            <div className="disclaimer" style={{ color: "#" }}>
-              AI model: <b>{formatModel(models.chat)}</b>
-              &nbsp;|&nbsp;AI-generated content may be incorrect. Validate
-              important information.
-            </div>
-            <div
-              className={"scenarios-collection " + displayMode + "-display"}
-              style={{ height: "95%", background: "#F5F5F5" }}
-            >
-              {scenarios && scenarios.length > 0 && (
-                <div className="scenarios-actions">
-                  <Button
-                    className="prompt-preview-copy-btn"
-                    onClick={onCopyAll}
-                    size="small"
-                  >
-                    <RiCheckboxMultipleBlankLine /> COPY ALL
-                  </Button>
-                  <Radio.Group
-                    className="display-mode-choice"
-                    onChange={onSelectDisplayMode}
-                    defaultValue="grid"
-                    size="small"
-                  >
-                    <Radio.Button value="grid">
-                      <RiStackLine /> CARD VIEW
-                    </Radio.Button>
-                    <Radio.Button value="plot">
-                      <RiGridLine /> MATRIX VIEW
-                    </Radio.Button>
-                  </Radio.Group>
-                </div>
-              )}
-              <div className="cards-container with-display-mode">
-                {scenarios.map((scenario, i) => {
-                  return (
-                    <Card
-                      hoverable
-                      key={i}
-                      className="scenario"
-                      actions={[
-                        <Button
-                          type="link"
-                          key="explore"
-                          onClick={() => onExplore(i)}
-                        >
-                          <RiChat2Line style={{ fontSize: "large" }} />
-                        </Button>,
-                        <Button
-                          type="link"
-                          key="explore"
-                          onClick={() => onCopyOne(i)}
-                        >
-                          <RiCheckboxMultipleBlankFill
-                            style={{ fontSize: "large" }}
-                          />
-                        </Button>,
-                      ]}
-                    >
-                      <div className="scenario-card-content">
-                        <h3>{scenario.title}</h3>
-                        {scenario.category && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">Category</div>
-                            <div className="card-prop-value">
-                              {scenario.category}
-                            </div>
-                          </div>
-                        )}
-                        <div className="card-prop-name">Description</div>
-                        <div className="scenario-summary">
-                          {scenario.summary}
-                        </div>
-                        {scenario.probability && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">Probability</div>
-                            <div className="card-prop-value">
-                              {scenario.probability}
-                            </div>
-                          </div>
-                        )}
-                        {scenario.impact && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">
-                              Potential impact
-                            </div>
-                            <div className="card-prop-value">
-                              {scenario.impact}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </Card>
-                  );
-                })}
-                <div
-                  className="scenarios-plot-container"
-                  style={{ display: displayMode == "plot" ? "block" : "none" }}
+          <div className={"scenarios-collection " + displayMode + "-display"}>
+            {scenarios && scenarios.length > 0 && (
+              <div className="scenarios-actions">
+                <Button
+                  className="prompt-preview-copy-btn"
+                  onClick={onCopyAll}
+                  size="small"
                 >
-                  <ScenariosPlotProbabilityImpact
-                    scenarios={scenarios}
-                    visible={displayMode == "plot"}
-                  />
-                </div>
+                  <RiCheckboxMultipleBlankLine /> COPY ALL
+                </Button>
+                <Radio.Group
+                  className="display-mode-choice"
+                  onChange={onSelectDisplayMode}
+                  defaultValue="grid"
+                  size="small"
+                >
+                  <Radio.Button value="grid">
+                    <RiStackLine /> CARD VIEW
+                  </Radio.Button>
+                  <Radio.Button value="plot">
+                    <RiGridLine /> MATRIX VIEW
+                  </Radio.Button>
+                </Radio.Group>
+              </div>
+            )}
+            <div className="cards-container with-display-mode">
+              {scenarios.map((scenario, i) => {
+                return (
+                  <Card
+                    hoverable
+                    key={i}
+                    className="scenario"
+                    actions={[
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onExplore(i)}
+                      >
+                        <RiChat2Line style={{ fontSize: "large" }} />
+                      </Button>,
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onCopyOne(i)}
+                      >
+                        <RiCheckboxMultipleBlankFill
+                          style={{ fontSize: "large" }}
+                        />
+                      </Button>,
+                    ]}
+                  >
+                    <div className="scenario-card-content">
+                      <h3>{scenario.title}</h3>
+                      {scenario.category && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Category</div>
+                          <div className="card-prop-value">
+                            {scenario.category}
+                          </div>
+                        </div>
+                      )}
+                      <div className="card-prop-name">Description</div>
+                      <div className="scenario-summary">{scenario.summary}</div>
+                      {scenario.probability && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Probability</div>
+                          <div className="card-prop-value">
+                            {scenario.probability}
+                          </div>
+                        </div>
+                      )}
+                      {scenario.impact && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Potential impact</div>
+                          <div className="card-prop-value">
+                            {scenario.impact}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })}
+
+              <div
+                className="scenarios-plot-container"
+                style={{ display: displayMode == "plot" ? "block" : "none" }}
+              >
+                <ScenariosPlotProbabilityImpact
+                  scenarios={scenarios}
+                  visible={displayMode == "plot"}
+                />
               </div>
             </div>
           </div>

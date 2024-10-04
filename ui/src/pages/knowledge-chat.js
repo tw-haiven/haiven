@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import PromptChat from "../app/_prompt_chat";
 
-const KnowledgeChatPage = ({ prompts, documents, models }) => {
+const KnowledgeChatPage = ({ prompts, documents }) => {
   const [promptId, setPromptId] = useState();
 
   const searchParams = useSearchParams();
@@ -19,7 +19,6 @@ const KnowledgeChatPage = ({ prompts, documents, models }) => {
       key={promptId}
       prompts={prompts}
       documents={documents}
-      models={models}
       showTextSnippets={false}
       showImageDescription={false}
       pageTitle="Chat with Haiven"

@@ -51,7 +51,6 @@ class BobaApi:
             self.knowledge_manager,
             self.prompts_chat,
             self.image_service,
-            self.config_service,
         )
 
         ApiThreatModelling(

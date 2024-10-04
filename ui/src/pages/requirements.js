@@ -15,7 +15,7 @@ import HelpTooltip from "../app/_help_tooltip";
 
 let ctrl;
 
-const RequirementsBreakdown = ({ contexts, models }) => {
+const RequirementsBreakdown = ({ contexts }) => {
   const [scenarios, setScenarios] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [selectedContext, setSelectedContext] = useState("");
@@ -38,13 +38,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   function abortLoad() {
     ctrl && ctrl.abort();
     setLoading(false);
-  }
-
-  function formatModel(model) {
-    if (model === "azure-gpt4") {
-      return "GPT-4";
-    }
-    return model;
   }
 
   const onExplore = (id) => {
@@ -223,54 +216,43 @@ const RequirementsBreakdown = ({ contexts, models }) => {
               </Space>
             )}
           </div>
-          <div
-            style={{ height: "100%", display: "flex", flexDirection: "column" }}
-          >
-            <div className="disclaimer" style={{ color: "#" }}>
-              AI model: <b>{formatModel(models.chat)}</b>
-              &nbsp;|&nbsp;AI-generated content may be incorrect. Validate
-              important information.
-            </div>
-            <div
-              className={"scenarios-collection grid-display"}
-              style={{ height: "95%", background: "#F5F5F5" }}
-            >
-              <div className="cards-container">
-                {scenarios.map((scenario, i) => {
-                  return (
-                    <Card
-                      hoverable
-                      key={i}
-                      className="scenario"
-                      actions={[
-                        <Button
-                          type="link"
-                          key="explore"
-                          onClick={() => onExplore(i)}
-                        >
-                          <RiChat2Line style={{ fontSize: "large" }} />
-                        </Button>,
-                        <Button
-                          type="link"
-                          key="explore"
-                          onClick={() => onCopy(i)}
-                        >
-                          <RiCheckboxMultipleBlankFill
-                            style={{ fontSize: "large" }}
-                          />
-                        </Button>,
-                      ]}
-                    >
-                      <div className="scenario-card-content">
-                        <h3>{scenario.title}</h3>
-                        <ReactMarkdown className="scenario-summary">
-                          {scenario.summary}
-                        </ReactMarkdown>
-                      </div>
-                    </Card>
-                  );
-                })}
-              </div>
+
+          <div className={"scenarios-collection grid-display"}>
+            <div className="cards-container">
+              {scenarios.map((scenario, i) => {
+                return (
+                  <Card
+                    hoverable
+                    key={i}
+                    className="scenario"
+                    actions={[
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onExplore(i)}
+                      >
+                        <RiChat2Line style={{ fontSize: "large" }} />
+                      </Button>,
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onCopy(i)}
+                      >
+                        <RiCheckboxMultipleBlankFill
+                          style={{ fontSize: "large" }}
+                        />
+                      </Button>,
+                    ]}
+                  >
+                    <div className="scenario-card-content">
+                      <h3>{scenario.title}</h3>
+                      <ReactMarkdown className="scenario-summary">
+                        {scenario.summary}
+                      </ReactMarkdown>
+                    </div>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </div>

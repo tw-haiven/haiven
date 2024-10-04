@@ -18,20 +18,6 @@ export const getPrompts = async (onSuccess) => {
   });
 };
 
-export const getModels = async (onSuccess) => {
-  fetch("/api/models", {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((response) => {
-    response.json().then((data) => {
-      onSuccess(data);
-    });
-  });
-};
-
 export const getContextSnippets = async (onSuccess) => {
   fetch("/api/knowledge/snippets", {
     method: "GET",

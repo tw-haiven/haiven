@@ -537,6 +537,7 @@ z-index: 0;
 
 .matrix-container {
   flex: 5;
+  margin-top: 1em;
   padding-left: 1em;
 }
 
@@ -763,14 +764,6 @@ z-index: 0;
     } */
   }
 
-}
-
-.disclaimer{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 5%;
-  color: #666666ff;
 }
 
 /****** KNOWLEDGE OVERVIEW ******/
