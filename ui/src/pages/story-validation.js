@@ -10,8 +10,9 @@ import { RiFileCopyLine } from "react-icons/ri";
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
+import Disclaimer from "./_disclaimer";
 
-const StoryValidation = ({ contexts }) => {
+const StoryValidation = ({ contexts, models }) => {
   const [questions, setQuestions] = useState([]);
   const [storyScenarios, setStoryScenarios] = useState();
   const [storySummary, setStorySummary] = useState();
@@ -321,67 +322,77 @@ const StoryValidation = ({ contexts }) => {
             )}
           </div>
 
-          <div className={"scenarios-collection cards-display"}>
-            {questions.length > 0 && <h2>Questions</h2>}
-            <div className="cards-container">
-              {questions.map((question, i) => {
-                return (
-                  <Card
-                    hoverable
-                    key={i}
-                    className="scenario"
-                    title={<>{question.question}</>}
-                  >
-                    <div className="q-a-card-content">
-                      {question.question && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Suggested answer</div>
-                          <div>
-                            <TextArea
-                              className="answer-overwrite"
-                              value={question.answer}
-                              onChange={(e) => {
-                                const updatedQuestions = [...questions];
-                                updatedQuestions[i].answer = e.target.value;
-                                setQuestions(updatedQuestions);
-                              }}
-                              rows={8}
-                            ></TextArea>
+          <div
+            style={{ height: "100%", display: "flex", flexDirection: "column" }}
+          >
+            <Disclaimer models={models} />
+            <div
+              className={"scenarios-collection cards-display"}
+              style={{ height: "95%", background: "#F5F5F5" }}
+            >
+              {questions.length > 0 && <h2>Questions</h2>}
+              <div className="cards-container">
+                {questions.map((question, i) => {
+                  return (
+                    <Card
+                      hoverable
+                      key={i}
+                      className="scenario"
+                      title={<>{question.question}</>}
+                    >
+                      <div className="q-a-card-content">
+                        {question.question && (
+                          <div className="card-prop stackable">
+                            <div className="card-prop-name">
+                              Suggested answer
+                            </div>
+                            <div>
+                              <TextArea
+                                className="answer-overwrite"
+                                value={question.answer}
+                                onChange={(e) => {
+                                  const updatedQuestions = [...questions];
+                                  updatedQuestions[i].answer = e.target.value;
+                                  setQuestions(updatedQuestions);
+                                }}
+                                rows={8}
+                              ></TextArea>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
 
-            {questions.length > 0 && (
-              <>
-                <div className="user-inputs" style={{ marginTop: "1em" }}>
-                  <h3>What do you want to generate next?</h3>
-                  <div>
-                    Go through the questions and refine the answers.
-                    <br />
-                    Once you're happy with the selected answers, you can
-                    generate different forms of summaries or further critique
-                    for your story.
-                    <br />
-                    <br />
+              {questions.length > 0 && (
+                <>
+                  <div className="user-inputs" style={{ marginTop: "1em" }}>
+                    <h3>What do you want to generate next?</h3>
+                    <div>
+                      Go through the questions and refine the answers.
+                      <br />
+                      Once you're happy with the selected answers, you can
+                      generate different forms of summaries or further critique
+                      for your story.
+                      <br />
+                      <br />
+                    </div>
                   </div>
-                </div>
-                <Collapse
-                  defaultActiveKey={[
-                    "summary",
-                    "acceptance-criteria",
-                    "scope-check",
-                  ]}
-                  // defaultActiveKey={secondStepItems.map((i) => i.key)}
-                  items={secondStepItems}
-                  className="second-step-collapsable"
-                />
-              </>
-            )}
+                  <Collapse
+                    defaultActiveKey={[
+                      "summary",
+                      "acceptance-criteria",
+                      "scope-check",
+                    ]}
+                    // defaultActiveKey={secondStepItems.map((i) => i.key)}
+                    items={secondStepItems}
+                    className="second-step-collapsable"
+                  />
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

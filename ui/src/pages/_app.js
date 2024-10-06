@@ -7,7 +7,13 @@ import Header from "./_header";
 import "../styles/globals.css";
 import Sidebar from "./_sidebar";
 
-import { getPrompts, getContextSnippets, getDocuments } from "../app/_boba_api";
+import {
+  getPrompts,
+  getContextSnippets,
+  getDocuments,
+  getModels,
+} from "../app/_boba_api";
+import { get } from "http";
 
 export default function App({
   Component,
@@ -19,6 +25,7 @@ export default function App({
   const [prompts, setPrompts] = useState([]);
   const [contexts, setContexts] = useState([]);
   const [documents, setDocuments] = useState([]);
+  const [models, setModels] = useState([]);
 
   const colorlightgray = "#edf1f3";
   const colormediumgray = "#d9dfe1ff";
@@ -54,6 +61,7 @@ export default function App({
       const updatedDocuments = [{ label: "None", value: "base" }, ...data];
       setDocuments(updatedDocuments);
     });
+    getModels(setModels);
   }, []);
 
   return (
@@ -151,6 +159,7 @@ export default function App({
                 prompts={prompts}
                 contexts={contexts}
                 documents={documents}
+                models={models}
               />
             </Layout.Content>
           </Layout>

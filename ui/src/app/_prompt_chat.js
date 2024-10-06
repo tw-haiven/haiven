@@ -9,7 +9,7 @@ import ChatWidget from "./_chat";
 import DescribeImage from "./_image_description";
 import HelpTooltip from "./_help_tooltip";
 import ContextChoice from "./_context_choice";
-
+import Disclaimer from "../pages/_disclaimer";
 import PromptPreview from "./_prompt_preview";
 
 const PromptChat = ({
@@ -17,6 +17,7 @@ const PromptChat = ({
   prompts,
   contexts,
   documents,
+  models,
   showImageDescription = true,
   showTextSnippets = true,
   showDocuments = true,
@@ -232,15 +233,23 @@ const PromptChat = ({
     <>
       <div className="prompt-chat-container">
         {prompt_options}
-
-        <ProChatProvider>
-          <ChatWidget
-            onSubmitMessage={submitPromptToBackend}
-            ref={chatRef}
-            visible={showChat}
-            helloMessage={"Fill in some input on the left and hit 'Generate'"}
-          />
-        </ProChatProvider>
+        <div
+          style={{ height: "100%", display: "flex", flexDirection: "column" }}
+        >
+          <Disclaimer models={models} />
+          <div style={{ height: "95%" }}>
+            <ProChatProvider>
+              <ChatWidget
+                onSubmitMessage={submitPromptToBackend}
+                ref={chatRef}
+                visible={showChat}
+                helloMessage={
+                  "Fill in some input on the left and hit 'Generate'"
+                }
+              />
+            </ProChatProvider>
+          </div>
+        </div>
       </div>
     </>
   );

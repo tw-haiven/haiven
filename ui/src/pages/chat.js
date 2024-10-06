@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import PromptChat from "../app/_prompt_chat";
 
-const ChatPage = ({ prompts, contexts, documents }) => {
+const ChatPage = ({ prompts, contexts, documents, models }) => {
   const [promptId, setPromptId] = useState();
 
   const searchParams = useSearchParams();
@@ -20,6 +20,7 @@ const ChatPage = ({ prompts, contexts, documents }) => {
       prompts={prompts}
       contexts={contexts}
       documents={documents}
+      models={models}
     />
   );
 };

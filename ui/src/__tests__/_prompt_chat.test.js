@@ -22,6 +22,13 @@ describe("PromptChat Component", () => {
     { key: "doc1", label: "Document 1" },
     { key: "doc2", label: "Document 2" },
   ];
+  const mockModels = [
+    {
+      chat: "Chat Model",
+      vision: "Vision Model ",
+      embeddings: "Embeddings Model",
+    },
+  ];
 
   it("should render the default user input fields and options when no prompt is selected", async () => {
     await act(async () => {
@@ -31,6 +38,7 @@ describe("PromptChat Component", () => {
           prompts={mockPrompts}
           contexts={mockContexts}
           documents={mockDocuments}
+          models={mockModels}
           pageTitle="Default Title"
           pageIntro="Default Intro"
         />,

@@ -59,6 +59,7 @@ class TestApi(unittest.TestCase):
             knowledge_manager=mock_knowledge_manager,
             prompts_chat=MagicMock(),
             image_service=MagicMock(),
+            config_service=MagicMock(),
         )
 
         response = self.client.get("/api/knowledge/documents")
@@ -107,6 +108,7 @@ class TestApi(unittest.TestCase):
             knowledge_manager=MagicMock(),
             prompts_chat=mock_prompt_list,
             image_service=MagicMock(),
+            config_service=MagicMock(),
         )
 
         response = self.client.post(
@@ -149,6 +151,7 @@ class TestApi(unittest.TestCase):
             knowledge_manager=MagicMock(),
             prompts_chat=MagicMock(),
             image_service=MagicMock(),
+            config_service=MagicMock(),
         )
 
         # Make the request to the endpoint
