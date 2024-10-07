@@ -313,16 +313,18 @@ const CreativeMatrix = ({ models }) => {
           onChange={onCollapsibleIconClick}
           expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
         />
-        <h1
-          className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
-        >
-          Creative Matrix
-        </h1>
         {/* MATRIX */}
         <div
           style={{ height: "100%", display: "flex", flexDirection: "column" }}
         >
           <Disclaimer models={models} />
+
+          <h1
+            className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
+          >
+            Creative Matrix
+          </h1>
+
           <div
             class="matrix-container"
             style={{ height: "95%", background: "#F5F5F5" }}
