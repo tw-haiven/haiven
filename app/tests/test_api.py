@@ -22,6 +22,38 @@ class TestApi(unittest.TestCase):
         # Clean up code to run after each test
         pass
 
+    def test_get_models(self):
+        mock_config_service = MagicMock()
+        mock_config_service.load_default_models.return_value = MagicMock(
+            chat="some-chat-model",
+            vision="some-vision-model",
+            embeddings="some-embeddings-model",
+        )
+        mock_config_service.get_default_chat_model.return_value = "default-chat-model"
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_key="some_model_key",
+            image_service=MagicMock(),
+            prompts_chat=MagicMock(),
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            config_service=mock_config_service,
+        )
+
+        response = self.client.get("/api/models")
+        print(response.json())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+            {
+                "chat": "some-chat-model",
+                "vision": "some-vision-model",
+                "embeddings": "some-embeddings-model",
+            },
+        )
+
     def test_get_documents(self):
         mock_knowledge_manager = MagicMock()
         mock_knowledge_manager.get_all_context_keys.return_value = [
