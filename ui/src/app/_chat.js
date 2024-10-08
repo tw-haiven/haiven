@@ -82,9 +82,7 @@ const ChatWidget = forwardRef(
             chatItemRenderConfig={{
               contentRender: (props, _defaultDom) => {
                 return (
-                  <div
-                    className={"chat-message" + (props.primary ? " user" : "")}
-                  >
+                  <div className="chat-message">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {props.message}
                     </ReactMarkdown>
