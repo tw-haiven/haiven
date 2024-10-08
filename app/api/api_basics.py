@@ -108,15 +108,23 @@ class ApiBasics(HaivenBaseApi):
 
         @app.get("/api/models")
         def get_models(request: Request):
-            print("Loading default models")
-            models = config_service.load_default_models()
+            embeddings = config_service.load_embedding_model()
+            vision = config_service.get_image_model()
+            chat = config_service.get_chat_model()
             return JSONResponse(
                 {
-                    "chat": models.chat
-                    if models.chat
-                    else config_service.get_default_chat_model(),
-                    "vision": models.vision,
-                    "embeddings": models.embeddings,
+                    "chat": {
+                        "id": chat.id,
+                        "name": chat.name,
+                    },
+                    "vision": {
+                        "id": vision.id,
+                        "name": vision.name,
+                    },
+                    "embeddings": {
+                        "id": embeddings.id,
+                        "name": embeddings.name,
+                    },
                 }
             )
 

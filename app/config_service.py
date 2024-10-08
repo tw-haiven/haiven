@@ -120,6 +120,22 @@ class ConfigService:
 
         return self.get_model(image_model_id)
 
+    def get_chat_model(self) -> Model:
+        available_chat_models = [
+            (available_model.name, available_model.id)
+            for available_model in self.load_enabled_models(
+                features=["text-generation"],
+            )
+        ]
+
+        chat_model_id = (
+            self.load_default_models().chat or self.get_default_chat_model()
+            if len(available_chat_models) > 0
+            else None
+        )
+
+        return self.get_model(chat_model_id)
+
     def load_knowledge_pack_path(self) -> str:
         """
         Load the knowledge pack path from a YAML config file.

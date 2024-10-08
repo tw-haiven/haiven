@@ -23,13 +23,24 @@ class TestApi(unittest.TestCase):
         pass
 
     def test_get_models(self):
+        # Helper function to create MagicMock with id and name attributes
+        def create_mock_model(id_value, name_value):
+            mock_model = MagicMock()
+            mock_model.id = id_value
+            mock_model.name = name_value
+            return mock_model
+
+        # Mocking config_service methods to return specific MagicMock objects
         mock_config_service = MagicMock()
-        mock_config_service.load_default_models.return_value = MagicMock(
-            chat="some-chat-model",
-            vision="some-vision-model",
-            embeddings="some-embeddings-model",
+        mock_config_service.load_embedding_model.return_value = create_mock_model(
+            "embed-model-id", "embed-model-name"
         )
-        mock_config_service.get_default_chat_model.return_value = "default-chat-model"
+        mock_config_service.get_image_model.return_value = create_mock_model(
+            "image-model-id", "image-model-name"
+        )
+        mock_config_service.get_chat_model.return_value = create_mock_model(
+            "chat-model-id", "chat-model-name"
+        )
 
         ApiBasics(
             self.app,
@@ -43,16 +54,23 @@ class TestApi(unittest.TestCase):
         )
 
         response = self.client.get("/api/models")
-        print(response.json())
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.json(),
-            {
-                "chat": "some-chat-model",
-                "vision": "some-vision-model",
-                "embeddings": "some-embeddings-model",
+        expected_response = {
+            "chat": {
+                "id": "chat-model-id",
+                "name": "chat-model-name",
             },
-        )
+            "vision": {
+                "id": "image-model-id",
+                "name": "image-model-name",
+            },
+            "embeddings": {
+                "id": "embed-model-id",
+                "name": "embed-model-name",
+            },
+        }
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_response)
 
     def test_get_documents(self):
         mock_knowledge_manager = MagicMock()
