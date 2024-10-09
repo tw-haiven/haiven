@@ -346,6 +346,8 @@ z-index: 0;
 
 .prompt-chat-options-container.collapsed {
   padding-bottom: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
   background-color: inherit !important;
 }
 
@@ -795,10 +797,11 @@ z-index: 0;
 
 .disclaimer{
   display: flex;
-  justify-content: center;
+  justify-content: right;
   align-items: center;
   height: 5%;
   color: #666666ff;
+  padding-right: 56px;
 }
 
 /****** KNOWLEDGE OVERVIEW ******/
