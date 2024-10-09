@@ -4,7 +4,7 @@ const Disclaimer = ({ models }) => {
 
   return (
     <div className="disclaimer">
-      AI model: <b>{chatModel}</b>&nbsp;|&nbsp;AI-generated content may be
+      AI model:&nbsp;<b>{chatModel}</b>&nbsp;|&nbsp;AI-generated content may be
       incorrect. Validate important information.
     </div>
   );

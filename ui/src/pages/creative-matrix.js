@@ -179,7 +179,7 @@ const CreativeMatrix = ({ models }) => {
     {
       key: "1",
       label: isExpanded ? (
-        <div style={{ fontSize: "14px" }}>Hide Prompt Panel</div>
+        <div>Hide Prompt Panel</div>
       ) : (
         <div className="creative-matrix-panel-header">
           <div>Show Prompt Panel</div>
