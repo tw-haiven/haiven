@@ -365,7 +365,7 @@ z-index: 0;
   display: block;
   margin-top: 7px;
   margin-left: 34px;
-  margin-bottom: 0px;
+  margin-bottom: 10px;
 }
 
 .prompt-chat-container.collapsed {
@@ -593,6 +593,13 @@ z-index: 0;
 /**** EXPLORATION CHAT ****/
 .chat-exploration-drawer {
   width: 500px;
+}
+
+.creative-matrix-panel-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 14px;
 }
 
 .drawer-header {

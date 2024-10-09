@@ -178,7 +178,14 @@ const CreativeMatrix = ({ models }) => {
   const collapseItem = [
     {
       key: "1",
-      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
+      label: isExpanded ? (
+        <div style={{ fontSize: "14px" }}>Hide Prompt Panel</div>
+      ) : (
+        <div className="creative-matrix-panel-header">
+          <div>Show Prompt Panel</div>
+          <Disclaimer models={models} />
+        </div>
+      ),
       children: (
         <div>
           <h1>Creative Matrix</h1>
@@ -317,7 +324,7 @@ const CreativeMatrix = ({ models }) => {
         <div
           style={{ height: "100%", display: "flex", flexDirection: "column" }}
         >
-          <Disclaimer models={models} />
+          {isExpanded ? <Disclaimer models={models} /> : null}
 
           <h1
             className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
