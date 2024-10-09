@@ -59,7 +59,7 @@ docker run \
         -e AUTH_SWITCHED_OFF=true \
         -e KNOWLEDGE_PACK_PATH=/knowledge-pack \
         -p 8080:8080 \
-        ghcr.io/tw-haiven/haiven:v0.3
+        ghcr.io/tw-haiven/haiven:main
 ```
 
 ### With Ollama, locally
@@ -85,7 +85,7 @@ docker run \
         -e ENABLED_VISION_MODEL=ollama-local-llava \
         -e OLLAMA_HOST=http://host.docker.internal:11434 \
         -p 8080:8080 \
-        ghcr.io/tw-haiven/haiven:v0.3
+        ghcr.io/tw-haiven/haiven:main
 ```
 
 #### Ollama restrictions
