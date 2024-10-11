@@ -2,7 +2,7 @@
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
-import { Input, Select, Button } from "antd";
+import { Input, Select, Button, message } from "antd";
 
 const { TextArea } = Input;
 import ChatWidget from "./_chat";
@@ -75,12 +75,19 @@ const PromptChat = ({
   };
 
   const submitPromptToBackend = async (messages) => {
-    if (conversationStarted !== true) {
-      // start a new chat session with the selected prompt
+    const lastMessage = messages[messages.length - 1];
+    let requestData;
 
-      const lastMessage = messages[messages.length - 1];
+    if (!conversationStarted) {
+      requestData = buildRequestBody(lastMessage?.content);
+    } else {
+      requestData = {
+        userinput: lastMessage?.content,
+        chatSessionId: chatSessionId,
+      };
+    }
 
-      const requestData = buildRequestBody(lastMessage?.content);
+    try {
       const response = await fetch("/api/prompt", {
         method: "POST",
         credentials: "include",
@@ -89,25 +96,23 @@ const PromptChat = ({
         },
         body: JSON.stringify(requestData),
       });
-      setConversationStarted(true);
-      setChatSessionId(response.headers.get("X-Chat-ID"));
-      setShowChat(true);
+
+      if (!response.ok) {
+        const errorMessage = `Error: ${response.status} - ${response.statusText}`;
+        throw new Error(errorMessage);
+      }
+
+      const chatId = response.headers.get("X-Chat-ID");
+
+      if (!conversationStarted) {
+        setConversationStarted(true);
+        setChatSessionId(chatId);
+        setShowChat(true);
+      }
+
       return response;
-    } else {
-      // continue chat session
-      const lastMessage = messages[messages.length - 1];
-      const response = await fetch("/api/prompt", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userinput: lastMessage?.content,
-          chatSessionId: chatSessionId,
-        }),
-      });
-      return response;
+    } catch (error) {
+      message.error(error.message);
     }
   };
 

@@ -20,7 +20,6 @@ const StoryValidation = ({ contexts, models }) => {
   const [isLoading, setLoading] = useState(false);
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
-  const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const [currentAbortController, setCurrentAbortController] = useState();
   const placeholderHelp = "What do you have so far?";
 
@@ -54,7 +53,6 @@ const StoryValidation = ({ contexts, models }) => {
   };
 
   const onGenerateQuestions = () => {
-    setModelOutputFailed(false);
     abortCurrentLoad();
     clearAll();
 
@@ -93,7 +91,13 @@ const StoryValidation = ({ contexts, models }) => {
             if (Array.isArray(output)) {
               setQuestions(output);
             } else {
-              setModelOutputFailed(true);
+              if (ms.includes("Error code:")) {
+                message.error(ms);
+              } else {
+                message.warning(
+                  "Model failed to respond rightly, please rewrite your message and try again",
+                );
+              }
               console.log("response is not parseable into an array");
             }
           } catch (error) {
@@ -296,15 +300,6 @@ const StoryValidation = ({ contexts, models }) => {
               >
                 GENERATE QUESTIONS
               </Button>
-              {modelOutputFailed && (
-                <Space direction="vertical" style={{ width: "100%" }}>
-                  <Alert
-                    message="Model failed to respond rightly"
-                    description="Please rewrite your message and try again"
-                    type="warning"
-                  />
-                </Space>
-              )}
             </div>
 
             {isLoading && (

@@ -1,7 +1,9 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+import { message } from "antd";
+
 export const getMessageError = async (response) => {
   let chatMessageError = {
-    message: `response error, status: ${response.statusText}`,
+    message: response.statusText,
     type: response.status,
   };
 
@@ -42,6 +44,8 @@ export const fetchSSE = async (uri, fetchOptions, options) => {
     const chatMessageError = await getMessageError(response);
 
     options.onErrorHandle?.(chatMessageError);
+    const errorMessage = `Error: ${chatMessageError.type} - ${chatMessageError.message}`;
+    message.error(errorMessage);
     return;
   }
 

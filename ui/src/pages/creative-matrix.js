@@ -1,6 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
-import { Alert, Input, Button, Spin, Select, Space, Collapse } from "antd";
+import { Input, Button, Spin, Select, Collapse, message } from "antd";
 import { MenuFoldOutlined } from "@ant-design/icons";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
@@ -26,8 +26,6 @@ const CreativeMatrix = ({ models }) => {
   );
   const [isLoading, setLoading] = useState(false);
   const [matrix, setMatrix] = useState([]);
-  const [currentSSE, setCurrentSSE] = useState(null);
-  const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const [templates, setTemplates] = useState([
     {
       name: "Template: GenAI Use Case Exploration Matrix",
@@ -118,7 +116,6 @@ const CreativeMatrix = ({ models }) => {
   }
 
   const onGenerateMatrix = () => {
-    setModelOutputFailed(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
@@ -160,10 +157,20 @@ const CreativeMatrix = ({ models }) => {
             try {
               output = parse(ms || "[]");
             } catch (error) {
-              setModelOutputFailed(true);
               console.log("error", error);
             }
-            setMatrix(output);
+            if (Array.isArray(output)) {
+              setMatrix(output);
+            } else {
+              if (ms.includes("Error code:")) {
+                message.error(ms);
+              } else {
+                message.warning(
+                  "Model failed to respond rightly, please rewrite your message and try again",
+                );
+              }
+              console.log("response is not parseable into an array");
+            }
           },
         },
       );
@@ -290,19 +297,6 @@ const CreativeMatrix = ({ models }) => {
               </Button>
             )}
           </div>
-
-          {modelOutputFailed && (
-            <Space
-              direction="vertical"
-              style={{ width: "100%", marginTop: "5px" }}
-            >
-              <Alert
-                message="Model failed to respond rightly"
-                description="Please rewrite your message and try again"
-                type="warning"
-              />
-            </Space>
-          )}
         </div>
       ),
     },

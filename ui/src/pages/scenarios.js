@@ -12,6 +12,7 @@ import {
   Space,
   Spin,
   Radio,
+  message,
 } from "antd";
 import ScenariosPlot from "./_plot";
 import ChatExploration from "./_chat_exploration";
@@ -46,7 +47,6 @@ const Home = ({ models }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
-  const [modelOutputNotParseable, setModelOutputNotParseable] = useState(false);
 
   function abortLoad() {
     ctrl && ctrl.abort("User aborted");
@@ -95,7 +95,6 @@ const Home = ({ models }) => {
   };
 
   const onSubmitPrompt = async () => {
-    setModelOutputNotParseable(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
@@ -146,7 +145,13 @@ const Home = ({ models }) => {
             if (Array.isArray(output)) {
               setScenarios(output);
             } else {
-              setModelOutputNotParseable(true);
+              if (ms.includes("Error code:")) {
+                message.error(ms);
+              } else {
+                message.warning(
+                  "Model failed to respond rightly, please rewrite your message and try again",
+                );
+              }
               console.log("response is not parseable into an array");
             }
           } catch (error) {
@@ -329,16 +334,6 @@ const Home = ({ models }) => {
               </div>
             </div>
           </div>
-
-          {modelOutputNotParseable && (
-            <Space direction="vertical" style={{ width: "100%" }}>
-              <Alert
-                message="Model failed to respond rightly"
-                description="Please rewrite your message and try again"
-                type="warning"
-              />
-            </Space>
-          )}
 
           <div
             style={{ height: "100%", display: "flex", flexDirection: "column" }}

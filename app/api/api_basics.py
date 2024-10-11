@@ -51,45 +51,57 @@ class HaivenBaseApi:
     def stream_json_chat(
         self, prompt, chat_category, chat_session_key_value=None, document_key=None
     ):
-        chat_session_key_value, chat_session = self.chat_manager.json_chat(
-            client_config=ChatClientConfig(self.model_key, 0.5),
-            session_id=chat_session_key_value,
-            options=ChatOptions(category=chat_category),
-        )
+        try:
+            chat_session_key_value, chat_session = self.chat_manager.json_chat(
+                client_config=ChatClientConfig(self.model_key, 0.5),
+                session_id=chat_session_key_value,
+                options=ChatOptions(category=chat_category),
+            )
 
-        return StreamingResponse(
-            chat_session.run(prompt),
-            media_type=streaming_media_type(),
-            headers=streaming_headers(chat_session_key_value),
-        )
+            return StreamingResponse(
+                chat_session.run(prompt),
+                media_type=streaming_media_type(),
+                headers=streaming_headers(chat_session_key_value),
+            )
+
+        except Exception as e:
+            raise Exception(e)
 
     def stream_text_chat(
         self, prompt, chat_category, chat_session_key_value=None, document_key=None
     ):
-        def stream(chat_session: StreamingChat, prompt):
-            if document_key:
-                sources = ""
-                for chunk, sources in chat_session.run_with_document(
-                    document_key, None, prompt
-                ):
-                    sources = sources
-                    yield chunk
-                yield "\n\n" + sources
-            else:
-                for chunk in chat_session.run(prompt):
-                    yield chunk
+        try:
 
-        chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
-            client_config=ChatClientConfig(self.model_key, 0.5),
-            session_id=chat_session_key_value,
-            options=ChatOptions(in_chunks=True, category=chat_category),
-        )
+            def stream(chat_session: StreamingChat, prompt):
+                try:
+                    if document_key:
+                        sources = ""
+                        for chunk, sources in chat_session.run_with_document(
+                            document_key, None, prompt
+                        ):
+                            sources = sources
+                            yield chunk
+                        yield "\n\n" + sources
+                    else:
+                        for chunk in chat_session.run(prompt):
+                            yield chunk
+                except Exception as e:
+                    yield str(e)
 
-        return StreamingResponse(
-            stream(chat_session, prompt),
-            media_type=streaming_media_type(),
-            headers=streaming_headers(chat_session_key_value),
-        )
+            chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
+                client_config=ChatClientConfig(self.model_key, 0.5),
+                session_id=chat_session_key_value,
+                options=ChatOptions(in_chunks=True, category=chat_category),
+            )
+
+            return StreamingResponse(
+                stream(chat_session, prompt),
+                media_type=streaming_media_type(),
+                headers=streaming_headers(chat_session_key_value),
+            )
+
+        except Exception as e:
+            raise Exception(e)
 
 
 class ApiBasics(HaivenBaseApi):
@@ -176,31 +188,35 @@ class ApiBasics(HaivenBaseApi):
 
         @app.post("/api/prompt")
         def chat(prompt_data: PromptRequestBody):
-            stream_fn = self.stream_text_chat
-            if prompt_data.promptid:
-                prompts = (
-                    prompts_guided
-                    if prompt_data.promptid.startswith("guided-")
-                    else prompts_chat
-                )
-                rendered_prompt, _ = prompts.render_prompt(
-                    active_knowledge_context=prompt_data.context,
-                    prompt_choice=prompt_data.promptid,
-                    user_input=prompt_data.userinput,
-                    additional_vars={},
-                    warnings=[],
-                )
-                if prompt_data.promptid.startswith("guided-"):
-                    stream_fn = self.stream_json_chat
-            else:
-                rendered_prompt = prompt_data.userinput
+            try:
+                stream_fn = self.stream_text_chat
+                if prompt_data.promptid:
+                    prompts = (
+                        prompts_guided
+                        if prompt_data.promptid.startswith("guided-")
+                        else prompts_chat
+                    )
+                    rendered_prompt, _ = prompts.render_prompt(
+                        active_knowledge_context=prompt_data.context,
+                        prompt_choice=prompt_data.promptid,
+                        user_input=prompt_data.userinput,
+                        additional_vars={},
+                        warnings=[],
+                    )
+                    if prompt_data.promptid.startswith("guided-"):
+                        stream_fn = self.stream_json_chat
+                else:
+                    rendered_prompt = prompt_data.userinput
 
-            return stream_fn(
-                prompt=rendered_prompt,
-                chat_category="boba-chat",
-                chat_session_key_value=prompt_data.chatSessionId,
-                document_key=prompt_data.document,
-            )
+                return stream_fn(
+                    prompt=rendered_prompt,
+                    chat_category="boba-chat",
+                    chat_session_key_value=prompt_data.chatSessionId,
+                    document_key=prompt_data.document,
+                )
+
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
         @app.post("/api/prompt/render")
         def render_prompt(prompt_data: PromptRequestBody):

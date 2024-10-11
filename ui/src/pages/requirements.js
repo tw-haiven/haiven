@@ -24,7 +24,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("Explore requirement");
   const [chatContext, setChatContext] = useState({});
-  const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const [variations, setVariations] = useState([
     { value: "workflow", label: "By workflow" },
     { value: "timeline", label: "By timeline" },
@@ -67,7 +66,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   };
 
   const onSubmitPrompt = () => {
-    setModelOutputFailed(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
@@ -105,7 +103,13 @@ const RequirementsBreakdown = ({ contexts, models }) => {
           if (Array.isArray(output)) {
             setScenarios(output);
           } else {
-            setModelOutputFailed(true);
+            if (ms.includes("Error code:")) {
+              message.error(ms);
+            } else {
+              message.warning(
+                "Model failed to respond rightly, please rewrite your message and try again",
+              );
+            }
             console.log("response is not parseable into an array");
           }
         },
@@ -204,18 +208,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
                 )}
               </div>
             </div>
-            {modelOutputFailed && (
-              <Space
-                direction="vertical"
-                style={{ width: "100%", marginTop: "5px" }}
-              >
-                <Alert
-                  message="Model failed to respond rightly"
-                  description="Please rewrite your message and try again"
-                  type="warning"
-                />
-              </Space>
-            )}
           </div>
           <div
             style={{ height: "100%", display: "flex", flexDirection: "column" }}

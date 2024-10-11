@@ -120,12 +120,15 @@ class StreamingChat(HaivenBaseChat):
     def run(self, message: str):
         self.memory.append(HumanMessage(content=message))
         self.log_run()
+        try:
+            for i, chunk in enumerate(self.chat_client.stream(self.memory)):
+                if i == 0:
+                    self.memory.append(AIMessage(content=""))
+                self.memory[-1].content += chunk.content
+                yield chunk.content
 
-        for i, chunk in enumerate(self.chat_client.stream(self.memory)):
-            if i == 0:
-                self.memory.append(AIMessage(content=""))
-            self.memory[-1].content += chunk.content
-            yield chunk.content
+        except Exception as error:
+            yield str(error)
 
     def run_with_document(
         self,
@@ -133,29 +136,35 @@ class StreamingChat(HaivenBaseChat):
         knowledge_context: str,
         message: str = None,
     ):
-        context_for_prompt, sources_markdown = self._similarity_search_based_on_history(
-            message, knowledge_document_key, knowledge_context
-        )
+        try:
+            context_for_prompt, sources_markdown = (
+                self._similarity_search_based_on_history(
+                    message, knowledge_document_key, knowledge_context
+                )
+            )
 
-        user_request = (
-            message
-            or "Based on our conversation so far, what do you think is relevant to me with the CONTEXT information I gathered?"
-        )
+            user_request = (
+                message
+                or "Based on our conversation so far, what do you think is relevant to me with the CONTEXT information I gathered?"
+            )
 
-        prompt = f"""
-        
-        {user_request}
+            prompt = f"""
+            
+            {user_request}
 
-        ---- Here is some additional CONTEXT that might be relevant to this:
-        {context_for_prompt}
+            ---- Here is some additional CONTEXT that might be relevant to this:
+            {context_for_prompt}
 
-        -------
-        Do not provide any advice that is outside of the CONTEXT I provided.
-        """
+            -------
+            Do not provide any advice that is outside of the CONTEXT I provided.
+            """
 
-        # ask the LLM for the advice
-        for chunk in self.run(prompt):
-            yield chunk, sources_markdown
+            # ask the LLM for the advice
+            for chunk in self.run(prompt):
+                yield chunk, sources_markdown
+
+        except Exception as error:
+            yield str(error), ""
 
 
 class Q_A_ResponseParser:
@@ -310,33 +319,41 @@ class JSONChat(HaivenBaseChat):
         self.event_stream_standard = event_stream_standard
 
     def stream_from_model(self, prompt):
-        messages = [HumanMessage(content=prompt)]
-        stream = self.chat_client.stream(
-            messages
-        )  # TODO: Previously this was a new object, does this still work?
-        for chunk in stream:
-            yield chunk.content
+        try:
+            messages = [HumanMessage(content=prompt)]
+            stream = self.chat_client.stream(
+                messages
+            )  # TODO: Previously this was a new object, does this still work?
+            for chunk in stream:
+                yield chunk.content
 
-        if self.event_stream_standard:
-            yield "[DONE]"
+            if self.event_stream_standard:
+                yield "[DONE]"
+
+        except Exception as error:
+            yield str(error)
 
     def run(self, message: str):
-        self.memory.append(HumanMessage(content=message))
-        data = enumerate(self.stream_from_model(message))
-        for i, chunk in data:
-            if i == 0:
-                self.memory.append(AIMessage(content=""))
+        try:
+            self.memory.append(HumanMessage(content=message))
+            data = enumerate(self.stream_from_model(message))
+            for i, chunk in data:
+                if i == 0:
+                    self.memory.append(AIMessage(content=""))
 
-            if chunk == "[DONE]":
-                yield f"data: {chunk}\n\n"
-            else:
-                self.memory[-1].content += chunk
-                if self.event_stream_standard:
-                    message = '{ "data": ' + json.dumps(chunk) + " }"
-                    yield f"data: {message}\n\n"
+                if chunk == "[DONE]":
+                    yield f"data: {chunk}\n\n"
                 else:
-                    message = json.dumps({"data": chunk})
-                    yield f"{message}\n\n"
+                    self.memory[-1].content += chunk
+                    if self.event_stream_standard:
+                        message = '{ "data": ' + json.dumps(chunk) + " }"
+                        yield f"data: {message}\n\n"
+                    else:
+                        message = json.dumps({"data": chunk})
+                        yield f"{message}\n\n"
+
+        except Exception as error:
+            yield str(error)
 
 
 class ServerChatSessionMemory:

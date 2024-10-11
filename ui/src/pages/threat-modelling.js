@@ -42,7 +42,6 @@ const ThreatModelling = ({ contexts, models }) => {
   const [explorationDrawerTitle, setExplorationDrawerTitle] =
     useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
-  const [modelOutputFailed, setModelOutputFailed] = useState(false);
   const router = useRouter();
 
   function abortLoad() {
@@ -102,7 +101,6 @@ const ThreatModelling = ({ contexts, models }) => {
   };
 
   const onSubmitPrompt = (event) => {
-    setModelOutputFailed(false);
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
@@ -137,7 +135,13 @@ const ThreatModelling = ({ contexts, models }) => {
           if (Array.isArray(output)) {
             setScenarios(output);
           } else {
-            setModelOutputFailed(true);
+            if (ms.includes("Error code:")) {
+              message.error(ms);
+            } else {
+              message.warning(
+                "Model failed to respond rightly, please rewrite your message and try again",
+              );
+            }
             console.log("response is not parseable into an array");
           }
         },
@@ -224,19 +228,6 @@ const ThreatModelling = ({ contexts, models }) => {
                   </div>
                 )}
               </div>
-
-              {modelOutputFailed && (
-                <Space
-                  direction="vertical"
-                  style={{ width: "100%", marginTop: "5px" }}
-                >
-                  <Alert
-                    message="Model failed to respond rightly"
-                    description="Please rewrite your message and try again"
-                    type="warning"
-                  />
-                </Space>
-              )}
             </div>
           </div>
 
