@@ -310,7 +310,7 @@ z-index: 0;
   font-weight: var(--font-weight-semi-bold);
 
   &.inline, &.ant-checkbox-wrapper {
-    display: inline;
+    display: flex;
     font-weight: normal;
   }
 }
@@ -318,7 +318,6 @@ z-index: 0;
 .prompt-chat-options-container .user-input textarea, 
 .prompt-chat-options-container .user-input input {
   width: 100%;
-  max-width: 350px;
   padding: 0.6em;
 }
 
@@ -331,6 +330,10 @@ z-index: 0;
   }
 }
 
+.ant-upload {
+  width: 100%;
+}
+
 .prompt-chat-options-container .image-uploader {
   display: block;
   width: 100%;
@@ -338,7 +341,7 @@ z-index: 0;
 
 .prompt-chat-options-container .image-uploader .ant-upload button {
   height: 50px;
-  width: 300px;
+  width: 100%;
   border: 1px dashed var(--color-dark-gray);
   background-color: var(--color-light-gray);
   color: var(--color-dark-gray);

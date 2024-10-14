@@ -11,7 +11,6 @@ function ContextChoice({ contexts, value, onChange }) {
       </label>
       <Select
         onChange={onChange}
-        style={{ width: 300 }}
         options={contexts}
         value={value}
         defaultValue="base"

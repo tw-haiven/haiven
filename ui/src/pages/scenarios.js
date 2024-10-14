@@ -190,11 +190,10 @@ const Home = ({ models }) => {
             </div>
             <div className="prompt-chat-options-section">
               <div className="user-input">
-                <label className="inline">Generate </label>
+                <label>Generate</label>
                 <Select
                   defaultValue={"5"}
                   onChange={handleSelectChange}
-                  style={{ width: 150 }}
                   disabled={isLoading}
                   options={[
                     { value: "1", label: "1 scenario" },
@@ -208,7 +207,6 @@ const Home = ({ models }) => {
                 <Select
                   defaultValue={"10-year"}
                   onChange={handleSelectTimeHorizonChange}
-                  style={{ width: 215 }}
                   disabled={isLoading}
                   options={[
                     { value: "5-year", label: "5-year horizon" },
@@ -221,7 +219,6 @@ const Home = ({ models }) => {
                 <Select
                   defaultValue={"optimistic"}
                   onChange={handleSelectOptimismChange}
-                  style={{ width: 215 }}
                   disabled={isLoading}
                   options={[
                     {
@@ -253,7 +250,6 @@ const Home = ({ models }) => {
                 <Select
                   defaultValue={"futuristic sci-fi"}
                   onChange={handleSelectRealismChange}
-                  style={{ width: 215 }}
                   disabled={isLoading}
                   options={[
                     {
@@ -293,10 +289,9 @@ const Home = ({ models }) => {
                 ></Select>
               </div>
               <div className="user-input">
-                <Checkbox onChange={handleDetailCheck} disabled={isLoading} />
-                <label className="inline">
+                <Checkbox onChange={handleDetailCheck} disabled={isLoading}>
                   Add details (signals, threats, opportunties)
-                </label>
+                </Checkbox>
               </div>
 
               <div className="user-input">

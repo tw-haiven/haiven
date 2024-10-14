@@ -179,7 +179,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
                 </label>
                 <Select
                   onChange={setSelectedVariation}
-                  style={{ width: 300, marginBottom: "1em" }}
+                  style={{ marginBottom: "1em" }}
                   options={variations}
                   value={selectedVariation}
                   defaultValue="workflow"

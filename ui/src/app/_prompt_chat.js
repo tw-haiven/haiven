@@ -157,7 +157,6 @@ const PromptChat = ({
         </label>
         <Select
           onChange={setSelectedDocument}
-          style={{ width: 300 }}
           options={documents}
           value={selectedDocument?.key}
           defaultValue={"base"}
@@ -212,6 +211,7 @@ const PromptChat = ({
 
             <TextArea
               value={promptInput}
+              style={{ width: "100%" }}
               placeholder={selectedPrompt?.help_user_input || pageIntro}
               rows={10}
               onChange={(e, v) => {
