@@ -6546,10 +6546,10 @@ remark-stringify@^11.0.0:
     mdast-util-to-markdown "^2.0.0"
     unified "^11.0.0"
 
-replicate@^0.33.0:
-  version "0.33.0"
-  resolved "https://registry.yarnpkg.com/replicate/-/replicate-0.33.0.tgz#42373b0f2052fa13a81dda6433d2b577aa2a4eac"
-  integrity sha512-jC8xR+hKnSEvxxLhHz1iML3ow8XmFYG/hDntlWjAwXaeFRboFWk805ooxgTKWSDMHZBZ4HZM7Wla7u644SfYqg==
+replicate@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/replicate/-/replicate-1.0.0.tgz#b4835ae4829492751c2f0268d3b1290d471e27fa"
+  integrity sha512-NmaQFbqua1H+YnulcTiRrJA+H5ZjYjLQ/uwhKgsJjwJ3uf7KLH2yuuQF90Xz4EB88vE+Dhrk/BtYNOZkJoHf1g==
   optionalDependencies:
     readable-stream ">=4.0.0"
 
