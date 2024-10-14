@@ -702,6 +702,10 @@ z-index: 0;
   padding: 2em;
 }
 
+.dashboard .headline{
+  margin: 80px 0;
+}
+
 .dashboard .subline {
   font-size: 18px;
   text-align: center;
@@ -715,7 +719,7 @@ z-index: 0;
 
 .dashboard h1 {
   font-size: 44px;
-  font-weight: semi-bold;
+  margin-bottom: 10px;
   text-align: center;
 }
 
@@ -723,14 +727,13 @@ z-index: 0;
   display: flex;
   justify-content: center;
   width: 100%;
-  padding-left: 9em;
 }
 
 .dashboard .ant-space {
   width: 100%;
   max-width: 1200px;
   display: flex;
-  justify-content: start;
+  justify-content: center;
   flex-wrap: wrap;
 }
 
