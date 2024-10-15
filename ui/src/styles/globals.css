@@ -802,12 +802,11 @@ z-index: 0;
 }
 
 .disclaimer{
-  display: flex;
-  justify-content: right;
-  align-items: center;
+  align-content: center;
+  text-align: right;
   height: 5%;
   color: #666666ff;
-  padding-right: 56px;
+  padding-right: 34px;
   font-size: 12px;
 }
 
