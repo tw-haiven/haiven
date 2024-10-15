@@ -17,10 +17,15 @@ const ChatWidget = forwardRef(
       key: "pin",
       label: "Pin",
       execute: (props) => {
-        var pinboard = localStorage.getItem("pinboard");
-        var pinboardMap = pinboard ? JSON.parse(pinboard) : {};
-        pinboardMap[Date.now()] = props.message;
-        localStorage.setItem("pinboard", JSON.stringify(pinboardMap));
+        try {
+          var pinboard = localStorage.getItem("pinboard");
+          var pinboardMap = pinboard ? JSON.parse(pinboard) : {};
+          pinboardMap[Date.now()] = props.message;
+          localStorage.setItem("pinboard", JSON.stringify(pinboardMap));
+        } catch (error) {
+          console.log(error.message);
+          message.error("Failed to pin the content");
+        }
         message.success("The content is Pinned");
       },
     };
