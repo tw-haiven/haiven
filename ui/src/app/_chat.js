@@ -6,6 +6,7 @@ import { PinIcon, RotateCw, Trash, Copy } from "lucide-react";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { addToPinboard } from "./_pinboard";
 
 const ChatWidget = forwardRef(
   ({ onSubmitMessage, helloMessage, visible }, ref) => {
@@ -17,16 +18,7 @@ const ChatWidget = forwardRef(
       key: "pin",
       label: "Pin",
       execute: (props) => {
-        try {
-          var pinboard = localStorage.getItem("pinboard");
-          var pinboardMap = pinboard ? JSON.parse(pinboard) : {};
-          pinboardMap[Date.now()] = props.message;
-          localStorage.setItem("pinboard", JSON.stringify(pinboardMap));
-        } catch (error) {
-          console.log(error.message);
-          message.error("Failed to pin the content");
-        }
-        message.success("The content is Pinned");
+        addToPinboard(props.message);
       },
     };
     const regenerate = {
