@@ -37,7 +37,7 @@ body {
 h1, h2, h3, h4 {
   margin: 0.5em 0;
   margin-bottom: 0.3em;
-  font-weight: var(--font-weight-semi-bold)
+  font-weight: var(--font-weight-semi-bold);
 }
 
 h1 {
@@ -143,7 +143,7 @@ z-index: 0;
 
 .chat-message th {
   background-color: #f8f8f8;
-  font-weight: bold;
+  font-weight: var(--font-weight-semi-bold)
 }
 
 .chat-message tr:hover {
@@ -704,6 +704,7 @@ z-index: 0;
 
 .dashboard .headline{
   margin: 80px 0;
+  font-weight: var(--font-weight-semi-bold);
 }
 
 .dashboard .subline {
@@ -712,7 +713,7 @@ z-index: 0;
 }
 
 .dashboard h2 {
-  font-weight: bold;
+  font-weight: var(--font-weight-semi-bold);
   font-size: 18px;
   text-align: center;
 }
