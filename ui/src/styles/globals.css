@@ -263,6 +263,45 @@ z-index: 0;
   border-top-left-radius: 15px;
   border-bottom-left-radius: 15px;
 }
+/**** PINBOARD *****/
+.pin-board {
+  display: flex;
+  align-items: center;
+}
+
+.pinboard-title {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  padding-left: 0.7em;
+  background-color: #edf1f3;
+}
+
+.pin-icon {
+  padding-right: 0.2em;
+  transform: rotate(45deg);
+}
+
+.clock-icon {
+  padding-left: 24px;
+  padding-right: 5px;
+}
+
+.pinboard-card-action-items {
+  display: flex;
+  justify-content: space-between;
+  
+}
+
+.date {
+  display: flex;
+  align-items: center;
+}
+
+.ant-modal .ant-modal-content {
+  background-color: #edf1f3;
+
+}
 
 /**** INPUT --> GENERATION RESULTS COLUMN LAYOUT *****/
 .prompt-chat-container {
@@ -444,12 +483,12 @@ z-index: 0;
 }
 
 .scenario {
-  width: 250px;
+  width: 350px;
   display: flex;
   flex-direction: column;
   margin: 0.8em;
   padding-top: 0.8em;
-  height: 380px;
+  height: 400px;
 }
 
 .scenario .scenario-card-content {
@@ -705,11 +744,6 @@ z-index: 0;
   padding: 2em;
 }
 
-.dashboard .headline{
-  margin: 80px 0;
-  font-weight: var(--font-weight-semi-bold);
-}
-
 .dashboard .subline {
   font-size: 18px;
   text-align: center;
@@ -723,7 +757,7 @@ z-index: 0;
 
 .dashboard h1 {
   font-size: 44px;
-  margin-bottom: 10px;
+  font-weight: semi-bold;
   text-align: center;
 }
 
@@ -731,13 +765,14 @@ z-index: 0;
   display: flex;
   justify-content: center;
   width: 100%;
+  padding-left: 9em;
 }
 
 .dashboard .ant-space {
   width: 100%;
   max-width: 1200px;
   display: flex;
-  justify-content: center;
+  justify-content: start;
   flex-wrap: wrap;
 }
 
@@ -806,11 +841,12 @@ z-index: 0;
 }
 
 .disclaimer{
-  align-content: center;
-  text-align: right;
+  display: flex;
+  justify-content: right;
+  align-items: center;
   height: 5%;
   color: #666666ff;
-  padding-right: 34px;
+  padding-right: 35px;
   font-size: 12px;
 }
 

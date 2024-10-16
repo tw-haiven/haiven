@@ -327,7 +327,7 @@ const CreativeMatrix = ({ models }) => {
           </h1>
 
           <div
-            class="matrix-container"
+            className="matrix-container"
             style={{ height: "95%", background: "#F5F5F5" }}
           >
             <div className="">
