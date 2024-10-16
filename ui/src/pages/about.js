@@ -51,9 +51,9 @@ const AboutPage = ({}) => {
       </p>
       <p>
         Each chat message is shared with an AI model. Depending on which "AI
-        service and model" you indicate in the UI, that's where your chat
-        messages go (typically either a cloud service, or a model running on
-        your local machine).
+        service and model" you had opted, that's where your chat messages go
+        (typically either a cloud service, or a model running on your local
+        machine).
       </p>
       <p>
         Most of the 3rd party model services have terms & conditions that say
@@ -70,7 +70,7 @@ const AboutPage = ({}) => {
         sensitivity and confidentiality in the context of your particular
         situation, and consult your organization's data privacy policies.
       </p>
-      <h2>Data Collection</h2>
+      <h3>Data Collection</h3>
       <p>
         The only data that gets persisted by this application itself is in the
         form of logs.
