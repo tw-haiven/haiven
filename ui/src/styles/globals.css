@@ -701,7 +701,9 @@ z-index: 0;
 /******* SIDEBAR ******/
 
 .sidebar {
-  height: 100vh;
+  height: 100%;
+  padding-top: 10px;
+  overflow: scroll;
 }
 
 .sidebar .ant-menu-inline {

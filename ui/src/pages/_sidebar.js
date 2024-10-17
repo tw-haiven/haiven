@@ -63,7 +63,6 @@ const Sidebar = ({ prompts }) => {
       theme="light"
       mode="inline"
       className="sidebar"
-      style={{ paddingTop: 10 }}
       items={menuItems}
       defaultSelectedKeys={[currentSelectedKey]}
     ></Menu>
