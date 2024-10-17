@@ -85,8 +85,10 @@ class HaivenBaseApi:
                     else:
                         for chunk in chat_session.run(prompt):
                             yield chunk
-                except Exception as e:
-                    yield str(e)
+                except Exception as error:
+                    if not str(error).strip():
+                        error = "Error while the model was processing the input"
+                    yield f"[ERROR]: {str(error)}"
 
             chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
                 client_config=ChatClientConfig(self.model_key, 0.5),

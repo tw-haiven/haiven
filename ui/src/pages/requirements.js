@@ -3,7 +3,17 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
 import { parse } from "best-effort-json-parser";
-import { Alert, Button, Card, Drawer, Input, Space, Spin, Select } from "antd";
+import {
+  Alert,
+  Button,
+  Card,
+  Drawer,
+  Input,
+  Space,
+  Spin,
+  Select,
+  message,
+} from "antd";
 const { TextArea } = Input;
 import { RiChat2Line, RiCheckboxMultipleBlankFill } from "react-icons/ri";
 import ReactMarkdown from "react-markdown";
@@ -103,13 +113,9 @@ const RequirementsBreakdown = ({ contexts, models }) => {
           if (Array.isArray(output)) {
             setScenarios(output);
           } else {
-            if (ms.includes("Error code:")) {
-              message.error(ms);
-            } else {
-              message.warning(
-                "Model failed to respond rightly, please rewrite your message and try again",
-              );
-            }
+            message.warning(
+              "Model failed to respond rightly, please rewrite your message and try again",
+            );
             console.log("response is not parseable into an array");
           }
         },

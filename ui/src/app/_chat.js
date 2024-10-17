@@ -119,6 +119,16 @@ const ChatWidget = forwardRef(
             request={onSubmit}
             chatItemRenderConfig={{
               contentRender: (props, _defaultDom) => {
+                const isError = props.message.startsWith("[ERROR]: ")
+                  ? props.message.replace("[ERROR]: ", "")
+                  : null;
+                if (isError) {
+                  return (
+                    <div className="chat-message">
+                      <p style={{ color: "red" }}>{isError}</p>
+                    </div>
+                  );
+                }
                 return (
                   <div className="chat-message">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>

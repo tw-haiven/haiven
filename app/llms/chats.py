@@ -128,7 +128,9 @@ class StreamingChat(HaivenBaseChat):
                 yield chunk.content
 
         except Exception as error:
-            yield str(error)
+            if not str(error).strip():
+                error = "Error while the model was processing the input"
+            yield f"[ERROR]: {str(error)}"
 
     def run_with_document(
         self,
@@ -164,7 +166,9 @@ class StreamingChat(HaivenBaseChat):
                 yield chunk, sources_markdown
 
         except Exception as error:
-            yield str(error), ""
+            if not str(error).strip():
+                error = "Error while the model was processing the input"
+            yield f"[ERROR]: {str(error)}", ""
 
 
 class Q_A_ResponseParser:
@@ -331,7 +335,9 @@ class JSONChat(HaivenBaseChat):
                 yield "[DONE]"
 
         except Exception as error:
-            yield str(error)
+            if not str(error).strip():
+                error = "Error while the model was processing the input"
+            yield f"[ERROR]: {str(error)}"
 
     def run(self, message: str):
         try:
@@ -353,7 +359,9 @@ class JSONChat(HaivenBaseChat):
                         yield f"{message}\n\n"
 
         except Exception as error:
-            yield str(error)
+            if not str(error).strip():
+                error = "Error while the model was processing the input"
+            yield f"[ERROR]: {str(error)}"
 
 
 class ServerChatSessionMemory:

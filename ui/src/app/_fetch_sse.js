@@ -10,6 +10,16 @@ export const getMessageError = async (response) => {
   return chatMessageError;
 };
 
+const checkError = (response) => {
+  const isError = response.startsWith("[ERROR]: ")
+    ? response.replace("[ERROR]: ", "")
+    : null;
+  if (isError) {
+    message.error(isError);
+    throw new Error(isError);
+  }
+};
+
 const isAbortError = (error) => {
   return (
     error.name === "AbortError" &&
@@ -84,10 +94,12 @@ export const fetchSSE = async (uri, fetchOptions, options) => {
           const chunks = chunkable.split(SPLIT_DELIMITER);
           chunks.forEach((value) => {
             const data = JSON.parse(value);
+            checkError(data.data);
             options.onMessageHandle?.(data, response);
           });
         }
       } else {
+        checkError(chunkValue);
         options.onMessageHandle?.(chunkValue, response);
       }
     }

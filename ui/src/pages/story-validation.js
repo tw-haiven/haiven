@@ -1,7 +1,16 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import { Alert, Button, Card, Input, Space, Spin, Collapse } from "antd";
+import {
+  Alert,
+  Button,
+  Card,
+  Input,
+  Space,
+  Spin,
+  Collapse,
+  message,
+} from "antd";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import ReactMarkdown from "react-markdown";
@@ -91,13 +100,9 @@ const StoryValidation = ({ contexts, models }) => {
             if (Array.isArray(output)) {
               setQuestions(output);
             } else {
-              if (ms.includes("Error code:")) {
-                message.error(ms);
-              } else {
-                message.warning(
-                  "Model failed to respond rightly, please rewrite your message and try again",
-                );
-              }
+              message.warning(
+                "Model failed to respond rightly, please rewrite your message and try again",
+              );
               console.log("response is not parseable into an array");
             }
           } catch (error) {

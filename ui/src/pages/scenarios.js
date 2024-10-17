@@ -145,13 +145,9 @@ const Home = ({ models }) => {
             if (Array.isArray(output)) {
               setScenarios(output);
             } else {
-              if (ms.includes("Error code:")) {
-                message.error(ms);
-              } else {
-                message.warning(
-                  "Model failed to respond rightly, please rewrite your message and try again",
-                );
-              }
+              message.warning(
+                "Model failed to respond rightly, please rewrite your message and try again",
+              );
               console.log("response is not parseable into an array");
             }
           } catch (error) {
