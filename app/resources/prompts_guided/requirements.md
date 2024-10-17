@@ -1,6 +1,6 @@
 ---
 identifier: guided-requirements
-title: "Requirements breakdown"
+title: "Requirements Breakdown"
 system: "You are a member of a software engineering team and are assisting me in requirements analysis."
 categories: ["guided"]
 

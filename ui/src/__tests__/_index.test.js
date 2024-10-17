@@ -1,6 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { render, screen, fireEvent } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import ChatDashboard from "../pages/index";
 import { describe, it, expect, vi } from "vitest";
 import { getPrompts } from "../app/_boba_api";
@@ -18,15 +18,15 @@ describe("ChatDashboard Component", () => {
   const mockPrompts = [
     {
       identifier: "1",
-      title: "User persona creation",
+      title: "User Persona Creation",
       categories: ["research"],
       help_prompt_description: "Description for user persona creation",
     },
     {
       identifier: "2",
-      title: "Contract test generation",
+      title: "Contract Test Generation",
       categories: ["testing"],
-      help_prompt_description: "Description for contract test generation",
+      help_prompt_description: "Description for Contract Test Generation",
     },
   ];
 
@@ -49,8 +49,8 @@ describe("ChatDashboard Component", () => {
       render(<ChatDashboard />);
     });
 
-    expect(screen.getByText("User persona creation")).toBeInTheDocument();
-    expect(screen.getByText("Contract test generation")).toBeInTheDocument();
+    expect(screen.getByText("User Persona Creation")).toBeInTheDocument();
+    expect(screen.getByText("Contract Test Generation")).toBeInTheDocument();
     expect(screen.getByText("Creative Matrix")).toBeInTheDocument();
   });
 
@@ -70,9 +70,9 @@ describe("ChatDashboard Component", () => {
       fireEvent.click(researchTags[0]);
     });
 
-    expect(screen.getByText("User persona creation")).toBeInTheDocument();
+    expect(screen.getByText("User Persona Creation")).toBeInTheDocument();
     expect(
-      screen.queryByText(/Contract test generation/i),
+      screen.queryByText(/Contract Test Generation/i),
     ).not.toBeInTheDocument();
   });
 
@@ -85,10 +85,10 @@ describe("ChatDashboard Component", () => {
     });
 
     expect(
-      screen.queryByText(/User persona creation/i),
+      screen.queryByText(/User Persona Creation/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Contract test generation/i),
+      screen.queryByText(/Contract Test Generation/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/Creative Matrix/i)).not.toBeInTheDocument();
   });

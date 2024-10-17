@@ -18,12 +18,12 @@ describe("Sidebar Component", () => {
     },
     {
       identifier: "2",
-      title: "Contract test generation",
+      title: "Contract Test Generation",
       categories: ["testing"],
     },
     {
       identifier: "3",
-      title: "Architecture discussion",
+      title: "Architecture Discussion",
       categories: ["coding"],
     },
   ];

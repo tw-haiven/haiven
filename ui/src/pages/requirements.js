@@ -151,7 +151,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
         <div className="prompt-chat-container">
           <div className="prompt-chat-options-container">
             <div className="prompt-chat-options-section">
-              <h1>Requirements breakdown</h1>
+              <h1>Requirements Breakdown</h1>
               <p>
                 Haiven will help you break down your requirement into multiple
                 work packages.

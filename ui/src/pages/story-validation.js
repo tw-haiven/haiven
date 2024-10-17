@@ -270,7 +270,7 @@ const StoryValidation = ({ contexts, models }) => {
         <div className="prompt-chat-container">
           <div className="prompt-chat-options-container">
             <div className="prompt-chat-options-section">
-              <h1>Validate and refine a user story</h1>
+              <h1>Validate and Refine a User Story</h1>
               <p>
                 Haiven will ask you questions about your requirement, so you can
                 discover gaps you haven't thought about yet. In a second step,

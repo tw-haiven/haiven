@@ -1,6 +1,6 @@
 ---
 identifier: guided-story-validation
-title: "Story validation"
+title: "Story Validation"
 system: "You are a developer on a software engineering team."
 categories: ["guided"]
 

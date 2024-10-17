@@ -12,7 +12,7 @@ describe("PromptChat Component", () => {
       help_prompt_description: "Help description",
       help_user_input: "Help input",
     },
-    { identifier: "2", title: "Contract test generation" },
+    { identifier: "2", title: "Contract Test Generation" },
   ];
   const mockContexts = [
     { key: "base", label: "Base Context" },
@@ -49,7 +49,7 @@ describe("PromptChat Component", () => {
 
     expect(screen.getByText(/Default Title/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Default Intro/i)).toBeInTheDocument();
-    expect(screen.getByText(/Add image description/i)).toBeInTheDocument();
+    expect(screen.getByText(/Upload image/i)).toBeInTheDocument();
     expect(screen.getByText(/Document/i)).toBeInTheDocument();
     expect(screen.getByText(/Contexts/i)).toBeInTheDocument();
     expect(startChatButton).toBeInTheDocument();

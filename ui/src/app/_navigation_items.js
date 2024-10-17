@@ -44,7 +44,7 @@ export const initialiseMenuCategoriesForSidebar = () => {
         },
         {
           key: "scenarios",
-          label: <Link href="/scenarios">Scenario design</Link>,
+          label: <Link href="/scenarios">Scenario Design</Link>,
         },
       ],
     },
@@ -55,11 +55,11 @@ export const initialiseMenuCategoriesForSidebar = () => {
       children: [
         {
           key: "requirements",
-          label: <Link href="/requirements">Requirements breakdown</Link>,
+          label: <Link href="/requirements">Requirements Breakdown</Link>,
         },
         {
           key: "story-validation",
-          label: <Link href="/story-validation">Story validation</Link>,
+          label: <Link href="/story-validation">Story Validation</Link>,
         },
       ],
     },
@@ -82,7 +82,7 @@ export const initialiseMenuCategoriesForSidebar = () => {
       children: [
         {
           key: "threat-modelling",
-          label: <Link href="/threat-modelling">Threat modelling: STRIDE</Link>,
+          label: <Link href="/threat-modelling">Threat Modelling: STRIDE</Link>,
         },
       ],
     },
@@ -108,7 +108,7 @@ export const staticFeaturesForDashboard = () => {
     },
     {
       identifier: "boba-scenarios",
-      title: "Scenario design",
+      title: "Scenario Design",
       help_prompt_description:
         "Brainstorm a range of scenarios for your product domain based on criteria like time horizon, realism, and optimism.",
       categories: ["ideate"],
@@ -117,7 +117,7 @@ export const staticFeaturesForDashboard = () => {
     },
     {
       identifier: "boba-requirements-breakdown",
-      title: "Requirements breakdown",
+      title: "Requirements Breakdown",
       help_prompt_description:
         "Break down your requirement into multiple scenarios, based on a high level description.",
       categories: ["analysis"],
@@ -126,7 +126,7 @@ export const staticFeaturesForDashboard = () => {
     },
     {
       identifier: "boba-story-validation",
-      title: "Story validation",
+      title: "Story Validation",
       help_prompt_description:
         "Get asked questions about your requirement to discover gaps. In a second step, you can generate a draft for a user story.",
       categories: ["analysis"],
