@@ -93,6 +93,8 @@ export default function App({
             Button: {
               defaultBg: colorflamingo,
               defaultColor: "white",
+              defaultHoverBg: "#ca6070",
+              defaultHoverColor: "white",
             },
             Tabs: {
               itemColor: colorsapphire,
