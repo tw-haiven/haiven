@@ -66,7 +66,10 @@ const Pinboard = ({ isModalVisible, onClose }) => {
           <PinIcon className="pin-icon" size={14} />
           Pinboard
         </div>
-        <p className="saved-response">Your saved response</p>
+        <p className="saved-response">
+          Access important messages you've pinned to the pinboard for quick
+          reference.
+        </p>
       </div>
     );
   };
@@ -98,7 +101,12 @@ const Pinboard = ({ isModalVisible, onClose }) => {
       mask={false}
     >
       {pinnedMessages.length === 0 && (
-        <p className="empty-pinboard">Your pinboard is empty</p>
+        <div className="empty-pinboard">
+          <p className="empty-state-message">
+            Start pinning by clicking on the pin
+          </p>
+          <p className="empty-state-instruction">icon on the messages</p>
+        </div>
       )}
       {pinnedMessages.map((pinnedMessage, i) => (
         <Card

@@ -272,7 +272,6 @@ z-index: 0;
   align-items: center;
 }
 
-
 .pinboard-modal {
   position: fixed;
   right: 0;
@@ -281,8 +280,22 @@ z-index: 0;
 }
 
 .pinboard-modal .empty-pinboard {
-  padding: 16px;
-  background-color: white;
+  background-color: var(--color-light-gray);
+  height: 40%;
+  align-content: center;
+  color: var(--color-dark-gray);
+}
+
+.pinboard-modal .empty-pinboard p {
+  margin: 0;
+}
+
+.empty-pinboard .empty-state-message {
+  padding-left: 20%;
+}
+
+.empty-pinboard .empty-state-instruction {
+  padding-left: 30%;
 }
 
 .pinboard-modal .ant-modal-content {
