@@ -18,7 +18,7 @@ const ChatWidget = forwardRef(
       key: "pin",
       label: "Pin",
       execute: (props) => {
-        addToPinboard(props.message);
+        addToPinboard(props.time, props.message);
       },
     };
     const regenerate = {

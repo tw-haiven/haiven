@@ -94,52 +94,44 @@ const Pinboard = ({ isModalVisible, onClose }) => {
       onCancel={onClose}
       width={420}
       footer={null}
-      style={{
-        position: "fixed",
-        right: 0,
-        top: "67px",
-        bottom: 0,
-        height: "95%",
-        overflow: "auto",
-      }}
+      className="pinboard-modal"
       mask={false}
     >
-      <div>
-        {pinnedMessages.map((pinnedMessage, i) => (
-          <Card
-            hoverable
-            key={i}
-            className="pinboard-card"
-            actions={[
-              <div
-                className="pinboard-card-action-items"
-                style={{ backgroundColor: "#f9f9f9" }}
-              >
-                <div className="date">
-                  <ClockIcon size={16} className="clock-icon" />
-                  {formatDate(pinnedMessage.timestamp)}
-                </div>
-                <div style={{ display: "flex" }} key="actions">
-                  <Button type="link" onClick={() => onDelete(i)}>
-                    <RiDeleteBinLine style={{ fontSize: "large" }} />
-                  </Button>
-                  <Button type="link" onClick={() => onCopyOne(i)}>
-                    <RiCheckboxMultipleBlankFill
-                      style={{ fontSize: "large" }}
-                    />
-                  </Button>
-                </div>
-              </div>,
-            ]}
-          >
-            <div className="pinboard-card-content">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {pinnedMessage.summary}
-              </ReactMarkdown>
-            </div>
-          </Card>
-        ))}
-      </div>
+      {pinnedMessages.length === 0 && (
+        <p className="empty-pinboard">Your pinboard is empty</p>
+      )}
+      {pinnedMessages.map((pinnedMessage, i) => (
+        <Card
+          hoverable
+          key={i}
+          className="pinboard-card"
+          actions={[
+            <div
+              className="pinboard-card-action-items"
+              style={{ backgroundColor: "#f9f9f9" }}
+            >
+              <div className="card-action">
+                <ClockIcon size={16} className="clock-icon" />
+                {formatDate(pinnedMessage.timestamp)}
+              </div>
+              <div className="card-action" key="actions">
+                <Button type="link" onClick={() => onDelete(i)}>
+                  <RiDeleteBinLine style={{ fontSize: "large" }} />
+                </Button>
+                <Button type="link" onClick={() => onCopyOne(i)}>
+                  <RiCheckboxMultipleBlankFill style={{ fontSize: "large" }} />
+                </Button>
+              </div>
+            </div>,
+          ]}
+        >
+          <div className="pinboard-card-content">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {pinnedMessage.summary}
+            </ReactMarkdown>
+          </div>
+        </Card>
+      ))}
     </Modal>
   );
 };

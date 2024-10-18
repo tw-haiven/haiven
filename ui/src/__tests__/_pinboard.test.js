@@ -35,8 +35,9 @@ describe("addToPinboard", () => {
 
   it("should add content to pinboard and show success message", () => {
     const content = "Test content";
+    const key = Date.now();
 
-    addToPinboard(content);
+    addToPinboard(key, content);
 
     const pinboard = JSON.parse(localStorage.getItem("pinboard"));
     expect(Object.values(pinboard)).toContain(content);
@@ -47,13 +48,14 @@ describe("addToPinboard", () => {
 
   it("should handle errors and show error message", () => {
     const content = "Test content";
+    const key = Date.now();
     const errorMessage = "Failed to pin the content";
     const newLocal = vi.spyOn(localStorage, "setItem");
     newLocal.mockImplementation(() => {
       throw new Error("Storage error");
     });
 
-    addToPinboard(content);
+    addToPinboard(key, content);
 
     expect(message.error).toHaveBeenCalledWith(errorMessage);
     newLocal.mockRestore();
@@ -61,8 +63,9 @@ describe("addToPinboard", () => {
 
   it("should initialize pinboard if it does not exist", () => {
     const content = "Test content";
+    const key = Date.now();
 
-    addToPinboard(content);
+    addToPinboard(key, content);
 
     const pinboard = JSON.parse(localStorage.getItem("pinboard"));
     expect(pinboard).toBeDefined();
@@ -74,15 +77,12 @@ describe("addToPinboard", () => {
     const content2 = "Test content 2";
     const originalDateNow = Date.now;
 
-    Date.now = vi.fn(() => 1234567890);
-    addToPinboard(content1);
+    addToPinboard(originalDateNow, content1);
     Date.now = vi.fn(() => 1234567891);
-    addToPinboard(content2);
+    addToPinboard(Date.now, content2);
 
     const pinboard = JSON.parse(localStorage.getItem("pinboard"));
     expect(Object.values(pinboard)).toContain(content1);
     expect(Object.values(pinboard)).toContain(content2);
-
-    Date.now = originalDateNow; // Restore Date.now() after the test
   });
 });

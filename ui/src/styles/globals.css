@@ -269,12 +269,38 @@ z-index: 0;
   align-items: center;
 }
 
+
+.pinboard-modal {
+  position: fixed;
+  right: 0;
+  top: 67px;
+  height: 95vh;
+}
+
+.pinboard-modal .empty-pinboard {
+  padding: 16px;
+  background-color: white;
+}
+
+.ant-modal .ant-modal-content {
+  background-color: var(--color-light-gray);
+  padding: 12px 24px;
+  height: 95vh;
+}
+
+.ant-modal .ant-modal-content .ant-modal-body {
+  height: 90% !important;
+  overflow: scroll !important;
+}
+
 .pinboard-card {
   width: 350px;
   flex-direction: column;
   margin: 0.8em;
-  /* padding-top: 0.8em; */
-  height: 400px;
+}
+
+.pinboard-card .ant-card-body {
+  padding: 16px;
 }
 
 .pinboard-title {
@@ -291,25 +317,30 @@ z-index: 0;
 }
 
 .pinboard-card-content {
-  height: 280px;
+  max-height: 280px;
   overflow-y: scroll;
   padding: 0;
 }
 
-.clock-icon {
-  padding-left: 24px;
-  padding-right: 5px;
+.ant-card-actions li {
+  margin: 0 !important;
 }
 
 .pinboard-card-action-items {
   display: flex;
   justify-content: space-between;
   height: 40px;
+  padding: 0 12px;
 }
 
-.date {
+.pinboard-card-action-items .card-action {
   display: flex;
   align-items: center;
+  gap: 6px;
+}
+
+.pinboard-card-action-items .card-action button {
+  padding: 4px !important;
 }
 
 .saved-response {
@@ -319,10 +350,6 @@ z-index: 0;
   margin-bottom: 10px;
 }
 
-.ant-modal .ant-modal-content {
-  background-color: var(--color-light-gray);
-  padding: 12px 24px;
-}
 
 /**** INPUT --> GENERATION RESULTS COLUMN LAYOUT *****/
 .prompt-chat-container {
