@@ -5,7 +5,9 @@ export const addToPinboard = (content) => {
   try {
     var pinboard = localStorage.getItem("pinboard");
     var pinboardMap = pinboard ? JSON.parse(pinboard) : {};
-    pinboardMap[Date.now()] = content;
+    var pinboardEntries = Object.entries(pinboardMap);
+    pinboardEntries.unshift([Date.now(), content]);
+    pinboardMap = Object.fromEntries(pinboardEntries);
     localStorage.setItem("pinboard", JSON.stringify(pinboardMap));
   } catch (error) {
     console.log(error.message);

@@ -264,9 +264,17 @@ z-index: 0;
   border-bottom-left-radius: 15px;
 }
 /**** PINBOARD *****/
-.pin-board {
+.pinboard {
   display: flex;
   align-items: center;
+}
+
+.pinboard-card {
+  width: 350px;
+  flex-direction: column;
+  margin: 0.8em;
+  /* padding-top: 0.8em; */
+  height: 400px;
 }
 
 .pinboard-title {
@@ -282,6 +290,12 @@ z-index: 0;
   transform: rotate(45deg);
 }
 
+.pinboard-card-content {
+  height: 280px;
+  overflow-y: scroll;
+  padding: 0;
+}
+
 .clock-icon {
   padding-left: 24px;
   padding-right: 5px;
@@ -290,7 +304,7 @@ z-index: 0;
 .pinboard-card-action-items {
   display: flex;
   justify-content: space-between;
-  
+  height: 40px;
 }
 
 .date {
@@ -298,8 +312,16 @@ z-index: 0;
   align-items: center;
 }
 
+.saved-response {
+  font-size: 14px;
+  font-weight: normal;
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
 .ant-modal .ant-modal-content {
   background-color: var(--color-light-gray);
+  padding: 12px 24px;
 }
 
 /**** INPUT --> GENERATION RESULTS COLUMN LAYOUT *****/

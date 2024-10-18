@@ -45,7 +45,7 @@ export default function Header() {
               </span>
             </div>
             <div className="separator"></div>
-            <div className="pin-board">
+            <div className="pinboard">
               <Button
                 type="link"
                 onClick={openPinboard}

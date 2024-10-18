@@ -45,7 +45,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     delete pinboardData[removedScenario.timestamp];
     localStorage.setItem("pinboard", JSON.stringify(pinboardData));
     setPinnedMessages(updatedPinnedMessages);
-    message.success("Scenario deleted successfully!");
+    message.success("Content deleted successfully!");
   };
 
   const onCopyOne = async (index) => {
@@ -53,9 +53,9 @@ const Pinboard = ({ isModalVisible, onClose }) => {
       await navigator.clipboard.writeText(
         scenarioToText(pinnedMessages[index]),
       );
-      message.success("Scenario copied to clipboard!");
+      message.success("Content copied successfully!");
     } catch (err) {
-      message.error("Failed to copy the scenario to clipboard.");
+      message.error("Failed to copy the content.");
     }
   };
 
@@ -66,7 +66,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
           <PinIcon className="pin-icon" size={14} />
           Pinboard
         </div>
-        <p style={{ fontSize: "12px" }}>Your saved response</p>
+        <p className="saved-response">Your saved response</p>
       </div>
     );
   };
@@ -99,17 +99,17 @@ const Pinboard = ({ isModalVisible, onClose }) => {
         right: 0,
         top: "67px",
         bottom: 0,
-        height: "95vh",
+        height: "95%",
         overflow: "auto",
       }}
       mask={false}
     >
-      <div className="cards-container with-display-mode">
+      <div>
         {pinnedMessages.map((pinnedMessage, i) => (
           <Card
             hoverable
             key={i}
-            className="scenario"
+            className="pinboard-card"
             actions={[
               <div
                 className="pinboard-card-action-items"
@@ -132,12 +132,10 @@ const Pinboard = ({ isModalVisible, onClose }) => {
               </div>,
             ]}
           >
-            <div className="scenario-card-content">
-              <div className="scenario-summary">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {pinnedMessage.summary}
-                </ReactMarkdown>
-              </div>
+            <div className="pinboard-card-content">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {pinnedMessage.summary}
+              </ReactMarkdown>
             </div>
           </Card>
         ))}
