@@ -451,7 +451,7 @@ z-index: 0;
   padding-top: 4px;
 }
 
-.title-for-collapsed-panel.hide {
+.hide {
   display: none;
 }
 
@@ -657,8 +657,20 @@ z-index: 0;
 .matrix-container {
   flex: 5;
   padding-left: 1em;
+  height: 95%;
+  background: #F5F5F5
 }
 
+.content-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column
+}
+
+.matrix-table {
+  width: 95%;
+  border-collapse: collapse;
+}
 
 .boba-matrix,
 .boba-matrix table {

@@ -178,6 +178,112 @@ const CreativeMatrix = ({ models }) => {
     }
   };
 
+  const promptMenu = (
+    <div>
+      <h1>Creative Matrix</h1>
+
+      <div className="user-input">
+        <Select
+          defaultValue={templates[0].name}
+          onChange={onChangeTemplate}
+          options={templates.map((t) => ({ value: t.name, label: t.name }))}
+        ></Select>
+      </div>
+
+      <div className="user-input">
+        <label>Prompt</label>
+        <TextArea
+          placeholder="Prompt for the intersection of row and column"
+          value={prompt}
+          onChange={onChangePrompt}
+          disabled={isLoading}
+        />
+      </div>
+      <div className="user-input">
+        <label>Rows</label>
+        <TextArea
+          placeholder="Comma-separated list of values"
+          value={rowsCSV}
+          onChange={onChangeRowsCSV}
+          disabled={isLoading}
+        />
+      </div>
+      <div className="user-input">
+        <label>Columns</label>
+
+        <TextArea
+          placeholder="Comma-separated list of values"
+          value={columnsCSV}
+          onChange={onChangeColumnsCSV}
+          disabled={isLoading}
+        />
+      </div>
+      <div className="user-input">
+        Generate{" "}
+        <Select
+          defaultValue={"3"}
+          onChange={handleSelectChange}
+          disabled={isLoading}
+          className="small"
+          options={[
+            { value: "1", label: "1 idea" },
+            { value: "2", label: "2 ideas" },
+            { value: "3", label: "3 ideas" },
+            { value: "4", label: "4 ideas" },
+            { value: "5", label: "5 ideas" },
+          ]}
+        ></Select>
+        &nbsp; per combination.
+      </div>
+      <div className="user-input">
+        <label>Each idea must be...</label>
+        <Select
+          style={{ width: "100%" }}
+          mode="tags"
+          placeholder="List of adjectives/qualifiers"
+          onChange={onChangeIdeaQualifiers}
+          disabled={isLoading}
+          options={[
+            { value: "utopian", label: "Utopian" },
+            { value: "dystopian", label: "Dystopian" },
+            {
+              value: "inspired by science fiction",
+              label: "Inspired by science fiction",
+            },
+            { value: "funny and bizarre", label: "Funny and bizarre" },
+            {
+              value: "written in the style of Shakespear",
+              label: "Written in the style of Shakespear",
+            },
+          ]}
+        />
+      </div>
+      <div className="user-input">
+        {!isLoading && (
+          <Button
+            onClick={onGenerateMatrix}
+            className="go-button"
+            disabled={isLoading}
+          >
+            GENERATE MATRIX
+          </Button>
+        )}
+      </div>
+      <div className="user-input">
+        {isLoading ? <Spin /> : <></>}
+        {isLoading && (
+          <Button
+            type="primary"
+            danger
+            onClick={abortLoad}
+            style={{ marginLeft: "1em" }}
+          >
+            Stop
+          </Button>
+        )}
+      </div>
+    </div>
+  );
   const collapseItem = [
     {
       key: "1",
@@ -189,112 +295,7 @@ const CreativeMatrix = ({ models }) => {
           <Disclaimer models={models} />
         </div>
       ),
-      children: (
-        <div>
-          <h1>Creative Matrix</h1>
-
-          <div className="user-input">
-            <Select
-              defaultValue={templates[0].name}
-              onChange={onChangeTemplate}
-              options={templates.map((t) => ({ value: t.name, label: t.name }))}
-            ></Select>
-          </div>
-
-          <div className="user-input">
-            <label>Prompt</label>
-            <TextArea
-              placeholder="Prompt for the intersection of row and column"
-              value={prompt}
-              onChange={onChangePrompt}
-              disabled={isLoading}
-            />
-          </div>
-          <div className="user-input">
-            <label>Rows</label>
-            <TextArea
-              placeholder="Comma-separated list of values"
-              value={rowsCSV}
-              onChange={onChangeRowsCSV}
-              disabled={isLoading}
-            />
-          </div>
-          <div className="user-input">
-            <label>Columns</label>
-
-            <TextArea
-              placeholder="Comma-separated list of values"
-              value={columnsCSV}
-              onChange={onChangeColumnsCSV}
-              disabled={isLoading}
-            />
-          </div>
-          <div className="user-input">
-            Generate{" "}
-            <Select
-              defaultValue={"3"}
-              onChange={handleSelectChange}
-              disabled={isLoading}
-              className="small"
-              options={[
-                { value: "1", label: "1 idea" },
-                { value: "2", label: "2 ideas" },
-                { value: "3", label: "3 ideas" },
-                { value: "4", label: "4 ideas" },
-                { value: "5", label: "5 ideas" },
-              ]}
-            ></Select>
-            &nbsp; per combination.
-          </div>
-          <div className="user-input">
-            <label>Each idea must be...</label>
-            <Select
-              style={{ width: "100%" }}
-              mode="tags"
-              placeholder="List of adjectives/qualifiers"
-              onChange={onChangeIdeaQualifiers}
-              disabled={isLoading}
-              options={[
-                { value: "utopian", label: "Utopian" },
-                { value: "dystopian", label: "Dystopian" },
-                {
-                  value: "inspired by science fiction",
-                  label: "Inspired by science fiction",
-                },
-                { value: "funny and bizarre", label: "Funny and bizarre" },
-                {
-                  value: "written in the style of Shakespear",
-                  label: "Written in the style of Shakespear",
-                },
-              ]}
-            />
-          </div>
-          <div className="user-input">
-            {!isLoading && (
-              <Button
-                onClick={onGenerateMatrix}
-                className="go-button"
-                disabled={isLoading}
-              >
-                GENERATE MATRIX
-              </Button>
-            )}
-          </div>
-          <div className="user-input">
-            {isLoading ? <Spin /> : <></>}
-            {isLoading && (
-              <Button
-                type="primary"
-                danger
-                onClick={abortLoad}
-                style={{ marginLeft: "1em" }}
-              >
-                Stop
-              </Button>
-            )}
-          </div>
-        </div>
-      ),
+      children: promptMenu,
     },
   ];
 
@@ -310,24 +311,18 @@ const CreativeMatrix = ({ models }) => {
           onChange={onCollapsibleIconClick}
           expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
         />
-        {/* MATRIX */}
-        <div
-          style={{ height: "100%", display: "flex", flexDirection: "column" }}
-        >
-          {isExpanded ? <Disclaimer models={models} /> : null}
 
+        <div className="content-container">
+          {isExpanded ? <Disclaimer models={models} /> : null}
           <h1
             className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
           >
             Creative Matrix
           </h1>
 
-          <div
-            className="matrix-container"
-            style={{ height: "95%", background: "#F5F5F5" }}
-          >
-            <div className="">
-              <table style={{ width: "95%", borderCollapse: "collapse" }}>
+          <div className="matrix-container">
+            <div>
+              <table className="matrix-table">
                 <thead>
                   <tr>
                     <th></th>
