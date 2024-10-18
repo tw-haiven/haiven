@@ -282,7 +282,7 @@ z-index: 0;
   background-color: white;
 }
 
-.ant-modal .ant-modal-content {
+.pinboard-modal .ant-modal-content {
   background-color: var(--color-light-gray);
   padding: 12px 24px;
   height: 95vh;
@@ -306,9 +306,8 @@ z-index: 0;
 .pinboard-title {
   display: flex;
   flex-direction: column;
-  align-items: left;
-  padding-left: 0.7em;
   background-color: var(--color-light-gray);
+  padding-left: 0.7em;
 }
 
 .pin-icon {
@@ -468,7 +467,9 @@ z-index: 0;
 
 .prompt-preview {
   background-color: var(--color-light-gray);
+  height: 70svh;
   padding: 1em;
+  overflow: auto;
 }
 
 .prompt-preview-btn {
@@ -477,18 +478,15 @@ z-index: 0;
 }
 
 .prompt-preview-copy-btn {
+  position: absolute;
+  right: 24px;
   background-color: var(--color-dark-gray);
-  float: right;
   margin: 1em;
 }
 
 .prompt-preview-diff-highlight {
   color: var(--color-flamingo);
   font-weight: var(--font-weight-semi-bold);
-}
-
-.ant-modal-title {
-  background-color: var(--color-light-gray);
 }
 
 /****** SCENARIO CARDS *******/
