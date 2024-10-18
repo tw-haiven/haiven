@@ -70,7 +70,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   };
 
   const onPin = (id) => {
-    const timestamp = new Date().toISOString();
+    const timestamp = Math.floor(Date.now()).toString();
     addToPinboard(
       timestamp,
       "## " + scenarios[id].title + "\n\n" + scenarios[id].summary,
