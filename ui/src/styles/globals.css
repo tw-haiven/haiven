@@ -159,6 +159,9 @@ z-index: 0;
   height: 100%;
 }
 
+.ant-message-notice-content {
+  border-radius: 0% !important;
+}
 
 .section-header .tooltip-help {
   margin-left: 0.5em;
