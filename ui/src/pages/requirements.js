@@ -17,12 +17,14 @@ import {
 const { TextArea } = Input;
 import { RiChat2Line, RiCheckboxMultipleBlankFill } from "react-icons/ri";
 import ReactMarkdown from "react-markdown";
+import { RiPushpin2Line } from "react-icons/ri";
 
 import ChatExploration from "./_chat_exploration";
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
+import { addToPinboard } from "../app/_pinboard";
 
 let ctrl;
 
@@ -63,6 +65,14 @@ const RequirementsBreakdown = ({ contexts, models }) => {
 
   const onCopy = (id) => {
     navigator.clipboard.writeText(
+      "## " + scenarios[id].title + "\n\n" + scenarios[id].summary,
+    );
+  };
+
+  const onPin = (id) => {
+    const timestamp = new Date().toISOString();
+    addToPinboard(
+      timestamp,
       "## " + scenarios[id].title + "\n\n" + scenarios[id].summary,
     );
   };
@@ -246,6 +256,13 @@ const RequirementsBreakdown = ({ contexts, models }) => {
                           <RiCheckboxMultipleBlankFill
                             style={{ fontSize: "large" }}
                           />
+                        </Button>,
+                        <Button
+                          type="link"
+                          key="explore"
+                          onClick={() => onPin(i)}
+                        >
+                          <RiPushpin2Line style={{ fontSize: "large" }} />
                         </Button>,
                       ]}
                     >
