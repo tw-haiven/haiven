@@ -109,7 +109,7 @@ export default function App({
         <Head>
           <title>Haiven</title>
 
-          <meta property="og:image" content="/boba/social-preview-image.jpg" />
+          <meta property="og:image" content="/boba/social-preview-image.png" />
           <meta property="og:title" content="Haiven team assistant" />
           <meta
             property="og:description"
@@ -122,7 +122,7 @@ export default function App({
         <div className="social-preview">
           <img
             className="social-preview-image"
-            src="/boba/social-preview-image.jpg"
+            src="/boba/social-preview-image.png"
             alt="haiven"
           />
         </div>

@@ -149,7 +149,7 @@ class Server:
                 "/logout",
                 "/index.html",
                 "/static/main.css",
-                "/static/social-preview-image.jpg",
+                "/static/social-preview-image.png",
                 "/static/thoughtworks_logo_grey.png",
                 "/favicon.ico",
             ]
