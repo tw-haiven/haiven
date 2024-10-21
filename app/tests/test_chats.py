@@ -5,7 +5,8 @@ import unittest
 from langchain.docstore.document import Document
 from llms.chats import DocumentsChat, ServerChatSessionMemory, StreamingChat
 from unittest.mock import MagicMock, patch
-from langchain.schema import AIMessage, HumanMessage, SystemMessage
+
+from llms.clients import HaivenAIMessage, HaivenHumanMessage, HaivenSystemMessage
 
 
 class TestChats(unittest.TestCase):
@@ -76,7 +77,7 @@ class TestChats(unittest.TestCase):
         )
 
         assert len(streaming_chat.memory) == 1
-        assert isinstance(streaming_chat.memory[0], SystemMessage)
+        assert isinstance(streaming_chat.memory[0], HaivenSystemMessage)
 
         question = "What is the capital of France?"
         answer = streaming_chat.run(question)
@@ -84,8 +85,8 @@ class TestChats(unittest.TestCase):
         assert next(answer) == "Pa"
         assert next(answer) == "ris"
         assert len(streaming_chat.memory) == 3
-        assert isinstance(streaming_chat.memory[1], HumanMessage)
-        assert isinstance(streaming_chat.memory[2], AIMessage)
+        assert isinstance(streaming_chat.memory[1], HaivenHumanMessage)
+        assert isinstance(streaming_chat.memory[2], HaivenAIMessage)
 
     def test_dump_as_text(self):
         # Arrange

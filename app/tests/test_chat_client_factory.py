@@ -22,4 +22,4 @@ class TestChatClientFactory(unittest.TestCase):
             )
         )
         assert base_chat is not None
-        assert base_chat.__class__.__name__ == "AzureChatOpenAI"
+        assert base_chat.__class__.__name__ == "ChatClient"
