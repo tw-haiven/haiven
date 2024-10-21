@@ -229,10 +229,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
             style={{ height: "100%", display: "flex", flexDirection: "column" }}
           >
             <Disclaimer models={models} />
-            <div
-              className={"scenarios-collection grid-display"}
-              style={{ height: "95%", background: "#F5F5F5" }}
-            >
+            <div className={"scenarios-collection grid-display"}>
               <div className="cards-container">
                 {scenarios.map((scenario, i) => {
                   return (

@@ -242,18 +242,14 @@ const PromptChat = ({
           style={{ height: "100%", display: "flex", flexDirection: "column" }}
         >
           <Disclaimer models={models} />
-          <div style={{ height: "95%" }}>
-            <ProChatProvider>
-              <ChatWidget
-                onSubmitMessage={submitPromptToBackend}
-                ref={chatRef}
-                visible={showChat}
-                helloMessage={
-                  "Fill in some input on the left and hit 'Generate'"
-                }
-              />
-            </ProChatProvider>
-          </div>
+          <ProChatProvider>
+            <ChatWidget
+              onSubmitMessage={submitPromptToBackend}
+              ref={chatRef}
+              visible={showChat}
+              helloMessage={"Fill in some input on the left and hit 'Generate'"}
+            />
+          </ProChatProvider>
         </div>
       </div>
     </>

@@ -68,8 +68,17 @@ h4, h5 {
   word-break: keep-all !important;
 }
 
+.ant-pro-chat-message-content {
+ flex-direction: column !important;
+}
+
 .ant-pro-chat .ant-pro-chat-input-area {
-z-index: 0;
+  z-index: 0;
+  background-image: none;
+}
+
+.ant-pro-chat .ant-pro-chat-input-area-action-bar {
+  display: none;
 }
 
 .ant-avatar {
@@ -77,8 +86,8 @@ z-index: 0;
 }
 
 .ant-avatar img {
-  width: 1em;
-  height: 1em;
+  width: 1.4em;
+  height: 1.4em;
 }
 
 .chat-message {
@@ -87,6 +96,10 @@ z-index: 0;
   padding: 10px;
   max-width: 800px;
   overflow: auto;
+}
+
+.chat-message.user {
+  background-color: var(--color-light-gray);
 }
 
 .chat-message p {
@@ -426,7 +439,6 @@ z-index: 0;
 .prompt-chat-options-container .go-button,
 .prompt-chat-options-container .ant-select {
   width: 100%;
-  /* max-width: 300px; */
   &.small {
     width: 30%;
   }
@@ -445,6 +457,10 @@ z-index: 0;
   height: 50px;
   width: 100%;
   border: 1px dashed var(--color-dark-gray);
+}
+
+.prompt-chat-options-container .prompt-chat-options-section {
+  margin-top: 1em;
 }
 
 .prompt-chat-options-container.collapsed {
@@ -490,7 +506,6 @@ z-index: 0;
 
 .prompt-preview-btn {
   padding-left: 0;
-  margin-top: 1em;
 }
 
 .prompt-preview-copy-btn {
@@ -510,6 +525,9 @@ z-index: 0;
   padding: var(--standard-left-padding) var(--standard-left-padding);
   display: block !important;
   flex: 3 !important;
+  height: 100%;
+  overflow: auto;
+  border-top: 1px solid var(--color-light-gray);
 }
 
 .scenarios-collection .cards-container {
@@ -670,9 +688,9 @@ z-index: 0;
 
 .matrix-container {
   flex: 5;
-  padding-left: 1em;
+  padding: 1em;
   height: 95%;
-  background: #F5F5F5
+  border-top: 1px solid var(--color-light-gray);
 }
 
 .content-container {
@@ -822,8 +840,11 @@ z-index: 0;
   padding: 2em;
 }
 
-.dashboard .headline{
+.dashboard .headline {
   margin: 80px 0;
+}
+
+.dashboard .headline h1 {
   font-weight: var(--font-weight-semi-bold);
 }
 

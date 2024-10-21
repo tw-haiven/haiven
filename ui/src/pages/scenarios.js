@@ -330,10 +330,7 @@ const Home = ({ models }) => {
             style={{ height: "100%", display: "flex", flexDirection: "column" }}
           >
             <Disclaimer models={models} />
-            <div
-              className={"scenarios-collection " + displayMode + "-display"}
-              style={{ height: "95%", background: "#F5F5F5" }}
-            >
+            <div className={"scenarios-collection " + displayMode + "-display"}>
               <div>
                 <Radio.Group
                   className="display-mode-choice"

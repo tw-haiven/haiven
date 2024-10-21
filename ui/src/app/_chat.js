@@ -94,13 +94,12 @@ const ChatWidget = forwardRef(
 
     return (
       <div
-        style={{ background: theme.colorBgLayout, height: "100%" }}
+        style={{ borderTop: "1px solid #edf1f3", height: "100%" }}
         className={ChatStylingClass}
       >
         {chatIsVisible && (
           <ProChat
             style={{
-              backgroundColor: theme.colorBgContainer,
               height: "100%", // this is important for the chat_exploration styling!
             }}
             showTitle
@@ -122,18 +121,17 @@ const ChatWidget = forwardRef(
                 const isError = props.message.startsWith("[ERROR]: ")
                   ? props.message.replace("[ERROR]: ", "")
                   : null;
-                if (isError) {
-                  return (
-                    <div className="chat-message">
-                      <p style={{ color: "red" }}>{isError}</p>
-                    </div>
-                  );
-                }
                 return (
-                  <div className="chat-message">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {props.message}
-                    </ReactMarkdown>
+                  <div
+                    className={`chat-message ${props.primary ? "user" : "assistant"}`}
+                  >
+                    {isError ? (
+                      <p style={{ color: "red" }}>{isError}</p>
+                    ) : (
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {props.message}
+                      </ReactMarkdown>
+                    )}
                   </div>
                 );
               },
