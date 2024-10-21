@@ -3,7 +3,7 @@ import gradio as gr
 from pydantic import BaseModel
 
 from llms.chats import ChatManager, StreamingChat
-from llms.clients import ChatClientConfig
+from llms.model_config import ModelConfig
 
 
 class ChatOptions(BaseModel):
@@ -30,7 +30,7 @@ class UIStreamingChatWrapper:
 class PromptsTestingUI:
     def __init__(self, chat_manager: ChatManager):
         self.chat_manager = chat_manager
-        self.chat_client_config = ChatClientConfig("azure-gpt35", 0.2)
+        self.chat_client_config = ModelConfig("azure-gpt35", "azure", "GPT3.5 on Azure")
 
     def create_gradio_ui(self):
         def send_prompt(prompt_text):
@@ -63,7 +63,7 @@ class PromptsTestingUI:
                             
                             This is a little test space to compare different prompt versions and their results
                             
-                            Activated model: {self.chat_client_config.service_name}
+                            Activated model: {self.chat_client_config.name}
                             
                             """)
 

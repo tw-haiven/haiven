@@ -5,9 +5,9 @@ from typing import List
 
 import pytest
 from knowledge.pack import KnowledgePackError
+from llms.model_config import ModelConfig
 from llms.default_models import DefaultModels
 from embeddings.model import EmbeddingModel
-from llms.model import Model
 from config_service import ConfigService
 from tests.utils import get_test_data_path
 
@@ -100,13 +100,13 @@ class TestConfigService:
     def test_config_initialization(self):
         config_service = ConfigService(self.config_path)
 
-        models: List[Model] = config_service.load_enabled_models()
+        models: List[ModelConfig] = config_service.load_enabled_models()
         assert isinstance(models, list)
-        assert all(isinstance(model, Model) for model in models)
+        assert all(isinstance(model, ModelConfig) for model in models)
 
         assert len(models) == 2
 
-        model: Model = models[0]
+        model: ModelConfig = models[0]
         assert model.id == self.model_id
         assert model.name == self.name
         assert model.provider == self.provider

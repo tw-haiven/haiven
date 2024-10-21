@@ -6,9 +6,9 @@ from typing import List
 import yaml
 from dotenv import load_dotenv
 from knowledge.pack import KnowledgePackError
+from llms.model_config import ModelConfig
 from llms.default_models import DefaultModels
 from embeddings.model import EmbeddingModel
-from llms.model import Model
 
 
 class ConfigService:
@@ -40,7 +40,7 @@ class ConfigService:
         embedding_model = EmbeddingModel.from_dict(embedding_model_data)
         return embedding_model
 
-    def load_enabled_models(self, features: List[str] = []) -> List[Model]:
+    def load_enabled_models(self, features: List[str] = []) -> List[ModelConfig]:
         """
         Load a list of models for the enabled providers from a YAML config file.
 
@@ -49,14 +49,14 @@ class ConfigService:
             features (List[str]): A list of features to filter the models by.
 
         Returns:
-            List[Model]: The loaded models.
+            List[ModelConfig]: The loaded models.
         """
 
         model_data_list = self.data["models"]
         models = []
 
         for model_data in model_data_list:
-            model = Model.from_dict(model_data)
+            model = ModelConfig.from_dict(model_data)
             models.append(model)
 
         filtered_models = copy.deepcopy(models)
@@ -86,7 +86,7 @@ class ConfigService:
 
         return filtered_models
 
-    def get_model(self, model_id: str) -> Model:
+    def get_model(self, model_id: str) -> ModelConfig:
         """
         Get a model by its ID.
 
@@ -94,7 +94,7 @@ class ConfigService:
             model_id (str): The model ID.
 
         Returns:
-            Model: The model.
+            ModelConfig: The model.
         """
         models = self.load_enabled_models()
         model = next((model for model in models if model.id == model_id), None)
@@ -104,7 +104,7 @@ class ConfigService:
 
         return model
 
-    def get_image_model(self) -> Model:
+    def get_image_model(self) -> ModelConfig:
         available_vision_models = [
             (available_model.name, available_model.id)
             for available_model in self.load_enabled_models(
@@ -120,7 +120,7 @@ class ConfigService:
 
         return self.get_model(image_model_id)
 
-    def get_chat_model(self) -> Model:
+    def get_chat_model(self) -> ModelConfig:
         available_chat_models = [
             (available_model.name, available_model.id)
             for available_model in self.load_enabled_models(

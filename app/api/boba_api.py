@@ -36,17 +36,17 @@ class BobaApi:
             self.knowledge_manager.knowledge_base_markdown
         )
 
-        self.model = self.config_service.get_default_chat_model()
+        self.model_config = self.config_service.get_chat_model()
 
         self.image_service = image_service
 
-        print(f"Model used for guided mode: {self.model}")
+        print(f"Model used for guided mode: {self.model_config.id}")
 
     def add_endpoints(self, app: FastAPI):
         ApiBasics(
             app,
             self.chat_manager,
-            self.model,
+            self.model_config,
             self.prompts_guided,
             self.knowledge_manager,
             self.prompts_chat,
@@ -57,30 +57,30 @@ class BobaApi:
         ApiThreatModelling(
             app,
             self.chat_manager,
-            self.model,
+            self.model_config,
             self.prompts_guided,
         )
         ApiRequirementsBreakdown(
             app,
             self.chat_manager,
-            self.model,
+            self.model_config,
             self.prompts_guided,
         )
         ApiStoryValidation(
             app,
             self.chat_manager,
-            self.model,
+            self.model_config,
             self.prompts_guided,
         )
         ApiScenarios(
             app,
             self.chat_manager,
-            self.model,
+            self.model_config,
             self.prompts_guided,
         )
         ApiCreativeMatrix(
             app,
             self.chat_manager,
-            self.model,
+            self.model_config,
             self.prompts_guided,
         )

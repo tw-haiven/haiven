@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 from PIL import Image
 from io import BytesIO
 
+from llms.model_config import ModelConfig
 from llms.image_description_service import ImageDescriptionService
-from llms.model import Model
 
 
 class TestImageDescriptionService:
@@ -22,7 +22,7 @@ class TestImageDescriptionService:
         self,
         mock_azure_openai,
     ):
-        model = Model(
+        model = ModelConfig(
             provider="azure",
             id="some-image-model",
             name="Some image model",

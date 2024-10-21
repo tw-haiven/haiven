@@ -7,9 +7,10 @@ import boto3
 from botocore.exceptions import ClientError
 from openai import AzureOpenAI, OpenAI
 from PIL import Image
-from llms.model import Model
 from vertexai.preview.generative_models import GenerativeModel, Part
 import ollama
+
+from llms.model_config import ModelConfig
 
 DEFAULT_PROMPT = "I am a member of a software development team. This image is part of our documentation, please describe the image to me."
 
@@ -45,7 +46,7 @@ class ImageDescriptionService:
             Helper method to encode an image to a base64 string, facilitating its transmission over networks.
     """
 
-    def __init__(self, model: Model):
+    def __init__(self, model: ModelConfig):
         """
         Initializes the ImageDescriptionService with a specific model configuration.
 

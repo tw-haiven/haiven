@@ -2,7 +2,7 @@
 from typing import Dict, List
 
 
-class Model:
+class ModelConfig:
     def __init__(
         self,
         id: str,
@@ -26,6 +26,7 @@ class Model:
         self.name = name
         self.features = features if features else []
         self.config = config if config else {}
+        self.temperature = 0.5
 
     @classmethod
     def from_dict(cls, data):

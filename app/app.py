@@ -4,7 +4,7 @@ from knowledge_manager import KnowledgeManager
 from llms.chats import ChatManager, ServerChatSessionMemory
 from llms.image_description_service import ImageDescriptionService
 from llms.clients import ChatClientFactory
-from llms.model import Model
+from llms.model_config import ModelConfig
 from prompts.prompts_factory import PromptsFactory
 from prompts.prompts_testing_ui import PromptsTestingUI
 from server import Server
@@ -15,7 +15,7 @@ import gradio as gr
 
 class App:
     def create_image_service(self, config_service):
-        model: Model = config_service.get_image_model()
+        model: ModelConfig = config_service.get_image_model()
 
         return ImageDescriptionService(model)
 

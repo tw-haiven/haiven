@@ -21,7 +21,7 @@ graph TD;
 
     subgraph LLMs
         ChatClientFactory --> |creates| BaseChatModel[langchain_core...BaseChatModel]
-        ChatClientConfig
+        ModelConfig
         ImageDescriptionService
     end
 

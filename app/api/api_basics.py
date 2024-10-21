@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from embeddings.documents import KnowledgeDocument
 from knowledge_manager import KnowledgeManager
 from llms.chats import ChatManager, ChatOptions, StreamingChat
-from llms.clients import ChatClientConfig
+from llms.model_config import ModelConfig
 from llms.image_description_service import ImageDescriptionService
 from prompts.prompts import PromptList
 from config_service import ConfigService
@@ -42,10 +42,14 @@ def streaming_headers(chat_session_key_value=None):
 
 class HaivenBaseApi:
     def __init__(
-        self, app, chat_manager: ChatManager, model_key: str, prompt_list: PromptList
+        self,
+        app,
+        chat_manager: ChatManager,
+        model_config: ModelConfig,
+        prompt_list: PromptList,
     ):
         self.chat_manager = chat_manager
-        self.model_key = model_key
+        self.model_config = model_config
         self.prompt_list = prompt_list
 
     def stream_json_chat(
@@ -53,7 +57,7 @@ class HaivenBaseApi:
     ):
         try:
             chat_session_key_value, chat_session = self.chat_manager.json_chat(
-                client_config=ChatClientConfig(self.model_key, 0.5),
+                client_config=self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(category=chat_category),
             )
@@ -91,7 +95,7 @@ class HaivenBaseApi:
                     yield f"[ERROR]: {str(error)}"
 
             chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
-                client_config=ChatClientConfig(self.model_key, 0.5),
+                client_config=self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(in_chunks=True, category=chat_category),
             )

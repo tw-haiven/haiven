@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from config_service import ConfigService
 from knowledge_manager import KnowledgeManager
 from embeddings.documents import DocumentsUtils
-from llms.clients import ChatClientFactory
+from llms.clients import ChatClientFactory, ModelConfig
 from logger import HaivenLogger
 
 
@@ -490,7 +490,10 @@ class ChatManager:
         )
 
     def json_chat(
-        self, client_config, session_id: str = None, options: ChatOptions = None
+        self,
+        client_config: ModelConfig,
+        session_id: str = None,
+        options: ChatOptions = None,
     ):
         chat_client = self.llm_chat_factory.new_chat_client(client_config)
         return self.chat_session_memory.get_or_create_chat(
