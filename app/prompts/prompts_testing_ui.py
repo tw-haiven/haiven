@@ -37,7 +37,7 @@ class PromptsTestingUI:
             # self.chat_manager.send_prompt(prompt_text)
 
             _, chat_client = self.chat_manager.streaming_chat(
-                client_config=self.chat_client_config,
+                model_config=self.chat_client_config,
                 session_id=None,
                 options=ChatOptions(category="chat"),
             )

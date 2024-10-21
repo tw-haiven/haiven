@@ -15,6 +15,13 @@ def backwards_compat_env_vars():
     if os.environ.get("OLLAMA_BASE_URL"):
         os.environ["OLLAMA_HOST"] = os.environ["OLLAMA_BASE_URL"]
 
+    # for LiteLLM
+    os.environ["AZURE_API_KEY"] = os.environ["AZURE_OPENAI_API_KEY"]
+    os.environ["AZURE_API_BASE"] = os.environ["AZURE_OPENAI_API_BASE"]
+    os.environ["AZURE_API_VERSION"] = os.environ["AZURE_OPENAI_API_VERSION"]
+    os.environ["AWS_REGION_NAME"] = os.environ["AWS_BEDROCK_REGION"]
+    os.environ["GEMINI_API_KEY"] = os.environ["GOOGLE_API_KEY"]
+
 
 def create_server():
     load_dotenv()
