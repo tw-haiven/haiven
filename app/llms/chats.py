@@ -5,25 +5,30 @@ import uuid
 
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
-from langchain.schema import AIMessage, HumanMessage, SystemMessage
-from langchain_core.language_models.chat_models import BaseChatModel
 from pydantic import BaseModel
 from config_service import ConfigService
 from knowledge_manager import KnowledgeManager
 from embeddings.documents import DocumentsUtils
-from llms.clients import ChatClientFactory, ModelConfig
+from llms.clients import (
+    ChatClient,
+    ChatClientFactory,
+    HaivenAIMessage,
+    HaivenHumanMessage,
+    HaivenSystemMessage,
+    ModelConfig,
+)
 from logger import HaivenLogger
 
 
 class HaivenBaseChat:
     def __init__(
         self,
-        chat_client: BaseChatModel,
+        chat_client: ChatClient,
         knowledge_manager: KnowledgeManager,
         system_message: str,
     ):
         self.system = system_message
-        self.memory = [SystemMessage(content=system_message)]
+        self.memory = [HaivenSystemMessage(content=system_message)]
         self.chat_client = chat_client
         self.knowledge_manager = knowledge_manager
 
@@ -44,7 +49,7 @@ class HaivenBaseChat:
         copy_of_history = []
         copy_of_history.extend(self.memory)
         copy_of_history.append(
-            HumanMessage(
+            HaivenHumanMessage(
                 content="""
             Summarise the conversation we've had so far in maximum 2 paragraphs.
             I want to use the summary to start a search for other relevant information for my task,
@@ -109,7 +114,7 @@ class HaivenBaseChat:
 class StreamingChat(HaivenBaseChat):
     def __init__(
         self,
-        chat_client: BaseChatModel,
+        chat_client: ChatClient,
         knowledge_manager: KnowledgeManager,
         system_message: str = "You are a helpful assistant",
         stream_in_chunks: bool = False,
@@ -118,12 +123,12 @@ class StreamingChat(HaivenBaseChat):
         self.stream_in_chunks = stream_in_chunks
 
     def run(self, message: str):
-        self.memory.append(HumanMessage(content=message))
+        self.memory.append(HaivenHumanMessage(content=message))
         self.log_run()
         try:
             for i, chunk in enumerate(self.chat_client.stream(self.memory)):
                 if i == 0:
-                    self.memory.append(AIMessage(content=""))
+                    self.memory.append(HaivenAIMessage(content=""))
                 self.memory[-1].content += chunk.content
                 yield chunk.content
 
@@ -193,7 +198,7 @@ class Q_A_ResponseParser:
 class Q_A_Chat(HaivenBaseChat):
     def __init__(
         self,
-        chat_client: BaseChatModel,
+        chat_client: ChatClient,
         system_message: str = "You are a helpful assistant",
     ):
         super().__init__(
@@ -209,12 +214,12 @@ class Q_A_Chat(HaivenBaseChat):
         return processed_response
 
     def run(self, message: str):
-        self.memory.append(HumanMessage(content=message))
+        self.memory.append(HaivenHumanMessage(content=message))
         self.log_run()
 
         ai_message = self.chat_client(self.memory)
         processed_response = self.process_response(ai_message.content)
-        self.memory.append(AIMessage(content=processed_response))
+        self.memory.append(HaivenAIMessage(content=processed_response))
 
         return processed_response
 
@@ -233,7 +238,7 @@ class Q_A_Chat(HaivenBaseChat):
 class DocumentsChat(HaivenBaseChat):
     def __init__(
         self,
-        chat_client: BaseChatModel,
+        chat_client: ChatClient,
         knowledge_manager: KnowledgeManager,
         knowledge: str,
         context: str,
@@ -250,7 +255,7 @@ class DocumentsChat(HaivenBaseChat):
 
     def run(self, message: str):
         self.log_run({"knowledge": self.knowledge})
-        self.memory.append(HumanMessage(content=message))
+        self.memory.append(HaivenHumanMessage(content=message))
         self.chain.llm_chain.llm = (
             self.chat_client
         )  # TODO: Previously this created a new object, is this still working?
@@ -271,7 +276,7 @@ class DocumentsChat(HaivenBaseChat):
         ai_message = self.chain(
             {"input_documents": search_results, "question": template}
         )
-        self.memory.append(AIMessage(content=ai_message["output_text"]))
+        self.memory.append(HaivenAIMessage(content=ai_message["output_text"]))
 
         de_duplicated_sources = DocumentsUtils.get_unique_sources(search_results)
 
@@ -284,7 +289,7 @@ class DocumentsChat(HaivenBaseChat):
                 ]
             )
         )
-        self.memory.append(AIMessage(content=sources_markdown))
+        self.memory.append(HaivenAIMessage(content=sources_markdown))
 
         return ai_message["output_text"], sources_markdown
 
@@ -314,7 +319,7 @@ class DocumentsChat(HaivenBaseChat):
 class JSONChat(HaivenBaseChat):
     def __init__(
         self,
-        chat_client: BaseChatModel,
+        chat_client: ChatClient,
         system_message: str = "You are a helpful assistant",
         event_stream_standard=True,
     ):
@@ -324,7 +329,7 @@ class JSONChat(HaivenBaseChat):
 
     def stream_from_model(self, prompt):
         try:
-            messages = [HumanMessage(content=prompt)]
+            messages = [HaivenHumanMessage(content=prompt)]
             stream = self.chat_client.stream(
                 messages
             )  # TODO: Previously this was a new object, does this still work?
@@ -341,11 +346,11 @@ class JSONChat(HaivenBaseChat):
 
     def run(self, message: str):
         try:
-            self.memory.append(HumanMessage(content=message))
+            self.memory.append(HaivenHumanMessage(content=message))
             data = enumerate(self.stream_from_model(message))
             for i, chunk in data:
                 if i == 0:
-                    self.memory.append(AIMessage(content=""))
+                    self.memory.append(HaivenAIMessage(content=""))
 
                 if chunk == "[DONE]":
                     yield f"data: {chunk}\n\n"
