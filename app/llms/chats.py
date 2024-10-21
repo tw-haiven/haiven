@@ -128,8 +128,8 @@ class StreamingChat(HaivenBaseChat):
             for i, chunk in enumerate(self.chat_client.stream(self.memory)):
                 if i == 0:
                     self.memory.append(HaivenAIMessage(content=""))
-                self.memory[-1].content += chunk.content
-                yield chunk.content
+                self.memory[-1].content += chunk["content"]
+                yield chunk["content"]
 
         except Exception as error:
             if not str(error).strip():
@@ -395,7 +395,6 @@ class ServerChatSessionMemory:
 
 class ChatOptions(BaseModel):
     category: str = None
-    stop: str = None
     in_chunks: bool = False
     user_identifier: str = None
 
@@ -420,9 +419,12 @@ class ChatManager:
         return self.chat_session_memory.get_chat(chat_session_key_value)
 
     def streaming_chat(
-        self, client_config, session_id: str = None, options: ChatOptions = None
+        self,
+        model_config: ModelConfig,
+        session_id: str = None,
+        options: ChatOptions = None,
     ):
-        chat_client = self.llm_chat_factory.new_chat_client(client_config)
+        chat_client = self.llm_chat_factory.new_chat_client(model_config)
         return self.chat_session_memory.get_or_create_chat(
             lambda: StreamingChat(
                 chat_client,
@@ -436,11 +438,11 @@ class ChatManager:
 
     def json_chat(
         self,
-        client_config: ModelConfig,
+        model_config: ModelConfig,
         session_id: str = None,
         options: ChatOptions = None,
     ):
-        chat_client = self.llm_chat_factory.new_chat_client(client_config)
+        chat_client = self.llm_chat_factory.new_chat_client(model_config)
         return self.chat_session_memory.get_or_create_chat(
             lambda: JSONChat(
                 chat_client,

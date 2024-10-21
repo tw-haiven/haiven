@@ -57,7 +57,7 @@ class HaivenBaseApi:
     ):
         try:
             chat_session_key_value, chat_session = self.chat_manager.json_chat(
-                client_config=self.model_config,
+                model_config=self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(category=chat_category),
             )
@@ -95,7 +95,7 @@ class HaivenBaseApi:
                     yield f"[ERROR]: {str(error)}"
 
             chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
-                client_config=self.model_config,
+                model_config=self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(in_chunks=True, category=chat_category),
             )
