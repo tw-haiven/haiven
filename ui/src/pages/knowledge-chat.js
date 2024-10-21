@@ -21,7 +21,7 @@ const KnowledgeChatPage = ({ prompts, documents, models }) => {
       documents={documents}
       models={models}
       showTextSnippets={false}
-      showImageDescription={false}
+      showImageDescription={true}
       pageTitle="Chat with Haiven"
       pageIntro="Ask for help with a task, ask a question and select a document"
     />
