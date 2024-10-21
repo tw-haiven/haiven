@@ -306,7 +306,7 @@ z-index: 0;
 
 .ant-modal .ant-modal-content .ant-modal-body {
   height: 90% !important;
-  overflow: scroll !important;
+  overflow: auto !important;
 }
 
 .pinboard-card {
@@ -779,7 +779,7 @@ z-index: 0;
 .sidebar {
   height: 100%;
   padding-top: 10px;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .sidebar .ant-menu-inline {
