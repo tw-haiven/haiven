@@ -848,7 +848,6 @@ z-index: 0;
   display: flex;
   justify-content: center;
   width: 100%;
-  padding-left: 9em;
 }
 
 .dashboard .ant-space {
