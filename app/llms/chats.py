@@ -4,7 +4,6 @@ import time
 import uuid
 
 from langchain.chains.question_answering import load_qa_chain
-from langchain.prompts import PromptTemplate
 from pydantic import BaseModel
 from config_service import ConfigService
 from knowledge_manager import KnowledgeManager
@@ -174,65 +173,6 @@ class StreamingChat(HaivenBaseChat):
             if not str(error).strip():
                 error = "Error while the model was processing the input"
             yield f"[ERROR]: {str(error)}", ""
-
-
-class Q_A_ResponseParser:
-    question_prefix: str = "<Question>"
-    feedback_prefix: str = "<Answer>"
-
-    def parse(self, text: str) -> str:
-        text = text.replace("</Question>", "")
-        text = text.replace("</Answer>", "")
-        question_index = text.rfind(f"\n{self.question_prefix}")
-        answer_index = text.rfind(f"\n{self.feedback_prefix}")
-        if question_index != -1 and answer_index != -1:
-            question = text[
-                question_index + len(f"\n{self.question_prefix}") : answer_index
-            ]
-            suggested_answer = text[answer_index + len(f"\n{self.feedback_prefix}") :]
-            return f"**Question:** {question}\n\n**Suggested answer:** {suggested_answer}\n\nSay 'ok' or provide your own answer."
-        else:
-            return text
-
-
-class Q_A_Chat(HaivenBaseChat):
-    def __init__(
-        self,
-        chat_client: ChatClient,
-        system_message: str = "You are a helpful assistant",
-    ):
-        super().__init__(
-            chat_client,
-            None,
-            system_message,
-        )
-
-    def process_response(self, response: str):
-        # TODO: How to NOT post-process when the Q&A time is over?
-        # TODO: If the Q&A is very long, we could reset the history to only include the Q&A end result in the history, from that point on
-        processed_response = Q_A_ResponseParser().parse(response)
-        return processed_response
-
-    def run(self, message: str):
-        self.memory.append(HaivenHumanMessage(content=message))
-        self.log_run()
-
-        ai_message = self.chat_client(self.memory)
-        processed_response = self.process_response(ai_message.content)
-        self.memory.append(HaivenAIMessage(content=processed_response))
-
-        return processed_response
-
-    def start(self, template: PromptTemplate, variables):
-        initial_instructions = template.format(**variables)
-
-        return self.run(initial_instructions)
-
-    def start_with_prompt(self, prompt: str):
-        return self.run(prompt)
-
-    def next(self, human_message):
-        return self.run(human_message)
 
 
 class DocumentsChat(HaivenBaseChat):
@@ -509,38 +449,4 @@ class ChatManager:
             chat_session_key_value=session_id,
             chat_category=options.category if options else None,
             user_identifier=options.user_identifier if options else None,
-        )
-
-    def q_a_chat(
-        self, client_config, session_id: str = None, options: ChatOptions = None
-    ):
-        chat_client = self.llm_chat_factory.new_chat_client(
-            client_config, stop="</Answer>"
-        )
-        return self.chat_session_memory.get_or_create_chat(
-            lambda: Q_A_Chat(chat_client),
-            chat_session_key_value=session_id,
-            chat_category=options.category if options else None,
-            # TODO: Pass user identifier from session
-        )
-
-    def docs_chat(
-        self,
-        client_config,
-        knowledge_key: str,
-        knowledge_context: str,
-        session_id: str = None,
-        options: ChatOptions = None,
-    ):
-        chat_client = self.llm_chat_factory.new_chat_client(client_config)
-        return self.chat_session_memory.get_or_create_chat(
-            lambda: DocumentsChat(
-                chat_client=chat_client,
-                knowledge_manager=self.knowledge_manager,
-                knowledge=knowledge_key,
-                context=knowledge_context,
-            ),
-            chat_session_key_value=session_id,
-            chat_category=options.category if options else None,
-            # TODO: Pass user identifier from session
         )
