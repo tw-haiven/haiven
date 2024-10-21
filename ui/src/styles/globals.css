@@ -822,6 +822,11 @@ z-index: 0;
   padding: 2em;
 }
 
+.dashboard .headline{
+  margin: 80px 0;
+  font-weight: var(--font-weight-semi-bold);
+}
+
 .dashboard .subline {
   font-size: 18px;
   text-align: center;
@@ -835,7 +840,7 @@ z-index: 0;
 
 .dashboard h1 {
   font-size: 44px;
-  font-weight: semi-bold;
+  margin-bottom: 10px;
   text-align: center;
 }
 
@@ -850,7 +855,7 @@ z-index: 0;
   width: 100%;
   max-width: 1200px;
   display: flex;
-  justify-content: start;
+  justify-content: center;
   flex-wrap: wrap;
 }
 
@@ -919,9 +924,8 @@ z-index: 0;
 }
 
 .disclaimer{
-  display: flex;
-  justify-content: right;
-  align-items: center;
+  align-content: center;
+  text-align: right;
   height: 5%;
   color: #666666ff;
   padding-right: 35px;
