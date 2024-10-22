@@ -24,6 +24,7 @@ const PromptChat = ({
   showDocuments = true,
   pageTitle,
   pageIntro,
+  headerTooltip = false,
 }) => {
   const chatRef = useRef();
 
@@ -200,17 +201,21 @@ const PromptChat = ({
       <div className="prompt-chat-options-section">
         <h1>
           {selectedPrompt?.title || pageTitle}
-          <HelpTooltip text="This prompt comes from the connected knowledge pack, where you can customize it if you don't like the results." />
+          {headerTooltip && (
+            <HelpTooltip text="This prompt comes from the connected knowledge pack, where you can customize it if you don't like the results." />
+          )}
         </h1>
-
-        <div>{selectedPrompt?.help_prompt_description}</div>
+        <div className={headerTooltip ? "" : "prompt-chat-description"}>
+          {selectedPrompt?.help_prompt_description ||
+            "Ask general questions & document based questions"}
+        </div>
       </div>
 
       <div className="prompt-chat-options-section">
         <div>
           <div className="user-input">
             <label>
-              {selectedPrompt ? "Your input" : "What do you want help with?"}
+              Your input
               <HelpTooltip
                 text={selectedPrompt?.help_user_input || pageIntro}
               />

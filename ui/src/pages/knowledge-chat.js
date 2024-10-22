@@ -23,7 +23,7 @@ const KnowledgeChatPage = ({ prompts, documents, models }) => {
       showTextSnippets={false}
       showImageDescription={true}
       pageTitle="Chat with Haiven"
-      pageIntro="Ask for help with a task, ask a question and select a document"
+      pageIntro="Ask anything! You can also upload a document and ask questions about its content."
     />
   );
 };

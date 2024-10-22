@@ -412,13 +412,19 @@ h4, h5 {
   flex: 3;
 }
 
+.prompt-chat-options-section .prompt-chat-description {
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--color-medium-gray);
+  margin-bottom: 18px;
+}
+
 .prompt-chat-options-container .go-button {
   font-weight: var(--font-weight-semi-bold);
   font-size: 90%;
 }
 
 .prompt-chat-options-container .user-input {
-  padding: 0.5em 0;
+  padding-bottom: 1em;
 }
 
 .prompt-chat-options-container .user-input label {
@@ -463,7 +469,7 @@ h4, h5 {
 }
 
 .prompt-chat-options-container .prompt-chat-options-section {
-  margin-top: 1em;
+  margin-top: 0.6em;
 }
 
 .prompt-chat-options-container.collapsed {
