@@ -281,14 +281,18 @@ const PromptChat = ({
           >
             Chat with Haiven
           </h1>
-          <ProChatProvider>
-            <ChatWidget
-              onSubmitMessage={submitPromptToBackend}
-              ref={chatRef}
-              visible={showChat}
-              helloMessage={"Fill in some input on the left and hit 'Generate'"}
-            />
-          </ProChatProvider>
+          <div className="chat-container">
+            <ProChatProvider>
+              <ChatWidget
+                onSubmitMessage={submitPromptToBackend}
+                ref={chatRef}
+                visible={showChat}
+                helloMessage={
+                  "Fill in some input on the left and hit 'Generate'"
+                }
+              />
+            </ProChatProvider>
+          </div>
         </div>
       </div>
     </>
