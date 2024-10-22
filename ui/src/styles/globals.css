@@ -59,6 +59,14 @@ h4, h5 {
   height: 95%;
 }
 
+.prompt-chat-container .ant-pro-chat-chat-list-container {
+  height: inherit !important;
+}
+
+.prompt-chat-container.collapsed .ant-pro-chat-chat-list-container {
+  height: 85% !important;
+}
+
 .ant-pro-chat {
   max-width: 100%;
   max-height: 100%;
