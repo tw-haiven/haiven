@@ -126,71 +126,87 @@ class ApiBasics(HaivenBaseApi):
 
         @app.get("/api/models")
         def get_models(request: Request):
-            embeddings = config_service.load_embedding_model()
-            vision = config_service.get_image_model()
-            chat = config_service.get_chat_model()
-            return JSONResponse(
-                {
-                    "chat": {
-                        "id": chat.id,
-                        "name": chat.name,
-                    },
-                    "vision": {
-                        "id": vision.id,
-                        "name": vision.name,
-                    },
-                    "embeddings": {
-                        "id": embeddings.id,
-                        "name": embeddings.name,
-                    },
-                }
-            )
+            try:
+                embeddings = config_service.load_embedding_model()
+                vision = config_service.get_image_model()
+                chat = config_service.get_chat_model()
+                return JSONResponse(
+                    {
+                        "chat": {
+                            "id": chat.id,
+                            "name": chat.name,
+                        },
+                        "vision": {
+                            "id": vision.id,
+                            "name": vision.name,
+                        },
+                        "embeddings": {
+                            "id": embeddings.id,
+                            "name": embeddings.name,
+                        },
+                    }
+                )
+
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
         @app.get("/api/prompts")
         def get_prompts(request: Request):
-            response_data = [entry.metadata for entry in prompts_chat.prompts]
-            return JSONResponse(response_data)
+            try:
+                response_data = [entry.metadata for entry in prompts_chat.prompts]
+                return JSONResponse(response_data)
+
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
         @app.get("/api/knowledge/snippets")
         def get_knowledge_snippets(request: Request):
-            all_contexts = knowledge_manager.get_all_context_keys()
+            try:
+                all_contexts = knowledge_manager.get_all_context_keys()
 
-            response_data = []
-            for context in all_contexts:
-                snippets = knowledge_manager.knowledge_base_markdown.get_knowledge_content_dict(
-                    context
-                )
-                response_data.append({"context": context, "snippets": snippets})
+                response_data = []
+                for context in all_contexts:
+                    snippets = knowledge_manager.knowledge_base_markdown.get_knowledge_content_dict(
+                        context
+                    )
+                    response_data.append({"context": context, "snippets": snippets})
 
-            response_data.sort(key=lambda x: x["context"])
+                response_data.sort(key=lambda x: x["context"])
 
-            return JSONResponse(response_data)
+                return JSONResponse(response_data)
+
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
         @app.get("/api/knowledge/documents")
         def get_knowledge_documents(request: Request):
-            base_context = None
-            all_contexts = knowledge_manager.get_all_context_keys()
+            try:
+                base_context = None
+                all_contexts = knowledge_manager.get_all_context_keys()
 
-            all_contexts.append(base_context)
-            response_data = []
-            for context in all_contexts:
-                documents: List[KnowledgeDocument] = (
-                    knowledge_manager.knowledge_base_documents.get_documents(
-                        context=context, include_base_context=False
-                    )
-                )
-
-                for document in documents:
-                    response_data.append(
-                        {
-                            "key": document.key,
-                            "title": document.title,
-                            "description": document.description,
-                            "source": document.get_source_title_link(),
-                        }
+                all_contexts.append(base_context)
+                response_data = []
+                for context in all_contexts:
+                    documents: List[KnowledgeDocument] = (
+                        knowledge_manager.knowledge_base_documents.get_documents(
+                            context=context, include_base_context=False
+                        )
                     )
 
-            return JSONResponse(response_data)
+                    for document in documents:
+                        response_data.append(
+                            {
+                                "key": document.key,
+                                "title": document.title,
+                                "description": document.description,
+                                "source": document.get_source_title_link(),
+                            }
+                        )
+
+                return JSONResponse(response_data)
+
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
         @app.post("/api/prompt")
         def chat(prompt_data: PromptRequestBody):
@@ -250,15 +266,19 @@ class ApiBasics(HaivenBaseApi):
 
         @app.post("/api/prompt/image")
         async def describe_image(prompt: str = Form(...), file: UploadFile = File(...)):
-            def chat_with_yield(image, prompt):
-                for chunk in image_service.prompt_with_image(image, prompt):
-                    yield chunk
+            try:
 
-            contents = await file.read()
-            image = Image.open(io.BytesIO(contents))
+                def chat_with_yield(image, prompt):
+                    for chunk in image_service.prompt_with_image(image, prompt):
+                        yield chunk
 
-            return StreamingResponse(
-                chat_with_yield(image, prompt),
-                media_type=streaming_media_type(),
-                headers=streaming_headers(None),
-            )
+                contents = await file.read()
+                image = Image.open(io.BytesIO(contents))
+
+                return StreamingResponse(
+                    chat_with_yield(image, prompt),
+                    media_type=streaming_media_type(),
+                    headers=streaming_headers(None),
+                )
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")

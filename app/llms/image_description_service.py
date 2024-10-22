@@ -82,58 +82,70 @@ class ImageDescriptionService:
                 return "Provider not supported"
 
     def _describe_with_gcp(self, image: Image.Image, user_input: str):
-        if self.model_client is None:
-            self.model_client = GenerativeModel(
-                self.model_definition.config.get("model")
+        try:
+            if self.model_client is None:
+                self.model_client = GenerativeModel(
+                    self.model_definition.config.get("model")
+                )
+
+            image = Part.from_data(self._get_image_bytes(image), mime_type="image/png")
+
+            model_response = self.model_client.generate_content(
+                [
+                    user_input,
+                    image,
+                ],
+                stream=True,
             )
+            for chunk in model_response:
+                yield chunk.text
 
-        image = Part.from_data(self._get_image_bytes(image), mime_type="image/png")
-
-        model_response = self.model_client.generate_content(
-            [
-                user_input,
-                image,
-            ],
-            stream=True,
-        )
-        for chunk in model_response:
-            yield chunk.text
+        except Exception as error:
+            yield f"[ERROR]: {str(error)}"
 
     def _describe_image_with_openai(self, image: Image.Image, user_input: str):
-        if self.model_client is None:
-            api_key = self.model_definition.config.get("api_key")
-            if not api_key.strip():
-                return "Error: Missing Open AI Vision configuration. Please check your environment variables."
-            self.model_client = OpenAI(api_key=api_key)
+        try:
+            if self.model_client is None:
+                api_key = self.model_definition.config.get("api_key")
+                if not api_key.strip():
+                    return "Error: Missing Open AI Vision configuration. Please check your environment variables."
+                self.model_client = OpenAI(api_key=api_key)
 
-        response = self.model_client.chat.completions.create(
-            model=self.model_definition.config.get("model_name"),
-            messages=self._messages_for_openai_api(image, user_input),
-            max_tokens=2000,
-            stream=True,
-        )
+            response = self.model_client.chat.completions.create(
+                model=self.model_definition.config.get("model_name"),
+                messages=self._messages_for_openai_api(image, user_input),
+                max_tokens=2000,
+                stream=True,
+            )
 
-        for chunk in response:
-            if len(chunk.choices) > 0:
-                delta = chunk.choices[0].delta
-                if delta.content:
-                    yield delta.content
+            for chunk in response:
+                if len(chunk.choices) > 0:
+                    delta = chunk.choices[0].delta
+                    if delta.content:
+                        yield delta.content
+
+        except Exception as error:
+            yield f"[ERROR]: {str(error)}"
 
     def _describe_image_with_azure(self, image: Image.Image, user_input: str):
-        self._init_azure_client()
+        try:
+            self._init_azure_client()
 
-        response = self.model_client.chat.completions.create(
-            model=self.model_definition.config.get("azure_deployment"),
-            messages=self._messages_for_openai_api(image, user_input),
-            max_tokens=2000,
-            stream=True,
-        )
+            response = self.model_client.chat.completions.create(
+                model=self.model_definition.config.get("azure_deployment"),
+                messages=self._messages_for_openai_api(image, user_input),
+                max_tokens=2000,
+                stream=True,
+            )
 
-        for chunk in response:
-            if len(chunk.choices) > 0:
-                delta = chunk.choices[0].delta
-                if delta.content:
-                    yield delta.content
+            for chunk in response:
+                if len(chunk.choices) > 0:
+                    delta = chunk.choices[0].delta
+                    if delta.content:
+                        yield delta.content
+
+        except Exception as error:
+            yield f"[ERROR]: {str(error)}"
 
     def _describe_image_with_aws_anthropic(self, image: Image.Image, user_input: str):
         try:
@@ -186,25 +198,29 @@ class ImageDescriptionService:
                 if "delta" in chunk and "text" in chunk["delta"]:
                     yield chunk["delta"]["text"]
 
-        except ClientError as err:
-            message = err.response["Error"]["Message"]
+        except ClientError as error:
+            message = error.response["Error"]["Message"]
             print("A client error occured: " + format(message))
-            yield "Error: " + message
+            yield f"[ERROR]: {str(error)}"
 
     def _describe_image_with_ollama(self, image: Image.Image, user_input: str):
-        res = ollama.chat(
-            model=self.model_definition.config.get("model"),
-            messages=[
-                {
-                    "role": "user",
-                    "content": user_input,
-                    "images": [self._get_image_bytes(image)],
-                }
-            ],
-        )
+        try:
+            res = ollama.chat(
+                model=self.model_definition.config.get("model"),
+                messages=[
+                    {
+                        "role": "user",
+                        "content": user_input,
+                        "images": [self._get_image_bytes(image)],
+                    }
+                ],
+            )
 
-        print(res["message"]["content"])
-        yield res["message"]["content"]
+            print(res["message"]["content"])
+            yield res["message"]["content"]
+
+        except Exception as error:
+            yield f"[ERROR]: {str(error)}"
 
     def _get_image_bytes(self, image):
         buffered = BytesIO()
