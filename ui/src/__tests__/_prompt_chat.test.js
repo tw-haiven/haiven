@@ -41,6 +41,7 @@ describe("PromptChat Component", () => {
           models={mockModels}
           pageTitle="Default Title"
           pageIntro="Default Intro"
+          headerTooltip={true}
         />,
       );
     });
@@ -50,7 +51,7 @@ describe("PromptChat Component", () => {
     expect(screen.getByText(/Default Title/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Default Intro/i)).toBeInTheDocument();
     expect(screen.getByText(/Upload image/i)).toBeInTheDocument();
-    expect(screen.getByText(/Document/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Document/i)[0]).toBeInTheDocument();
     expect(screen.getByText(/Contexts/i)).toBeInTheDocument();
     expect(startChatButton).toBeInTheDocument();
   });
