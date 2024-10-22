@@ -166,6 +166,7 @@ const CreativeMatrix = ({ models }) => {
                 "Model failed to respond rightly, please rewrite your message and try again",
               );
               console.log("response is not parseable into an array");
+              abortLoad(ctrl);
             }
           },
         },
