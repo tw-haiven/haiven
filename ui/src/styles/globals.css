@@ -54,7 +54,6 @@ h4, h5 {
   font-size: 1.1em;
 }
 
-
 /**** CHAT *****/
 .ant-pro-chat {
   max-width: 100%;
@@ -79,6 +78,10 @@ h4, h5 {
 
 .ant-pro-chat .ant-pro-chat-input-area-action-bar {
   display: none;
+}
+
+.collapsed .ant-pro-chat-container {
+  height: 94% !important;
 }
 
 .ant-avatar {
@@ -467,6 +470,7 @@ h4, h5 {
   padding-bottom: 0px;
   width: 100%;
   background-color: inherit !important;
+  height: 5%;
 }
 
 .prompt-chat-container .ant-collapse-content-box {
@@ -491,6 +495,7 @@ h4, h5 {
   margin-top: 7px;
   margin-left: 34px;
   margin-bottom: 10px;
+  height: 4%;
 }
 
 .prompt-chat-container.collapsed {
@@ -696,7 +701,7 @@ h4, h5 {
 .content-container {
   height: 100%;
   display: flex;
-  flex-direction: column
+  flex-direction: column;
 }
 
 .matrix-table {
@@ -737,7 +742,7 @@ h4, h5 {
   width: 500px;
 }
 
-.creative-matrix-panel-header {
+.prompt-options-panel-header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;

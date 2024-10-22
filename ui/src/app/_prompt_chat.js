@@ -2,7 +2,8 @@
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
-import { Input, Select, Button, message } from "antd";
+import { Input, Select, Button, message, Collapse } from "antd";
+import { MenuFoldOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
 import ChatWidget from "./_chat";
@@ -37,6 +38,7 @@ const PromptChat = ({
   const [conversationStarted, setConversationStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
   const [showChat, setShowChat] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   // Rendered prompt
   const [renderedPromptData, setRenderedPromptData] = useState({});
@@ -71,6 +73,7 @@ const PromptChat = ({
 
       let userInput = buildUserInput();
       chatRef.current.startNewConversation(userInput);
+      setIsExpanded(false);
     }
   };
 
@@ -131,6 +134,10 @@ const PromptChat = ({
     return buildRequestBody(buildUserInput());
   };
 
+  const onCollapsibleIconClick = (e) => {
+    setIsExpanded(!isExpanded);
+  };
+
   useEffect(() => {
     handlePromptSelection(promptId);
   }, [promptId, prompts]);
@@ -188,8 +195,8 @@ const PromptChat = ({
       <></>
     );
 
-  const prompt_options = (
-    <div className="prompt-chat-options-container">
+  const promptMenu = (
+    <div>
       <div className="prompt-chat-options-section">
         <h1>
           {selectedPrompt?.title || pageTitle}
@@ -234,14 +241,41 @@ const PromptChat = ({
     </div>
   );
 
+  const collapseItem = [
+    {
+      key: "1",
+      label: isExpanded ? (
+        <div>Hide Prompt Panel</div>
+      ) : (
+        <div className="prompt-options-panel-header">
+          <div>Show Prompt Panel</div>
+          <Disclaimer models={models} />
+        </div>
+      ),
+      children: promptMenu,
+    },
+  ];
+
   return (
     <>
-      <div className="prompt-chat-container">
-        {prompt_options}
-        <div
-          style={{ height: "100%", display: "flex", flexDirection: "column" }}
-        >
-          <Disclaimer models={models} />
+      <div className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}>
+        <Collapse
+          className={`prompt-chat-options-container ${isExpanded ? "" : "collapsed"}`}
+          items={collapseItem}
+          defaultActiveKey={["1"]}
+          ghost={isExpanded}
+          activeKey={isExpanded ? "1" : ""}
+          onChange={onCollapsibleIconClick}
+          expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
+        />
+
+        <div className="content-container">
+          {isExpanded ? <Disclaimer models={models} /> : null}
+          <h1
+            className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
+          >
+            Chat with Haiven
+          </h1>
           <ProChatProvider>
             <ChatWidget
               onSubmitMessage={submitPromptToBackend}

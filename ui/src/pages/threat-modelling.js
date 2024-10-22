@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
+import { MenuFoldOutlined } from "@ant-design/icons";
 import {
   Alert,
   Drawer,
@@ -13,6 +14,7 @@ import {
   Input,
   Select,
   message,
+  Collapse,
 } from "antd";
 const { TextArea } = Input;
 import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
@@ -43,6 +45,8 @@ const ThreatModelling = ({ contexts, models }) => {
   const [explorationDrawerTitle, setExplorationDrawerTitle] =
     useState("Explore scenario");
   const [chatContext, setChatContext] = useState({});
+  const [isExpanded, setIsExpanded] = useState(true);
+
   const router = useRouter();
 
   function abortLoad() {
@@ -67,6 +71,10 @@ const ThreatModelling = ({ contexts, models }) => {
 
   const onSelectDisplayMode = (event) => {
     setDisplayMode(event.target.value);
+  };
+
+  const onCollapsibleIconClick = (e) => {
+    setIsExpanded(!isExpanded);
   };
 
   const scenarioToText = (scenario) => {
@@ -125,6 +133,7 @@ const ThreatModelling = ({ contexts, models }) => {
         },
         onFinish: () => {
           setLoading(false);
+          setIsExpanded(false);
         },
         onMessageHandle: (data) => {
           ms += data.data;
@@ -148,6 +157,76 @@ const ThreatModelling = ({ contexts, models }) => {
 
   const placeholderHelp =
     "Describe who the users are, what assets you need to protect, and how data flows through your system";
+
+  const promptMenu = (
+    <div>
+      <div className="prompt-chat-options-section">
+        <h1>Threat Modelling</h1>
+      </div>
+
+      <div className="prompt-chat-options-section">
+        <div className="user-input">
+          <label>
+            Your input
+            <HelpTooltip text={placeholderHelp} />
+          </label>
+          <TextArea
+            placeholder={placeholderHelp}
+            value={promptInput}
+            onChange={(e, v) => {
+              setPromptInput(e.target.value);
+            }}
+            rows={18}
+          />
+        </div>
+        <ContextChoice
+          onChange={handleContextSelection}
+          contexts={contexts}
+          value={selectedContext?.key}
+        />
+        <div className="user-input">
+          <PromptPreview buildRenderPromptRequest={buildRequestData} />
+          <Button
+            onClick={onSubmitPrompt}
+            className="go-button"
+            disabled={isLoading}
+          >
+            GENERATE
+          </Button>
+        </div>
+        <div className="user-input">
+          {isLoading && (
+            <div>
+              <Spin />
+              <Button
+                type="primary"
+                danger
+                onClick={abortLoad}
+                style={{ marginLeft: "1em" }}
+              >
+                Stop
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const collapseItem = [
+    {
+      key: "1",
+      label: isExpanded ? (
+        <div>Hide Prompt Panel</div>
+      ) : (
+        <div className="prompt-options-panel-header">
+          <div>Show Prompt Panel</div>
+          <Disclaimer models={models} />
+        </div>
+      ),
+      children: promptMenu,
+    },
+  ];
 
   return (
     <>
@@ -174,64 +253,27 @@ const ThreatModelling = ({ contexts, models }) => {
       </Drawer>
 
       <div id="canvas">
-        <div className="prompt-chat-container">
-          <div className="prompt-chat-options-container">
-            <div className="prompt-chat-options-section">
-              <h1>Threat Modelling</h1>
-            </div>
-
-            <div className="prompt-chat-options-section">
-              <div className="user-input">
-                <label>
-                  Your input
-                  <HelpTooltip text={placeholderHelp} />
-                </label>
-                <TextArea
-                  placeholder={placeholderHelp}
-                  value={promptInput}
-                  onChange={(e, v) => {
-                    setPromptInput(e.target.value);
-                  }}
-                  rows={18}
-                />
-              </div>
-              <ContextChoice
-                onChange={handleContextSelection}
-                contexts={contexts}
-                value={selectedContext?.key}
-              />
-              <div className="user-input">
-                <PromptPreview buildRenderPromptRequest={buildRequestData} />
-                <Button
-                  onClick={onSubmitPrompt}
-                  className="go-button"
-                  disabled={isLoading}
-                >
-                  GENERATE
-                </Button>
-              </div>
-              <div className="user-input">
-                {isLoading && (
-                  <div>
-                    <Spin />
-                    <Button
-                      type="primary"
-                      danger
-                      onClick={abortLoad}
-                      style={{ marginLeft: "1em" }}
-                    >
-                      Stop
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div
-            style={{ height: "100%", display: "flex", flexDirection: "column" }}
-          >
-            <Disclaimer models={models} />
+        <div
+          className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
+        >
+          <Collapse
+            className={`prompt-chat-options-container ${isExpanded ? "" : "collapsed"}`}
+            items={collapseItem}
+            defaultActiveKey={["1"]}
+            ghost={isExpanded}
+            activeKey={isExpanded ? "1" : ""}
+            onChange={onCollapsibleIconClick}
+            expandIcon={() => (
+              <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
+            )}
+          />
+          <div className="content-container">
+            {isExpanded ? <Disclaimer models={models} /> : null}
+            <h1
+              className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
+            >
+              Threat Modelling
+            </h1>
             <div className={"scenarios-collection " + displayMode + "-display"}>
               {scenarios && scenarios.length > 0 && (
                 <div className="scenarios-actions">

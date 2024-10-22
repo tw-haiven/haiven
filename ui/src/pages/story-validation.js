@@ -1,6 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
+import { MenuFoldOutlined } from "@ant-design/icons";
 import {
   Alert,
   Button,
@@ -30,6 +31,7 @@ const StoryValidation = ({ contexts, models }) => {
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
   const [currentAbortController, setCurrentAbortController] = useState();
+  const [isExpanded, setIsExpanded] = useState(true);
   const placeholderHelp = "What do you have so far?";
 
   function abortLoad(abortController) {
@@ -87,6 +89,7 @@ const StoryValidation = ({ contexts, models }) => {
         },
         onFinish: () => {
           setLoading(false);
+          setIsExpanded(false);
         },
         onMessageHandle: (data, response) => {
           try {
@@ -160,6 +163,10 @@ const StoryValidation = ({ contexts, models }) => {
 
   const onGenerateScopeCritique = () => {
     onSecondStep("/api/story-validation/invest", setScopeCritique);
+  };
+
+  const onCollapsibleIconClick = (e) => {
+    setIsExpanded(!isExpanded);
   };
 
   const copyScenarios = () => {
@@ -264,68 +271,101 @@ const StoryValidation = ({ contexts, models }) => {
     },
   ];
 
+  const promptMenu = (
+    <div>
+      <div className="prompt-chat-options-section">
+        <h1>Validate and Refine a User Story</h1>
+        <p>
+          Haiven will ask you questions about your requirement, so you can
+          discover gaps you haven't thought about yet. In a second step, you can
+          generate a draft for a user story.
+        </p>
+      </div>
+      <div className="user-inputs">
+        <div className="user-input">
+          <label>
+            High level description of your requirement
+            <HelpTooltip text={placeholderHelp} />
+          </label>
+          <TextArea
+            placeholder={placeholderHelp}
+            value={promptInput}
+            onChange={(e, v) => {
+              setPromptInput(e.target.value);
+            }}
+            rows={10}
+          />
+        </div>
+        <ContextChoice
+          onChange={handleContextSelection}
+          contexts={contexts}
+          value={selectedContext?.key}
+        />
+        <PromptPreview buildRenderPromptRequest={buildRequestData} />
+        <Button
+          onClick={onGenerateQuestions}
+          className="go-button"
+          disabled={isLoading}
+        >
+          GENERATE QUESTIONS
+        </Button>
+      </div>
+
+      {isLoading && (
+        <div style={{ marginTop: 10 }}>
+          <Spin />
+          <Button
+            type="primary"
+            danger
+            onClick={abortCurrentLoad}
+            style={{ marginLeft: "1em" }}
+          >
+            Stop
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+
+  const collapseItem = [
+    {
+      key: "1",
+      label: isExpanded ? (
+        <div>Hide Prompt Panel</div>
+      ) : (
+        <div className="prompt-options-panel-header">
+          <div>Show Prompt Panel</div>
+          <Disclaimer models={models} />
+        </div>
+      ),
+      children: promptMenu,
+    },
+  ];
+
   return (
     <>
       <div id="canvas">
-        <div className="prompt-chat-container">
-          <div className="prompt-chat-options-container">
-            <div className="prompt-chat-options-section">
-              <h1>Validate and Refine a User Story</h1>
-              <p>
-                Haiven will ask you questions about your requirement, so you can
-                discover gaps you haven't thought about yet. In a second step,
-                you can generate a draft for a user story.
-              </p>
-            </div>
-            <div className="user-inputs">
-              <div className="user-input">
-                <label>
-                  High level description of your requirement
-                  <HelpTooltip text={placeholderHelp} />
-                </label>
-                <TextArea
-                  placeholder={placeholderHelp}
-                  value={promptInput}
-                  onChange={(e, v) => {
-                    setPromptInput(e.target.value);
-                  }}
-                  rows={10}
-                />
-              </div>
-              <ContextChoice
-                onChange={handleContextSelection}
-                contexts={contexts}
-                value={selectedContext?.key}
-              />
-              <PromptPreview buildRenderPromptRequest={buildRequestData} />
-              <Button
-                onClick={onGenerateQuestions}
-                className="go-button"
-                disabled={isLoading}
-              >
-                GENERATE QUESTIONS
-              </Button>
-            </div>
-
-            {isLoading && (
-              <div style={{ marginTop: 10 }}>
-                <Spin />
-                <Button
-                  type="primary"
-                  danger
-                  onClick={abortCurrentLoad}
-                  style={{ marginLeft: "1em" }}
-                >
-                  Stop
-                </Button>
-              </div>
+        <div
+          className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
+        >
+          <Collapse
+            className={`prompt-chat-options-container ${isExpanded ? "" : "collapsed"}`}
+            items={collapseItem}
+            defaultActiveKey={["1"]}
+            ghost={isExpanded}
+            activeKey={isExpanded ? "1" : ""}
+            onChange={onCollapsibleIconClick}
+            expandIcon={() => (
+              <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
-          </div>
-
-          <div
-            style={{ height: "100%", display: "flex", flexDirection: "column" }}
-          >
-            <Disclaimer models={models} />
+          />
+          <div className="content-container">
+            {isExpanded ? <Disclaimer models={models} /> : null}
+            <h1
+              className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
+            >
+              Validate and Refine a User Story
+            </h1>
             <div className={"scenarios-collection cards-display"}>
               {questions.length > 0 && <h2>Questions</h2>}
               <div className="cards-container">

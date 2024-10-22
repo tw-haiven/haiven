@@ -10,7 +10,6 @@ import Disclaimer from "./_disclaimer";
 let ctrl;
 
 const CreativeMatrix = ({ models }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
   const [rowsCSV, setRowsCSV] = useState("For Customers, For Employees");
   const [columnsCSV, setColumnsCSV] = useState(
     "For Tactical or Operational Tasks, For Creative or Strategic Tasks",
@@ -24,6 +23,7 @@ const CreativeMatrix = ({ models }) => {
   const [columns, setColumns] = useState(
     columnsCSV.split(",").map((v) => v.trim()),
   );
+  const [isExpanded, setIsExpanded] = useState(true);
   const [isLoading, setLoading] = useState(false);
   const [matrix, setMatrix] = useState([]);
   const [templates, setTemplates] = useState([
@@ -284,13 +284,14 @@ const CreativeMatrix = ({ models }) => {
       </div>
     </div>
   );
+
   const collapseItem = [
     {
       key: "1",
       label: isExpanded ? (
         <div>Hide Prompt Panel</div>
       ) : (
-        <div className="creative-matrix-panel-header">
+        <div className="prompt-options-panel-header">
           <div>Show Prompt Panel</div>
           <Disclaimer models={models} />
         </div>
