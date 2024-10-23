@@ -285,7 +285,7 @@ const StoryValidation = ({ contexts, models }) => {
       <div className="user-inputs">
         <div className="user-input">
           <label>
-            High level description of your requirement
+            Your input
             <HelpTooltip text={placeholderHelp} />
           </label>
           <TextArea

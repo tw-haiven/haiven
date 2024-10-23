@@ -154,7 +154,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
       <div className="prompt-chat-options-section">
         <div className="user-input">
           <label>
-            High level description of your requirement
+            Your input
             <HelpTooltip text={placeholderHelp} />
           </label>
           <TextArea
