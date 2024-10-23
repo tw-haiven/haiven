@@ -24,7 +24,8 @@ const PromptChat = ({
   showDocuments = true,
   pageTitle,
   pageIntro,
-  headerTooltip = false,
+  headerTooltip = true,
+  inputTooltip = true,
 }) => {
   const chatRef = useRef();
 
@@ -216,9 +217,11 @@ const PromptChat = ({
           <div className="user-input">
             <label>
               Your input
-              <HelpTooltip
-                text={selectedPrompt?.help_user_input || pageIntro}
-              />
+              {inputTooltip && (
+                <HelpTooltip
+                  text={selectedPrompt?.help_user_input || pageIntro}
+                />
+              )}
             </label>
 
             <TextArea

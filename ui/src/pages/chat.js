@@ -21,7 +21,6 @@ const ChatPage = ({ prompts, contexts, documents, models }) => {
       contexts={contexts}
       documents={documents}
       models={models}
-      headerTooltip={true}
     />
   );
 };
