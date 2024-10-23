@@ -148,11 +148,6 @@ const ChatWidget = forwardRef(
                 );
               },
             }}
-            inputAreaProps={{
-              style: {
-                borderRadius: "0",
-              },
-            }}
           />
         )}
       </div>
