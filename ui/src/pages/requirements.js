@@ -96,6 +96,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
+    setIsExpanded(false);
 
     const uri = "/api/requirements?variation=" + selectedVariation;
 
@@ -119,7 +120,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
         },
         onFinish: () => {
           setLoading(false);
-          setIsExpanded(false);
         },
         onMessageHandle: (data) => {
           ms += data.data;

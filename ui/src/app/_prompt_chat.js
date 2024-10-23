@@ -282,7 +282,7 @@ const PromptChat = ({
           <h1
             className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
           >
-            Chat with Haiven
+            {selectedPrompt?.title || pageTitle}
           </h1>
           <div className="chat-container">
             <ProChatProvider>

@@ -119,6 +119,7 @@ const CreativeMatrix = ({ models }) => {
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
+    setIsExpanded(false);
 
     const uri =
       "/api/creative-matrix?rows=" +
@@ -146,7 +147,6 @@ const CreativeMatrix = ({ models }) => {
           },
           onFinish: () => {
             setLoading(false);
-            setIsExpanded(false);
           },
           onMessageHandle: (data) => {
             if (!isLoadingXhr) {

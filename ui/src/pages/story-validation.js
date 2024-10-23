@@ -70,6 +70,7 @@ const StoryValidation = ({ contexts, models }) => {
     const ctrl = new AbortController();
     setCurrentAbortController(ctrl);
     setLoading(true);
+    setIsExpanded(false);
 
     const uri = "/api/prompt";
 
@@ -89,7 +90,6 @@ const StoryValidation = ({ contexts, models }) => {
         },
         onFinish: () => {
           setLoading(false);
-          setIsExpanded(false);
         },
         onMessageHandle: (data, response) => {
           try {

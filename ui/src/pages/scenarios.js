@@ -105,6 +105,7 @@ const Home = ({ models }) => {
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
+    setIsExpanded(false);
     // setPrompt(value);
 
     const uri =
@@ -139,7 +140,6 @@ const Home = ({ models }) => {
         },
         onFinish: () => {
           setLoading(false);
-          setIsExpanded(false);
         },
         onMessageHandle: (data) => {
           try {

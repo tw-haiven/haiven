@@ -113,6 +113,7 @@ const ThreatModelling = ({ contexts, models }) => {
     abortLoad();
     ctrl = new AbortController();
     setLoading(true);
+    setIsExpanded(false);
 
     const uri = "/api/prompt";
 
@@ -133,7 +134,6 @@ const ThreatModelling = ({ contexts, models }) => {
         },
         onFinish: () => {
           setLoading(false);
-          setIsExpanded(false);
         },
         onMessageHandle: (data) => {
           ms += data.data;
