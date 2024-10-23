@@ -163,7 +163,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
             onChange={(e, v) => {
               setPromptInput(e.target.value);
             }}
-            rows={20}
+            rows={10}
           />
         </div>
         <ContextChoice

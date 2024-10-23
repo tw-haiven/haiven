@@ -177,7 +177,7 @@ const ThreatModelling = ({ contexts, models }) => {
             onChange={(e, v) => {
               setPromptInput(e.target.value);
             }}
-            rows={18}
+            rows={10}
           />
         </div>
         <ContextChoice
