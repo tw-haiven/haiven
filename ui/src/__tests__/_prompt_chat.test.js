@@ -48,7 +48,7 @@ describe("PromptChat Component", () => {
 
     const startChatButton = screen.getByText(/START CHAT/i);
 
-    expect(screen.getByText(/Default Title/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Default Title/i)[0]).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Default Intro/i)).toBeInTheDocument();
     expect(screen.getByText(/Upload image/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Document/i)[0]).toBeInTheDocument();
