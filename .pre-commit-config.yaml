@@ -35,5 +35,6 @@ repos:
         language: system
       - id: check-ui-tests
         name: Check if UI tests are passing
-        entry: poetry run ui-test
+        entry: .precommit/run_ui_tests.sh
         language: system
+        pass_filenames: false
