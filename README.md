@@ -127,7 +127,9 @@ There are 4 options:
 
 ### 2. Get (and adapt) a "knowledge pack"
 
-You can clone the [Sample Knowledge Pack](https://github.com/tw-haiven/haiven-sample-knowledge-pack) or, for Thoughtworkers, the [Thoughtworks Knowledge Pack](https://github.com/tw-haiven/haiven-tw-knowledge-pack) to get started.
+You can clone the [Sample Knowledge Pack](https://github.com/tw-haiven/haiven-sample-knowledge-pack) or, for Thoughtworkers, the [Thoughtworks Knowledge Pack](https://github.com/tw-haiven/haiven-tw-knowledge-pack) to get started. <br/>
+Note: Make sure you have *git-lfs* installed before cloning knowledge packs, otherwise git might only partially clone.
+
 
 Find more documentation about knowledge packs and how to adapt them [here](docs/knowledge_packs.md).
 
