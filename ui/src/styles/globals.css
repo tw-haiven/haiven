@@ -377,7 +377,7 @@ h4, h5 {
 
 .pinboard-card-content {
   max-height: 280px;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding: 0;
 }
 
@@ -592,7 +592,7 @@ h4, h5 {
 
 .scenarios-collection.equal-display .scenario-card-content {
   height: 300px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .scenario-card-content {
