@@ -46,7 +46,8 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   ]);
   const [selectedVariation, setSelectedVariation] = useState(variations[0]);
   const [isExpanded, setIsExpanded] = useState(true);
-  const placeholderHelp = "Describe the high level requirements to break down";
+  const placeholderHelp =
+    "Describe the requirements that you'd like to break down";
 
   const router = useRouter();
 

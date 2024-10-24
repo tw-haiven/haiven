@@ -157,7 +157,7 @@ const ThreatModelling = ({ contexts, models }) => {
   };
 
   const placeholderHelp =
-    "Describe who the users are, what assets you need to protect, and how data flows through your system";
+    "Describe your users, the assets to protect, and how data flows through your system.";
 
   const promptMenu = (
     <div>

@@ -32,7 +32,7 @@ const StoryValidation = ({ contexts, models }) => {
   const [promptInput, setPromptInput] = useState("");
   const [currentAbortController, setCurrentAbortController] = useState();
   const [isExpanded, setIsExpanded] = useState(true);
-  const placeholderHelp = "What do you have so far?";
+  const placeholderHelp = "Describe all details of your user story here.";
 
   function abortLoad(abortController) {
     setLoading(false);
