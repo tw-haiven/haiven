@@ -64,8 +64,8 @@ h4, h5 {
 .collapsed .chat-container {
   height: 90%;
   width: 100%;
-  float: inline-start;
 }
+
 .prompt-chat-container .ant-pro-chat-chat-list-container {
   height: inherit !important;
 }
@@ -734,6 +734,13 @@ h4, h5 {
   flex: 5;
   padding: 1em;
   height: 95%;
+  width: 72%;
+  float: inline-start;
+}
+  
+.collapsed .matrix-container {
+  height: 90%;
+  width: 100%;
 }
 
 .matrix-table {
