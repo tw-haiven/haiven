@@ -217,14 +217,7 @@ const ThreatModelling = ({ contexts, models }) => {
   const collapseItem = [
     {
       key: "1",
-      label: isExpanded ? (
-        <div>Hide Prompt Panel</div>
-      ) : (
-        <div className="prompt-options-panel-header">
-          <div>Show Prompt Panel</div>
-          <Disclaimer models={models} />
-        </div>
-      ),
+      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
       children: promptMenu,
     },
   ];
@@ -258,7 +251,7 @@ const ThreatModelling = ({ contexts, models }) => {
           className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
         >
           <Collapse
-            className={`prompt-chat-options-container ${isExpanded ? "" : "collapsed"}`}
+            className="prompt-chat-options-container"
             items={collapseItem}
             defaultActiveKey={["1"]}
             ghost={isExpanded}
@@ -268,109 +261,99 @@ const ThreatModelling = ({ contexts, models }) => {
               <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
           />
-          <div className="content-container">
-            {isExpanded ? <Disclaimer models={models} /> : null}
-            <h1
-              className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
-            >
-              Threat Modelling
-            </h1>
-            <div className={"scenarios-collection " + displayMode + "-display"}>
-              {scenarios && scenarios.length > 0 && (
-                <div className="scenarios-actions">
-                  <Button
-                    className="prompt-preview-copy-btn"
-                    onClick={onCopyAll}
-                    size="small"
-                  >
-                    <RiCheckboxMultipleBlankLine /> COPY ALL
-                  </Button>
-                  <Radio.Group
-                    className="display-mode-choice"
-                    onChange={onSelectDisplayMode}
-                    defaultValue="grid"
-                    size="small"
-                  >
-                    <Radio.Button value="grid">
-                      <RiStackLine /> CARD VIEW
-                    </Radio.Button>
-                    <Radio.Button value="plot">
-                      <RiGridLine /> MATRIX VIEW
-                    </Radio.Button>
-                  </Radio.Group>
-                </div>
-              )}
-              <div className="cards-container with-display-mode">
-                {scenarios.map((scenario, i) => {
-                  return (
-                    <Card
-                      hoverable
-                      key={i}
-                      className="scenario"
-                      actions={[
-                        <Button
-                          type="link"
-                          key="explore"
-                          onClick={() => onExplore(i)}
-                        >
-                          <RiChat2Line style={{ fontSize: "large" }} />
-                        </Button>,
-                        <Button
-                          type="link"
-                          key="explore"
-                          onClick={() => onCopyOne(i)}
-                        >
-                          <RiCheckboxMultipleBlankFill
-                            style={{ fontSize: "large" }}
-                          />
-                        </Button>,
-                      ]}
-                    >
-                      <div className="scenario-card-content">
-                        <h3>{scenario.title}</h3>
-                        {scenario.category && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">Category</div>
-                            <div className="card-prop-value">
-                              {scenario.category}
-                            </div>
-                          </div>
-                        )}
-                        <div className="card-prop-name">Description</div>
-                        <div className="scenario-summary">
-                          {scenario.summary}
-                        </div>
-                        {scenario.probability && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">Probability</div>
-                            <div className="card-prop-value">
-                              {scenario.probability}
-                            </div>
-                          </div>
-                        )}
-                        {scenario.impact && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">
-                              Potential impact
-                            </div>
-                            <div className="card-prop-value">
-                              {scenario.impact}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </Card>
-                  );
-                })}
-                <div
-                  className="scenarios-plot-container"
-                  style={{ display: displayMode == "plot" ? "block" : "none" }}
+          <Disclaimer models={models} />
+          <h1 className="title-for-collapsed-panel">Threat Modelling</h1>
+          <div className={"scenarios-collection " + displayMode + "-display"}>
+            {scenarios && scenarios.length > 0 && (
+              <div className="scenarios-actions">
+                <Button
+                  className="prompt-preview-copy-btn"
+                  onClick={onCopyAll}
+                  size="small"
                 >
-                  <ScenariosPlotProbabilityImpact
-                    scenarios={scenarios}
-                    visible={displayMode == "plot"}
-                  />
-                </div>
+                  <RiCheckboxMultipleBlankLine /> COPY ALL
+                </Button>
+                <Radio.Group
+                  className="display-mode-choice"
+                  onChange={onSelectDisplayMode}
+                  defaultValue="grid"
+                  size="small"
+                >
+                  <Radio.Button value="grid">
+                    <RiStackLine /> CARD VIEW
+                  </Radio.Button>
+                  <Radio.Button value="plot">
+                    <RiGridLine /> MATRIX VIEW
+                  </Radio.Button>
+                </Radio.Group>
+              </div>
+            )}
+            <div className="cards-container with-display-mode">
+              {scenarios.map((scenario, i) => {
+                return (
+                  <Card
+                    hoverable
+                    key={i}
+                    className="scenario"
+                    actions={[
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onExplore(i)}
+                      >
+                        <RiChat2Line style={{ fontSize: "large" }} />
+                      </Button>,
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onCopyOne(i)}
+                      >
+                        <RiCheckboxMultipleBlankFill
+                          style={{ fontSize: "large" }}
+                        />
+                      </Button>,
+                    ]}
+                  >
+                    <div className="scenario-card-content">
+                      <h3>{scenario.title}</h3>
+                      {scenario.category && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Category</div>
+                          <div className="card-prop-value">
+                            {scenario.category}
+                          </div>
+                        </div>
+                      )}
+                      <div className="card-prop-name">Description</div>
+                      <div className="scenario-summary">{scenario.summary}</div>
+                      {scenario.probability && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Probability</div>
+                          <div className="card-prop-value">
+                            {scenario.probability}
+                          </div>
+                        </div>
+                      )}
+                      {scenario.impact && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Potential impact</div>
+                          <div className="card-prop-value">
+                            {scenario.impact}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })}
+              <div
+                className="scenarios-plot-container"
+                style={{ display: displayMode == "plot" ? "block" : "none" }}
+              >
+                <ScenariosPlotProbabilityImpact
+                  scenarios={scenarios}
+                  visible={displayMode == "plot"}
+                />
               </div>
             </div>
           </div>

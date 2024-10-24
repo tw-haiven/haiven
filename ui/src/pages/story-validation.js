@@ -331,14 +331,7 @@ const StoryValidation = ({ contexts, models }) => {
   const collapseItem = [
     {
       key: "1",
-      label: isExpanded ? (
-        <div>Hide Prompt Panel</div>
-      ) : (
-        <div className="prompt-options-panel-header">
-          <div>Show Prompt Panel</div>
-          <Disclaimer models={models} />
-        </div>
-      ),
+      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
       children: promptMenu,
     },
   ];
@@ -350,7 +343,7 @@ const StoryValidation = ({ contexts, models }) => {
           className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
         >
           <Collapse
-            className={`prompt-chat-options-container ${isExpanded ? "" : "collapsed"}`}
+            className="prompt-chat-options-container"
             items={collapseItem}
             defaultActiveKey={["1"]}
             ghost={isExpanded}
@@ -360,77 +353,71 @@ const StoryValidation = ({ contexts, models }) => {
               <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
           />
-          <div className="content-container">
-            {isExpanded ? <Disclaimer models={models} /> : null}
-            <h1
-              className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
-            >
-              Validate and Refine a User Story
-            </h1>
-            <div className={"scenarios-collection cards-display"}>
-              {questions.length > 0 && <h2>Questions</h2>}
-              <div className="cards-container">
-                {questions.map((question, i) => {
-                  return (
-                    <Card
-                      hoverable
-                      key={i}
-                      className="scenario"
-                      title={<>{question.question}</>}
-                    >
-                      <div className="q-a-card-content">
-                        {question.question && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">
-                              Suggested answer
-                            </div>
-                            <div>
-                              <TextArea
-                                className="answer-overwrite"
-                                value={question.answer}
-                                onChange={(e) => {
-                                  const updatedQuestions = [...questions];
-                                  updatedQuestions[i].answer = e.target.value;
-                                  setQuestions(updatedQuestions);
-                                }}
-                                rows={8}
-                              ></TextArea>
-                            </div>
+          <Disclaimer models={models} />
+          <h1 className="title-for-collapsed-panel">
+            Validate and Refine a User Story
+          </h1>
+          <div className={"scenarios-collection cards-display"}>
+            {questions.length > 0 && <h2>Questions</h2>}
+            <div className="cards-container">
+              {questions.map((question, i) => {
+                return (
+                  <Card
+                    hoverable
+                    key={i}
+                    className="scenario"
+                    title={<>{question.question}</>}
+                  >
+                    <div className="q-a-card-content">
+                      {question.question && (
+                        <div className="card-prop stackable">
+                          <div className="card-prop-name">Suggested answer</div>
+                          <div>
+                            <TextArea
+                              className="answer-overwrite"
+                              value={question.answer}
+                              onChange={(e) => {
+                                const updatedQuestions = [...questions];
+                                updatedQuestions[i].answer = e.target.value;
+                                setQuestions(updatedQuestions);
+                              }}
+                              rows={8}
+                            ></TextArea>
                           </div>
-                        )}
-                      </div>
-                    </Card>
-                  );
-                })}
-              </div>
-
-              {questions.length > 0 && (
-                <>
-                  <div className="user-inputs" style={{ marginTop: "1em" }}>
-                    <h3>What do you want to generate next?</h3>
-                    <div>
-                      Go through the questions and refine the answers.
-                      <br />
-                      Once you're happy with the selected answers, you can
-                      generate different forms of summaries or further critique
-                      for your story.
-                      <br />
-                      <br />
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  <Collapse
-                    defaultActiveKey={[
-                      "summary",
-                      "acceptance-criteria",
-                      "scope-check",
-                    ]}
-                    // defaultActiveKey={secondStepItems.map((i) => i.key)}
-                    items={secondStepItems}
-                    className="second-step-collapsable"
-                  />
-                </>
-              )}
+                  </Card>
+                );
+              })}
             </div>
+
+            {questions.length > 0 && (
+              <>
+                <div className="user-inputs" style={{ marginTop: "1em" }}>
+                  <h3>What do you want to generate next?</h3>
+                  <div>
+                    Go through the questions and refine the answers.
+                    <br />
+                    Once you're happy with the selected answers, you can
+                    generate different forms of summaries or further critique
+                    for your story.
+                    <br />
+                    <br />
+                  </div>
+                </div>
+                <Collapse
+                  defaultActiveKey={[
+                    "summary",
+                    "acceptance-criteria",
+                    "scope-check",
+                  ]}
+                  // defaultActiveKey={secondStepItems.map((i) => i.key)}
+                  items={secondStepItems}
+                  className="second-step-collapsable"
+                />
+              </>
+            )}
           </div>
         </div>
       </div>

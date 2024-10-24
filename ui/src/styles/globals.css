@@ -57,8 +57,15 @@ h4, h5 {
 /**** CHAT *****/
 .chat-container {
   height: 95%;
+  width: 72%;
+  float: inline-start;
 }
 
+.collapsed .chat-container {
+  height: 90%;
+  width: 100%;
+  float: inline-start;
+}
 .prompt-chat-container .ant-pro-chat-chat-list-container {
   height: inherit !important;
 }
@@ -192,7 +199,6 @@ h4, h5 {
 /* ************************* */
 
 #canvas {
-  padding-left: 5px;
   overflow-x: hidden;
   height: 100%;
 }
@@ -406,33 +412,13 @@ h4, h5 {
 
 /**** INPUT --> GENERATION RESULTS COLUMN LAYOUT *****/
 .prompt-chat-container {
-  display: flex;
-  flex-direction: row;
   height: 100%;
-}
-
-.prompt-chat-container .prompt-chat-options-container {
-  padding: var(--standard-left-padding);
-  padding-top: 1em;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  width: 360px;
-  box-shadow: 5px 0px 5px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  overflow-y: scroll;
 }
 
 .social-preview, .social-preview-image {
   max-width: 0px;
   max-height: 0px;
   visibility: hidden;
-}
-
-/* Cannot put a class on the root div of the chat (which is probably from ProChatProvider component) */
-.prompt-chat-container > :nth-child(2) {
-  display: flex;
-  flex: 3;
 }
 
 .prompt-chat-options-section .prompt-chat-description {
@@ -443,6 +429,20 @@ h4, h5 {
   margin-right: -19.5px;
   padding-left: 19.5px;
   padding-right: 19.5px;
+}
+
+.prompt-chat-options-container {
+  padding: var(--standard-left-padding);
+  padding-top: 1em;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  box-shadow: 5px 0px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  overflow-y: auto;
+  height: 100%;
+  float: left;
 }
 
 .prompt-chat-options-container .go-button {
@@ -499,11 +499,12 @@ h4, h5 {
   margin-top: 0.6em;
 }
 
-.prompt-chat-options-container.collapsed {
+.collapsed .prompt-chat-options-container {
   padding-bottom: 0px;
-  width: 100%;
   background-color: inherit !important;
   height: 5%;
+  box-shadow: none;
+  border-bottom: 1px solid var(--color-light-gray);
 }
 
 .prompt-chat-container .ant-collapse-content-box {
@@ -523,7 +524,12 @@ h4, h5 {
   display: none;
 }
 
-.title-for-collapsed-panel.show {
+.title-for-collapsed-panel {
+  display: none;
+  text-align: left;
+}
+
+.collapsed .title-for-collapsed-panel {
   display: block;
   margin-top: 7px;
   margin-left: 34px;
@@ -566,7 +572,6 @@ h4, h5 {
   flex: 3 !important;
   height: 95%;
   overflow: auto;
-  border-top: 1px solid var(--color-light-gray);
 }
 
 .scenarios-collection .cards-container {
@@ -729,17 +734,6 @@ h4, h5 {
   flex: 5;
   padding: 1em;
   height: 95%;
-  border-top: 1px solid var(--color-light-gray);
-}
-
-.content-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.collapsed .content-container {
-  height: 95%;
 }
 
 .matrix-table {
@@ -778,12 +772,6 @@ h4, h5 {
 /**** EXPLORATION CHAT ****/
 .chat-exploration-drawer {
   width: 500px;
-}
-
-.prompt-options-panel-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
 }
 
 .drawer-header {
@@ -993,6 +981,8 @@ h4, h5 {
   color: #666666ff;
   padding-right: 35px;
   font-size: 12px;
+  border-bottom: 1px solid var(--color-light-gray);
+  float: none;
 }
 
 /****** KNOWLEDGE OVERVIEW ******/

@@ -93,10 +93,7 @@ const ChatWidget = forwardRef(
     }));
 
     return (
-      <div
-        style={{ borderTop: "1px solid #edf1f3", height: "100%" }}
-        className={ChatStylingClass}
-      >
+      <div style={{ height: "100%" }} className={ChatStylingClass}>
         {chatIsVisible && (
           <ProChat
             style={{

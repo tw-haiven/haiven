@@ -215,14 +215,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   const collapseItem = [
     {
       key: "1",
-      label: isExpanded ? (
-        <div>Hide Prompt Panel</div>
-      ) : (
-        <div className="prompt-options-panel-header">
-          <div>Show Prompt Panel</div>
-          <Disclaimer models={models} />
-        </div>
-      ),
+      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
       children: promptMenu,
     },
   ];
@@ -256,7 +249,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
           className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
         >
           <Collapse
-            className={`prompt-chat-options-container ${isExpanded ? "" : "collapsed"}`}
+            className="prompt-chat-options-container"
             items={collapseItem}
             defaultActiveKey={["1"]}
             ghost={isExpanded}
@@ -266,57 +259,51 @@ const RequirementsBreakdown = ({ contexts, models }) => {
               <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
           />
-          <div className="content-container">
-            {isExpanded ? <Disclaimer models={models} /> : null}
-            <h1
-              className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
-            >
-              Requirements Breakdown
-            </h1>
-            <div className={"scenarios-collection grid-display"}>
-              <div className="cards-container">
-                {scenarios.map((scenario, i) => {
-                  return (
-                    <Card
-                      hoverable
-                      key={i}
-                      className="scenario"
-                      actions={[
-                        <Button
-                          type="link"
-                          key="explore"
-                          onClick={() => onExplore(i)}
-                        >
-                          <RiChat2Line style={{ fontSize: "large" }} />
-                        </Button>,
-                        <Button
-                          type="link"
-                          key="explore"
-                          onClick={() => onCopy(i)}
-                        >
-                          <RiCheckboxMultipleBlankFill
-                            style={{ fontSize: "large" }}
-                          />
-                        </Button>,
-                        <Button
-                          type="link"
-                          key="explore"
-                          onClick={() => onPin(i)}
-                        >
-                          <RiPushpin2Line style={{ fontSize: "large" }} />
-                        </Button>,
-                      ]}
-                    >
-                      <div className="scenario-card-content">
-                        <h3>{scenario.title}</h3>
-                        <ReactMarkdown className="scenario-summary">
-                          {scenario.summary}
-                        </ReactMarkdown>
-                      </div>
-                    </Card>
-                  );
-                })}
-              </div>
+          <Disclaimer models={models} />
+          <h1 className="title-for-collapsed-panel">Requirements Breakdown</h1>
+          <div className={"scenarios-collection grid-display"}>
+            <div className="cards-container">
+              {scenarios.map((scenario, i) => {
+                return (
+                  <Card
+                    hoverable
+                    key={i}
+                    className="scenario"
+                    actions={[
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onExplore(i)}
+                      >
+                        <RiChat2Line style={{ fontSize: "large" }} />
+                      </Button>,
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onCopy(i)}
+                      >
+                        <RiCheckboxMultipleBlankFill
+                          style={{ fontSize: "large" }}
+                        />
+                      </Button>,
+                      <Button
+                        type="link"
+                        key="explore"
+                        onClick={() => onPin(i)}
+                      >
+                        <RiPushpin2Line style={{ fontSize: "large" }} />
+                      </Button>,
+                    ]}
+                  >
+                    <div className="scenario-card-content">
+                      <h3>{scenario.title}</h3>
+                      <ReactMarkdown className="scenario-summary">
+                        {scenario.summary}
+                      </ReactMarkdown>
+                    </div>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </div>

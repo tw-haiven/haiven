@@ -252,14 +252,7 @@ const PromptChat = ({
   const collapseItem = [
     {
       key: "1",
-      label: isExpanded ? (
-        <div>Hide Prompt Panel</div>
-      ) : (
-        <div className="prompt-options-panel-header">
-          <div>Show Prompt Panel</div>
-          <Disclaimer models={models} />
-        </div>
-      ),
+      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
       children: promptMenu,
     },
   ];
@@ -268,7 +261,7 @@ const PromptChat = ({
     <>
       <div className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}>
         <Collapse
-          className={`prompt-chat-options-container ${isExpanded ? "" : "collapsed"}`}
+          className="prompt-chat-options-container"
           items={collapseItem}
           defaultActiveKey={["1"]}
           ghost={isExpanded}
@@ -276,26 +269,19 @@ const PromptChat = ({
           onChange={onCollapsibleIconClick}
           expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
         />
-
-        <div className="content-container">
-          {isExpanded ? <Disclaimer models={models} /> : null}
-          <h1
-            className={`title-for-collapsed-panel ${isExpanded ? "hide" : "show"}`}
-          >
-            {selectedPrompt?.title || pageTitle}
-          </h1>
-          <div className="chat-container">
-            <ProChatProvider>
-              <ChatWidget
-                onSubmitMessage={submitPromptToBackend}
-                ref={chatRef}
-                visible={showChat}
-                helloMessage={
-                  "Fill in some input on the left and hit 'Generate'"
-                }
-              />
-            </ProChatProvider>
-          </div>
+        <Disclaimer models={models} />
+        <h1 className="title-for-collapsed-panel">
+          {selectedPrompt?.title || pageTitle}
+        </h1>
+        <div className="chat-container">
+          <ProChatProvider>
+            <ChatWidget
+              onSubmitMessage={submitPromptToBackend}
+              ref={chatRef}
+              visible={showChat}
+              helloMessage={"Fill in some input on the left and hit 'Generate'"}
+            />
+          </ProChatProvider>
         </div>
       </div>
     </>
