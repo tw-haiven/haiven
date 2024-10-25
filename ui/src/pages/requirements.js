@@ -29,7 +29,7 @@ import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
-import { addToPinboard } from "../app/_pinboard";
+import { addToPinboard } from "../app/_local_store";
 
 let ctrl;
 

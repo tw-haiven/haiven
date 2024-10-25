@@ -6,7 +6,7 @@ import { PinIcon, RotateCw, Trash, Copy } from "lucide-react";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { addToPinboard } from "./_pinboard";
+import { addToPinboard } from "./_local_store";
 
 const ChatWidget = forwardRef(
   ({ onSubmitMessage, helloMessage, visible }, ref) => {

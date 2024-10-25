@@ -1,6 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { addToPinboard } from "../app/_pinboard";
+import { addToPinboard } from "../app/_local_store";
 import { message } from "antd";
 
 const localStorageMock = (() => {
