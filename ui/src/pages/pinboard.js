@@ -35,7 +35,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
   if (!isMounted) return null;
 
   const scenarioToText = (scenario) => {
-    return "Description" + scenario.summary;
+    return scenario.summary;
   };
 
   const onDelete = (index) => {
