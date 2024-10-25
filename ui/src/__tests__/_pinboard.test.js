@@ -63,26 +63,30 @@ describe("addToPinboard", () => {
 
   it("should initialize pinboard if it does not exist", () => {
     const content = "Test content";
-    const key = Date.now();
+    const timestamp = 1729881106012;
 
-    addToPinboard(key, content);
+    addToPinboard(timestamp, content);
 
     const pinboard = JSON.parse(localStorage.getItem("pinboard"));
     expect(pinboard).toBeDefined();
-    expect(Object.values(pinboard)).toContain(content);
+    expect(Object.entries(pinboard)[0]).toEqual([
+      timestamp.toString(),
+      content,
+    ]);
   });
 
-  it("should add multiple contents to pinboard", () => {
+  it("should add new content to the top of pinboard", () => {
     const content1 = "Test content 1";
-    const content2 = "Test content 2";
-    const originalDateNow = Date.now;
+    const timestamp1 = 1729881106013;
 
-    addToPinboard(originalDateNow, content1);
-    Date.now = vi.fn(() => 1234567891);
-    addToPinboard(Date.now, content2);
+    const content2 = "Test content 2";
+    const timestamp2 = 1729881106014;
+
+    addToPinboard(timestamp1, content1);
+    addToPinboard(timestamp2, content2);
 
     const pinboard = JSON.parse(localStorage.getItem("pinboard"));
-    expect(Object.values(pinboard)).toContain(content1);
-    expect(Object.values(pinboard)).toContain(content2);
+    expect(Object.entries(pinboard)[0]).toContain(content2);
+    expect(Object.entries(pinboard)[1]).toContain(content1);
   });
 });

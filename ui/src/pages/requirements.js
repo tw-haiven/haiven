@@ -17,9 +17,12 @@ import {
   Collapse,
 } from "antd";
 const { TextArea } = Input;
-import { RiChat2Line, RiCheckboxMultipleBlankFill } from "react-icons/ri";
+import {
+  RiChat2Line,
+  RiCheckboxMultipleBlankFill,
+  RiPushpin2Line,
+} from "react-icons/ri";
 import ReactMarkdown from "react-markdown";
-import { RiPushpin2Line } from "react-icons/ri";
 
 import ChatExploration from "./_chat_exploration";
 import ContextChoice from "../app/_context_choice";
