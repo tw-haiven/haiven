@@ -208,7 +208,7 @@ const PromptChat = ({
         </h1>
         <div className={headerTooltip ? "" : "prompt-chat-description"}>
           {selectedPrompt?.help_prompt_description ||
-            "Ask general questions & document based questions"}
+            "Ask general questions & document based queries"}
         </div>
       </div>
 
