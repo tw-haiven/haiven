@@ -10,3 +10,10 @@ def get_test_data_path():
     if cwd.endswith("/app"):
         return "tests/test_data"
     return "app/tests/test_data"
+
+
+def get_app_path():
+    cwd = os.getcwd()
+    if cwd.endswith("/app"):
+        return cwd
+    return "app"
