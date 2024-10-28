@@ -1,6 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import copy
 import os
+import sys
 from typing import List
 
 import yaml
@@ -148,10 +149,17 @@ class ConfigService:
         """
         knowledge_pack_path = self.data["knowledge_pack_path"]
 
+        # Check for the file in the provided path or in the _MEIPASS directory
         if not os.path.exists(knowledge_pack_path):
-            raise KnowledgePackError(
-                f"Cannot find path to Knowledge Pack: `{knowledge_pack_path}`. Please check the `knowledge_pack_path` in your config file."
+            # If the file doesn't exist at the original path, try the _MEIPASS directory
+            base_path = getattr(sys, "_MEIPASS", os.path.abspath("."))
+            knowledge_pack_path = os.path.join(
+                base_path, os.path.basename(knowledge_pack_path)
             )
+            if not os.path.exists(knowledge_pack_path):
+                raise KnowledgePackError(
+                    f"Cannot find path to Knowledge Pack: `{knowledge_pack_path}`. Please check the `knowledge_pack_path` in your config file."
+                )
 
         return knowledge_pack_path
 
@@ -223,15 +231,22 @@ class ConfigService:
         Returns:
             dict: The loaded YAML data.
         """
+        # Check for the file in the provided path or in the _MEIPASS directory
         if not os.path.exists(path):
-            raise FileNotFoundError(f"Path {path} is not valid")
+            # If the file doesn't exist at the original path, try the _MEIPASS directory
+            base_path = getattr(sys, "_MEIPASS", os.path.abspath("."))
+            path = os.path.join(base_path, os.path.basename(path))
+            if not os.path.exists(path):
+                raise FileNotFoundError(f"Path {path} is not valid")
 
         data = None
 
+        # Adding a custom constructor for YAML timestamps
         yaml.SafeLoader.add_constructor(
             "tag:yaml.org,2002:timestamp", ConfigService._string_constructor
         )
 
+        # Load the YAML file
         with open(path, "r") as file:
             try:
                 data = yaml.load(file, Loader=yaml.SafeLoader)
