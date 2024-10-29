@@ -34,7 +34,7 @@ python-dotenv = "^1.0.1"
 toml = "^0.10.2"
 pillow = "^10.4.0"
 python-multipart = "^0.0.12"
-gradio = "^5.1.0"
+gradio = "^5.4.0"
 litellm = "^1.50.1"
 
 [tool.poetry.group.dev.dependencies]
