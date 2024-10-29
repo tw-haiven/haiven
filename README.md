@@ -177,7 +177,7 @@ yarn dev
 
 Test:
 ```
-poetry run test
+poetry run pytest -m 'not integration' tests/
 ```
 
 ### 4. Deploy your own instance
