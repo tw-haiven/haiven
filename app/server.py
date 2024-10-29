@@ -20,10 +20,13 @@ from jinja2 import Environment, FileSystemLoader
 from ui.url import HaivenUrl
 import time
 import os
+import sys
+
+base_path = getattr(sys, "_MEIPASS", os.path.abspath("."))
 
 
 class Server:
-    boba_build_dir_path = "./resources/static/out"
+    boba_build_dir_path = base_path + "/resources/static/out"
 
     def __init__(
         self,
@@ -37,7 +40,9 @@ class Server:
         self.boba_api = boba_api
 
     def user_endpoints(self, app):
-        jinja_env = Environment(loader=FileSystemLoader("./resources/html_templates"))
+        jinja_env = Environment(
+            loader=FileSystemLoader(base_path + "/resources/html_templates")
+        )
 
         def auth_error_response(error):
             template = jinja_env.get_template("auth_error.html")
@@ -226,7 +231,7 @@ class Server:
         )
 
     def serve_static_resources(self, app):
-        static_dir = Path("./resources/static")
+        static_dir = Path(base_path + "/resources/static")
         static_dir.mkdir(parents=True, exist_ok=True)
         app.mount(
             "/static", StaticFiles(directory=static_dir, html=True), name="static"
@@ -234,7 +239,7 @@ class Server:
 
         @app.get("/favicon.ico", include_in_schema=False)
         async def favicon():
-            return FileResponse("./resources/static/favicon.ico")
+            return FileResponse(base_path + "/resources/static/favicon.ico")
 
     def serve_react_frontend(self, app):
         try:

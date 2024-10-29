@@ -1,10 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_all
 
 static_files = [
     ('config.yaml', '.'), 
     ('../../haiven-tw-knowledge-pack', 'haiven-tw-knowledge-pack'),
-    ('resources/static/out', 'resources/static/out')
+    ('resources', 'resources')
 ]
 
 a = Analysis(
@@ -22,6 +21,7 @@ a = Analysis(
 )
 pyz = PYZ(a.pure)
 
+# Define the executable block, removing `runtime_tmpdir` or other parameters used for single-file bundles
 exe = EXE(
     pyz,
     a.scripts,
@@ -32,13 +32,19 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
+    upx=True,  # Compresses the executable using UPX, optional
+    upx_exclude=[],
+    console=True,  # Set to False if you want a windowless app (e.g., GUI apps)
+)
+
+# Collate all data into a single directory structure
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
     upx=True,
     upx_exclude=[],
-    runtime_tmpdir=None,
-    console=True,
-    disable_windowed_traceback=False,
-    argv_emulation=False,
-    target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
+    name='dist_folder',  # Folder name for the distribution
 )

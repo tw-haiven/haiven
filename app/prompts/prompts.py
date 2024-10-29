@@ -1,5 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
+import sys
 from typing import List
 
 import frontmatter
@@ -33,7 +34,9 @@ class PromptList:
 
         self.interaction_pattern_name = data_sources[interaction_type]["title"]
 
-        directory = data_sources[interaction_type]["dir"]
+        base_path = getattr(sys, "_MEIPASS", os.path.abspath("."))
+        directory = os.path.join(base_path, data_sources[interaction_type]["dir"])
+        # directory = data_sources[interaction_type]["dir"]
         prompt_files = sorted(
             [f for f in os.listdir(directory) if f.endswith(".md") and f != "README.md"]
         )
