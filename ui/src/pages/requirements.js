@@ -15,13 +15,10 @@ import {
   Select,
   message,
   Collapse,
+  Tooltip,
 } from "antd";
 const { TextArea } = Input;
-import {
-  RiChat2Line,
-  RiCheckboxMultipleBlankFill,
-  RiPushpin2Line,
-} from "react-icons/ri";
+import { RiChat2Line, RiFileCopyLine, RiPushpinLine } from "react-icons/ri";
 import ReactMarkdown from "react-markdown";
 
 import ChatExploration from "./_chat_exploration";
@@ -70,10 +67,25 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     setDrawerOpen(true);
   };
 
+  const requirementToText = (scenario) => {
+    return "## " + scenario.title + "\n\n" + scenario.summary;
+  };
+
+  const copySuccess = () => {
+    message.success("Content copied successfully!");
+  };
+
   const onCopy = (id) => {
-    navigator.clipboard.writeText(
-      "## " + scenarios[id].title + "\n\n" + scenarios[id].summary,
-    );
+    navigator.clipboard.writeText(requirementToText(scenarios[id]));
+
+    copySuccess();
+  };
+
+  const onCopyAll = () => {
+    const allScenarios = scenarios.map(requirementToText);
+    navigator.clipboard.writeText(allScenarios.join("\n\n"));
+
+    copySuccess();
   };
 
   const onPin = (id) => {
@@ -265,41 +277,37 @@ const RequirementsBreakdown = ({ contexts, models }) => {
           <Disclaimer models={models} />
           <h1 className="title-for-collapsed-panel">Requirements Breakdown</h1>
           <div className={"scenarios-collection grid-display"}>
+            {scenarios && scenarios.length > 0 && (
+              <Button type="link" className="copy-all" onClick={onCopyAll}>
+                <RiFileCopyLine fontSize="large" /> COPY ALL
+              </Button>
+            )}
             <div className="cards-container">
               {scenarios.map((scenario, i) => {
                 return (
                   <Card
-                    hoverable
+                    title={scenario.title}
                     key={i}
                     className="scenario"
                     actions={[
-                      <Button
-                        type="link"
-                        key="explore"
-                        onClick={() => onExplore(i)}
-                      >
-                        <RiChat2Line style={{ fontSize: "large" }} />
-                      </Button>,
-                      <Button
-                        type="link"
-                        key="explore"
-                        onClick={() => onCopy(i)}
-                      >
-                        <RiCheckboxMultipleBlankFill
-                          style={{ fontSize: "large" }}
-                        />
-                      </Button>,
-                      <Button
-                        type="link"
-                        key="explore"
-                        onClick={() => onPin(i)}
-                      >
-                        <RiPushpin2Line style={{ fontSize: "large" }} />
-                      </Button>,
+                      <Tooltip title="Chat With Haiven">
+                        <Button type="link" onClick={() => onExplore(i)}>
+                          <RiChat2Line fontSize="large" />
+                        </Button>
+                      </Tooltip>,
+                      <Tooltip title="Copy">
+                        <Button type="link" onClick={() => onCopy(i)}>
+                          <RiFileCopyLine fontSize="large" />
+                        </Button>
+                      </Tooltip>,
+                      <Tooltip title="Pin to pinboard">
+                        <Button type="link" onClick={() => onPin(i)}>
+                          <RiPushpinLine fontSize="large" />
+                        </Button>
+                      </Tooltip>,
                     ]}
                   >
                     <div className="scenario-card-content">
-                      <h3>{scenario.title}</h3>
                       <ReactMarkdown className="scenario-summary">
                         {scenario.summary}
                       </ReactMarkdown>

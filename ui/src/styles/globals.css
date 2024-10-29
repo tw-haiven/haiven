@@ -588,13 +588,31 @@ h4, h5 {
 .scenarios-collection .ant-card-body {
   padding-top: 0.5em;
   padding-bottom: 0;
+  overflow: hidden;
 }
+
 
 .scenarios-collection.equal-display .scenario-card-content {
   height: 300px;
   overflow-y: auto;
 }
 
+.scenarios-collection .ant-card-actions {
+  justify-content: flex-end;
+  padding-bottom: 8px;
+}
+
+.scenarios-collection .ant-card-actions li {
+  width: fit-content !important;
+}
+
+.scenarios-collection .ant-card-actions button:hover {
+  color: #CA6070 !important;
+}
+
+.scenarios-collection .copy-all {
+  font-weight: 500;
+}
 .scenario-card-content {
   scrollbar-width: thin;
   scrollbar-color: var(--color-light-gray) white;
@@ -633,6 +651,11 @@ h4, h5 {
   background-color: white;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   min-height: auto;
+}
+
+.scenarios-collection .ant-card {
+  border: 1px solid var(--color-light-gray);
+  box-shadow: none;
 }
 
 .ant-card-head {
