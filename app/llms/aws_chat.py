@@ -23,7 +23,6 @@ from langchain_core.callbacks import CallbackManagerForLLMRun
 from langchain_core.outputs import GenerationChunk
 
 
-# TODO: Do we still need this? Switched to LiteLLM, need to monitor if this problem from months ago still persists
 class AWSChat(BedrockChat):
     def _stream(
         self,

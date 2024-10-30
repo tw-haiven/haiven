@@ -28,18 +28,6 @@ class ModelConfig:
         self.config = config if config else {}
         self.temperature = 0.5
 
-        self.lite_id = provider.lower() + "/" + self.id
-        if self.provider.lower() == "azure":
-            self.lite_id = (
-                provider.lower() + "/" + self.config.get("azure_deployment", "")
-            )
-        elif self.provider.lower() == "aws":
-            self.lite_id = "bedrock/" + self.config["model_id"]
-        elif self.provider.lower() == "google":
-            self.lite_id = "gemini/" + self.config["model"]
-        elif self.provider.lower() == "ollama":
-            self.lite_id = "ollama/" + self.config["model"]
-
     @classmethod
     def from_dict(cls, data):
         """

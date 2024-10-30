@@ -65,8 +65,11 @@ class TestChats(unittest.TestCase):
         os.environ["USE_AZURE"] = "true"
 
         mock_chat_client = MagicMock()
-        mock_chat_client.stream.return_value = (
-            {"content": part} for part in ["Pa", "ris"]
+        mock_chat_client.stream.return_value = iter(
+            [
+                MagicMock(content="Pa"),
+                MagicMock(content="ris"),
+            ]
         )
 
         streaming_chat = StreamingChat(
