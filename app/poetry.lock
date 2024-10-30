@@ -1951,13 +1951,13 @@ requests-toolbelt = ">=1.0.0,<2.0.0"
 
 [[package]]
 name = "litellm"
-version = "1.50.1"
+version = "1.51.1"
 description = "Library to easily interface with LLM API providers"
 optional = false
 python-versions = "!=2.7.*,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,!=3.7.*,>=3.8"
 files = [
-    {file = "litellm-1.50.1-py3-none-any.whl", hash = "sha256:7606ee74f8ad0f31814587861cc94e724fa7951381135e17ca69deddd1acde08"},
-    {file = "litellm-1.50.1.tar.gz", hash = "sha256:ddda7ac94d769734e7c38866d0dc1a94c3e3fe5af2a111fcf04c97cc6d6e847a"},
+    {file = "litellm-1.51.1-py3-none-any.whl", hash = "sha256:1a389ca5b8ddd7a98d97ad229118d8323caeaaf9c1c5b79b1072edc2a18e773d"},
+    {file = "litellm-1.51.1.tar.gz", hash = "sha256:ef9019bdd8bbad927e49696a300d03ea00b86721ebe7b62621c923f728e50d18"},
 ]
 
 [package.dependencies]
@@ -2291,22 +2291,13 @@ httpx = ">=0.27.0,<0.28.0"
 
 [[package]]
 name = "openai"
-<<<<<<< HEAD
 version = "1.52.2"
-=======
-version = "1.52.0"
->>>>>>> d83eea4 (Use LiteLLM for model requests)
 description = "The official Python library for the openai API"
 optional = false
 python-versions = ">=3.7.1"
 files = [
-<<<<<<< HEAD
     {file = "openai-1.52.2-py3-none-any.whl", hash = "sha256:57e9e37bc407f39bb6ec3a27d7e8fb9728b2779936daa1fcf95df17d3edfaccc"},
     {file = "openai-1.52.2.tar.gz", hash = "sha256:87b7d0f69d85f5641678d414b7ee3082363647a5c66a462ed7f3ccb59582da0d"},
-=======
-    {file = "openai-1.52.0-py3-none-any.whl", hash = "sha256:0c249f20920183b0a2ca4f7dba7b0452df3ecd0fa7985eb1d91ad884bc3ced9c"},
-    {file = "openai-1.52.0.tar.gz", hash = "sha256:95c65a5f77559641ab8f3e4c3a050804f7b51d278870e2ec1f7444080bfe565a"},
->>>>>>> d83eea4 (Use LiteLLM for model requests)
 ]
 
 [package.dependencies]
