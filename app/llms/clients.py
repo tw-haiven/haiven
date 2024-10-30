@@ -1,4 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+import os
 from typing import List
 from litellm import completion
 from config_service import ConfigService
@@ -38,13 +39,22 @@ class HaivenSystemMessage(HaivenMessage):
 
 
 class ChatClient:
-    def __init__(self, model_config: ModelConfig = None):
+    def __init__(self, model_config: ModelConfig):
         self.model_config = model_config
+
+    def _get_kwargs(self) -> dict:
+        if self.model_config.provider == "ollama":
+            return {"api_base": os.environ.get("OLLAMA_HOST", "")}
+        else:
+            return {}
 
     def stream(self, messages: List[HaivenMessage]):
         json_messages = [message.to_json() for message in messages]
         for result in completion(
-            model=self.model_config.lite_id, messages=json_messages, stream=True
+            model=self.model_config.lite_id,
+            messages=json_messages,
+            stream=True,
+            **self._get_kwargs(),
         ):
             if result.choices[0].delta.content is not None:
                 yield {"content": result.choices[0].delta.content}
