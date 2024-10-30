@@ -567,22 +567,17 @@ h4, h5 {
 
 /****** SCENARIO CARDS *******/
 .scenarios-collection {
-  padding: var(--standard-left-padding) var(--standard-left-padding);
+  padding: 0 var(--standard-left-padding) var(--standard-left-padding) var(--standard-left-padding) ;
   display: block !important;
   flex: 3 !important;
-  height: 95%;
+  height: 85%;
   overflow: auto;
 }
 
 .scenarios-collection .cards-container {
-  margin-top: 1em;
   display:flex;
   flex-direction: row;
   flex-wrap: wrap;
-
-  &.with-display-mode {
-    margin-top: 2.5em;
-  }
 }
 
 .scenarios-collection .ant-card-body {
@@ -610,7 +605,7 @@ h4, h5 {
   color: #CA6070 !important;
 }
 
-.scenarios-collection .copy-all {
+.copy-all {
   font-weight: 500;
 }
 .scenario-card-content {
@@ -699,7 +694,9 @@ h4, h5 {
 }
 
 .scenarios-actions {
-  height: 1em;
+  height: 5%;
+  margin-left: 20px;
+  margin-right: 35px;
 }
 
 /**** STORY VALIDATION ******/

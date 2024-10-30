@@ -405,7 +405,7 @@ const Home = ({ models }) => {
           />
           <Disclaimer models={models} />
           <h1 className="title-for-collapsed-panel">Scenarios</h1>
-          <div className={"scenarios-collection " + displayMode + "-display"}>
+          {scenarios && scenarios.length > 0 && (
             <div className="scenarios-actions">
               <Button type="link" className="copy-all" onClick={onCopyAll}>
                 <RiFileCopyLine fontSize="large" /> COPY ALL
@@ -425,6 +425,8 @@ const Home = ({ models }) => {
                 </Radio.Button>
               </Radio.Group>
             </div>
+          )}
+          <div className={"scenarios-collection " + displayMode + "-display"}>
             <div className="cards-container with-display-mode">
               {scenarios.map((scenario, i) => {
                 return (
