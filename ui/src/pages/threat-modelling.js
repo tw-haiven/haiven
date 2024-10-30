@@ -1,40 +1,19 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
 import { MenuFoldOutlined } from "@ant-design/icons";
-import {
-  Alert,
-  Drawer,
-  Card,
-  Space,
-  Spin,
-  Button,
-  Radio,
-  Input,
-  Select,
-  message,
-  Collapse,
-  Tooltip,
-} from "antd";
+import { RiStackLine, RiGridLine, RiFileCopyLine } from "react-icons/ri";
+
+import { Card, Spin, Button, Radio, Input, message, Collapse } from "antd";
 const { TextArea } = Input;
 import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
-import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
-import {
-  RiStackLine,
-  RiGridLine,
-  RiChat2Line,
-  RiFileCopyLine,
-  RiPushpinLine,
-  RiCheckboxMultipleBlankFill,
-} from "react-icons/ri";
-
+import { useRouter } from "next/router";
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
-import { addToPinboard } from "../app/_local_store";
+import CardActions, { scenarioToText } from "../app/_card_actions";
 
 let ctrl;
 
@@ -44,10 +23,6 @@ const ThreatModelling = ({ contexts, models }) => {
   const [displayMode, setDisplayMode] = useState("grid");
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
-  const [explorationDrawerOpen, setExplorationDrawerOpen] = useState(false);
-  const [explorationDrawerTitle, setExplorationDrawerTitle] =
-    useState("Explore scenario");
-  const [chatContext, setChatContext] = useState({});
   const [isExpanded, setIsExpanded] = useState(true);
 
   const router = useRouter();
@@ -61,17 +36,6 @@ const ThreatModelling = ({ contexts, models }) => {
     setSelectedContext(value);
   };
 
-  const onExplore = (id) => {
-    setExplorationDrawerTitle("Explore scenario: " + scenarios[id].title);
-    setChatContext({
-      id: id,
-      originalPrompt: promptInput,
-      type: "threat-modelling",
-      ...scenarios[id],
-    });
-    setExplorationDrawerOpen(true);
-  };
-
   const onSelectDisplayMode = (event) => {
     setDisplayMode(event.target.value);
   };
@@ -80,34 +44,10 @@ const ThreatModelling = ({ contexts, models }) => {
     setIsExpanded(!isExpanded);
   };
 
-  const scenarioToText = (scenario) => {
-    return (
-      `# ${scenario.title}\n\n` +
-      `**Category:** ${scenario.category}\n\n` +
-      `**Description:** ${scenario.summary}\n\n` +
-      `**Probability:** ${scenario.probability}\n\n` +
-      `**Impact:** ${scenario.impact}`
-    );
-  };
-
-  const copySuccess = () => {
-    message.success("Content copied successfully!");
-  };
-
   const onCopyAll = () => {
     const allScenarios = scenarios.map(scenarioToText);
     navigator.clipboard.writeText(allScenarios.join("\n\n\n"));
-    copySuccess();
-  };
-
-  const onCopyOne = (id) => {
-    navigator.clipboard.writeText(scenarioToText(scenarios[id]));
-    copySuccess();
-  };
-
-  const onPin = (id) => {
-    const timestamp = Math.floor(Date.now()).toString();
-    addToPinboard(timestamp, scenarioToText(scenarios[id]));
+    message.success("Content copied successfully!");
   };
 
   const buildRequestData = () => {
@@ -231,30 +171,14 @@ const ThreatModelling = ({ contexts, models }) => {
     },
   ];
 
+  const scenarioQueries = [
+    "How could this scenario be prevented?",
+    "Elaborate how you chose the probability for this scenario",
+    "Elaborate how you chose the impact for this scenario",
+  ];
+
   return (
     <>
-      <Drawer
-        title={explorationDrawerTitle}
-        mask={false}
-        open={explorationDrawerOpen}
-        destroyOnClose={true}
-        onClose={() => setExplorationDrawerOpen(false)}
-        size={"large"}
-      >
-        <ChatExploration
-          context={chatContext}
-          user={{
-            name: "User",
-            avatar: "/boba/user-5-fill-dark-blue.svg",
-          }}
-          scenarioQueries={[
-            "How could this scenario be prevented?",
-            "Elaborate how you chose the probability for this scenario",
-            "Elaborate how you chose the impact for this scenario",
-          ]}
-        />
-      </Drawer>
-
       <div id="canvas">
         <div
           className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
@@ -296,28 +220,7 @@ const ThreatModelling = ({ contexts, models }) => {
             <div className="cards-container with-display-mode">
               {scenarios.map((scenario, i) => {
                 return (
-                  <Card
-                    title={scenario.title}
-                    key={i}
-                    className="scenario"
-                    actions={[
-                      <Tooltip title="Chat With Haiven">
-                        <Button type="link" onClick={() => onExplore(i)}>
-                          <RiChat2Line fontSize="large" />
-                        </Button>
-                      </Tooltip>,
-                      <Tooltip title="Copy">
-                        <Button type="link" onClick={() => onCopyOne(i)}>
-                          <RiFileCopyLine fontSize="large" />
-                        </Button>
-                      </Tooltip>,
-                      <Tooltip title="Pin to pinboard">
-                        <Button type="link" onClick={() => onPin(i)}>
-                          <RiPushpinLine fontSize="large" />
-                        </Button>
-                      </Tooltip>,
-                    ]}
-                  >
+                  <Card title={scenario.title} key={i} className="scenario">
                     <div className="scenario-card-content">
                       {scenario.category && (
                         <div className="card-prop stackable">
@@ -346,6 +249,13 @@ const ThreatModelling = ({ contexts, models }) => {
                         </div>
                       )}
                     </div>
+                    <CardActions
+                      scenario={scenario}
+                      prompt={promptInput}
+                      scenarioQueries={scenarioQueries}
+                      chatExploreTitle="Explore Scenario"
+                      chatType="threat-modelling"
+                    />
                   </Card>
                 );
               })}

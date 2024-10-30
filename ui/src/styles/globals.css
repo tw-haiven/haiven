@@ -381,7 +381,7 @@ h4, h5 {
   padding: 0;
 }
 
-.ant-card-actions li {
+.ant-card-actions li, .card-actions-footer li {
   margin: 0 !important;
 }
 
@@ -580,7 +580,7 @@ h4, h5 {
   flex-wrap: wrap;
 }
 
-.scenarios-collection .ant-card-body {
+.scenarios-collection .scenario-card-content {
   padding-top: 0.5em;
   padding-bottom: 0;
   overflow-y: auto;
@@ -592,16 +592,18 @@ h4, h5 {
   overflow-y: auto;
 }
 
-.scenarios-collection .ant-card-actions {
+.scenarios-collection .card-actions-footer {
+  display: flex;
   justify-content: flex-end;
   padding-bottom: 8px;
+  bottom: 0;
 }
 
-.scenarios-collection .ant-card-actions li {
+.scenarios-collection .card-actions-footer li {
   width: fit-content !important;
 }
 
-.scenarios-collection .ant-card-actions button:hover, .copy-all:hover {
+.scenarios-collection .card-actions-footer button:hover, .copy-all:hover {
   color: #CA6070 !important;
 }
 
@@ -631,7 +633,7 @@ h4, h5 {
 }
 
 .scenario .scenario-card-content {
-  height: 300px;
+  height: 270px;
   overflow-y: auto;
   font-size: small;
 }
@@ -663,7 +665,7 @@ h4, h5 {
   padding-bottom: 1em;
 }
 
-.ant-card-actions {
+.ant-card-actions, .card-actions-footer {
   background-color: transparent !important;
 }
 

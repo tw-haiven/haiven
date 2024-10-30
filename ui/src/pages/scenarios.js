@@ -2,24 +2,18 @@
 import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
 import { MenuFoldOutlined } from "@ant-design/icons";
-import { RiChat2Line, RiFileCopyLine, RiPushpinLine } from "react-icons/ri";
 import {
-  Alert,
   Button,
   Card,
   Checkbox,
-  Drawer,
   Input,
   Select,
-  Space,
   Spin,
   Radio,
   message,
   Collapse,
-  Tooltip,
 } from "antd";
 import ScenariosPlot from "./_plot";
-import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 const { TextArea } = Input;
 
@@ -31,10 +25,10 @@ import {
   RiRocket2Line,
   RiFileImageLine,
   RiAliensLine,
+  RiFileCopyLine,
 } from "react-icons/ri";
 import Disclaimer from "./_disclaimer";
-import { addToPinboard } from "../app/_local_store";
-
+import CardActions, { scenarioToText } from "../app/_card_actions";
 let ctrl;
 
 const Home = ({ models }) => {
@@ -49,10 +43,13 @@ const Home = ({ models }) => {
   const [realism, setRealism] = useState("scifi");
   const [strangeness, setStrangeness] = useState("neutral");
   const [voice, setVoice] = useState("serious");
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerTitle, setDrawerTitle] = useState("Explore scenario");
-  const [chatContext, setChatContext] = useState({});
   const [isExpanded, setIsExpanded] = useState(true);
+
+  const scenarioQueries = [
+    "What are the key drivers for this scenario?",
+    "What are the key uncertainties?",
+    "What business opportunities could this trigger?",
+  ];
 
   function abortLoad() {
     ctrl && ctrl.abort("User aborted");
@@ -79,57 +76,10 @@ const Home = ({ models }) => {
     setLoading(false);
   }
 
-  const onExplore = (id) => {
-    setDrawerTitle("Explore scenario: " + scenarios[id].title);
-    setChatContext({
-      id: id,
-      originalPrompt: prompt,
-      type: "scenario",
-      ...scenarios[id],
-    });
-    setDrawerOpen(true);
-  };
-
-  const scenarioToText = (scenario) => {
-    return (
-      `## ${scenario.title}\n\n` +
-      `**Summary:** ${scenario.summary}\n\n` +
-      (scenario.plausibility
-        ? `**Plausibility:** ${scenario.plausibility}\n\n`
-        : "") +
-      (scenario.probability
-        ? `**Probability:** ${scenario.probability}\n\n`
-        : "") +
-      (scenario.signals
-        ? `**Signals:**\n${scenario.signals.map((signal) => `- ${signal}`).join("\n")}\n\n`
-        : "") +
-      (scenario.threats
-        ? `**Threats:**\n${scenario.threats.map((threat) => `- ${threat}`).join("\n")}\n\n`
-        : "") +
-      (scenario.opportunities
-        ? `**Opportunities:**\n${scenario.opportunities.map((opportunity) => `- ${opportunity}`).join("\n")}`
-        : "")
-    );
-  };
-
-  const copySuccess = () => {
-    message.success("Content copied successfully!");
-  };
-
   const onCopyAll = () => {
     const allScenarios = scenarios.map(scenarioToText);
     navigator.clipboard.writeText(allScenarios.join("\n\n\n"));
-    copySuccess();
-  };
-
-  const onCopyOne = (id) => {
-    navigator.clipboard.writeText(scenarioToText(scenarios[id]));
-    copySuccess();
-  };
-
-  const onPin = (id) => {
-    const timestamp = Math.floor(Date.now()).toString();
-    addToPinboard(timestamp, scenarioToText(scenarios[id]));
+    message.success("Content copied successfully!");
   };
 
   const handleDetailCheck = (event) => {
@@ -370,24 +320,6 @@ const Home = ({ models }) => {
 
   return (
     <>
-      <Drawer
-        title={drawerTitle}
-        mask={false}
-        open={drawerOpen}
-        destroyOnClose={true}
-        onClose={() => setDrawerOpen(false)}
-        size={"large"}
-      >
-        <ChatExploration
-          context={chatContext}
-          user={{ name: "User", avatar: "/boba/user-5-fill-dark-blue.svg" }}
-          scenarioQueries={[
-            "What are the key drivers for this scenario?",
-            "What are the key uncertainties?",
-            "What business opportunities could this trigger?",
-          ]}
-        />
-      </Drawer>
       <div id="canvas">
         <div
           className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
@@ -430,29 +362,7 @@ const Home = ({ models }) => {
             <div className="cards-container with-display-mode">
               {scenarios.map((scenario, i) => {
                 return (
-                  <Card
-                    title={scenario.title}
-                    key={i}
-                    className="scenario"
-                    // title={<>{}</>}
-                    actions={[
-                      <Tooltip title="Chat With Haiven">
-                        <Button type="link" onClick={() => onExplore(i)}>
-                          <RiChat2Line fontSize="large" />
-                        </Button>
-                      </Tooltip>,
-                      <Tooltip title="Copy">
-                        <Button type="link" onClick={() => onCopyOne(i)}>
-                          <RiFileCopyLine fontSize="large" />
-                        </Button>
-                      </Tooltip>,
-                      <Tooltip title="Pin to pinboard">
-                        <Button type="link" onClick={() => onPin(i)}>
-                          <RiPushpinLine fontSize="large" />
-                        </Button>
-                      </Tooltip>,
-                    ]}
-                  >
+                  <Card title={scenario.title} key={i} className="scenario">
                     <div className="scenario-card-content">
                       <div className="scenario-summary">{scenario.summary}</div>
                       {scenario.horizon && (
@@ -506,6 +416,13 @@ const Home = ({ models }) => {
                         </div>
                       )}
                     </div>
+                    <CardActions
+                      scenario={scenario}
+                      prompt={prompt}
+                      scenarioQueries={scenarioQueries}
+                      chatExploreTitle="Explore Scenario"
+                      chatType="scenario"
+                    />
                   </Card>
                 );
               })}

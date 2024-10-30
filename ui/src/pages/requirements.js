@@ -1,32 +1,19 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
 import { parse } from "best-effort-json-parser";
 import { MenuFoldOutlined } from "@ant-design/icons";
-import {
-  Alert,
-  Button,
-  Card,
-  Drawer,
-  Input,
-  Space,
-  Spin,
-  Select,
-  message,
-  Collapse,
-  Tooltip,
-} from "antd";
+import { Button, Card, Input, Spin, Select, message, Collapse } from "antd";
 const { TextArea } = Input;
-import { RiChat2Line, RiFileCopyLine, RiPushpinLine } from "react-icons/ri";
+import { RiFileCopyLine } from "react-icons/ri";
 import ReactMarkdown from "react-markdown";
 
-import ChatExploration from "./_chat_exploration";
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
-import { addToPinboard } from "../app/_local_store";
+import CardActions, { scenarioToText } from "../app/_card_actions";
 
 let ctrl;
 
@@ -35,9 +22,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   const [isLoading, setLoading] = useState(false);
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerTitle, setDrawerTitle] = useState("Explore requirement");
-  const [chatContext, setChatContext] = useState({});
   const [variations, setVariations] = useState([
     { value: "workflow", label: "By workflow" },
     { value: "timeline", label: "By timeline" },
@@ -56,44 +40,11 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     setLoading(false);
   }
 
-  const onExplore = (id) => {
-    setDrawerTitle("Explore requirement: " + scenarios[id].title);
-    setChatContext({
-      id: id,
-      originalPrompt: promptInput,
-      type: "requirements",
-      ...scenarios[id],
-    });
-    setDrawerOpen(true);
-  };
-
-  const requirementToText = (scenario) => {
-    return "## " + scenario.title + "\n\n" + scenario.summary;
-  };
-
-  const copySuccess = () => {
-    message.success("Content copied successfully!");
-  };
-
-  const onCopy = (id) => {
-    navigator.clipboard.writeText(requirementToText(scenarios[id]));
-
-    copySuccess();
-  };
-
   const onCopyAll = () => {
-    const allScenarios = scenarios.map(requirementToText);
+    const allScenarios = scenarios.map(scenarioToText);
     navigator.clipboard.writeText(allScenarios.join("\n\n"));
 
-    copySuccess();
-  };
-
-  const onPin = (id) => {
-    const timestamp = Math.floor(Date.now()).toString();
-    addToPinboard(
-      timestamp,
-      "## " + scenarios[id].title + "\n\n" + scenarios[id].summary,
-    );
+    message.success("Content copied successfully!");
   };
 
   const buildRequestData = () => {
@@ -235,30 +186,14 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     },
   ];
 
+  const scenarioQueries = [
+    "Write behavior-driven development scenarios for this requirement",
+    "Break down this requirement into smaller requirements",
+    "What could potentially go wrong?",
+  ];
+
   return (
     <>
-      <Drawer
-        title={drawerTitle}
-        mask={false}
-        open={drawerOpen}
-        destroyOnClose={true}
-        onClose={() => setDrawerOpen(false)}
-        size={"large"}
-      >
-        <ChatExploration
-          context={chatContext}
-          user={{
-            name: "User",
-            avatar: "/boba/user-5-fill-dark-blue.svg",
-          }}
-          scenarioQueries={[
-            "Write behavior-driven development scenarios for this requirement",
-            "Break down this requirement into smaller requirements",
-            "What could potentially go wrong?",
-          ]}
-        />
-      </Drawer>
-
       <div id="canvas">
         <div
           className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
@@ -276,42 +211,30 @@ const RequirementsBreakdown = ({ contexts, models }) => {
           />
           <Disclaimer models={models} />
           <h1 className="title-for-collapsed-panel">Requirements Breakdown</h1>
-          <div className={"scenarios-collection grid-display"}>
-            {scenarios && scenarios.length > 0 && (
+          {scenarios && scenarios.length > 0 && (
+            <div className="scenarios-actions">
               <Button type="link" className="copy-all" onClick={onCopyAll}>
                 <RiFileCopyLine fontSize="large" /> COPY ALL
               </Button>
-            )}
+            </div>
+          )}
+          <div className={"scenarios-collection grid-display"}>
             <div className="cards-container">
               {scenarios.map((scenario, i) => {
                 return (
-                  <Card
-                    title={scenario.title}
-                    key={i}
-                    className="scenario"
-                    actions={[
-                      <Tooltip title="Chat With Haiven">
-                        <Button type="link" onClick={() => onExplore(i)}>
-                          <RiChat2Line fontSize="large" />
-                        </Button>
-                      </Tooltip>,
-                      <Tooltip title="Copy">
-                        <Button type="link" onClick={() => onCopy(i)}>
-                          <RiFileCopyLine fontSize="large" />
-                        </Button>
-                      </Tooltip>,
-                      <Tooltip title="Pin to pinboard">
-                        <Button type="link" onClick={() => onPin(i)}>
-                          <RiPushpinLine fontSize="large" />
-                        </Button>
-                      </Tooltip>,
-                    ]}
-                  >
+                  <Card title={scenario.title} key={i} className="scenario">
                     <div className="scenario-card-content">
                       <ReactMarkdown className="scenario-summary">
                         {scenario.summary}
                       </ReactMarkdown>
                     </div>
+                    <CardActions
+                      scenario={scenario}
+                      prompt={promptInput}
+                      scenarioQueries={scenarioQueries}
+                      chatExploreTitle="Explore requirement"
+                      chatType="requirements"
+                    />
                   </Card>
                 );
               })}
