@@ -151,25 +151,20 @@ export default function ChatDashboard() {
                   key={prompt.identifier}
                   title={prompt.title}
                   className="dashboard-tile scenario-card-content"
+                  actions={prompt.categories.map((category) => {
+                    return (
+                      <Tag
+                        className="capitalize"
+                        color={
+                          categoryColors[category] || categoryColors["other"]
+                        }
+                      >
+                        {category}
+                      </Tag>
+                    );
+                  })}
                 >
-                  <div className="card-contents">
-                    <div className="card-prop-value">
-                      {prompt.help_prompt_description}
-                    </div>
-                  </div>
-                  <div className="tile-tags">
-                    {prompt.categories.map((category) => {
-                      return (
-                        <Tag
-                          color={
-                            categoryColors[category] || categoryColors["other"]
-                          }
-                        >
-                          {category}
-                        </Tag>
-                      );
-                    })}
-                  </div>
+                  {prompt.help_prompt_description}
                 </Card>
               </Link>
             );

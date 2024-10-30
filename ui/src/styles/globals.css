@@ -639,7 +639,6 @@ h4, h5 {
   height: 300px;
   overflow-y: auto;
   font-size: small;
-
 }
 
 .scenario .q-a-card-content {
@@ -950,18 +949,23 @@ h4, h5 {
   padding-top: 0.5em;
   margin-right: 1em;
   margin-bottom: 1em;
+  position: relative;
 }
 
 .dashboard-tile .ant-card-body {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: 80%;
+  overflow: auto;
+  height: 130px;
 }
 
-.dashboard-tile .tile-tags {
-  margin-top: auto;
+.capitalize {
   text-transform: capitalize;
+}
+
+.dashboard-tile .ant-card-actions {
+  margin-bottom: 10px;
+  position: absolute;
+  bottom: 0;
+  padding-left: 24px;
 }
 
 .ant-tag {
