@@ -14,36 +14,44 @@ from llms.model_config import ModelConfig
 from main import backwards_compat_env_vars
 from tests.utils import get_app_path
 
-azure_config = ModelConfig(
-    "azure-gpt4",
-    "azure",
-    "GPT4 on Azure",
-    config={
-        "azure_deployment": os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME_GPT4"),
-        "api_version": os.environ.get("AZURE_OPENAI_API_VERSION"),
-    },
-)
 
-aws_config = ModelConfig(
-    "sonnet",
-    "aws",
-    "Sonnet on AWS",
-    config={"model_id": "anthropic.claude-3-sonnet-20240229-v1:0"},
-)
+def _get_azure_config():
+    return ModelConfig(
+        "azure-gpt4",
+        "azure",
+        "GPT4 on Azure",
+        config={
+            "azure_deployment": os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME_GPT4"),
+            "api_version": os.environ.get("AZURE_OPENAI_API_VERSION"),
+        },
+    )
 
-google_config = ModelConfig(
-    "gemini",
-    "google",
-    "Gemini",
-    config={"model": "gemini-1.5-flash"},
-)
 
-ollama_config = ModelConfig(
-    "ollama-llama2",
-    "ollama",
-    "Llama 2 on ollama",
-    config={"model": "llama3:latest"},
-)
+def _get_aws_config():
+    return ModelConfig(
+        "sonnet",
+        "aws",
+        "Sonnet on AWS",
+        config={"model_id": "anthropic.claude-3-sonnet-20240229-v1:0"},
+    )
+
+
+def _get_google_config():
+    return ModelConfig(
+        "gemini",
+        "google",
+        "Gemini",
+        config={"model": "gemini-1.5-flash"},
+    )
+
+
+def _get_ollama_config():
+    return ModelConfig(
+        "ollama-llama2",
+        "ollama",
+        "Llama 2 on ollama",
+        config={"model": "llama3:latest"},
+    )
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -116,46 +124,46 @@ def run_json_stream_for_model_config(model_config: ModelConfig):
 @pytest.mark.integration
 @patch.object(ConfigService, "load_knowledge_pack_path", return_value="")
 def test_REAL_CALLS_streaming_chat_azure(mock_get_config):
-    run_text_stream_for_model_config(azure_config)
+    run_text_stream_for_model_config(_get_azure_config())
 
 
 @pytest.mark.integration
 @patch.object(ConfigService, "load_knowledge_pack_path", return_value="")
 def test_REAL_CALLS_streaming_json_azure(mock_get_config):
-    run_json_stream_for_model_config(azure_config)
+    run_json_stream_for_model_config(_get_azure_config())
 
 
 @pytest.mark.integration
 @patch.object(ConfigService, "load_knowledge_pack_path", return_value="")
 def test_REAL_CALLS_streaming_chat_bedrock(mock_get_config):
-    run_text_stream_for_model_config(aws_config)
+    run_text_stream_for_model_config(_get_aws_config())
 
 
 @pytest.mark.integration
 @patch.object(ConfigService, "load_knowledge_pack_path", return_value="")
 def test_REAL_CALLS_streaming_json_bedrock(mock_get_config):
-    run_json_stream_for_model_config(aws_config)
+    run_json_stream_for_model_config(_get_aws_config())
 
 
 @pytest.mark.integration
 @patch.object(ConfigService, "load_knowledge_pack_path", return_value="")
 def test_REAL_CALLS_streaming_chat_gemini(mock_get_config):
-    run_text_stream_for_model_config(google_config)
+    run_text_stream_for_model_config(_get_google_config())
 
 
 @pytest.mark.integration
 @patch.object(ConfigService, "load_knowledge_pack_path", return_value="")
 def test_REAL_CALLS_streaming_json_gemini(mock_get_config):
-    run_json_stream_for_model_config(google_config)
+    run_json_stream_for_model_config(_get_google_config())
 
 
 @pytest.mark.integration
 @patch.object(ConfigService, "load_knowledge_pack_path", return_value="")
 def test_REAL_CALLS_streaming_chat_ollama(mock_get_config):
-    run_text_stream_for_model_config(ollama_config)
+    run_text_stream_for_model_config(_get_ollama_config())
 
 
 @pytest.mark.integration
 @patch.object(ConfigService, "load_knowledge_pack_path", return_value="")
 def test_REAL_CALLS_streaming_json_ollama(mock_get_config):
-    run_json_stream_for_model_config(ollama_config)
+    run_json_stream_for_model_config(_get_ollama_config())
