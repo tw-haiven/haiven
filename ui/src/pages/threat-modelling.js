@@ -272,27 +272,27 @@ const ThreatModelling = ({ contexts, models }) => {
           />
           <Disclaimer models={models} />
           <h1 className="title-for-collapsed-panel">Threat Modelling</h1>
+          {scenarios && scenarios.length > 0 && (
+            <div className="scenarios-actions">
+              <Button type="link" className="copy-all" onClick={onCopyAll}>
+                <RiFileCopyLine fontSize="large" /> COPY ALL
+              </Button>
+              <Radio.Group
+                className="display-mode-choice"
+                onChange={onSelectDisplayMode}
+                defaultValue="grid"
+                size="small"
+              >
+                <Radio.Button value="grid">
+                  <RiStackLine /> CARD VIEW
+                </Radio.Button>
+                <Radio.Button value="plot">
+                  <RiGridLine /> MATRIX VIEW
+                </Radio.Button>
+              </Radio.Group>
+            </div>
+          )}
           <div className={"scenarios-collection " + displayMode + "-display"}>
-            {scenarios && scenarios.length > 0 && (
-              <div className="scenarios-actions">
-                <Button type="link" className="copy-all" onClick={onCopyAll}>
-                  <RiFileCopyLine fontSize="large" /> COPY ALL
-                </Button>
-                <Radio.Group
-                  className="display-mode-choice"
-                  onChange={onSelectDisplayMode}
-                  defaultValue="grid"
-                  size="small"
-                >
-                  <Radio.Button value="grid">
-                    <RiStackLine /> CARD VIEW
-                  </Radio.Button>
-                  <Radio.Button value="plot">
-                    <RiGridLine /> MATRIX VIEW
-                  </Radio.Button>
-                </Radio.Group>
-              </div>
-            )}
             <div className="cards-container with-display-mode">
               {scenarios.map((scenario, i) => {
                 return (

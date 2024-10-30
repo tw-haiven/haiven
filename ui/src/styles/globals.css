@@ -532,9 +532,9 @@ h4, h5 {
 .collapsed .title-for-collapsed-panel {
   display: block;
   margin-top: 7px;
-  margin-left: 34px;
   margin-bottom: 10px;
   height: 5%;
+  padding-left: var(--standard-left-padding);
 }
 
 .prompt-chat-container.collapsed {
@@ -695,8 +695,8 @@ h4, h5 {
 
 .scenarios-actions {
   height: 5%;
-  margin-left: 20px;
-  margin-right: 35px;
+  padding-left: var(--standard-left-padding);
+  padding-right: var(--standard-left-padding);
 }
 
 /**** STORY VALIDATION ******/
