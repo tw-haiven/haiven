@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
 import { MenuFoldOutlined } from "@ant-design/icons";
+import { RiChat2Line, RiFileCopyLine, RiPushpinLine } from "react-icons/ri";
 import {
   Alert,
   Button,
@@ -15,6 +16,7 @@ import {
   Radio,
   message,
   Collapse,
+  Tooltip,
 } from "antd";
 import ScenariosPlot from "./_plot";
 import ChatExploration from "./_chat_exploration";
@@ -31,6 +33,7 @@ import {
   RiAliensLine,
 } from "react-icons/ri";
 import Disclaimer from "./_disclaimer";
+import { addToPinboard } from "../app/_local_store";
 
 let ctrl;
 
@@ -85,6 +88,48 @@ const Home = ({ models }) => {
       ...scenarios[id],
     });
     setDrawerOpen(true);
+  };
+
+  const scenarioToText = (scenario) => {
+    return (
+      `## ${scenario.title}\n\n` +
+      `**Summary:** ${scenario.summary}\n\n` +
+      (scenario.plausibility
+        ? `**Plausibility:** ${scenario.plausibility}\n\n`
+        : "") +
+      (scenario.probability
+        ? `**Probability:** ${scenario.probability}\n\n`
+        : "") +
+      (scenario.signals
+        ? `**Signals:**\n${scenario.signals.map((signal) => `- ${signal}`).join("\n")}\n\n`
+        : "") +
+      (scenario.threats
+        ? `**Threats:**\n${scenario.threats.map((threat) => `- ${threat}`).join("\n")}\n\n`
+        : "") +
+      (scenario.opportunities
+        ? `**Opportunities:**\n${scenario.opportunities.map((opportunity) => `- ${opportunity}`).join("\n")}`
+        : "")
+    );
+  };
+
+  const copySuccess = () => {
+    message.success("Content copied successfully!");
+  };
+
+  const onCopyAll = () => {
+    const allScenarios = scenarios.map(scenarioToText);
+    navigator.clipboard.writeText(allScenarios.join("\n\n\n"));
+    copySuccess();
+  };
+
+  const onCopyOne = (id) => {
+    navigator.clipboard.writeText(scenarioToText(scenarios[id]));
+    copySuccess();
+  };
+
+  const onPin = (id) => {
+    const timestamp = Math.floor(Date.now()).toString();
+    addToPinboard(timestamp, scenarioToText(scenarios[id]));
   };
 
   const handleDetailCheck = (event) => {
@@ -361,7 +406,10 @@ const Home = ({ models }) => {
           <Disclaimer models={models} />
           <h1 className="title-for-collapsed-panel">Scenarios</h1>
           <div className={"scenarios-collection " + displayMode + "-display"}>
-            <div>
+            <div className="scenarios-actions">
+              <Button type="link" className="copy-all" onClick={onCopyAll}>
+                <RiFileCopyLine fontSize="large" /> COPY ALL
+              </Button>
               <Radio.Group
                 className="display-mode-choice"
                 onChange={onSelectDisplayMode}
@@ -381,22 +429,29 @@ const Home = ({ models }) => {
               {scenarios.map((scenario, i) => {
                 return (
                   <Card
-                    hoverable
+                    title={scenario.title}
                     key={i}
                     className="scenario"
                     // title={<>{}</>}
                     actions={[
-                      <Button
-                        type="link"
-                        key="explore"
-                        onClick={() => onExplore(i)}
-                      >
-                        Explore
-                      </Button>,
+                      <Tooltip title="Chat With Haiven">
+                        <Button type="link" onClick={() => onExplore(i)}>
+                          <RiChat2Line fontSize="large" />
+                        </Button>
+                      </Tooltip>,
+                      <Tooltip title="Copy">
+                        <Button type="link" onClick={() => onCopyOne(i)}>
+                          <RiFileCopyLine fontSize="large" />
+                        </Button>
+                      </Tooltip>,
+                      <Tooltip title="Pin to pinboard">
+                        <Button type="link" onClick={() => onPin(i)}>
+                          <RiPushpinLine fontSize="large" />
+                        </Button>
+                      </Tooltip>,
                     ]}
                   >
                     <div className="scenario-card-content">
-                      <h3>{scenario.title}</h3>
                       <div className="scenario-summary">{scenario.summary}</div>
                       {scenario.horizon && (
                         <div className="card-prop stackable">

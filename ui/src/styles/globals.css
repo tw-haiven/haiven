@@ -588,7 +588,7 @@ h4, h5 {
 .scenarios-collection .ant-card-body {
   padding-top: 0.5em;
   padding-bottom: 0;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 

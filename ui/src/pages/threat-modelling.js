@@ -82,16 +82,11 @@ const ThreatModelling = ({ contexts, models }) => {
 
   const scenarioToText = (scenario) => {
     return (
-      "# Title: " +
-      scenario.title +
-      "\n\nCategory: " +
-      scenario.category +
-      "\nDescription: " +
-      scenario.summary +
-      "\nProbability: " +
-      scenario.probability +
-      "\nImpact: " +
-      scenario.impact
+      `# ${scenario.title}\n\n` +
+      `**Category:** ${scenario.category}\n\n` +
+      `**Description:** ${scenario.summary}\n\n` +
+      `**Probability:** ${scenario.probability}\n\n` +
+      `**Impact:** ${scenario.impact}`
     );
   };
 
@@ -101,7 +96,7 @@ const ThreatModelling = ({ contexts, models }) => {
 
   const onCopyAll = () => {
     const allScenarios = scenarios.map(scenarioToText);
-    navigator.clipboard.writeText(allScenarios.join("\n\n"));
+    navigator.clipboard.writeText(allScenarios.join("\n\n\n"));
     copySuccess();
   };
 
@@ -112,10 +107,7 @@ const ThreatModelling = ({ contexts, models }) => {
 
   const onPin = (id) => {
     const timestamp = Math.floor(Date.now()).toString();
-    addToPinboard(
-      timestamp,
-      "## " + scenarios[id].title + "\n\n" + scenarios[id].summary,
-    );
+    addToPinboard(timestamp, scenarioToText(scenarios[id]));
   };
 
   const buildRequestData = () => {
