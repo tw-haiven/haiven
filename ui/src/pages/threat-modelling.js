@@ -15,6 +15,7 @@ import {
   Select,
   message,
   Collapse,
+  Tooltip,
 } from "antd";
 const { TextArea } = Input;
 import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
@@ -24,7 +25,8 @@ import {
   RiStackLine,
   RiGridLine,
   RiChat2Line,
-  RiCheckboxMultipleBlankLine,
+  RiFileCopyLine,
+  RiPushpinLine,
   RiCheckboxMultipleBlankFill,
 } from "react-icons/ri";
 
@@ -32,6 +34,7 @@ import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
+import { addToPinboard } from "../app/_local_store";
 
 let ctrl;
 
@@ -92,13 +95,27 @@ const ThreatModelling = ({ contexts, models }) => {
     );
   };
 
+  const copySuccess = () => {
+    message.success("Content copied successfully!");
+  };
+
   const onCopyAll = () => {
     const allScenarios = scenarios.map(scenarioToText);
     navigator.clipboard.writeText(allScenarios.join("\n\n"));
+    copySuccess();
   };
 
   const onCopyOne = (id) => {
     navigator.clipboard.writeText(scenarioToText(scenarios[id]));
+    copySuccess();
+  };
+
+  const onPin = (id) => {
+    const timestamp = Math.floor(Date.now()).toString();
+    addToPinboard(
+      timestamp,
+      "## " + scenarios[id].title + "\n\n" + scenarios[id].summary,
+    );
   };
 
   const buildRequestData = () => {
@@ -266,12 +283,8 @@ const ThreatModelling = ({ contexts, models }) => {
           <div className={"scenarios-collection " + displayMode + "-display"}>
             {scenarios && scenarios.length > 0 && (
               <div className="scenarios-actions">
-                <Button
-                  className="prompt-preview-copy-btn"
-                  onClick={onCopyAll}
-                  size="small"
-                >
-                  <RiCheckboxMultipleBlankLine /> COPY ALL
+                <Button type="link" className="copy-all" onClick={onCopyAll}>
+                  <RiFileCopyLine fontSize="large" /> COPY ALL
                 </Button>
                 <Radio.Group
                   className="display-mode-choice"
@@ -292,30 +305,28 @@ const ThreatModelling = ({ contexts, models }) => {
               {scenarios.map((scenario, i) => {
                 return (
                   <Card
-                    hoverable
+                    title={scenario.title}
                     key={i}
                     className="scenario"
                     actions={[
-                      <Button
-                        type="link"
-                        key="explore"
-                        onClick={() => onExplore(i)}
-                      >
-                        <RiChat2Line style={{ fontSize: "large" }} />
-                      </Button>,
-                      <Button
-                        type="link"
-                        key="explore"
-                        onClick={() => onCopyOne(i)}
-                      >
-                        <RiCheckboxMultipleBlankFill
-                          style={{ fontSize: "large" }}
-                        />
-                      </Button>,
+                      <Tooltip title="Chat With Haiven">
+                        <Button type="link" onClick={() => onExplore(i)}>
+                          <RiChat2Line fontSize="large" />
+                        </Button>
+                      </Tooltip>,
+                      <Tooltip title="Copy">
+                        <Button type="link" onClick={() => onCopyOne(i)}>
+                          <RiFileCopyLine fontSize="large" />
+                        </Button>
+                      </Tooltip>,
+                      <Tooltip title="Pin to pinboard">
+                        <Button type="link" onClick={() => onPin(i)}>
+                          <RiPushpinLine fontSize="large" />
+                        </Button>
+                      </Tooltip>,
                     ]}
                   >
                     <div className="scenario-card-content">
-                      <h3>{scenario.title}</h3>
                       {scenario.category && (
                         <div className="card-prop stackable">
                           <div className="card-prop-name">Category</div>

@@ -606,7 +606,7 @@ h4, h5 {
   width: fit-content !important;
 }
 
-.scenarios-collection .ant-card-actions button:hover {
+.scenarios-collection .ant-card-actions button:hover, .copy-all:hover {
   color: #CA6070 !important;
 }
 
@@ -700,17 +700,6 @@ h4, h5 {
 
 .scenarios-actions {
   height: 1em;
-}
-
-.scenarios-actions button {
-  position:relative;
-  z-index: 0;
-  float: left;
-  margin-top: 0;
-  background-color: var(--color-flamingo);
-  color: white;
-  font-size: 0.8em;
-  margin-left: 0.2em;
 }
 
 /**** STORY VALIDATION ******/
