@@ -421,7 +421,7 @@ const Home = ({ models }) => {
                       prompt={prompt}
                       scenarioQueries={scenarioQueries}
                       chatExploreTitle="Explore Scenario"
-                      chatType="scenario"
+                      previousFraming="You are a visionary futurist. We're brainstorming scenarios."
                     />
                   </Card>
                 );

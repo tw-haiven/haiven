@@ -106,6 +106,25 @@ class PromptList:
         )
         return PromptTemplate(input_variables=variables, template=prompt_text)
 
+    def get_rendered_context(self, active_knowledge_context, identifier):
+        """
+        Args:
+            active_knowledge_context (str): The context identifier for the knowledge base.
+            identifier (str): The identifier for the prompt
+
+        Returns:
+            str: The content of the context placeholder used in a prompt
+        """
+        knowledge = self.knowledge_base.get_knowledge_content_dict(
+            active_knowledge_context
+        )
+        template = self.create_template(active_knowledge_context, identifier)
+        result = ""
+        for key in template.input_variables:
+            if key in knowledge and key != "user_input":
+                result += knowledge[key]
+        return result
+
     def create_and_render_template(
         self, active_knowledge_context, identifier, variables, warnings=None
     ):
@@ -120,8 +139,8 @@ class PromptList:
             knowledge_and_input = {**variables}
 
         template = self.create_template(active_knowledge_context, identifier)
-        template.get_input_schema()
-        template.dict()
+        # template.get_input_schema()
+        # template.dict()
 
         # make sure all input variables are present for template rendering (as it will otherwise fail)
         for key in template.input_variables:

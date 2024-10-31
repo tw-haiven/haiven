@@ -5,30 +5,16 @@ import { Button, Flex } from "antd";
 import { RiLightbulbLine } from "react-icons/ri";
 import ChatWidget from "../app/_chat";
 
-export default function ChatExploration({
-  context,
-  user,
-  scenarioQueries = [],
-}) {
-  const item = context || {};
-  // console.log("ITEM:", item);
+export default function ChatExploration({ context, scenarioQueries = [] }) {
+  const previousContext = context || {};
 
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
 
   const chatRef = useRef();
 
-  function itemToString(item) {
-    let result = "";
-    for (const key in item) {
-      result += `**${key}:** ${item[key]} || `;
-    }
-    return result;
-  }
-
   const submitPromptToBackend = async (messages) => {
-    const exploreUri = "/api/" + item.type + "/explore",
-      itemSummary = itemToString(item);
+    const exploreUri = "/api/prompt/explore";
 
     if (promptStarted !== true) {
       const lastMessage = messages[messages.length - 1];
@@ -39,10 +25,12 @@ export default function ChatExploration({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userMessage: lastMessage?.content,
-          item: itemSummary,
-          originalInput: item?.originalPrompt || "",
-          chatSessionId: chatSessionId,
+          userinput: lastMessage?.content,
+          item: previousContext?.itemSummary,
+          context: previousContext?.context || "",
+          first_step_input: previousContext?.firstStepInput || "",
+          previous_promptid: previousContext?.previousPromptId || "",
+          previous_framing: previousContext?.previousFraming || "",
         }),
       });
       setPromptStarted(true);
@@ -58,9 +46,7 @@ export default function ChatExploration({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userMessage: lastMessage?.content,
-          item: itemSummary,
-          originalInput: item?.originalPrompt || "",
+          userinput: lastMessage?.content,
           chatSessionId: chatSessionId,
         }),
       });
@@ -103,7 +89,7 @@ export default function ChatExploration({
   return (
     <div className="chat-exploration">
       <div className="chat-exploration__header">
-        <p>{item.summary}</p>
+        <p>{previousContext.summary}</p>
       </div>
       <PossibilityPanel />
       <ProChatProvider>

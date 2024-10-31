@@ -254,7 +254,8 @@ const ThreatModelling = ({ contexts, models }) => {
                       prompt={promptInput}
                       scenarioQueries={scenarioQueries}
                       chatExploreTitle="Explore Scenario"
-                      chatType="threat-modelling"
+                      previousFraming="We are brainstorming security threat scenarios for our application."
+                      selectedContext={selectedContext}
                     />
                   </Card>
                 );

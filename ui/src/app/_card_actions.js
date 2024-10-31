@@ -25,7 +25,8 @@ export default function CardActions({
   prompt,
   scenarioQueries,
   chatExploreTitle,
-  chatType,
+  selectedContext,
+  previousFraming,
 }) {
   const [drawerTitle, setDrawerTitle] = useState(chatExploreTitle);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -49,8 +50,10 @@ export default function CardActions({
     setDrawerTitle(chatExploreTitle + ": " + scenario.title);
     setChatContext({
       id: scenario.id,
-      originalPrompt: prompt,
-      type: chatType,
+      firstStepInput: prompt,
+      previousFraming: previousFraming,
+      context: selectedContext,
+      itemSummary: scenarioToText(scenario),
       ...scenario,
     });
     setDrawerOpen(true);

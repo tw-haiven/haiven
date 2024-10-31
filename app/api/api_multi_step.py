@@ -16,8 +16,15 @@ class FollowUpPromptInput(BaseModel):
 
 
 class FollowUpRequest(PromptRequestBody):
-    scenarios: List[TitleContent] = []
     previous_promptid: str = None
+    scenarios: List[TitleContent] = []
+
+
+class ExploreRequest(PromptRequestBody):
+    previous_promptid: str = None
+    previous_framing: str = None
+    item: str = None
+    first_step_input: str = None
 
 
 class ApiMultiStep(HaivenBaseApi):
@@ -39,7 +46,6 @@ class ApiMultiStep(HaivenBaseApi):
         @app.post("/api/prompt/follow-up")
         def generate_follow_up(prompt_data: FollowUpRequest):
             try:
-                # TODO: !! text vs JSON - guided or not?
                 stream_fn = self.stream_text_chat
                 prompts = self.prompt_list
 
@@ -66,7 +72,73 @@ class ApiMultiStep(HaivenBaseApi):
 
                 return stream_fn(
                     prompt=rendered_prompt,
-                    chat_category="boba-chat",
+                    chat_category="follow-up",
+                    chat_session_key_value=prompt_data.chatSessionId,
+                    document_key=prompt_data.document,
+                )
+
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+
+        @app.post("/api/prompt/explore")
+        def kick_off_explore(prompt_data: ExploreRequest):
+            try:
+                stream_fn = self.stream_text_chat
+                prompts = self.prompt_list
+
+                user_input = prompt_data.userinput
+                if (
+                    prompt_data.previous_promptid is not None
+                    and prompt_data.previous_promptid != ""
+                ):
+                    context = prompts.get_rendered_context(
+                        prompt_data.context, prompt_data.previous_promptid
+                    )
+
+                    user_input = f"""
+## General context
+{context}
+
+## Specific task we're working on
+
+{prompts.get(prompt_data.previous_promptid).metadata["title"]}
+
+{prompt_data.first_step_input}
+
+## What I have so far
+{prompts.get(prompt_data.previous_promptid).metadata["output_framing"]}
+
+I want to focus on this item:
+
+{prompt_data.item}
+
+## My follow-up question
+
+{prompt_data.userinput}
+                    """
+                elif (
+                    prompt_data.previous_framing is not None
+                    and prompt_data.previous_framing != ""
+                ):
+                    # For our custom-built pages that don't work with "previous prompt"
+                    user_input = f"""
+## What we're working on
+{prompt_data.previous_framing}
+
+## Context
+{prompt_data.first_step_input}
+
+## What I have so far
+I want to focus on this item:
+{prompt_data.item}
+
+## My follow-up question
+{prompt_data.userinput}
+                    """
+
+                return stream_fn(
+                    prompt=user_input,
+                    chat_category="explore",
                     chat_session_key_value=prompt_data.chatSessionId,
                     document_key=prompt_data.document,
                 )

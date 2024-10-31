@@ -1,7 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from fastapi import Request
 from api.api_basics import HaivenBaseApi
-from api.models.explore_request import ExploreRequest
 
 
 class ApiScenarios(HaivenBaseApi):
@@ -32,33 +31,3 @@ class ApiScenarios(HaivenBaseApi):
             )
 
             return self.stream_json_chat(prompt, "scenarios")
-
-        @app.post("/api/scenario/explore")
-        def explore_scenario(explore_request: ExploreRequest):
-            prompt = explore_request.userMessage
-            if explore_request.chatSessionId is None:
-                prompt = self.explore_scenario_prompt(
-                    explore_request.originalInput,
-                    explore_request.item,
-                    explore_request.userMessage,
-                )
-
-            return self.stream_text_chat(
-                prompt, "scenarios-explore", explore_request.chatSessionId
-            )
-
-    def explore_scenario_prompt(self, original_input, item, user_message):
-        return f"""
-            You are a prospector, I am exploring the following context:
-            {original_input}
-
-            ...and the following scenario:
-            {item}
-
-            You are able to give me a concise elaboration of the scenario described in the
-            context, here is my request for exploration:
-
-            {user_message}
-
-            Please respond in 3-5 sentences.
-            """

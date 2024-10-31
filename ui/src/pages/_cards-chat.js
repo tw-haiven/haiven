@@ -85,8 +85,11 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     setCardExplorationDrawerTitle("Explore scenario: " + scenarios[id].title);
     setChatContext({
       id: id,
-      originalPrompt: promptInput,
-      type: "explore-endpoint-doesnt-exist-yet", // TODO: Exploration will not work yet, no specific endpoint for it yet
+      firstStepInput: promptInput,
+      type: "prompt",
+      previousPromptId: selectedPromptId,
+      context: selectedContext,
+      itemSummary: scenarioToText(scenarios[id]),
       ...scenarios[id],
     });
     setCardExplorationDrawerOpen(true);

@@ -233,7 +233,8 @@ const RequirementsBreakdown = ({ contexts, models }) => {
                       prompt={promptInput}
                       scenarioQueries={scenarioQueries}
                       chatExploreTitle="Explore requirement"
-                      chatType="requirements"
+                      selectedContext={selectedContext}
+                      previousFraming="We are breaking down a software requirement into smaller parts."
                     />
                   </Card>
                 );

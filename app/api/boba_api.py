@@ -2,7 +2,6 @@
 from fastapi import FastAPI
 from api.api_basics import ApiBasics
 from api.api_multi_step import ApiMultiStep
-from api.api_threat_modelling import ApiThreatModelling
 from api.api_scenarios import ApiScenarios
 from api.api_requirements import ApiRequirementsBreakdown
 from api.api_story_validation import ApiStoryValidation
@@ -61,12 +60,6 @@ class BobaApi:
             self.prompts_chat,
         )
 
-        ApiThreatModelling(
-            app,
-            self.chat_manager,
-            self.model_config,
-            self.prompts_guided,
-        )
         ApiRequirementsBreakdown(
             app,
             self.chat_manager,

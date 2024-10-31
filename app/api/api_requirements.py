@@ -1,34 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from fastapi import Query
-from api.models.explore_request import ExploreRequest
 from api.api_basics import HaivenBaseApi, PromptRequestBody
-
-
-def get_explore_kickoff_prompt(originalInput, item, user_message):
-    return f"""
-    ## ROLE
-    
-    You are an expert agile coach and will help me, the product owner and analyst, refine the user stories. 
-
-    I'm currently trying to refine REQUIREMENTS in the following area:
-
-    {originalInput}
-     
-    More specifically, I'm looking to refine this SUB-REQUIREMENT:
-
-    {item}
-    
-    ## TASK
-
-    Your task as is to answer my questions and make suggestions to refine and improve the requirement and 
-    take into account my suggestions and clarifications towards writing the final definition for the user story. 
-    Keep your suggestions strictly to the SUB-REQUIREMENT I provided, 
-    and do not expand the scope to related scenarios or features.
-
-    ## MY QUESTION / MY ASK FOR YOU
-
-    {user_message}
-    """
 
 
 class ApiRequirementsBreakdown(HaivenBaseApi):
@@ -82,18 +54,4 @@ class ApiRequirementsBreakdown(HaivenBaseApi):
                 chat_category="boba-requirements",
                 chat_session_key_value=prompt_data.chatSessionId,
                 document_key=prompt_data.document,
-            )
-
-        @app.post("/api/requirements/explore")
-        def requirements_explore(explore_request: ExploreRequest):
-            prompt = explore_request.userMessage
-            if explore_request.chatSessionId is None:
-                prompt = get_explore_kickoff_prompt(
-                    explore_request.originalInput,
-                    explore_request.item,
-                    explore_request.userMessage,
-                )
-
-            return self.stream_text_chat(
-                prompt, "requirements-breakdown-explore", explore_request.chatSessionId
             )

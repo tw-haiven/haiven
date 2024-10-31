@@ -8,8 +8,6 @@ from fastapi import FastAPI
 from api.api_basics import ApiBasics
 from api.api_multi_step import ApiMultiStep
 from api.api_scenarios import ApiScenarios
-from api.api_threat_modelling import ApiThreatModelling
-from api.api_requirements import ApiRequirementsBreakdown
 from api.api_story_validation import ApiStoryValidation
 from api.api_creative_matrix import ApiCreativeMatrix
 from prompts.prompts_factory import PromptsFactory
@@ -302,7 +300,7 @@ class TestApi(unittest.TestCase):
     @patch("llms.chats.StreamingChat")
     @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
-    def test_scenarios_explore(
+    def test_explore_with_static_framing(
         self,
         mock_prompt_list,
         mock_chat_manager,
@@ -315,17 +313,21 @@ class TestApi(unittest.TestCase):
             mock_streaming_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt", "template"
-        ApiScenarios(self.app, mock_chat_manager, "some_model_key", mock_prompt_list)
+        ApiMultiStep(self.app, mock_chat_manager, "some_model_key", mock_prompt_list)
+
+        body_dict = {
+            "userinput": "some user question",
+            "item": "some scenario item",
+            "first_step_input": "some original prompt",
+            "chatSessionId": "",
+            # # previous_promptid: str = None TODO, another test
+            "previous_framing": "We did something before, here it is: ",
+        }
 
         # Make the request to the endpoint
         response = self.client.post(
-            "/api/scenario/explore",
-            json={
-                "userMessage": "some user question",
-                "item": "some scenario item",
-                "originalInput": "some original prompt",
-                "chatSessionId": None,
-            },
+            "/api/prompt/explore",
+            json=body_dict,
         )
 
         # Assert the response
@@ -333,51 +335,20 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
 
+        args, kwargs = mock_streaming_chat.run.call_args
+        actual_composed_prompt = args[0]
+        assert body_dict["userinput"] in actual_composed_prompt
+        assert body_dict["previous_framing"] in actual_composed_prompt
+        assert body_dict["first_step_input"] in actual_composed_prompt
+
         args, kwargs = mock_chat_manager.streaming_chat.call_args
-        assert kwargs["options"].category == "scenarios-explore"
-        assert kwargs["session_id"] is None
+        assert kwargs["options"].category == "explore"
+        assert kwargs["session_id"] == ""
 
     @patch("llms.chats.StreamingChat")
     @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
-    def test_threat_modelling_explore(
-        self, mock_prompt_list, mock_chat_manager, mock_streaming_chat
-    ):
-        mock_streaming_chat.run.return_value = "some response from the model"
-
-        mock_chat_manager.streaming_chat.return_value = (
-            "some_key",
-            mock_streaming_chat,
-        )
-        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
-        ApiThreatModelling(
-            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
-        )
-
-        # Make the request to the endpoint
-        response = self.client.post(
-            "/api/threat-modelling/explore",
-            json={
-                "userMessage": "some user question",
-                "item": "some scenario item",
-                "originalInput": "some original prompt",
-                "chatSessionId": None,
-            },
-        )
-
-        # Assert the response
-        assert response.status_code == 200
-        streamed_content = response.content.decode("utf-8")
-        assert streamed_content == "some response from the model"
-
-        args, kwargs = mock_chat_manager.streaming_chat.call_args
-        assert kwargs["options"].category == "threat-modelling-explore"
-        assert kwargs["session_id"] is None
-
-    @patch("llms.chats.StreamingChat")
-    @patch("llms.chats.ChatManager")
-    @patch("prompts.prompts.PromptList")
-    def test_requirements_explore(
+    def test_explore_with_previous_prompt(
         self,
         mock_prompt_list,
         mock_chat_manager,
@@ -390,19 +361,23 @@ class TestApi(unittest.TestCase):
             mock_streaming_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt", "template"
-        ApiRequirementsBreakdown(
-            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
-        )
+        some_context = "some context for example a domain description"
+        mock_prompt_list.get_rendered_context.return_value = some_context
+
+        ApiMultiStep(self.app, mock_chat_manager, "some_model_key", mock_prompt_list)
+
+        body_dict = {
+            "userinput": "some user question",
+            "item": "some scenario item",
+            "first_step_input": "some original prompt",
+            "chatSessionId": "",
+            "previous_promptid": "some-previous-prompt-id",
+        }
 
         # Make the request to the endpoint
         response = self.client.post(
-            "/api/requirements/explore",
-            json={
-                "userMessage": "some user question",
-                "item": "some scenario item",
-                "originalInput": "some original prompt",
-                "chatSessionId": "some session id",
-            },
+            "/api/prompt/explore",
+            json=body_dict,
         )
 
         # Assert the response
@@ -410,9 +385,15 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
 
+        args, kwargs = mock_streaming_chat.run.call_args
+        actual_composed_prompt = args[0]
+        assert body_dict["userinput"] in actual_composed_prompt
+        assert some_context in actual_composed_prompt
+        assert body_dict["first_step_input"] in actual_composed_prompt
+
         args, kwargs = mock_chat_manager.streaming_chat.call_args
-        assert kwargs["options"].category == "requirements-breakdown-explore"
-        assert kwargs["session_id"] == "some session id"
+        assert kwargs["options"].category == "explore"
+        assert kwargs["session_id"] == ""
 
     @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
