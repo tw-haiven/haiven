@@ -22,10 +22,16 @@ const Sidebar = ({ prompts }) => {
 
   const [menuItems, setMenuItems] = useState([]);
 
+  const typeToUrlMap = {
+    chat: "/chat",
+    cards: "/cards",
+  };
+
   useEffect(() => {
     const menuCategories = initialiseMenuCategoriesForSidebar();
 
     prompts.forEach((prompt) => {
+      const url = typeToUrlMap[prompt.type] || "/chat";
       prompt.categories.forEach((category) => {
         const menuCategory =
           menuCategories[category] || menuCategories["other"];
@@ -33,7 +39,7 @@ const Sidebar = ({ prompts }) => {
           key: category + "-" + prompt.identifier,
           label: (
             <Link
-              href={"/chat?prompt=" + prompt.identifier}
+              href={`${url}?prompt=${prompt.identifier}`}
               className="submenu-entry"
             >
               {prompt.title}

@@ -159,17 +159,6 @@ class ApiBasics(HaivenBaseApi):
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
-        # As an intermediate step in introducing multi-step, provide a separate endpoint for "guided" prompts
-        # Ideally, these would move to the proper knowledge pack at some point
-        @app.get("/api/prompts/guided")
-        def get_prompts_guided(request: Request):
-            try:
-                response_data = prompts_guided.get_prompts_with_follow_ups()
-                return JSONResponse(response_data)
-
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
-
         @app.get("/api/knowledge/snippets")
         def get_knowledge_snippets(request: Request):
             try:
@@ -236,7 +225,7 @@ class ApiBasics(HaivenBaseApi):
                         additional_vars={},
                         warnings=[],
                     )
-                    if prompt_data.promptid.startswith("guided-"):
+                    if prompts.produces_json_output(prompt_data.promptid):
                         stream_fn = self.stream_json_chat
                 else:
                     rendered_prompt = prompt_data.userinput

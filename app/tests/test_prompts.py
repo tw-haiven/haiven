@@ -46,6 +46,7 @@ def test_init_should_set_defaults_for_metadata():
     assert prompt_to_assert.metadata["title"] == "Test0"
     assert prompt_to_assert.metadata["system"] == "You are a useful assistant"
     assert prompt_to_assert.metadata["categories"] == []
+    assert prompt_to_assert.metadata["type"] == "chat"
 
 
 def test_init_should_load_all_metadata():

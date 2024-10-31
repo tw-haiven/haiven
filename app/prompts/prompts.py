@@ -53,6 +53,8 @@ class PromptList:
                 prompt.metadata["system"] = "You are a useful assistant"
             if "categories" not in prompt.metadata:
                 prompt.metadata["categories"] = []
+            if "type" not in prompt.metadata:
+                prompt.metadata["type"] = "chat"
 
         self.prompt_flows = self.load_prompt_flows(
             os.path.join(directory, "prompt_flows.yaml")
@@ -272,6 +274,16 @@ class PromptList:
                 ),
                 "help_user_input": prompt.metadata.get("help_user_input"),
                 "follow_ups": follow_ups,
+                "type": prompt.metadata.get(
+                    "type", "chat"
+                ),  # Ensure "type" is included
             }
             prompts_with_follow_ups.append(prompt_data)
         return prompts_with_follow_ups
+
+    def produces_json_output(self, identifier):
+        prompt = self.get(identifier)
+        return (
+            prompt.metadata.get("identifier").startswith("guided-")
+            or prompt.metadata.get("type") == "cards"
+        )

@@ -163,7 +163,7 @@ class TestApi(unittest.TestCase):
     @patch("llms.chats.StreamingChat")
     @patch("llms.chats.ChatManager")
     @patch("prompts.prompts.PromptList")
-    def test_prompting(
+    def test_prompting_text(
         self,
         mock_prompt_list,
         mock_chat_manager,
@@ -175,6 +175,7 @@ class TestApi(unittest.TestCase):
             mock_streaming_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt", None
+        mock_prompt_list.produces_json_output.return_value = False
         ApiBasics(
             self.app,
             chat_manager=mock_chat_manager,
@@ -218,6 +219,7 @@ class TestApi(unittest.TestCase):
             mock_json_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt", "template"
+        mock_prompt_list.produces_json_output.return_value = True
         ApiBasics(
             self.app,
             chat_manager=mock_chat_manager,

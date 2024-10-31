@@ -19,26 +19,6 @@ export const getPrompts = async (onSuccess) => {
   });
 };
 
-export const getPromptsGuided = async (onSuccess) => {
-  fetch("/api/prompts/guided", {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((response) => {
-    response.json().then((data) => {
-      const formattedForDropdown = data.map((item) => ({
-        ...item,
-        value: item.identifier,
-        label: item.title,
-        followUps: item.follow_ups,
-      }));
-      onSuccess(formattedForDropdown);
-    });
-  });
-};
-
 export const getModels = async (onSuccess) => {
   fetch("/api/models", {
     method: "GET",

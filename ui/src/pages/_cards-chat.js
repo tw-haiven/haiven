@@ -22,11 +22,10 @@ import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
 import { addToPinboard } from "../app/_local_store";
-import { getPromptsGuided } from "../app/_boba_api";
 
 let ctrl;
 
-const CardsChat = ({ promptId, contexts, models }) => {
+const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const [selectedPromptId, setSelectedPromptId] = useState(promptId); // via query parameter
   const [selectedPromptConfiguration, setSelectedPromptConfiguration] =
     useState({});
@@ -48,23 +47,21 @@ const CardsChat = ({ promptId, contexts, models }) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   useEffect(() => {
-    getPromptsGuided((data) => {
-      if (selectedPromptId !== undefined && selectedPromptId !== null) {
-        const firstStepEntry = data.find(
-          (entry) => entry.value === selectedPromptId,
-        );
-        if (!firstStepEntry) {
-          message.error(`Prompt with id '${selectedPromptId}' not found`);
-        } else {
-          firstStepEntry.followUps.forEach((followUp) => {
-            followUpResults[followUp.identifier] = "";
-          });
-          setFollowUpResults(followUpResults);
-          setSelectedPromptConfiguration(firstStepEntry);
-        }
+    if (selectedPromptId !== undefined && selectedPromptId !== null) {
+      const firstStepEntry = prompts.find(
+        (entry) => entry.value === selectedPromptId,
+      );
+      if (!firstStepEntry) {
+        message.error(`Prompt with id '${selectedPromptId}' not found`);
+      } else {
+        firstStepEntry.followUps.forEach((followUp) => {
+          followUpResults[followUp.identifier] = "";
+        });
+        setFollowUpResults(followUpResults);
+        setSelectedPromptConfiguration(firstStepEntry);
       }
-    });
-  }, [promptId]);
+    }
+  }, [promptId, prompts]);
 
   const onCollapsibleIconClick = (e) => {
     setIsExpanded(!isExpanded);
@@ -289,6 +286,7 @@ const CardsChat = ({ promptId, contexts, models }) => {
     <div>
       <div className="prompt-chat-options-section">
         <h1>{selectedPromptConfiguration.title}</h1>
+        <p>{selectedPromptConfiguration.help_prompt_description}</p>
       </div>
 
       <div className="prompt-chat-options-section">

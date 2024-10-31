@@ -56,10 +56,15 @@ export default function ChatDashboard() {
   }
 
   useEffect(() => {
+    const typeToUrlMap = {
+      chat: "/chat",
+      cards: "/cards",
+    };
+
     getPrompts((data) => {
       data.forEach((prompt) => {
-        prompt.type = "chat";
-        prompt.link = "/chat?prompt=" + prompt.identifier;
+        const url = typeToUrlMap[prompt.type] || "/chat";
+        prompt.link = `${url}?prompt=${prompt.identifier}`;
       });
 
       // add the "static" features
