@@ -379,7 +379,9 @@ const MultiStep = ({ contexts, models }) => {
             )}
           />
           <Disclaimer models={models} />
-          <h1 className="title-for-collapsed-panel">Requirements Breakdown</h1>
+          <h1 className="title-for-collapsed-panel">
+            {promptConfiguration.title}
+          </h1>
           <div className={"scenarios-collection grid-display"}>
             {scenarios && scenarios.length > 0 && (
               <Button type="link" className="copy-all" onClick={onCopyAll}>
