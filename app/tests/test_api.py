@@ -25,6 +25,28 @@ class TestApi(unittest.TestCase):
         # Clean up code to run after each test
         pass
 
+    def test_get_prompts(self):
+        mock_prompts = MagicMock()
+        some_prompts = [{"identifier": "some-identifier", "title": "Some title"}]
+        mock_prompts.get_prompts_with_follow_ups.return_value = some_prompts
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            image_service=MagicMock(),
+            prompts_chat=mock_prompts,
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            config_service=MagicMock(),
+        )
+
+        response = self.client.get("/api/prompts")
+        expected_response = some_prompts
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), expected_response)
+
     def test_get_models(self):
         # Helper function to create MagicMock with id and name attributes
         def create_mock_model(id_value, name_value):
