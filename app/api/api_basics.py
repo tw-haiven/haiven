@@ -153,7 +153,7 @@ class ApiBasics(HaivenBaseApi):
         @app.get("/api/prompts")
         def get_prompts(request: Request):
             try:
-                response_data = [entry.metadata for entry in prompts_chat.prompts]
+                response_data = prompts_chat.get_prompts_with_follow_ups()
                 return JSONResponse(response_data)
 
             except Exception as e:

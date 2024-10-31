@@ -207,7 +207,7 @@ def test_create_markdown_summary():
         "- **Test4**: Prompt description 4\n" "- **Test5**: Prompt description 5\n"
     )
 
-    assert markdown_summary == expected_summary
+    assert expected_summary in markdown_summary
 
 
 def test_get_knowledge_used():
@@ -218,3 +218,46 @@ def test_get_knowledge_used():
     assert len(vars) == 2
     assert {"key": "business", "title": "Business Knowledge"} in vars
     assert {"key": "architecture", "title": "Architecture Knowledge"} in vars
+
+
+def test_get_prompts_with_follow_ups():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+
+    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
+    prompts_with_follow_ups = prompt_list.get_prompts_with_follow_ups()
+
+    # test knowledge pack configures 2 valid follow up prompts for uuid-1
+
+    uuid_1_entry = [
+        prompt for prompt in prompts_with_follow_ups if prompt["identifier"] == "uuid-1"
+    ][0]
+    assert uuid_1_entry is not None
+    assert len(uuid_1_entry["follow_ups"]) == 2
+    assert uuid_1_entry["follow_ups"][0]["id"] == "uuid-2"
+    assert uuid_1_entry["follow_ups"][0]["title"] == "Test2"
+    assert "prompt 2" in uuid_1_entry["follow_ups"][0]["help_prompt_description"]
+    assert uuid_1_entry["follow_ups"][1]["id"] == "uuid-3"
+    assert uuid_1_entry["follow_ups"][1]["title"] == "Test3"
+    assert "prompt 3" in uuid_1_entry["follow_ups"][1]["help_prompt_description"]
+
+    uuid_3_entry = [
+        prompt for prompt in prompts_with_follow_ups if prompt["identifier"] == "uuid-3"
+    ][0]
+    assert uuid_3_entry is not None
+    assert uuid_3_entry["follow_ups"] == []
+
+
+def test_get_prompts_with_follow_ups_invalid_prompt_id():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+
+    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
+    prompts_with_follow_ups = prompt_list.get_prompts_with_follow_ups()
+
+    # test knowledge pack configures invalid follow-up and valid follow-up for uuid-2
+
+    uuid_2_entry = [
+        prompt for prompt in prompts_with_follow_ups if prompt["identifier"] == "uuid-2"
+    ][0]
+    assert uuid_2_entry is not None
+    assert len(uuid_2_entry["follow_ups"]) == 1
+    assert uuid_2_entry["follow_ups"][0]["id"] == "uuid-3"

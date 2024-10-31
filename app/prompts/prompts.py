@@ -1,5 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
+import yaml
 from typing import List
 
 import frontmatter
@@ -52,6 +53,22 @@ class PromptList:
                 prompt.metadata["system"] = "You are a useful assistant"
             if "categories" not in prompt.metadata:
                 prompt.metadata["categories"] = []
+
+        self.prompt_flows = self.load_prompt_flows(
+            os.path.join(directory, "prompt_flows.yaml")
+        )
+
+    def load_prompt_flows(self, prompt_flows_path):
+        if prompt_flows_path and os.path.exists(prompt_flows_path):
+            try:
+                with open(prompt_flows_path, "r") as file:
+                    return yaml.safe_load(file)
+            except FileNotFoundError:
+                print(
+                    f"Warning: No file {prompt_flows_path} found, moving on without flows."
+                )
+                return []
+        return []
 
     def get_title_id_tuples(self):
         tuples = [
@@ -221,3 +238,40 @@ class PromptList:
                 prompt_summary = f"- **{title}**: {description}\n"
                 prompts_summary += prompt_summary
         return prompts_summary
+
+    def get_follow_ups(self, identifier):
+        follow_ups = []
+        for flow in self.prompt_flows:
+            if flow["firstStep"]["id"] == identifier:
+                for follow_up in flow["followUps"]:
+                    follow_up_id = follow_up["id"]
+                    follow_up_prompt = self.get(follow_up_id)
+                    if follow_up_prompt:
+                        follow_ups.append(
+                            {
+                                "id": follow_up_id,
+                                "title": follow_up_prompt.metadata.get("title"),
+                                "help_prompt_description": follow_up_prompt.metadata.get(
+                                    "help_prompt_description"
+                                ),
+                            }
+                        )
+        return follow_ups
+
+    def get_prompts_with_follow_ups(self):
+        prompts_with_follow_ups = []
+        for prompt in self.prompts:
+            follow_ups = self.get_follow_ups(prompt.metadata.get("identifier"))
+            prompt_data = {
+                "identifier": prompt.metadata.get("identifier"),
+                "title": prompt.metadata.get("title"),
+                "system": prompt.metadata.get("system"),
+                "categories": prompt.metadata.get("categories"),
+                "help_prompt_description": prompt.metadata.get(
+                    "help_prompt_description"
+                ),
+                "help_user_input": prompt.metadata.get("help_user_input"),
+                "follow_ups": follow_ups,
+            }
+            prompts_with_follow_ups.append(prompt_data)
+        return prompts_with_follow_ups
