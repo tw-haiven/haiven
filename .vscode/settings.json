@@ -25,6 +25,7 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
+    "python.defaultInterpreterPath": "./app/.venv/bin/python",
     "github.copilot.chat.codeGeneration.instructions": [
         {
             "file": ".vscode/copilot-instructions.md"
