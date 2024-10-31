@@ -6,11 +6,14 @@ from fastapi.testclient import TestClient
 from fastapi import FastAPI
 
 from api.api_basics import ApiBasics
+from api.api_multi_step import ApiMultiStep
 from api.api_scenarios import ApiScenarios
 from api.api_threat_modelling import ApiThreatModelling
 from api.api_requirements import ApiRequirementsBreakdown
 from api.api_story_validation import ApiStoryValidation
 from api.api_creative_matrix import ApiCreativeMatrix
+from prompts.prompts_factory import PromptsFactory
+from tests.utils import get_test_data_path
 
 
 class TestApi(unittest.TestCase):
@@ -426,6 +429,60 @@ class TestApi(unittest.TestCase):
         args, kwargs = mock_streaming_chat.run.call_args
         prompt_argument = args[0]
         assert "some question 1" in prompt_argument
+
+        args, kwargs = mock_chat_manager.streaming_chat.call_args
+        assert kwargs["session_id"] is None
+
+    @patch("llms.chats.ChatManager")
+    @patch("llms.chats.StreamingChat")
+    def test_post_multi_step(
+        self,
+        mock_streaming_chat,
+        mock_chat_manager,
+    ):
+        mock_streaming_chat.run.return_value = "some response from the model"
+        mock_chat_manager.streaming_chat.return_value = (
+            "some_session_key",
+            mock_streaming_chat,
+        )
+
+        guided_prompts_path = (
+            get_test_data_path() + "/test_knowledge_pack/prompts/guided"
+        )
+        prompts_factory_guided = PromptsFactory(guided_prompts_path)
+        prompts_guided = prompts_factory_guided.create_guided_prompt_list(
+            MagicMock()  # knowledge_base_markdown
+        )
+
+        ApiMultiStep(self.app, mock_chat_manager, "some_model_key", prompts_guided)
+
+        # Make the request to the endpoint
+        response = self.client.post(
+            "/api/prompt/follow-up",
+            json={
+                # The usual
+                "chat_session_id": None,
+                "userinput": "some original requirement",
+                "promptid": "follow-up-prompt-2345",
+                "context": "some-context",
+                # additional data for the follow-up
+                "scenarios": [{"title": "some title", "content": "some content"}],
+                "previous_promptid": "first-step-prompt-1234",
+            },
+        )
+
+        # Assert the response
+        assert response.status_code == 200
+        streamed_content = response.content.decode("utf-8")
+        assert streamed_content == "some response from the model"
+
+        assert mock_streaming_chat.run.call_count == 1
+        args, kwargs = mock_streaming_chat.run.call_args
+        prompt_argument = args[0]
+        assert "this is what I got from the first step" in prompt_argument
+        assert "some title" in prompt_argument
+        assert "some content" in prompt_argument
+        assert "Follow up" in prompt_argument
 
         args, kwargs = mock_chat_manager.streaming_chat.call_args
         assert kwargs["session_id"] is None

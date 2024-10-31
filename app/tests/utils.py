@@ -17,3 +17,9 @@ def get_app_path():
     if cwd.endswith("/app"):
         return cwd
     return "app"
+
+def get_app_root_path():
+    cwd = os.getcwd()
+    if cwd.endswith("/app"):
+        return "./"
+    return "app/"
