@@ -233,10 +233,10 @@ def test_get_prompts_with_follow_ups():
     ][0]
     assert uuid_1_entry is not None
     assert len(uuid_1_entry["follow_ups"]) == 2
-    assert uuid_1_entry["follow_ups"][0]["id"] == "uuid-2"
+    assert uuid_1_entry["follow_ups"][0]["identifier"] == "uuid-2"
     assert uuid_1_entry["follow_ups"][0]["title"] == "Test2"
     assert "prompt 2" in uuid_1_entry["follow_ups"][0]["help_prompt_description"]
-    assert uuid_1_entry["follow_ups"][1]["id"] == "uuid-3"
+    assert uuid_1_entry["follow_ups"][1]["identifier"] == "uuid-3"
     assert uuid_1_entry["follow_ups"][1]["title"] == "Test3"
     assert "prompt 3" in uuid_1_entry["follow_ups"][1]["help_prompt_description"]
 
@@ -260,4 +260,4 @@ def test_get_prompts_with_follow_ups_invalid_prompt_id():
     ][0]
     assert uuid_2_entry is not None
     assert len(uuid_2_entry["follow_ups"]) == 1
-    assert uuid_2_entry["follow_ups"][0]["id"] == "uuid-3"
+    assert uuid_2_entry["follow_ups"][0]["identifier"] == "uuid-3"

@@ -242,14 +242,14 @@ class PromptList:
     def get_follow_ups(self, identifier):
         follow_ups = []
         for flow in self.prompt_flows:
-            if flow["firstStep"]["id"] == identifier:
+            if flow["firstStep"]["identifier"] == identifier:
                 for follow_up in flow["followUps"]:
-                    follow_up_id = follow_up["id"]
+                    follow_up_id = follow_up["identifier"]
                     follow_up_prompt = self.get(follow_up_id)
                     if follow_up_prompt:
                         follow_ups.append(
                             {
-                                "id": follow_up_id,
+                                "identifier": follow_up_id,
                                 "title": follow_up_prompt.metadata.get("title"),
                                 "help_prompt_description": follow_up_prompt.metadata.get(
                                     "help_prompt_description"

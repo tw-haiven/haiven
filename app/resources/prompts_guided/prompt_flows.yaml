@@ -1,0 +1,4 @@
+- firstStep:
+    identifier: guided-story-validation
+  followUps:
+    - identifier: guided-story-validation-01-summary
