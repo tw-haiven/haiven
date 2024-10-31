@@ -701,6 +701,11 @@ h4, h5 {
   padding-right: var(--standard-left-padding);
 }
 
+.follow-up-container {
+  display: flex;
+  flex-direction: column;
+}
+
 /**** STORY VALIDATION ******/
 
 .second-step-collapsable .ant-collapse-header {

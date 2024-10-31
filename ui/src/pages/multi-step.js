@@ -1,30 +1,37 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState, useEffect } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import { Drawer, Card, Spin, Button, Input, Collapse } from "antd";
+import {
+  Drawer,
+  Card,
+  Spin,
+  Button,
+  Input,
+  Collapse,
+  Tooltip,
+  message,
+} from "antd";
 const { TextArea } = Input;
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
-import {
-  RiFileCopyLine,
-  RiChat2Line,
-  RiCheckboxMultipleBlankLine,
-  RiCheckboxMultipleBlankFill,
-} from "react-icons/ri";
+import { RiFileCopyLine, RiChat2Line, RiPushpinLine } from "react-icons/ri";
+import { MenuFoldOutlined } from "@ant-design/icons";
 import ReactMarkdown from "react-markdown";
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
+import { addToPinboard } from "../app/_local_store";
+import { getPromptsGuided } from "../app/_boba_api";
 
 let ctrl;
 
 const MultiStep = ({ contexts, models }) => {
   const [scenarios, setScenarios] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const [displayMode, setDisplayMode] = useState("grid");
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
+  const [promptConfiguration, setPromptConfiguration] = useState({});
 
   const [cardExplorationDrawerOpen, setCardExplorationDrawerOpen] =
     useState(false);
@@ -35,22 +42,24 @@ const MultiStep = ({ contexts, models }) => {
 
   const [followUpResults, setFollowUpResults] = useState({});
   const [chatContext, setChatContext] = useState({});
+  const [isExpanded, setIsExpanded] = useState(true);
 
-  // hard coding a "workflow" for the purpose of the spike
-  // This would ultimately come from the backend
-  const workflowStoryValidation = {
-    workflowId: "story-validation",
-    firstStep: {
-      id: "guided-story-validation",
-      title: "Story validation",
-      description: "Guide the user through the story validation process",
-    },
-    followUps: [
-      {
-        id: "guided-story-validation-01-summary",
-        description: "Create a summary",
-      },
-    ],
+  useEffect(() => {
+    const firstStepPrompt = "guided-story-validation";
+    getPromptsGuided((data) => {
+      const firstStepEntry = data.find(
+        (entry) => entry.value === firstStepPrompt,
+      );
+      firstStepEntry.followUps.forEach((followUp) => {
+        followUpResults[followUp.identifier] = "";
+      });
+      setFollowUpResults(followUpResults);
+      setPromptConfiguration(firstStepEntry);
+    });
+  }, []);
+
+  const onCollapsibleIconClick = (e) => {
+    setIsExpanded(!isExpanded);
   };
 
   function abortLoad() {
@@ -86,24 +95,40 @@ const MultiStep = ({ contexts, models }) => {
     return { title: scenario.title, content: scenario.summary };
   };
 
+  const copySuccess = () => {
+    message.success("Content copied successfully!");
+  };
+
   const onCopyAll = () => {
     const allScenarios = scenarios.map(scenarioToText);
     navigator.clipboard.writeText(allScenarios.join("\n\n"));
+    copySuccess();
   };
 
-  const onCopyOne = (id) => {
+  const onCopy = (id) => {
     navigator.clipboard.writeText(scenarioToText(scenarios[id]));
+
+    copySuccess();
+  };
+
+  const onPin = (id) => {
+    const timestamp = Math.floor(Date.now()).toString();
+    addToPinboard(
+      timestamp,
+      "## " + scenarios[id].title + "\n\n" + scenarios[id].summary,
+    );
   };
 
   const onCopyFollowUp = (id) => {
     navigator.clipboard.writeText(followUpResults[id]);
+    copySuccess();
   };
 
   const buildRequestDataFirstStep = () => {
     return {
       userinput: promptInput,
       context: selectedContext,
-      promptid: workflowStoryValidation.firstStep.id,
+      promptid: promptConfiguration.identifier,
     };
   };
 
@@ -114,16 +139,9 @@ const MultiStep = ({ contexts, models }) => {
       promptid: followUpId,
 
       scenarios: scenarios.map(scenarioToJson), // title, content
-      previous_promptid: workflowStoryValidation.firstStep.id,
+      previous_promptid: promptConfiguration.identifier,
     };
   };
-
-  useEffect(() => {
-    workflowStoryValidation.followUps.forEach((followUp) => {
-      followUpResults[followUp.id] = "";
-    });
-    setFollowUpResults(followUpResults);
-  }, []);
 
   const sendFirstStepPrompt = () => {
     abortLoad();
@@ -223,41 +241,32 @@ const MultiStep = ({ contexts, models }) => {
   const placeholderHelp =
     "Describe who the users are, what assets you need to protect, and how data flows through your system";
 
-  const followUpButtons = (
-    <>
-      {workflowStoryValidation.followUps.map((followUp, i) => {
-        return (
-          <Button
-            className="prompt-preview-copy-btn"
-            onClick={() => onFollowUp(followUp.id)}
-            size="small"
-          >
-            <RiCheckboxMultipleBlankLine />
-            {followUp.description}
-          </Button>
-        );
-      })}
-    </>
-  );
-
-  const followUpCollapseItems = workflowStoryValidation.followUps.map(
+  const followUpCollapseItems = promptConfiguration.followUps?.map(
     (followUp, i) => {
       return {
-        key: followUp.id,
+        key: followUp.identifier,
         label: followUp.title,
         children: (
           <div className="second-step-section">
-            <p>{followUp.description}</p>
-            {followUpResults[followUp.id] && (
+            <p>{followUp.help_prompt_description}</p>
+            <Button
+              onClick={() => onFollowUp(followUp.identifier)}
+              size="small"
+            >
+              {followUp.title}
+            </Button>
+            {followUpResults[followUp.identifier] && (
               <>
                 <div className="generated-text-results">
                   <Button
-                    onClick={onCopyFollowUp(followUp.id)}
+                    onClick={onCopyFollowUp(followUp.identifier)}
                     className="icon-button"
                   >
                     <RiFileCopyLine />
                   </Button>
-                  <ReactMarkdown>{followUpResults[followUp.id]}</ReactMarkdown>
+                  <ReactMarkdown>
+                    {followUpResults[followUp.identifier]}
+                  </ReactMarkdown>
                 </div>
               </>
             )}
@@ -266,6 +275,69 @@ const MultiStep = ({ contexts, models }) => {
       };
     },
   );
+
+  const promptMenu = (
+    <div>
+      <div className="prompt-chat-options-section">
+        <h1>{promptConfiguration.title}</h1>
+      </div>
+
+      <div className="prompt-chat-options-section">
+        <div className="user-input">
+          <label>
+            Your input
+            <HelpTooltip text={placeholderHelp} />
+          </label>
+          <TextArea
+            placeholder={placeholderHelp}
+            value={promptInput}
+            onChange={(e, v) => {
+              setPromptInput(e.target.value);
+            }}
+            rows={18}
+          />
+        </div>
+        <ContextChoice
+          onChange={handleContextSelection}
+          contexts={contexts}
+          value={selectedContext?.key}
+        />
+        <div className="user-input">
+          <PromptPreview buildRenderPromptRequest={buildRequestDataFirstStep} />
+          <Button
+            onClick={sendFirstStepPrompt}
+            className="go-button"
+            disabled={isLoading}
+          >
+            GENERATE
+          </Button>
+        </div>
+        <div className="user-input">
+          {isLoading && (
+            <div>
+              <Spin />
+              <Button
+                type="primary"
+                danger
+                onClick={abortLoad}
+                style={{ marginLeft: "1em" }}
+              >
+                Stop
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const collapseItem = [
+    {
+      key: "1",
+      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
+      children: promptMenu,
+    },
+  ];
 
   return (
     <>
@@ -283,133 +355,78 @@ const MultiStep = ({ contexts, models }) => {
             name: "User",
             avatar: "/boba/user-5-fill-dark-blue.svg",
           }}
-          scenarioQueries={[
-            "How could this scenario be prevented?",
-            "Elaborate how you chose the probability for this scenario",
-            "Elaborate how you chose the impact for this scenario",
-          ]}
+          scenarioQueries={[]}
         />
       </Drawer>
 
       <div id="canvas">
-        <div className="prompt-chat-container">
-          <div className="prompt-chat-options-container">
-            <div className="prompt-chat-options-section">
-              <h1>{workflowStoryValidation.firstStep.title}</h1>
-            </div>
-
-            <div className="prompt-chat-options-section">
-              <div className="user-input">
-                <label>
-                  Your input
-                  <HelpTooltip text={placeholderHelp} />
-                </label>
-                <TextArea
-                  placeholder={placeholderHelp}
-                  value={promptInput}
-                  onChange={(e, v) => {
-                    setPromptInput(e.target.value);
-                  }}
-                  rows={18}
-                />
-              </div>
-              <ContextChoice
-                onChange={handleContextSelection}
-                contexts={contexts}
-                value={selectedContext?.key}
-              />
-              <div className="user-input">
-                <PromptPreview
-                  buildRenderPromptRequest={buildRequestDataFirstStep}
-                />
-                <Button
-                  onClick={sendFirstStepPrompt}
-                  className="go-button"
-                  disabled={isLoading}
-                >
-                  GENERATE
-                </Button>
-              </div>
-              <div className="user-input">
-                {isLoading && (
-                  <div>
-                    <Spin />
-                    <Button
-                      type="primary"
-                      danger
-                      onClick={abortLoad}
-                      style={{ marginLeft: "1em" }}
-                    >
-                      Stop
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div
-            style={{ height: "100%", display: "flex", flexDirection: "column" }}
-          >
-            <Disclaimer models={models} />
-            <div
-              className={"scenarios-collection " + displayMode + "-display"}
-              style={{ height: "95%", background: "#F5F5F5" }}
-            >
-              {scenarios && scenarios.length > 0 && (
-                <div className="scenarios-actions">
-                  <Button
-                    className="prompt-preview-copy-btn"
-                    onClick={onCopyAll}
-                    size="small"
+        <div
+          className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
+        >
+          <Collapse
+            className="prompt-chat-options-container"
+            items={collapseItem}
+            defaultActiveKey={["1"]}
+            ghost={isExpanded}
+            activeKey={isExpanded ? "1" : ""}
+            onChange={onCollapsibleIconClick}
+            expandIcon={() => (
+              <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
+            )}
+          />
+          <Disclaimer models={models} />
+          <h1 className="title-for-collapsed-panel">Requirements Breakdown</h1>
+          <div className={"scenarios-collection grid-display"}>
+            {scenarios && scenarios.length > 0 && (
+              <Button type="link" className="copy-all" onClick={onCopyAll}>
+                <RiFileCopyLine fontSize="large" /> COPY ALL
+              </Button>
+            )}
+            <div className="cards-container">
+              {scenarios.map((scenario, i) => {
+                return (
+                  <Card
+                    title={scenario.title}
+                    key={i}
+                    className="scenario"
+                    actions={[
+                      <Tooltip title="Chat With Haiven">
+                        <Button type="link" onClick={() => onExplore(i)}>
+                          <RiChat2Line fontSize="large" />
+                        </Button>
+                      </Tooltip>,
+                      <Tooltip title="Copy">
+                        <Button type="link" onClick={() => onCopy(i)}>
+                          <RiFileCopyLine fontSize="large" />
+                        </Button>
+                      </Tooltip>,
+                      <Tooltip title="Pin to pinboard">
+                        <Button type="link" onClick={() => onPin(i)}>
+                          <RiPushpinLine fontSize="large" />
+                        </Button>
+                      </Tooltip>,
+                    ]}
                   >
-                    <RiCheckboxMultipleBlankLine /> COPY ALL
-                  </Button>
-                  {followUpButtons}
+                    <div className="scenario-card-content">
+                      <ReactMarkdown className="scenario-summary">
+                        {scenario.summary}
+                      </ReactMarkdown>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+            {scenarios.length > 0 && (
+              <div className="follow-up-container">
+                <div style={{ marginTop: "1em" }}>
+                  <h3>What you can do next</h3>
                 </div>
-              )}
-              <div className="cards-container with-display-mode">
-                {scenarios.map((scenario, i) => {
-                  return (
-                    <Card
-                      hoverable
-                      key={i}
-                      className="scenario"
-                      actions={[
-                        <Button
-                          type="link"
-                          key="explore"
-                          onClick={() => onExplore(i)}
-                        >
-                          <RiChat2Line style={{ fontSize: "large" }} />
-                        </Button>,
-                        <Button
-                          type="link"
-                          key="explore"
-                          onClick={() => onCopyOne(i)}
-                        >
-                          <RiCheckboxMultipleBlankFill
-                            style={{ fontSize: "large" }}
-                          />
-                        </Button>,
-                      ]}
-                    >
-                      <div className="scenario-card-content">
-                        <h3>{scenario.title}</h3>
-                        <div className="card-prop-name">Description</div>
-                        <div className="scenario-summary">
-                          {scenario.summary}
-                        </div>
-                      </div>
-                    </Card>
-                  );
-                })}
                 <Collapse
                   items={followUpCollapseItems}
                   className="second-step-collapsable"
                 />
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
