@@ -26,12 +26,15 @@ import { getPromptsGuided } from "../app/_boba_api";
 
 let ctrl;
 
-const MultiStep = ({ contexts, models }) => {
+const CardsChat = ({ promptId, contexts, models }) => {
+  const [selectedPromptId, setSelectedPromptId] = useState(promptId); // via query parameter
+  const [selectedPromptConfiguration, setSelectedPromptConfiguration] =
+    useState({});
+
   const [scenarios, setScenarios] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
-  const [promptConfiguration, setPromptConfiguration] = useState({});
 
   const [cardExplorationDrawerOpen, setCardExplorationDrawerOpen] =
     useState(false);
@@ -45,18 +48,23 @@ const MultiStep = ({ contexts, models }) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   useEffect(() => {
-    const firstStepPrompt = "guided-story-validation";
     getPromptsGuided((data) => {
-      const firstStepEntry = data.find(
-        (entry) => entry.value === firstStepPrompt,
-      );
-      firstStepEntry.followUps.forEach((followUp) => {
-        followUpResults[followUp.identifier] = "";
-      });
-      setFollowUpResults(followUpResults);
-      setPromptConfiguration(firstStepEntry);
+      if (selectedPromptId !== undefined && selectedPromptId !== null) {
+        const firstStepEntry = data.find(
+          (entry) => entry.value === selectedPromptId,
+        );
+        if (!firstStepEntry) {
+          message.error(`Prompt with id '${selectedPromptId}' not found`);
+        } else {
+          firstStepEntry.followUps.forEach((followUp) => {
+            followUpResults[followUp.identifier] = "";
+          });
+          setFollowUpResults(followUpResults);
+          setSelectedPromptConfiguration(firstStepEntry);
+        }
+      }
     });
-  }, []);
+  }, [promptId]);
 
   const onCollapsibleIconClick = (e) => {
     setIsExpanded(!isExpanded);
@@ -128,7 +136,7 @@ const MultiStep = ({ contexts, models }) => {
     return {
       userinput: promptInput,
       context: selectedContext,
-      promptid: promptConfiguration.identifier,
+      promptid: selectedPromptConfiguration.identifier,
     };
   };
 
@@ -139,7 +147,7 @@ const MultiStep = ({ contexts, models }) => {
       promptid: followUpId,
 
       scenarios: scenarios.map(scenarioToJson), // title, content
-      previous_promptid: promptConfiguration.identifier,
+      previous_promptid: selectedPromptConfiguration.identifier,
     };
   };
 
@@ -238,10 +246,7 @@ const MultiStep = ({ contexts, models }) => {
     );
   };
 
-  const placeholderHelp =
-    "Describe who the users are, what assets you need to protect, and how data flows through your system";
-
-  const followUpCollapseItems = promptConfiguration.followUps?.map(
+  const followUpCollapseItems = selectedPromptConfiguration.followUps?.map(
     (followUp, i) => {
       return {
         key: followUp.identifier,
@@ -283,17 +288,17 @@ const MultiStep = ({ contexts, models }) => {
   const promptMenu = (
     <div>
       <div className="prompt-chat-options-section">
-        <h1>{promptConfiguration.title}</h1>
+        <h1>{selectedPromptConfiguration.title}</h1>
       </div>
 
       <div className="prompt-chat-options-section">
         <div className="user-input">
           <label>
             Your input
-            <HelpTooltip text={placeholderHelp} />
+            <HelpTooltip text={selectedPromptConfiguration.help_user_input} />
           </label>
           <TextArea
-            placeholder={placeholderHelp}
+            placeholder={selectedPromptConfiguration.help_user_input}
             value={promptInput}
             onChange={(e, v) => {
               setPromptInput(e.target.value);
@@ -380,7 +385,7 @@ const MultiStep = ({ contexts, models }) => {
           />
           <Disclaimer models={models} />
           <h1 className="title-for-collapsed-panel">
-            {promptConfiguration.title}
+            {selectedPromptConfiguration.title}
           </h1>
           <div className={"scenarios-collection grid-display"}>
             {scenarios && scenarios.length > 0 && (
@@ -422,7 +427,7 @@ const MultiStep = ({ contexts, models }) => {
                 );
               })}
             </div>
-            {scenarios.length > 0 && (
+            {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
               <div className="follow-up-container">
                 <div style={{ marginTop: "1em" }}>
                   <h3>What you can do next</h3>
@@ -440,4 +445,4 @@ const MultiStep = ({ contexts, models }) => {
   );
 };
 
-export default MultiStep;
+export default CardsChat;

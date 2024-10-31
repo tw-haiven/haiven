@@ -6,6 +6,7 @@ categories: ["guided"]
 output_framing: "A developer asked me a bunch of questions about this story, here are the questions and the answers I gave them:"
 
 help_prompt_description: "To be used and rendered only by the application for the 'guided' mode, not to offer to the user directly"
+help_user_input: "Provide any information you have about the story so far"
 ---
 You are a developer on a software engineering team.
 
