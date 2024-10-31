@@ -45,7 +45,7 @@ class TestApi(unittest.TestCase):
         ApiBasics(
             self.app,
             chat_manager=MagicMock(),
-            model_key="some_model_key",
+            model_config=MagicMock(),
             image_service=MagicMock(),
             prompts_chat=MagicMock(),
             prompts_guided=MagicMock(),
@@ -104,7 +104,7 @@ class TestApi(unittest.TestCase):
         ApiBasics(
             self.app,
             chat_manager=MagicMock(),
-            model_key="some_model_key",
+            model_config=MagicMock(),
             prompts_guided=MagicMock(),
             knowledge_manager=mock_knowledge_manager,
             prompts_chat=MagicMock(),
@@ -153,7 +153,7 @@ class TestApi(unittest.TestCase):
         ApiBasics(
             self.app,
             chat_manager=mock_chat_manager,
-            model_key="some_model_key",
+            model_config=MagicMock(),
             prompts_guided=MagicMock(),
             knowledge_manager=MagicMock(),
             prompts_chat=mock_prompt_list,
@@ -196,7 +196,7 @@ class TestApi(unittest.TestCase):
         ApiBasics(
             self.app,
             chat_manager=mock_chat_manager,
-            model_key="some_model_key",
+            model_config=MagicMock(),
             prompts_guided=mock_prompt_list,
             knowledge_manager=MagicMock(),
             prompts_chat=MagicMock(),

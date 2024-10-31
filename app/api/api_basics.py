@@ -115,14 +115,14 @@ class ApiBasics(HaivenBaseApi):
         self,
         app: FastAPI,
         chat_manager: ChatManager,
-        model_key: str,
+        model_config: ModelConfig,
         prompts_guided: PromptList,
         knowledge_manager: KnowledgeManager,
         prompts_chat: PromptList,
         image_service: ImageDescriptionService,
         config_service: ConfigService,
     ):
-        super().__init__(app, chat_manager, model_key, prompts_guided)
+        super().__init__(app, chat_manager, model_config, prompts_guided)
 
         @app.get("/api/models")
         def get_models(request: Request):
