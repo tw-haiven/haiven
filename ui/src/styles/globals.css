@@ -718,23 +718,25 @@ h4, h5 {
   background-color: white;
 }
 
+.second-step-section {
+  padding: var(--standard-left-padding);
+}
+
 .second-step-section p {
   margin-top: 0;
 }
 
+.second-step-section .go-button {
+  font-weight: var(--font-weight-semi-bold);
+  font-size: 90%;
+}
+
 .generated-text-results {
-  padding: 0 var(--standard-left-padding);
-  border: 1px solid var(--color-light-gray);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   margin-top: 1em;
 }
 
 .generated-text-results .icon-button {
   float: right;
-  background: transparent;
-  box-shadow: none;
-  border: none;
-  margin-top: 1em;
 }
 
 .generated-text-results h1 {

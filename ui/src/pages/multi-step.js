@@ -252,17 +252,21 @@ const MultiStep = ({ contexts, models }) => {
             <Button
               onClick={() => onFollowUp(followUp.identifier)}
               size="small"
+              className="go-button"
             >
-              {followUp.title}
+              GENERATE
             </Button>
             {followUpResults[followUp.identifier] && (
               <>
                 <div className="generated-text-results">
                   <Button
-                    onClick={onCopyFollowUp(followUp.identifier)}
+                    type="link"
+                    onClick={() => {
+                      onCopyFollowUp(followUp.identifier);
+                    }}
                     className="icon-button"
                   >
-                    <RiFileCopyLine />
+                    <RiFileCopyLine fontSize="large" />
                   </Button>
                   <ReactMarkdown>
                     {followUpResults[followUp.identifier]}
