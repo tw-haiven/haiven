@@ -441,9 +441,25 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
                   return (
                     <Card title={scenario.title} key={i} className="scenario">
                       <div className="scenario-card-content">
-                        <ReactMarkdown className="scenario-summary">
-                          {scenario.summary}
-                        </ReactMarkdown>
+                        {selectedPromptConfiguration.editable ? (
+                          <TextArea
+                            value={scenario.summary}
+                            onChange={(e) => {
+                              const updatedScenarios = [...scenarios];
+                              updatedScenarios[i].summary = e.target.value;
+                              setScenarios(updatedScenarios);
+                            }}
+                            rows={4}
+                            data-testid={`scenario-summary-${i}`}
+                          />
+                        ) : (
+                          <ReactMarkdown
+                            className="scenario-summary"
+                            data-testid={`scenario-summary-${i}`}
+                          >
+                            {scenario.summary}
+                          </ReactMarkdown>
+                        )}
                         {renderScenarioDetails(scenario)}
                       </div>
                       <CardActions
