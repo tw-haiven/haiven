@@ -22,6 +22,7 @@ import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
 import { addToPinboard } from "../app/_local_store";
+import CardActions from "../app/_card_actions";
 
 let ctrl;
 
