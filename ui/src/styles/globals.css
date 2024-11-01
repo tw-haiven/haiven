@@ -60,35 +60,24 @@ h4, h5 {
 }
 
 /**** CHAT *****/
-.chat-container-wrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.collapsed .chat-container-wrapper {
-  display: block;
-  height: 100%;
-}
-
 .chat-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  height: 95%;
+  width: 72%;
+  float: inline-start;
+}
+
+.collapsed .chat-container {
+  height: 90%;
   width: 100%;
-  max-width: 48rem;
-  margin: auto;
 }
 
 .prompt-chat-container .ant-pro-chat-chat-list-container {
-  max-height: 100% !important;
+  height: inherit !important;
 }
 
 .prompt-chat-container.collapsed .ant-pro-chat-chat-list-container {
-  max-height: 85% !important;
-} 
+  height: 85% !important;
+}
 
 .ant-pro-chat {
   max-width: 100%;
@@ -428,8 +417,6 @@ h4, h5 {
 
 /**** INPUT --> GENERATION RESULTS COLUMN LAYOUT *****/
 .prompt-chat-container {
-  display: flex;
-  width: 100%;
   height: 100%;
 }
 
@@ -550,19 +537,12 @@ h4, h5 {
 }
 
 .collapsed .title-for-collapsed-panel {
-  display: block;
-}
-
-.prompt-chat-header {
   display: flex;
   align-items: center;
-  margin: 1em 0;
+  margin: 0.5em 0;
   gap: 1.5em;
+  height: 5%;
   padding-left: var(--standard-left-padding);
-}
-
-.collapsed  .prompt-chat-header .title-for-collapsed-panel {
-  margin: 0;
 }
 
 .prompt-chat-container.collapsed {
@@ -641,7 +621,6 @@ h4, h5 {
 
 .copy-all {
   font-weight: 500;
-  padding: 0;
 }
 .scenario-card-content {
   scrollbar-width: thin;
@@ -729,7 +708,8 @@ h4, h5 {
 }
 
 .scenarios-actions {
-  margin-left: auto;
+  height: 5%;
+  padding-left: var(--standard-left-padding);
   padding-right: var(--standard-left-padding);
 }
 
@@ -783,9 +763,7 @@ h4, h5 {
   flex: 5;
   padding: 1em;
   height: 95%;
-  width: 100%;
-  max-width: 72rem;
-  overflow: auto;
+  width: 72%;
   float: inline-start;
 }
   

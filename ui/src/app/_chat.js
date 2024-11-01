@@ -93,60 +93,61 @@ const ChatWidget = forwardRef(
     }));
 
     return (
-      chatIsVisible && (
-        <ProChat
-          style={{
-            height: "100%", // this is important for the chat_exploration styling!
-          }}
-          className={ChatStylingClass}
-          showTitle
-          assistantMeta={{
-            avatar: "/boba/shining-fill-white.svg",
-            title: "Haiven",
-            backgroundColor: "#003d4f",
-          }}
-          userMeta={{
-            avatar: userProfile.avatar ?? userProfile.name,
-            title: userProfile.name,
-            backgroundColor: "#47a1ad",
-          }}
-          locale="en-US"
-          helloMessage={helloMessage}
-          request={onSubmit}
-          chatItemRenderConfig={{
-            contentRender: (props, _defaultDom) => {
-              const isError = props.message.startsWith("[ERROR]: ")
-                ? props.message.replace("[ERROR]: ", "")
-                : null;
-              return (
-                <div
-                  className={`chat-message ${props.primary ? "user" : "assistant"}`}
-                >
-                  {isError ? (
-                    <p style={{ color: "red" }}>{isError}</p>
-                  ) : (
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {props.message}
-                    </ReactMarkdown>
-                  )}
-                </div>
-              );
-            },
-            actionsRender: (props, _defaultDom) => {
-              return (
-                <ActionIconGroup
-                  items={defaultActions}
-                  dropdownMenu={extendedActions}
-                  onActionClick={(action) => {
-                    action.item.execute(props);
-                  }}
-                  type="ghost"
-                />
-              );
-            },
-          }}
-        />
-      )
+      <div style={{ height: "100%" }} className={ChatStylingClass}>
+        {chatIsVisible && (
+          <ProChat
+            style={{
+              height: "100%", // this is important for the chat_exploration styling!
+            }}
+            showTitle
+            assistantMeta={{
+              avatar: "/boba/shining-fill-white.svg",
+              title: "Haiven",
+              backgroundColor: "#003d4f",
+            }}
+            userMeta={{
+              avatar: userProfile.avatar ?? userProfile.name,
+              title: userProfile.name,
+              backgroundColor: "#47a1ad",
+            }}
+            locale="en-US"
+            helloMessage={helloMessage}
+            request={onSubmit}
+            chatItemRenderConfig={{
+              contentRender: (props, _defaultDom) => {
+                const isError = props.message.startsWith("[ERROR]: ")
+                  ? props.message.replace("[ERROR]: ", "")
+                  : null;
+                return (
+                  <div
+                    className={`chat-message ${props.primary ? "user" : "assistant"}`}
+                  >
+                    {isError ? (
+                      <p style={{ color: "red" }}>{isError}</p>
+                    ) : (
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {props.message}
+                      </ReactMarkdown>
+                    )}
+                  </div>
+                );
+              },
+              actionsRender: (props, _defaultDom) => {
+                return (
+                  <ActionIconGroup
+                    items={defaultActions}
+                    dropdownMenu={extendedActions}
+                    onActionClick={(action) => {
+                      action.item.execute(props);
+                    }}
+                    type="ghost"
+                  />
+                );
+              },
+            }}
+          />
+        )}
+      </div>
     );
   },
 );

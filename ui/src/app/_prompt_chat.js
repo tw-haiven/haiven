@@ -269,23 +269,19 @@ const PromptChat = ({
           onChange={onCollapsibleIconClick}
           expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
         />
-        <div className="chat-container-wrapper">
-          <Disclaimer models={models} />
-          <div className="chat-container">
-            <h1 className="title-for-collapsed-panel">
-              {selectedPrompt?.title || pageTitle}
-            </h1>
-            <ProChatProvider>
-              <ChatWidget
-                onSubmitMessage={submitPromptToBackend}
-                ref={chatRef}
-                visible={showChat}
-                helloMessage={
-                  "Fill in some input on the left and hit 'Generate'"
-                }
-              />
-            </ProChatProvider>
-          </div>
+        <Disclaimer models={models} />
+        <h1 className="title-for-collapsed-panel">
+          {selectedPrompt?.title || pageTitle}
+        </h1>
+        <div className="chat-container">
+          <ProChatProvider>
+            <ChatWidget
+              onSubmitMessage={submitPromptToBackend}
+              ref={chatRef}
+              visible={showChat}
+              helloMessage={"Fill in some input on the left and hit 'Generate'"}
+            />
+          </ProChatProvider>
         </div>
       </div>
     </>

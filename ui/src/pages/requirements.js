@@ -186,6 +186,21 @@ const RequirementsBreakdown = ({ contexts, models }) => {
             GENERATE
           </Button>
         </div>
+        <div className="user-input">
+          {isLoading && (
+            <div style={{ marginTop: 10 }}>
+              <Spin />
+              <Button
+                type="secondary"
+                danger
+                onClick={abortLoad}
+                style={{ marginLeft: "1em" }}
+              >
+                Stop
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -236,32 +251,30 @@ const RequirementsBreakdown = ({ contexts, models }) => {
               <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
           />
-          <div className="chat-container-wrapper">
-            <Disclaimer models={models} />
-            <div className="prompt-chat-header">
-              <h1 className="title-for-collapsed-panel">
-                Requirements Breakdown
-              </h1>
+          <Disclaimer models={models} />
+          <div className="title-for-collapsed-panel">
+            <h1>Requirements Breakdown</h1>
+            <div className="user-input">
+              {isLoading ? <Spin /> : <></>}
               {isLoading && (
-                <div className="user-input">
-                  <Spin />
-                  <Button
-                    type="secondary"
-                    danger
-                    onClick={abortLoad}
-                    style={{ marginLeft: "1em" }}
-                  >
-                    Stop
-                  </Button>
-                </div>
-              )}
-              {scenarios && scenarios.length > 0 && (
-                <Button type="link" className="copy-all" onClick={onCopyAll}>
-                  <RiFileCopyLine fontSize="large" /> COPY ALL
+                <Button
+                  type="secondary"
+                  danger
+                  onClick={abortLoad}
+                  style={{ marginLeft: "1em" }}
+                >
+                  Stop
                 </Button>
               )}
             </div>
           </div>
+          {scenarios && scenarios.length > 0 && (
+            <div className="scenarios-actions">
+              <Button type="link" className="copy-all" onClick={onCopyAll}>
+                <RiFileCopyLine fontSize="large" /> COPY ALL
+              </Button>
+            </div>
+          )}
           <div className={"scenarios-collection grid-display"}>
             <div className="cards-container">
               {scenarios.map((scenario, i) => {
