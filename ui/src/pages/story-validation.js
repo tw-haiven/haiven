@@ -316,7 +316,7 @@ const StoryValidation = ({ contexts, models }) => {
         <div style={{ marginTop: 10 }}>
           <Spin />
           <Button
-            type="primary"
+            type="secondary"
             danger
             onClick={abortCurrentLoad}
             style={{ marginLeft: "1em" }}
@@ -354,9 +354,22 @@ const StoryValidation = ({ contexts, models }) => {
             )}
           />
           <Disclaimer models={models} />
-          <h1 className="title-for-collapsed-panel">
-            Validate and Refine a User Story
-          </h1>
+          <div className="title-for-collapsed-panel">
+            <h1>Validate and Refine a User Story</h1>
+            <div className="user-input">
+              {isLoading ? <Spin /> : <></>}
+              {isLoading && (
+                <Button
+                  type="secondary"
+                  danger
+                  onClick={abortLoad}
+                  style={{ marginLeft: "1em" }}
+                >
+                  Stop
+                </Button>
+              )}
+            </div>
+          </div>
           <div className={"scenarios-collection cards-display"}>
             {questions.length > 0 && <h2>Questions</h2>}
             <div className="cards-container">

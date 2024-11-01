@@ -327,7 +327,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
             <div>
               <Spin />
               <Button
-                type="primary"
+                type="secondary"
                 danger
                 onClick={abortLoad}
                 style={{ marginLeft: "1em" }}
@@ -385,9 +385,22 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
             )}
           />
           <Disclaimer models={models} />
-          <h1 className="title-for-collapsed-panel">
-            {selectedPromptConfiguration.title}
-          </h1>
+          <div className="title-for-collapsed-panel">
+            <h1>{selectedPromptConfiguration.title}</h1>
+            <div className="user-input">
+              {isLoading ? <Spin /> : <></>}
+              {isLoading && (
+                <Button
+                  type="secondary"
+                  danger
+                  onClick={abortLoad}
+                  style={{ marginLeft: "1em" }}
+                >
+                  Stop
+                </Button>
+              )}
+            </div>
+          </div>
           <div className={"scenarios-collection grid-display"}>
             {scenarios && scenarios.length > 0 && (
               <Button type="link" className="copy-all" onClick={onCopyAll}>

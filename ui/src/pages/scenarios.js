@@ -297,7 +297,7 @@ const Home = ({ models }) => {
           {isLoading ? <Spin /> : <></>}
           {isLoading && (
             <Button
-              type="primary"
+              type="secondary"
               danger
               onClick={abortLoad}
               style={{ marginLeft: "1em" }}
@@ -336,7 +336,22 @@ const Home = ({ models }) => {
             )}
           />
           <Disclaimer models={models} />
-          <h1 className="title-for-collapsed-panel">Scenarios</h1>
+          <div className="title-for-collapsed-panel">
+            <h1>Scenarios</h1>
+            <div className="user-input">
+              {isLoading ? <Spin /> : <></>}
+              {isLoading && (
+                <Button
+                  type="secondary"
+                  danger
+                  onClick={abortLoad}
+                  style={{ marginLeft: "1em" }}
+                >
+                  Stop
+                </Button>
+              )}
+            </div>
+          </div>
           {scenarios && scenarios.length > 0 && (
             <div className="scenarios-actions">
               <Button type="link" className="copy-all" onClick={onCopyAll}>

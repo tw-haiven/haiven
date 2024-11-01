@@ -274,7 +274,7 @@ const CreativeMatrix = ({ models }) => {
         {isLoading ? <Spin /> : <></>}
         {isLoading && (
           <Button
-            type="primary"
+            type="secondary"
             danger
             onClick={abortLoad}
             style={{ marginLeft: "1em" }}
@@ -308,7 +308,22 @@ const CreativeMatrix = ({ models }) => {
         />
 
         <Disclaimer models={models} />
-        <h1 className="title-for-collapsed-panel">Creative Matrix</h1>
+        <div className="title-for-collapsed-panel">
+          <h1>Creative Matrix</h1>
+          <div className="user-input">
+            {isLoading ? <Spin /> : <></>}
+            {isLoading && (
+              <Button
+                type="secondary"
+                danger
+                onClick={abortLoad}
+                style={{ marginLeft: "1em" }}
+              >
+                Stop
+              </Button>
+            )}
+          </div>
+        </div>
         <div className="matrix-container">
           <div>
             <table className="matrix-table">

@@ -164,7 +164,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
             <div style={{ marginTop: 10 }}>
               <Spin />
               <Button
-                type="primary"
+                type="secondary"
                 danger
                 onClick={abortLoad}
                 style={{ marginLeft: "1em" }}
@@ -210,7 +210,22 @@ const RequirementsBreakdown = ({ contexts, models }) => {
             )}
           />
           <Disclaimer models={models} />
-          <h1 className="title-for-collapsed-panel">Requirements Breakdown</h1>
+          <div className="title-for-collapsed-panel">
+            <h1>Requirements Breakdown</h1>
+            <div className="user-input">
+              {isLoading ? <Spin /> : <></>}
+              {isLoading && (
+                <Button
+                  type="secondary"
+                  danger
+                  onClick={abortLoad}
+                  style={{ marginLeft: "1em" }}
+                >
+                  Stop
+                </Button>
+              )}
+            </div>
+          </div>
           {scenarios && scenarios.length > 0 && (
             <div className="scenarios-actions">
               <Button type="link" className="copy-all" onClick={onCopyAll}>

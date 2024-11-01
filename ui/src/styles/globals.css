@@ -54,6 +54,11 @@ h4, h5 {
   font-size: 1.1em;
 }
 
+.ant-btn-secondary {
+  background-color: var(--color-dark-gray);
+  color: white;
+}
+
 /**** CHAT *****/
 .chat-container {
   height: 95%;
@@ -530,9 +535,10 @@ h4, h5 {
 }
 
 .collapsed .title-for-collapsed-panel {
-  display: block;
-  margin-top: 7px;
-  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  margin: 0.5em 0;
+  gap: 1.5em;
   height: 5%;
   padding-left: var(--standard-left-padding);
 }
