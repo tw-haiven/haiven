@@ -260,28 +260,13 @@ const CreativeMatrix = ({ models }) => {
         />
       </div>
       <div className="user-input">
-        {!isLoading && (
-          <Button
-            onClick={onGenerateMatrix}
-            className="go-button"
-            disabled={isLoading}
-          >
-            GENERATE MATRIX
-          </Button>
-        )}
-      </div>
-      <div className="user-input">
-        {isLoading ? <Spin /> : <></>}
-        {isLoading && (
-          <Button
-            type="secondary"
-            danger
-            onClick={abortLoad}
-            style={{ marginLeft: "1em" }}
-          >
-            Stop
-          </Button>
-        )}
+        <Button
+          onClick={onGenerateMatrix}
+          className="go-button"
+          disabled={isLoading}
+        >
+          GENERATE MATRIX
+        </Button>
       </div>
     </div>
   );
@@ -306,81 +291,84 @@ const CreativeMatrix = ({ models }) => {
           onChange={onCollapsibleIconClick}
           expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
         />
-
-        <Disclaimer models={models} />
-        <div className="title-for-collapsed-panel">
-          <h1>Creative Matrix</h1>
-          <div className="user-input">
-            {isLoading ? <Spin /> : <></>}
+        <div className="chat-container-wrapper">
+          <Disclaimer models={models} />
+          <div className="prompt-chat-header">
+            <h1 className="title-for-collapsed-panel">Creative Matrix</h1>
             {isLoading && (
-              <Button
-                type="secondary"
-                danger
-                onClick={abortLoad}
-                style={{ marginLeft: "1em" }}
-              >
-                Stop
-              </Button>
+              <div className="user-input">
+                <Spin />
+                <Button
+                  type="secondary"
+                  danger
+                  onClick={abortLoad}
+                  style={{ marginLeft: "1em" }}
+                >
+                  Stop
+                </Button>
+              </div>
             )}
           </div>
-        </div>
-        <div className="matrix-container">
-          <div>
-            <table className="matrix-table">
-              <thead>
-                <tr>
-                  <th></th>
-                  {columns.map((columnValue, index) => {
-                    return <th>{columnValue}</th>;
+          <div className="matrix-container">
+            <div>
+              <table className="matrix-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    {columns.map((columnValue, index) => {
+                      return <th>{columnValue}</th>;
+                    })}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((rowValue, rowIndex) => {
+                    return (
+                      <tr style={{ height: 50 }}>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            width: "10%",
+                          }}
+                        >
+                          <b>{rowValue}</b>
+                        </td>
+                        {columns.map((columnValue, columnIndex) => {
+                          return (
+                            <td
+                              style={{
+                                textAlign: "center",
+                                border: "1px solid #e1e1e1",
+                                width: 85 / columns.length + "%",
+                              }}
+                            >
+                              <ul
+                                style={{ textAlign: "left", paddingLeft: 20 }}
+                              >
+                                {getMatrixCellValues(rowIndex, columnIndex).map(
+                                  (idea) => {
+                                    return (
+                                      <li
+                                        key={"" + rowIndex + "-" + columnIndex}
+                                        style={{
+                                          marginBottom: 10,
+                                          cursor: "auto",
+                                        }}
+                                      >
+                                        <b>{idea.title}:</b> {idea.description}
+                                      </li>
+                                    );
+                                  },
+                                )}
+                              </ul>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
                   })}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((rowValue, rowIndex) => {
-                  return (
-                    <tr style={{ height: 50 }}>
-                      <td
-                        style={{
-                          textAlign: "center",
-                          width: "10%",
-                        }}
-                      >
-                        <b>{rowValue}</b>
-                      </td>
-                      {columns.map((columnValue, columnIndex) => {
-                        return (
-                          <td
-                            style={{
-                              textAlign: "center",
-                              border: "1px solid #e1e1e1",
-                              width: 85 / columns.length + "%",
-                            }}
-                          >
-                            <ul style={{ textAlign: "left", paddingLeft: 20 }}>
-                              {getMatrixCellValues(rowIndex, columnIndex).map(
-                                (idea) => {
-                                  return (
-                                    <li
-                                      key={"" + rowIndex + "-" + columnIndex}
-                                      style={{
-                                        marginBottom: 10,
-                                        cursor: "auto",
-                                      }}
-                                    >
-                                      <b>{idea.title}:</b> {idea.description}
-                                    </li>
-                                  );
-                                },
-                              )}
-                            </ul>
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

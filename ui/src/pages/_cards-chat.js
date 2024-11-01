@@ -322,21 +322,6 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
             GENERATE
           </Button>
         </div>
-        <div className="user-input">
-          {isLoading && (
-            <div>
-              <Spin />
-              <Button
-                type="secondary"
-                danger
-                onClick={abortLoad}
-                style={{ marginLeft: "1em" }}
-              >
-                Stop
-              </Button>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
@@ -384,74 +369,78 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
               <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
           />
-          <Disclaimer models={models} />
-          <div className="title-for-collapsed-panel">
-            <h1>{selectedPromptConfiguration.title}</h1>
-            <div className="user-input">
-              {isLoading ? <Spin /> : <></>}
+          <div className="chat-container-wrapper">
+            <Disclaimer models={models} />
+            <div className="prompt-chat-header">
+              <h1 className="title-for-collapsed-panel">
+                {selectedPromptConfiguration.title}
+              </h1>
               {isLoading && (
-                <Button
-                  type="secondary"
-                  danger
-                  onClick={abortLoad}
-                  style={{ marginLeft: "1em" }}
-                >
-                  Stop
+                <div className="user-input">
+                  <Spin />
+                  <Button
+                    type="secondary"
+                    danger
+                    onClick={abortLoad}
+                    style={{ marginLeft: "1em" }}
+                  >
+                    Stop
+                  </Button>
+                </div>
+              )}
+              {scenarios && scenarios.length > 0 && (
+                <Button type="link" className="copy-all" onClick={onCopyAll}>
+                  <RiFileCopyLine fontSize="large" /> COPY ALL
                 </Button>
               )}
             </div>
-          </div>
-          <div className={"scenarios-collection grid-display"}>
-            {scenarios && scenarios.length > 0 && (
-              <Button type="link" className="copy-all" onClick={onCopyAll}>
-                <RiFileCopyLine fontSize="large" /> COPY ALL
-              </Button>
-            )}
-            <div className="cards-container">
-              {scenarios.map((scenario, i) => {
-                return (
-                  <Card
-                    title={scenario.title}
-                    key={i}
-                    className="scenario"
-                    actions={[
-                      <Tooltip title="Chat With Haiven">
-                        <Button type="link" onClick={() => onExplore(i)}>
-                          <RiChat2Line fontSize="large" />
-                        </Button>
-                      </Tooltip>,
-                      <Tooltip title="Copy">
-                        <Button type="link" onClick={() => onCopy(i)}>
-                          <RiFileCopyLine fontSize="large" />
-                        </Button>
-                      </Tooltip>,
-                      <Tooltip title="Pin to pinboard">
-                        <Button type="link" onClick={() => onPin(i)}>
-                          <RiPushpinLine fontSize="large" />
-                        </Button>
-                      </Tooltip>,
-                    ]}
-                  >
-                    <div className="scenario-card-content">
-                      <ReactMarkdown className="scenario-summary">
-                        {scenario.summary}
-                      </ReactMarkdown>
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
-            {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
-              <div className="follow-up-container">
-                <div style={{ marginTop: "1em" }}>
-                  <h3>What you can do next</h3>
-                </div>
-                <Collapse
-                  items={followUpCollapseItems}
-                  className="second-step-collapsable"
-                />
+            <div className={"scenarios-collection grid-display"}>
+              <div className="cards-container">
+                {scenarios.map((scenario, i) => {
+                  return (
+                    <Card
+                      title={scenario.title}
+                      key={i}
+                      className="scenario"
+                      actions={[
+                        <Tooltip title="Chat With Haiven">
+                          <Button type="link" onClick={() => onExplore(i)}>
+                            <RiChat2Line fontSize="large" />
+                          </Button>
+                        </Tooltip>,
+                        <Tooltip title="Copy">
+                          <Button type="link" onClick={() => onCopy(i)}>
+                            <RiFileCopyLine fontSize="large" />
+                          </Button>
+                        </Tooltip>,
+                        <Tooltip title="Pin to pinboard">
+                          <Button type="link" onClick={() => onPin(i)}>
+                            <RiPushpinLine fontSize="large" />
+                          </Button>
+                        </Tooltip>,
+                      ]}
+                    >
+                      <div className="scenario-card-content">
+                        <ReactMarkdown className="scenario-summary">
+                          {scenario.summary}
+                        </ReactMarkdown>
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
-            )}
+              {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
+                <div className="follow-up-container">
+                  <div style={{ marginTop: "1em" }}>
+                    <h3>What you can do next</h3>
+                  </div>
+                  <Collapse
+                    items={followUpCollapseItems}
+                    className="second-step-collapsable"
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

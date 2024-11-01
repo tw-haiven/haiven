@@ -312,20 +312,6 @@ const StoryValidation = ({ contexts, models }) => {
           GENERATE QUESTIONS
         </Button>
       </div>
-
-      {isLoading && (
-        <div style={{ marginTop: 10 }}>
-          <Spin />
-          <Button
-            type="secondary"
-            danger
-            onClick={abortCurrentLoad}
-            style={{ marginLeft: "1em" }}
-          >
-            Stop
-          </Button>
-        </div>
-      )}
     </div>
   );
 
@@ -354,84 +340,90 @@ const StoryValidation = ({ contexts, models }) => {
               <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
           />
-          <Disclaimer models={models} />
-          <div className="title-for-collapsed-panel">
-            <h1>Validate and Refine a User Story</h1>
-            <div className="user-input">
-              {isLoading ? <Spin /> : <></>}
+          <div className="chat-container-wrapper">
+            <Disclaimer models={models} />
+            <div className="prompt-chat-header">
+              <h1 className="title-for-collapsed-panel">
+                Validate and Refine a User Story
+              </h1>
               {isLoading && (
-                <Button
-                  type="secondary"
-                  danger
-                  onClick={abortLoad}
-                  style={{ marginLeft: "1em" }}
-                >
-                  Stop
-                </Button>
+                <div className="user-input">
+                  <Spin />
+                  <Button
+                    type="secondary"
+                    danger
+                    onClick={abortLoad}
+                    style={{ marginLeft: "1em" }}
+                  >
+                    Stop
+                  </Button>
+                </div>
               )}
             </div>
-          </div>
-          <div className={"scenarios-collection cards-display"}>
-            {questions.length > 0 && <h2>Questions</h2>}
-            <div className="cards-container">
-              {questions.map((question, i) => {
-                return (
-                  <Card
-                    hoverable
-                    key={i}
-                    className="scenario"
-                    title={<>{question.title}</>}
-                  >
-                    <div className="q-a-card-content">
-                      {question.title && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Suggested answer</div>
-                          <div>
-                            <TextArea
-                              className="answer-overwrite"
-                              value={question.summary}
-                              onChange={(e) => {
-                                const updatedQuestions = [...questions];
-                                updatedQuestions[i].answer = e.target.value;
-                                setQuestions(updatedQuestions);
-                              }}
-                              rows={8}
-                            ></TextArea>
+            <div className={"scenarios-collection cards-display"}>
+              {questions.length > 0 && <h2>Questions</h2>}
+              <div className="cards-container">
+                {questions.map((question, i) => {
+                  return (
+                    <Card
+                      hoverable
+                      key={i}
+                      className="scenario"
+                      title={<>{question.question}</>}
+                    >
+                      <div className="q-a-card-content">
+                        {question.question && (
+                          <div className="card-prop stackable">
+                            <div className="card-prop-name">
+                              Suggested answer
+                            </div>
+                            <div>
+                              <TextArea
+                                className="answer-overwrite"
+                                value={question.answer}
+                                onChange={(e) => {
+                                  const updatedQuestions = [...questions];
+                                  updatedQuestions[i].answer = e.target.value;
+                                  setQuestions(updatedQuestions);
+                                }}
+                                rows={8}
+                              ></TextArea>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
 
-            {questions.length > 0 && (
-              <>
-                <div className="user-inputs" style={{ marginTop: "1em" }}>
-                  <h3>What do you want to generate next?</h3>
-                  <div>
-                    Go through the questions and refine the answers.
-                    <br />
-                    Once you're happy with the selected answers, you can
-                    generate different forms of summaries or further critique
-                    for your story.
-                    <br />
-                    <br />
+              {questions.length > 0 && (
+                <>
+                  <div className="user-inputs" style={{ marginTop: "1em" }}>
+                    <h3>What do you want to generate next?</h3>
+                    <div>
+                      Go through the questions and refine the answers.
+                      <br />
+                      Once you're happy with the selected answers, you can
+                      generate different forms of summaries or further critique
+                      for your story.
+                      <br />
+                      <br />
+                    </div>
                   </div>
-                </div>
-                <Collapse
-                  defaultActiveKey={[
-                    "summary",
-                    "acceptance-criteria",
-                    "scope-check",
-                  ]}
-                  // defaultActiveKey={secondStepItems.map((i) => i.key)}
-                  items={secondStepItems}
-                  className="second-step-collapsable"
-                />
-              </>
-            )}
+                  <Collapse
+                    defaultActiveKey={[
+                      "summary",
+                      "acceptance-criteria",
+                      "scope-check",
+                    ]}
+                    // defaultActiveKey={secondStepItems.map((i) => i.key)}
+                    items={secondStepItems}
+                    className="second-step-collapsable"
+                  />
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

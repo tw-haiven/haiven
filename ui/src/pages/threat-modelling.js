@@ -171,21 +171,6 @@ const ThreatModelling = ({ contexts, models }) => {
             GENERATE
           </Button>
         </div>
-        <div className="user-input">
-          {isLoading && (
-            <div>
-              <Spin />
-              <Button
-                type="secondary"
-                danger
-                onClick={abortLoad}
-                style={{ marginLeft: "1em" }}
-              >
-                Stop
-              </Button>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
@@ -236,91 +221,103 @@ const ThreatModelling = ({ contexts, models }) => {
               <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
           />
-          <Disclaimer models={models} />
-          <div className="title-for-collapsed-panel">
-            <h1>Threat Modelling</h1>
-            <div className="user-input">
-              {isLoading ? <Spin /> : <></>}
+          <div className="chat-container-wrapper">
+            <Disclaimer models={models} />
+            <div className="prompt-chat-header">
+              <h1 className="title-for-collapsed-panel">Threat Modelling</h1>
               {isLoading && (
-                <Button
-                  type="secondary"
-                  danger
-                  onClick={abortLoad}
-                  style={{ marginLeft: "1em" }}
-                >
-                  Stop
+                <div className="user-input">
+                  <Spin />
+                  <Button
+                    type="secondary"
+                    danger
+                    onClick={abortLoad}
+                    style={{ marginLeft: "1em" }}
+                  >
+                    Stop
+                  </Button>
+                </div>
+              )}
+              {scenarios && scenarios.length > 0 && (
+                <Button type="link" className="copy-all" onClick={onCopyAll}>
+                  <RiFileCopyLine fontSize="large" /> COPY ALL
                 </Button>
               )}
+              {scenarios && scenarios.length > 0 && (
+                <div className="scenarios-actions">
+                  <Radio.Group
+                    className="display-mode-choice"
+                    onChange={onSelectDisplayMode}
+                    defaultValue="grid"
+                    size="small"
+                  >
+                    <Radio.Button value="grid">
+                      <RiStackLine /> CARD VIEW
+                    </Radio.Button>
+                    <Radio.Button value="plot">
+                      <RiGridLine /> MATRIX VIEW
+                    </Radio.Button>
+                  </Radio.Group>
+                </div>
+              )}
             </div>
-          </div>
-          {scenarios && scenarios.length > 0 && (
-            <div className="scenarios-actions">
-              <Button type="link" className="copy-all" onClick={onCopyAll}>
-                <RiFileCopyLine fontSize="large" /> COPY ALL
-              </Button>
-              <Radio.Group
-                className="display-mode-choice"
-                onChange={onSelectDisplayMode}
-                defaultValue="grid"
-                size="small"
-              >
-                <Radio.Button value="grid">
-                  <RiStackLine /> CARD VIEW
-                </Radio.Button>
-                <Radio.Button value="plot">
-                  <RiGridLine /> MATRIX VIEW
-                </Radio.Button>
-              </Radio.Group>
-            </div>
-          )}
-          <div className={"scenarios-collection " + displayMode + "-display"}>
-            <div className="cards-container with-display-mode">
-              {scenarios.map((scenario, i) => {
-                return (
-                  <Card title={scenario.title} key={i} className="scenario">
-                    <div className="scenario-card-content">
-                      {scenario.category && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Category</div>
-                          <div className="card-prop-value">
-                            {scenario.category}
+            <div className={"scenarios-collection " + displayMode + "-display"}>
+              <div className="cards-container with-display-mode">
+                {scenarios.map((scenario, i) => {
+                  return (
+                    <Card title={scenario.title} key={i} className="scenario">
+                      <div className="scenario-card-content">
+                        {scenario.category && (
+                          <div className="card-prop stackable">
+                            <div className="card-prop-name">Category</div>
+                            <div className="card-prop-value">
+                              {scenario.category}
+                            </div>
                           </div>
+                        )}
+                        <div className="card-prop-name">Description</div>
+                        <div className="scenario-summary">
+                          {scenario.summary}
                         </div>
-                      )}
-                      <div className="card-prop-name">Description</div>
-                      <div className="scenario-summary">{scenario.summary}</div>
-                      {scenario.probability && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Probability</div>
-                          <div className="card-prop-value">
-                            {scenario.probability}
+                        {scenario.probability && (
+                          <div className="card-prop stackable">
+                            <div className="card-prop-name">Probability</div>
+                            <div className="card-prop-value">
+                              {scenario.probability}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      {scenario.impact && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Potential impact</div>
-                          <div className="card-prop-value">
-                            {scenario.impact}
+                        )}
+                        {scenario.impact && (
+                          <div className="card-prop stackable">
+                            <div className="card-prop-name">
+                              Potential impact
+                            </div>
+                            <div className="card-prop-value">
+                              {scenario.impact}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                    <CardActions
-                      scenario={scenario}
-                      onExploreHandler={onExplore}
-                    />
-                  </Card>
-                );
-              })}
-              <div
-                className="scenarios-plot-container"
-                style={{ display: displayMode == "plot" ? "block" : "none" }}
-              >
-                <ScenariosPlotProbabilityImpact
-                  scenarios={scenarios}
-                  visible={displayMode == "plot"}
-                />
+                        )}
+                      </div>
+                      <CardActions
+                        scenario={scenario}
+                        prompt={promptInput}
+                        scenarioQueries={scenarioQueries}
+                        chatExploreTitle="Explore Scenario"
+                        previousFraming="We are brainstorming security threat scenarios for our application."
+                        selectedContext={selectedContext}
+                      />
+                    </Card>
+                  );
+                })}
+                <div
+                  className="scenarios-plot-container"
+                  style={{ display: displayMode == "plot" ? "block" : "none" }}
+                >
+                  <ScenariosPlotProbabilityImpact
+                    scenarios={scenarios}
+                    visible={displayMode == "plot"}
+                  />
+                </div>
               </div>
             </div>
           </div>
