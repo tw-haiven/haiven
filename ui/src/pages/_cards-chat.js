@@ -335,6 +335,33 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     },
   ];
 
+  const camelCaseToHumanReadable = (str) => {
+    return str
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase());
+  };
+
+  const renderScenarioDetails = (scenario) => {
+    return Object.keys(scenario).map((key) => {
+      if (key === "title" || key === "summary") return null;
+      const value = scenario[key];
+      return (
+        <div key={key}>
+          <strong>{camelCaseToHumanReadable(key)}:</strong>
+          {Array.isArray(value) ? (
+            <ul>
+              {value.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          ) : (
+            <span> {value}</span>
+          )}
+        </div>
+      );
+    });
+  };
+
   return (
     <>
       <Drawer
@@ -373,22 +400,22 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           <div className="chat-container-wrapper">
             <Disclaimer models={models} />
             <div className="prompt-chat-header">
-            <div className="title-for-collapsed-panel">
-              <h1>{selectedPromptConfiguration.title}</h1>
-              <div className="user-input">
-                {isLoading ? <Spin /> : <></>}
-                {isLoading && (
-                  <Button
-                    type="secondary"
-                    danger
-                    onClick={abortLoad}
-                    style={{ marginLeft: "1em" }}
-                  >
-                    Stop
-                  </Button>
-                )}
+              <div className="title-for-collapsed-panel">
+                <h1>{selectedPromptConfiguration.title}</h1>
+                <div className="user-input">
+                  {isLoading ? <Spin /> : <></>}
+                  {isLoading && (
+                    <Button
+                      type="secondary"
+                      danger
+                      onClick={abortLoad}
+                      style={{ marginLeft: "1em" }}
+                    >
+                      Stop
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
               {isLoading && (
                 <div className="user-input">
                   <Spin />
@@ -438,6 +465,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
                         <ReactMarkdown className="scenario-summary">
                           {scenario.summary}
                         </ReactMarkdown>
+                        {renderScenarioDetails(scenario)}
                       </div>
                     </Card>
                   );
@@ -451,6 +479,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
                   <Collapse
                     items={followUpCollapseItems}
                     className="second-step-collapsable"
+                    data-testid="follow-up-collapse"
                   />
                 </div>
               )}

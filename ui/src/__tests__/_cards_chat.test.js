@@ -103,8 +103,18 @@ describe("CardsChat Component", () => {
 
   it("should show a scenario returned by the backend on a card and handle follow-up", async () => {
     const someScenarios = [
-      { title: "Scenario 1", summary: "Summary of scenario 1" },
-      { title: "Scenario 2", summary: "Summary of scenario 2" },
+      {
+        title: "Scenario 1",
+        summary: "Summary of scenario 1",
+        additionalInfo: "Extra info 1",
+        tags: ["tag1", "tag2"],
+      },
+      {
+        title: "Scenario 2",
+        summary: "Summary of scenario 2",
+        moreDetails: "Extra info 2",
+        items: ["item1", "item2"],
+      },
     ];
     const someUserInput = "Here is my prompt input";
     const followUpResponse = "Follow-up response";
@@ -137,9 +147,22 @@ describe("CardsChat Component", () => {
     function thenScenariosAreRendered() {
       expect(screen.getByText(someScenarios[0].title)).toBeInTheDocument();
       expect(screen.getByText(someScenarios[0].summary)).toBeInTheDocument();
+      expect(screen.getByText("Additional Info:")).toBeInTheDocument();
+      expect(
+        screen.getByText(someScenarios[0].additionalInfo),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Tags:")).toBeInTheDocument();
+      expect(screen.getByText("tag1")).toBeInTheDocument();
+      expect(screen.getByText("tag2")).toBeInTheDocument();
       expect(screen.getByText(someScenarios[1].title)).toBeInTheDocument();
       expect(screen.getByText(someScenarios[1].summary)).toBeInTheDocument();
-
+      expect(screen.getByText("More Details:")).toBeInTheDocument();
+      expect(
+        screen.getByText(someScenarios[1].moreDetails),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Items:")).toBeInTheDocument();
+      expect(screen.getByText("item1")).toBeInTheDocument();
+      expect(screen.getByText("item2")).toBeInTheDocument();
       expect(screen.getByText(/COPY ALL/i)).toBeInTheDocument();
     }
 
