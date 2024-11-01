@@ -439,34 +439,17 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
               <div className="cards-container">
                 {scenarios.map((scenario, i) => {
                   return (
-                    <Card
-                      title={scenario.title}
-                      key={i}
-                      className="scenario"
-                      actions={[
-                        <Tooltip title="Chat With Haiven">
-                          <Button type="link" onClick={() => onExplore(i)}>
-                            <RiChat2Line fontSize="large" />
-                          </Button>
-                        </Tooltip>,
-                        <Tooltip title="Copy">
-                          <Button type="link" onClick={() => onCopy(i)}>
-                            <RiFileCopyLine fontSize="large" />
-                          </Button>
-                        </Tooltip>,
-                        <Tooltip title="Pin to pinboard">
-                          <Button type="link" onClick={() => onPin(i)}>
-                            <RiPushpinLine fontSize="large" />
-                          </Button>
-                        </Tooltip>,
-                      ]}
-                    >
+                    <Card title={scenario.title} key={i} className="scenario">
                       <div className="scenario-card-content">
                         <ReactMarkdown className="scenario-summary">
                           {scenario.summary}
                         </ReactMarkdown>
                         {renderScenarioDetails(scenario)}
                       </div>
+                      <CardActions
+                        scenario={scenario}
+                        onExploreHandler={onExplore}
+                      />
                     </Card>
                   );
                 })}
