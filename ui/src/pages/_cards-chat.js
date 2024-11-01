@@ -247,8 +247,8 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     );
   };
 
-  const followUpCollapseItems = selectedPromptConfiguration.followUps?.map(
-    (followUp, i) => {
+  const followUpCollapseItems =
+    selectedPromptConfiguration.followUps?.map((followUp, i) => {
       return {
         key: followUp.identifier,
         label: followUp.title,
@@ -283,8 +283,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           </div>
         ),
       };
-    },
-  );
+    }) || [];
 
   const promptMenu = (
     <div>
@@ -306,6 +305,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
               setPromptInput(e.target.value);
             }}
             rows={18}
+            data-testid="user-input"
           />
         </div>
         <ContextChoice

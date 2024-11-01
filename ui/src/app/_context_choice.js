@@ -14,6 +14,7 @@ function ContextChoice({ contexts, value, onChange }) {
         options={contexts}
         value={value}
         defaultValue="base"
+        data-testid="context-select"
       />
     </div>
   );
