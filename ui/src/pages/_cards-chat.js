@@ -372,9 +372,22 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           <div className="chat-container-wrapper">
             <Disclaimer models={models} />
             <div className="prompt-chat-header">
-              <h1 className="title-for-collapsed-panel">
-                {selectedPromptConfiguration.title}
-              </h1>
+            <div className="title-for-collapsed-panel">
+              <h1>{selectedPromptConfiguration.title}</h1>
+              <div className="user-input">
+                {isLoading ? <Spin /> : <></>}
+                {isLoading && (
+                  <Button
+                    type="secondary"
+                    danger
+                    onClick={abortLoad}
+                    style={{ marginLeft: "1em" }}
+                  >
+                    Stop
+                  </Button>
+                )}
+              </div>
+            </div>
               {isLoading && (
                 <div className="user-input">
                   <Spin />
