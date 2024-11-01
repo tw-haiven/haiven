@@ -94,6 +94,7 @@ const StoryValidation = ({ contexts, models }) => {
         onMessageHandle: (data, response) => {
           try {
             ms += data.data;
+            console.log(data.data);
 
             try {
               output = parse(ms || "[]");
@@ -379,16 +380,16 @@ const StoryValidation = ({ contexts, models }) => {
                     hoverable
                     key={i}
                     className="scenario"
-                    title={<>{question.question}</>}
+                    title={<>{question.title}</>}
                   >
                     <div className="q-a-card-content">
-                      {question.question && (
+                      {question.title && (
                         <div className="card-prop stackable">
                           <div className="card-prop-name">Suggested answer</div>
                           <div>
                             <TextArea
                               className="answer-overwrite"
-                              value={question.answer}
+                              value={question.summary}
                               onChange={(e) => {
                                 const updatedQuestions = [...questions];
                                 updatedQuestions[i].answer = e.target.value;
