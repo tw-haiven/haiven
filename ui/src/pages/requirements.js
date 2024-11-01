@@ -4,16 +4,25 @@ import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
 import { parse } from "best-effort-json-parser";
 import { MenuFoldOutlined } from "@ant-design/icons";
-import { Button, Card, Input, Spin, Select, message, Collapse } from "antd";
+import {
+  Button,
+  Card,
+  Drawer,
+  Input,
+  Spin,
+  Select,
+  message,
+  Collapse,
+} from "antd";
 const { TextArea } = Input;
 import { RiFileCopyLine } from "react-icons/ri";
 import ReactMarkdown from "react-markdown";
 
 import ContextChoice from "../app/_context_choice";
-import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
 import CardActions, { scenarioToText } from "../app/_card_actions";
+import ChatExploration from "./_chat_exploration";
 
 let ctrl;
 
@@ -30,6 +39,10 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   ]);
   const [selectedVariation, setSelectedVariation] = useState(variations[0]);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [drawerTitle, setDrawerTitle] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [chatContext, setChatContext] = useState({});
+
   const placeholderHelp =
     "Describe the requirements that you'd like to break down";
 
@@ -57,6 +70,20 @@ const RequirementsBreakdown = ({ contexts, models }) => {
 
   const onCollapsibleIconClick = (e) => {
     setIsExpanded(!isExpanded);
+  };
+
+  const onExplore = (scenario) => {
+    setDrawerTitle("Explore requirement: " + scenario.title);
+    setChatContext({
+      id: scenario.id,
+      firstStepInput: promptInput,
+      previousFraming:
+        "We are breaking down a software requirement into smaller parts.",
+      context: selectedContext,
+      itemSummary: scenarioToText(scenario),
+      ...scenario,
+    });
+    setDrawerOpen(true);
   };
 
   const onSubmitPrompt = () => {
@@ -186,14 +213,29 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     },
   ];
 
-  const scenarioQueries = [
-    "Write behavior-driven development scenarios for this requirement",
-    "Break down this requirement into smaller requirements",
-    "What could potentially go wrong?",
-  ];
-
   return (
     <>
+      <Drawer
+        title={drawerTitle}
+        mask={false}
+        open={drawerOpen}
+        destroyOnClose={true}
+        onClose={() => setDrawerOpen(false)}
+        size={"large"}
+      >
+        <ChatExploration
+          context={chatContext}
+          user={{
+            name: "User",
+            avatar: "/boba/user-5-fill-dark-blue.svg",
+          }}
+          scenarioQueries={[
+            "Write behavior-driven development scenarios for this requirement",
+            "Break down this requirement into smaller requirements",
+            "What could potentially go wrong?",
+          ]}
+        />
+      </Drawer>
       <div id="canvas">
         <div
           className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
@@ -245,11 +287,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
                     </div>
                     <CardActions
                       scenario={scenario}
-                      prompt={promptInput}
-                      scenarioQueries={scenarioQueries}
-                      chatExploreTitle="Explore requirement"
-                      selectedContext={selectedContext}
-                      previousFraming="We are breaking down a software requirement into smaller parts."
+                      onExploreHandler={onExplore}
                     />
                   </Card>
                 );

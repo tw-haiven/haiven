@@ -5,6 +5,7 @@ import { MenuFoldOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
+  Drawer,
   Checkbox,
   Input,
   Select,
@@ -30,6 +31,7 @@ import {
 import Disclaimer from "./_disclaimer";
 import CardActions, { scenarioToText } from "../app/_card_actions";
 let ctrl;
+import ChatExploration from "./_chat_exploration";
 
 const Home = ({ models }) => {
   const [numOfScenarios, setNumOfScenarios] = useState("6");
@@ -44,12 +46,9 @@ const Home = ({ models }) => {
   const [strangeness, setStrangeness] = useState("neutral");
   const [voice, setVoice] = useState("serious");
   const [isExpanded, setIsExpanded] = useState(true);
-
-  const scenarioQueries = [
-    "What are the key drivers for this scenario?",
-    "What are the key uncertainties?",
-    "What business opportunities could this trigger?",
-  ];
+  const [drawerTitle, setDrawerTitle] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [chatContext, setChatContext] = useState({});
 
   function abortLoad() {
     ctrl && ctrl.abort("User aborted");
@@ -94,6 +93,19 @@ const Home = ({ models }) => {
 
   const onCollapsibleIconClick = (e) => {
     setIsExpanded(!isExpanded);
+  };
+
+  const onExplore = (scenario) => {
+    setDrawerTitle("Explore Scenario: " + scenario.title);
+    setChatContext({
+      id: scenario.id,
+      firstStepInput: prompt,
+      previousFraming:
+        "You are a visionary futurist. We're brainstorming scenarios.",
+      itemSummary: scenarioToText(scenario),
+      ...scenario,
+    });
+    setDrawerOpen(true);
   };
 
   const onSubmitPrompt = async () => {
@@ -320,6 +332,27 @@ const Home = ({ models }) => {
 
   return (
     <>
+      <Drawer
+        title={drawerTitle}
+        mask={false}
+        open={drawerOpen}
+        destroyOnClose={true}
+        onClose={() => setDrawerOpen(false)}
+        size={"large"}
+      >
+        <ChatExploration
+          context={chatContext}
+          user={{
+            name: "User",
+            avatar: "/boba/user-5-fill-dark-blue.svg",
+          }}
+          scenarioQueries={[
+            "What are the key drivers for this scenario?",
+            "What are the key uncertainties?",
+            "What business opportunities could this trigger?",
+          ]}
+        />
+      </Drawer>
       <div id="canvas">
         <div
           className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
@@ -433,10 +466,7 @@ const Home = ({ models }) => {
                     </div>
                     <CardActions
                       scenario={scenario}
-                      prompt={prompt}
-                      scenarioQueries={scenarioQueries}
-                      chatExploreTitle="Explore Scenario"
-                      previousFraming="You are a visionary futurist. We're brainstorming scenarios."
+                      onExploreHandler={onExplore}
                     />
                   </Card>
                 );

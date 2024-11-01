@@ -4,7 +4,16 @@ import { fetchSSE } from "../app/_fetch_sse";
 import { MenuFoldOutlined } from "@ant-design/icons";
 import { RiStackLine, RiGridLine, RiFileCopyLine } from "react-icons/ri";
 
-import { Card, Spin, Button, Radio, Input, message, Collapse } from "antd";
+import {
+  Card,
+  Drawer,
+  Spin,
+  Button,
+  Radio,
+  Input,
+  message,
+  Collapse,
+} from "antd";
 const { TextArea } = Input;
 import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import { parse } from "best-effort-json-parser";
@@ -14,6 +23,7 @@ import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
 import CardActions, { scenarioToText } from "../app/_card_actions";
+import ChatExploration from "./_chat_exploration";
 
 let ctrl;
 
@@ -24,6 +34,9 @@ const ThreatModelling = ({ contexts, models }) => {
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
   const [isExpanded, setIsExpanded] = useState(true);
+  const [drawerTitle, setDrawerTitle] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [chatContext, setChatContext] = useState({});
 
   const router = useRouter();
 
@@ -48,6 +61,20 @@ const ThreatModelling = ({ contexts, models }) => {
     const allScenarios = scenarios.map(scenarioToText);
     navigator.clipboard.writeText(allScenarios.join("\n\n\n"));
     message.success("Content copied successfully!");
+  };
+
+  const onExplore = (scenario) => {
+    setDrawerTitle("Explore Scenario: " + scenario.title);
+    setChatContext({
+      id: scenario.id,
+      firstStepInput: promptInput,
+      previousFraming:
+        "We are brainstorming security threat scenarios for our application.",
+      context: selectedContext,
+      itemSummary: scenarioToText(scenario),
+      ...scenario,
+    });
+    setDrawerOpen(true);
   };
 
   const buildRequestData = () => {
@@ -171,14 +198,29 @@ const ThreatModelling = ({ contexts, models }) => {
     },
   ];
 
-  const scenarioQueries = [
-    "How could this scenario be prevented?",
-    "Elaborate how you chose the probability for this scenario",
-    "Elaborate how you chose the impact for this scenario",
-  ];
-
   return (
     <>
+      <Drawer
+        title={drawerTitle}
+        mask={false}
+        open={drawerOpen}
+        destroyOnClose={true}
+        onClose={() => setDrawerOpen(false)}
+        size={"large"}
+      >
+        <ChatExploration
+          context={chatContext}
+          user={{
+            name: "User",
+            avatar: "/boba/user-5-fill-dark-blue.svg",
+          }}
+          scenarioQueries={[
+            "How could this scenario be prevented?",
+            "Elaborate how you chose the probability for this scenario",
+            "Elaborate how you chose the impact for this scenario",
+          ]}
+        />
+      </Drawer>
       <div id="canvas">
         <div
           className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
@@ -266,11 +308,7 @@ const ThreatModelling = ({ contexts, models }) => {
                     </div>
                     <CardActions
                       scenario={scenario}
-                      prompt={promptInput}
-                      scenarioQueries={scenarioQueries}
-                      chatExploreTitle="Explore Scenario"
-                      previousFraming="We are brainstorming security threat scenarios for our application."
-                      selectedContext={selectedContext}
+                      onExploreHandler={onExplore}
                     />
                   </Card>
                 );
