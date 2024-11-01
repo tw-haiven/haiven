@@ -346,7 +346,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
 
   const renderScenarioDetails = (scenario) => {
     return Object.keys(scenario).map((key) => {
-      if (key === "title" || key === "summary") return null;
+      if (key === "title" || key === "summary" || key === "hidden") return null;
       const value = scenario[key];
       return (
         <div key={key}>
