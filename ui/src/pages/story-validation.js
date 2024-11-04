@@ -95,20 +95,22 @@ const StoryValidation = ({ contexts, models }) => {
           try {
             ms += data.data;
             console.log(data.data);
-
-            try {
-              output = parse(ms || "[]");
-            } catch (error) {
-              console.log("error", error);
-            }
-            if (Array.isArray(output)) {
-              setQuestions(output);
-            } else {
-              abortLoad(ctrl);
-              message.warning(
-                "Model failed to respond rightly, please rewrite your message and try again",
-              );
-              console.log("response is not parseable into an array");
+            ms = ms.trim().replace(/^[^{[]+/, "");
+            if (ms.startsWith("{") || ms.startsWith("[")) {
+              try {
+                output = parse(ms || "[]");
+              } catch (error) {
+                console.log("error", error);
+              }
+              if (Array.isArray(output)) {
+                setQuestions(output);
+              } else {
+                abortLoad(ctrl);
+                message.warning(
+                  "Model failed to respond rightly, please rewrite your message and try again",
+                );
+                console.log("response is not parseable into an array");
+              }
             }
           } catch (error) {
             console.log("error", error, "data received", "'" + data + "'");

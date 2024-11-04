@@ -154,19 +154,22 @@ const CreativeMatrix = ({ models }) => {
               return;
             }
             ms += data.data;
-            try {
-              output = parse(ms || "[]");
-            } catch (error) {
-              console.log("error", error);
-            }
-            if (Array.isArray(output)) {
-              setMatrix(output);
-            } else {
-              abortLoad(ctrl);
-              message.warning(
-                "Model failed to respond rightly, please rewrite your message and try again",
-              );
-              console.log("response is not parseable into an array");
+            ms = ms.trim().replace(/^[^{[]+/, "");
+            if (ms.startsWith("{") || ms.startsWith("[")) {
+              try {
+                output = parse(ms || "[]");
+              } catch (error) {
+                console.log("error", error);
+              }
+              if (Array.isArray(output)) {
+                setMatrix(output);
+              } else {
+                abortLoad(ctrl);
+                message.warning(
+                  "Model failed to respond rightly, please rewrite your message and try again",
+                );
+                console.log("response is not parseable into an array");
+              }
             }
           },
         },
