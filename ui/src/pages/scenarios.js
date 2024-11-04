@@ -160,11 +160,11 @@ const Home = ({ models }) => {
             if (Array.isArray(output)) {
               setScenarios(output);
             } else {
+              abortLoad(ctrl);
               message.warning(
                 "Model failed to respond rightly, please rewrite your message and try again",
               );
               console.log("response is not parseable into an array");
-              abortLoad(ctrl);
             }
           } catch (error) {
             console.log("error", error, "data received", "'" + data + "'");
