@@ -537,12 +537,19 @@ h4, h5 {
 }
 
 .collapsed .title-for-collapsed-panel {
+  display: block;
+}
+
+.prompt-chat-header {
   display: flex;
   align-items: center;
-  margin: 0.5em 0;
+  margin: 1em 0;
   gap: 1.5em;
-  height: 5%;
   padding-left: var(--standard-left-padding);
+}
+
+.collapsed  .prompt-chat-header .title-for-collapsed-panel {
+  margin: 0;
 }
 
 .prompt-chat-container.collapsed {
@@ -621,6 +628,7 @@ h4, h5 {
 
 .copy-all {
   font-weight: 500;
+  padding: 0;
 }
 .scenario-card-content {
   scrollbar-width: thin;
@@ -708,8 +716,7 @@ h4, h5 {
 }
 
 .scenarios-actions {
-  height: 5%;
-  padding-left: var(--standard-left-padding);
+  margin-left: auto;
   padding-right: var(--standard-left-padding);
 }
 

@@ -260,28 +260,13 @@ const CreativeMatrix = ({ models }) => {
         />
       </div>
       <div className="user-input">
-        {!isLoading && (
-          <Button
-            onClick={onGenerateMatrix}
-            className="go-button"
-            disabled={isLoading}
-          >
-            GENERATE MATRIX
-          </Button>
-        )}
-      </div>
-      <div className="user-input">
-        {isLoading ? <Spin /> : <></>}
-        {isLoading && (
-          <Button
-            type="secondary"
-            danger
-            onClick={abortLoad}
-            style={{ marginLeft: "1em" }}
-          >
-            Stop
-          </Button>
-        )}
+        <Button
+          onClick={onGenerateMatrix}
+          className="go-button"
+          disabled={isLoading}
+        >
+          GENERATE MATRIX
+        </Button>
       </div>
     </div>
   );
@@ -308,11 +293,11 @@ const CreativeMatrix = ({ models }) => {
         />
 
         <Disclaimer models={models} />
-        <div className="title-for-collapsed-panel">
-          <h1>Creative Matrix</h1>
-          <div className="user-input">
-            {isLoading ? <Spin /> : <></>}
-            {isLoading && (
+        <div className="prompt-chat-header">
+          <h1 className="title-for-collapsed-panel">Creative Matrix</h1>
+          {isLoading && (
+            <div className="user-input">
+              <Spin />
               <Button
                 type="secondary"
                 danger
@@ -321,8 +306,8 @@ const CreativeMatrix = ({ models }) => {
               >
                 Stop
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
         <div className="matrix-container">
           <div>

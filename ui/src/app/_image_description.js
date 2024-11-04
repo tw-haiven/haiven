@@ -109,7 +109,7 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
         <div style={{ marginBottom: "1em", marginTop: "-1em" }}>
           <Spin />
           <Button
-            type="primary"
+            type="secondary"
             danger
             onClick={abortDescriptionLoad}
             style={{ marginLeft: "1em" }}
