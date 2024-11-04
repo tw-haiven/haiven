@@ -5,7 +5,9 @@ import { RiInformationFill } from "react-icons/ri";
 const HelpTooltip = ({ text }) => {
   return (
     <Tooltip className="tooltip-help" color="#003d4f" title={text}>
-      <RiInformationFill />
+      <>
+        <RiInformationFill />
+      </>
     </Tooltip>
   );
 };

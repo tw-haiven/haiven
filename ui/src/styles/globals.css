@@ -223,7 +223,7 @@ h4, h5 {
   vertical-align: bottom;
 }
 
-.tooltip-help {
+.tooltip-help svg {
   margin-left: 0.3em;
   margin-bottom: 0.1em;
   fill: var(--color-sapphire);
