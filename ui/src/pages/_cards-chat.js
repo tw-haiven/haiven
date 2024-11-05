@@ -413,9 +413,9 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
                     type="secondary"
                     danger
                     onClick={abortLoad}
-                    style={{ marginLeft: "1em" }}
+                    className="stop-button"
                   >
-                    Stop
+                    STOP
                   </Button>
                 </div>
               )}

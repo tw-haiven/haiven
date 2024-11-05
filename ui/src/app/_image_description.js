@@ -112,9 +112,9 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
             type="secondary"
             danger
             onClick={abortDescriptionLoad}
-            style={{ marginLeft: "1em" }}
+            className="stop-button"
           >
-            Stop
+            STOP
           </Button>
         </div>
       )}

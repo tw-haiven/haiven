@@ -355,9 +355,9 @@ const StoryValidation = ({ contexts, models }) => {
                     type="secondary"
                     danger
                     onClick={abortLoad}
-                    style={{ marginLeft: "1em" }}
+                    className="stop-button"
                   >
-                    Stop
+                    STOP
                   </Button>
                 </div>
               )}

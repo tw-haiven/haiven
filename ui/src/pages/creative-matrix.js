@@ -190,7 +190,10 @@ const CreativeMatrix = ({ models }) => {
         <Select
           defaultValue={templates[0].name}
           onChange={onChangeTemplate}
-          options={templates.map((t) => ({ value: t.name, label: t.name }))}
+          options={templates.map((t) => ({
+            value: t.name,
+            label: t.name,
+          }))}
         ></Select>
       </div>
 
@@ -305,9 +308,9 @@ const CreativeMatrix = ({ models }) => {
                   type="secondary"
                   danger
                   onClick={abortLoad}
-                  style={{ marginLeft: "1em" }}
+                  className="stop-button"
                 >
-                  Stop
+                  STOP
                 </Button>
               </div>
             )}
@@ -345,7 +348,10 @@ const CreativeMatrix = ({ models }) => {
                               }}
                             >
                               <ul
-                                style={{ textAlign: "left", paddingLeft: 20 }}
+                                style={{
+                                  textAlign: "left",
+                                  paddingLeft: 20,
+                                }}
                               >
                                 {getMatrixCellValues(rowIndex, columnIndex).map(
                                   (idea) => {

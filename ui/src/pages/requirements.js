@@ -35,7 +35,10 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     { value: "workflow", label: "By workflow" },
     { value: "timeline", label: "By timeline" },
     { value: "data-boundaries", label: "By data boundaries" },
-    { value: "operational-boundaries", label: "By operational boundaries" },
+    {
+      value: "operational-boundaries",
+      label: "By operational boundaries",
+    },
   ]);
   const [selectedVariation, setSelectedVariation] = useState(variations[0]);
   const [isExpanded, setIsExpanded] = useState(true);
@@ -252,9 +255,9 @@ const RequirementsBreakdown = ({ contexts, models }) => {
                     type="secondary"
                     danger
                     onClick={abortLoad}
-                    style={{ marginLeft: "1em" }}
+                    className="stop-button"
                   >
-                    Stop
+                    STOP
                   </Button>
                 </div>
               )}

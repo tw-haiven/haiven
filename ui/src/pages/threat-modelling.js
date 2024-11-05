@@ -236,9 +236,9 @@ const ThreatModelling = ({ contexts, models }) => {
                     type="secondary"
                     danger
                     onClick={abortLoad}
-                    style={{ marginLeft: "1em" }}
+                    className="stop-button"
                   >
-                    Stop
+                    STOP
                   </Button>
                 </div>
               )}
@@ -311,7 +311,9 @@ const ThreatModelling = ({ contexts, models }) => {
                 })}
                 <div
                   className="scenarios-plot-container"
-                  style={{ display: displayMode == "plot" ? "block" : "none" }}
+                  style={{
+                    display: displayMode == "plot" ? "block" : "none",
+                  }}
                 >
                   <ScenariosPlotProbabilityImpact
                     scenarios={scenarios}

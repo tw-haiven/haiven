@@ -584,6 +584,13 @@ h4, h5 {
   overflow-y: hidden;
 }
 
+.stop-button {
+  margin-left: 1em;
+  height: 24px;
+  font-size: 0.8em;
+  font-weight: var(--font-weight-semi-bold);
+}
+
 .prompt-preview {
   background-color: var(--color-light-gray);
   height: 70svh;
