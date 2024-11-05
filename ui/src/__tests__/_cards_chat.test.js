@@ -10,6 +10,7 @@ import { act } from "react";
 import CardsChat from "../pages/_cards-chat";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { fetchSSE } from "../app/_fetch_sse";
+import { message } from "antd";
 
 vi.mock("../app/_fetch_sse");
 
@@ -83,6 +84,27 @@ const whenGenerateIsClicked = () => {
   fireEvent.click(mainGenerateButton);
 };
 
+const thenScenariosAreRendered = () => {
+  expect(screen.getByText(someScenarios[0].title)).toBeInTheDocument();
+  expect(screen.getByText(someScenarios[0].summary)).toBeInTheDocument();
+  expect(screen.getByText("Additional Info:")).toBeInTheDocument();
+  expect(screen.getByText(someScenarios[0].additionalInfo)).toBeInTheDocument();
+  expect(screen.getByText("Tags:")).toBeInTheDocument();
+  expect(screen.getByText("tag1")).toBeInTheDocument();
+  expect(screen.getByText("tag2")).toBeInTheDocument();
+  expect(screen.getByText(someScenarios[1].title)).toBeInTheDocument();
+  expect(screen.getByText(someScenarios[1].summary)).toBeInTheDocument();
+  expect(screen.getByText("More Details:")).toBeInTheDocument();
+  expect(screen.getByText(someScenarios[1].moreDetails)).toBeInTheDocument();
+  expect(screen.getByText("Items:")).toBeInTheDocument();
+  expect(screen.getByText("item1")).toBeInTheDocument();
+  expect(screen.getByText("item2")).toBeInTheDocument();
+  expect(screen.getByText(/COPY ALL/i)).toBeInTheDocument();
+
+  const nonEditableSummary = screen.getByText(someScenarios[0].summary);
+  expect(nonEditableSummary).toBeInTheDocument();
+  expect(nonEditableSummary.tagName.toLowerCase()).not.toBe("textarea");
+};
 describe("CardsChat Component", () => {
   afterEach(() => {
     vi.clearAllMocks();
@@ -93,32 +115,6 @@ describe("CardsChat Component", () => {
       const body = JSON.parse(bodyString);
       expect(body.userinput).toBe(someUserInput);
       expect(body.promptid).toBe(mockPrompts[0].identifier);
-    };
-
-    const thenScenariosAreRendered = () => {
-      expect(screen.getByText(someScenarios[0].title)).toBeInTheDocument();
-      expect(screen.getByText(someScenarios[0].summary)).toBeInTheDocument();
-      expect(screen.getByText("Additional Info:")).toBeInTheDocument();
-      expect(
-        screen.getByText(someScenarios[0].additionalInfo),
-      ).toBeInTheDocument();
-      expect(screen.getByText("Tags:")).toBeInTheDocument();
-      expect(screen.getByText("tag1")).toBeInTheDocument();
-      expect(screen.getByText("tag2")).toBeInTheDocument();
-      expect(screen.getByText(someScenarios[1].title)).toBeInTheDocument();
-      expect(screen.getByText(someScenarios[1].summary)).toBeInTheDocument();
-      expect(screen.getByText("More Details:")).toBeInTheDocument();
-      expect(
-        screen.getByText(someScenarios[1].moreDetails),
-      ).toBeInTheDocument();
-      expect(screen.getByText("Items:")).toBeInTheDocument();
-      expect(screen.getByText("item1")).toBeInTheDocument();
-      expect(screen.getByText("item2")).toBeInTheDocument();
-      expect(screen.getByText(/COPY ALL/i)).toBeInTheDocument();
-
-      const nonEditableSummary = screen.getByText(someScenarios[0].summary);
-      expect(nonEditableSummary).toBeInTheDocument();
-      expect(nonEditableSummary.tagName.toLowerCase()).not.toBe("textarea");
     };
 
     const thenFollowUpPromptRequestHappens = (bodyString) => {
@@ -200,6 +196,124 @@ describe("CardsChat Component", () => {
       const textArea = screen.getByTestId("scenario-summary-0");
       expect(textArea).toBeInTheDocument();
       expect(textArea.tagName.toLowerCase()).toBe("textarea");
+    });
+  });
+
+  describe("Process Streaming data", () => {
+    afterEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it("should process streaming data if it is a valid json array", async () => {
+      fetchSSE.mockImplementationOnce(
+        (url, options, { onMessageHandle, onFinish }) => {
+          const scenariosArrayString = JSON.stringify(someScenarios);
+          onMessageHandle({ data: scenariosArrayString });
+          onFinish();
+        },
+      );
+
+      await setup();
+      givenUserInput();
+      whenGenerateIsClicked();
+
+      await waitFor(async () => {
+        thenScenariosAreRendered();
+      });
+    });
+
+    it("should process streaming data if it is a valid json data with a prefix string", async () => {
+      fetchSSE.mockImplementationOnce(
+        (url, options, { onMessageHandle, onFinish }) => {
+          const scenariosArrayString = JSON.stringify(someScenarios);
+          onMessageHandle({
+            data: "```Here is your json:" + scenariosArrayString,
+          });
+          onFinish();
+        },
+      );
+
+      await setup();
+      givenUserInput();
+      whenGenerateIsClicked();
+
+      await waitFor(async () => {
+        thenScenariosAreRendered();
+      });
+    });
+
+    it("should process streaming data if it is a valid array json data with a suffix string", async () => {
+      fetchSSE.mockImplementationOnce(
+        (url, options, { onMessageHandle, onFinish }) => {
+          const scenariosString = JSON.stringify(someScenarios);
+          onMessageHandle({ data: scenariosString + "```Here is your json:" });
+          onFinish();
+        },
+      );
+
+      await setup();
+      givenUserInput();
+      whenGenerateIsClicked();
+
+      await waitFor(async () => {
+        thenScenariosAreRendered();
+      });
+    });
+
+    it("should process streaming data if array of scenarios is encapsulated inside a json key value pair", async () => {
+      vi.spyOn(message, "warning");
+      fetchSSE.mockImplementationOnce(
+        (url, options, { onMessageHandle, onFinish }) => {
+          const streamingData = { response: someScenarios };
+          const streamingDataAsString = JSON.stringify(streamingData);
+          onMessageHandle({ data: streamingDataAsString });
+          onFinish();
+        },
+      );
+
+      await setup();
+
+      givenUserInput();
+      whenGenerateIsClicked();
+      await waitFor(async () => {
+        thenScenariosAreRendered();
+      });
+    });
+
+    it("should not process data and show error message when the streaming data is a JSON object but not an array object", async () => {
+      vi.spyOn(message, "warning");
+      fetchSSE.mockImplementationOnce(
+        (url, options, { onMessageHandle, onFinish }) => {
+          onMessageHandle({ data: '{"title": "some title"}' });
+          onFinish();
+        },
+      );
+
+      await setup();
+
+      givenUserInput();
+      whenGenerateIsClicked();
+      expect(message.warning).toHaveBeenCalledWith(
+        "Model failed to respond rightly, please rewrite your message and try again",
+      );
+    });
+
+    it("should not process data and show error message when the streaming data is not an json object", async () => {
+      vi.spyOn(message, "warning");
+      fetchSSE.mockImplementationOnce(
+        (url, options, { onMessageHandle, onFinish }) => {
+          onMessageHandle({ data: "not a json object" });
+          onFinish();
+        },
+      );
+
+      await setup();
+
+      givenUserInput();
+      whenGenerateIsClicked();
+      expect(message.warning).toHaveBeenCalledWith(
+        "Model failed to respond rightly, please rewrite your message and try again",
+      );
     });
   });
 });

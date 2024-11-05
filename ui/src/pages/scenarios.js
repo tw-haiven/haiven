@@ -146,13 +146,18 @@ const Home = ({ models }) => {
           abortLoad(ctrl);
         },
         onFinish: () => {
+          if (ms == "") {
+            message.warning(
+              "Model failed to respond rightly, please rewrite your message and try again",
+            );
+          }
           setLoading(false);
         },
         onMessageHandle: (data) => {
           try {
             ms += data.data;
-            ms = ms.trim().replace(/^[^{[]+/, "");
-            if (ms.startsWith("{") || ms.startsWith("[")) {
+            ms = ms.trim().replace(/^[^[]+/, "");
+            if (ms.startsWith("[")) {
               try {
                 output = parse(ms || "[]");
               } catch (error) {
