@@ -270,9 +270,11 @@ const PromptChat = ({
           expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
         />
         <Disclaimer models={models} />
-        <h1 className="title-for-collapsed-panel">
-          {selectedPrompt?.title || pageTitle}
-        </h1>
+        <div className="prompt-chat-header">
+          <h1 className="title-for-collapsed-panel">
+            {selectedPrompt?.title || pageTitle}
+          </h1>
+        </div>
         <div className="chat-container">
           <ProChatProvider>
             <ChatWidget
