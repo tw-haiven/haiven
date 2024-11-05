@@ -239,48 +239,50 @@ const RequirementsBreakdown = ({ contexts, models }) => {
               <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
           />
-          <Disclaimer models={models} />
-          <div className="prompt-chat-header">
-            <h1 className="title-for-collapsed-panel">
-              Requirements Breakdown
-            </h1>
-            {isLoading && (
-              <div className="user-input">
-                <Spin />
-                <Button
-                  type="secondary"
-                  danger
-                  onClick={abortLoad}
-                  style={{ marginLeft: "1em" }}
-                >
-                  Stop
+          <div className="chat-container-wrapper">
+            <Disclaimer models={models} />
+            <div className="prompt-chat-header">
+              <h1 className="title-for-collapsed-panel">
+                Requirements Breakdown
+              </h1>
+              {isLoading && (
+                <div className="user-input">
+                  <Spin />
+                  <Button
+                    type="secondary"
+                    danger
+                    onClick={abortLoad}
+                    style={{ marginLeft: "1em" }}
+                  >
+                    Stop
+                  </Button>
+                </div>
+              )}
+              {scenarios && scenarios.length > 0 && (
+                <Button type="link" className="copy-all" onClick={onCopyAll}>
+                  <RiFileCopyLine fontSize="large" /> COPY ALL
                 </Button>
-              </div>
-            )}
-            {scenarios && scenarios.length > 0 && (
-              <Button type="link" className="copy-all" onClick={onCopyAll}>
-                <RiFileCopyLine fontSize="large" /> COPY ALL
-              </Button>
-            )}
-          </div>
+              )}
+            </div>
 
-          <div className={"scenarios-collection grid-display"}>
-            <div className="cards-container">
-              {scenarios.map((scenario, i) => {
-                return (
-                  <Card title={scenario.title} key={i} className="scenario">
-                    <div className="scenario-card-content">
-                      <ReactMarkdown className="scenario-summary">
-                        {scenario.summary}
-                      </ReactMarkdown>
-                    </div>
-                    <CardActions
-                      scenario={scenario}
-                      onExploreHandler={onExplore}
-                    />
-                  </Card>
-                );
-              })}
+            <div className={"scenarios-collection grid-display"}>
+              <div className="cards-container">
+                {scenarios.map((scenario, i) => {
+                  return (
+                    <Card title={scenario.title} key={i} className="scenario">
+                      <div className="scenario-card-content">
+                        <ReactMarkdown className="scenario-summary">
+                          {scenario.summary}
+                        </ReactMarkdown>
+                      </div>
+                      <CardActions
+                        scenario={scenario}
+                        onExploreHandler={onExplore}
+                      />
+                    </Card>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>

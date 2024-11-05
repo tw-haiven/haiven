@@ -357,120 +357,124 @@ const Home = ({ models }) => {
               <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
           />
-          <Disclaimer models={models} />
-          <div className="prompt-chat-header">
-            <h1 className="title-for-collapsed-panel">Scenarios</h1>
-            {isLoading && (
-              <div className="user-input">
-                <Spin />
-                <Button
-                  type="secondary"
-                  danger
-                  onClick={abortLoad}
-                  style={{ marginLeft: "1em" }}
-                >
-                  Stop
+          <div className="chat-container-wrapper">
+            <Disclaimer models={models} />
+            <div className="prompt-chat-header">
+              <h1 className="title-for-collapsed-panel">Scenarios</h1>
+              {isLoading && (
+                <div className="user-input">
+                  <Spin />
+                  <Button
+                    type="secondary"
+                    danger
+                    onClick={abortLoad}
+                    style={{ marginLeft: "1em" }}
+                  >
+                    Stop
+                  </Button>
+                </div>
+              )}
+              {scenarios && scenarios.length > 0 && (
+                <Button type="link" className="copy-all" onClick={onCopyAll}>
+                  <RiFileCopyLine fontSize="large" /> COPY ALL
                 </Button>
-              </div>
-            )}
-            {scenarios && scenarios.length > 0 && (
-              <Button type="link" className="copy-all" onClick={onCopyAll}>
-                <RiFileCopyLine fontSize="large" /> COPY ALL
-              </Button>
-            )}
-            {scenarios && scenarios.length > 0 && (
-              <div className="scenarios-actions">
-                <Radio.Group
-                  className="display-mode-choice"
-                  onChange={onSelectDisplayMode}
-                  defaultValue="grid"
-                  style={{ float: "right" }}
-                  size="small"
-                >
-                  <Radio.Button value="grid">
-                    <RiStackLine /> CARD VIEW
-                  </Radio.Button>
-                  <Radio.Button value="plot">
-                    <RiGridLine /> MATRIX VIEW
-                  </Radio.Button>
-                </Radio.Group>
-              </div>
-            )}
-          </div>
-          <div className={"scenarios-collection " + displayMode + "-display"}>
-            <div className="cards-container with-display-mode">
-              {scenarios.map((scenario, i) => {
-                return (
-                  <Card title={scenario.title} key={i} className="scenario">
-                    <div className="scenario-card-content">
-                      <div className="scenario-summary">{scenario.summary}</div>
-                      {scenario.horizon && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Horizon</div>
-                          <div className="card-prop-value">
-                            {scenario.horizon}
-                          </div>
-                        </div>
-                      )}
-                      {scenario.plausibility && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Plausibility</div>
-                          <div className="card-prop-value">
-                            {scenario.plausibility}
-                          </div>
-                        </div>
-                      )}
-                      {scenario.probability && (
-                        <div className="card-prop stackable">
-                          <div className="card-prop-name">Probability</div>
-                          <div className="card-prop-value">
-                            {scenario.probability}
-                          </div>
-                        </div>
-                      )}
-                      {scenario.signals && (
-                        <div className="card-prop">
-                          <div className="card-prop-name">
-                            Signals/Driving Forces
-                          </div>
-                          <div className="card-prop-value">
-                            {(scenario.signals || []).join(", ")}
-                          </div>
-                        </div>
-                      )}
-                      {scenario.threats && (
-                        <div className="card-prop">
-                          <div className="card-prop-name">Threats</div>
-                          <div className="card-prop-value">
-                            {(scenario.threats || []).join(", ")}
-                          </div>
-                        </div>
-                      )}
-                      {scenario.opportunities && (
-                        <div className="card-prop">
-                          <div className="card-prop-name">Opportunities</div>
-                          <div className="card-prop-value">
-                            {(scenario.opportunities || []).join(", ")}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    <CardActions
-                      scenario={scenario}
-                      onExploreHandler={onExplore}
-                    />
-                  </Card>
-                );
-              })}
+              )}
+              {scenarios && scenarios.length > 0 && (
+                <div className="scenarios-actions">
+                  <Radio.Group
+                    className="display-mode-choice"
+                    onChange={onSelectDisplayMode}
+                    defaultValue="grid"
+                    style={{ float: "right" }}
+                    size="small"
+                  >
+                    <Radio.Button value="grid">
+                      <RiStackLine /> CARD VIEW
+                    </Radio.Button>
+                    <Radio.Button value="plot">
+                      <RiGridLine /> MATRIX VIEW
+                    </Radio.Button>
+                  </Radio.Group>
+                </div>
+              )}
             </div>
-            <div
-              className="scenarios-plot-container"
-              style={{ display: displayMode == "plot" ? "block" : "none" }}
-            >
-              <ScenariosPlot
-                scenarios={scenarios}
-                visible={displayMode == "plot"}
-              />
+            <div className={"scenarios-collection " + displayMode + "-display"}>
+              <div className="cards-container with-display-mode">
+                {scenarios.map((scenario, i) => {
+                  return (
+                    <Card title={scenario.title} key={i} className="scenario">
+                      <div className="scenario-card-content">
+                        <div className="scenario-summary">
+                          {scenario.summary}
+                        </div>
+                        {scenario.horizon && (
+                          <div className="card-prop stackable">
+                            <div className="card-prop-name">Horizon</div>
+                            <div className="card-prop-value">
+                              {scenario.horizon}
+                            </div>
+                          </div>
+                        )}
+                        {scenario.plausibility && (
+                          <div className="card-prop stackable">
+                            <div className="card-prop-name">Plausibility</div>
+                            <div className="card-prop-value">
+                              {scenario.plausibility}
+                            </div>
+                          </div>
+                        )}
+                        {scenario.probability && (
+                          <div className="card-prop stackable">
+                            <div className="card-prop-name">Probability</div>
+                            <div className="card-prop-value">
+                              {scenario.probability}
+                            </div>
+                          </div>
+                        )}
+                        {scenario.signals && (
+                          <div className="card-prop">
+                            <div className="card-prop-name">
+                              Signals/Driving Forces
+                            </div>
+                            <div className="card-prop-value">
+                              {(scenario.signals || []).join(", ")}
+                            </div>
+                          </div>
+                        )}
+                        {scenario.threats && (
+                          <div className="card-prop">
+                            <div className="card-prop-name">Threats</div>
+                            <div className="card-prop-value">
+                              {(scenario.threats || []).join(", ")}
+                            </div>
+                          </div>
+                        )}
+                        {scenario.opportunities && (
+                          <div className="card-prop">
+                            <div className="card-prop-name">Opportunities</div>
+                            <div className="card-prop-value">
+                              {(scenario.opportunities || []).join(", ")}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <CardActions
+                        scenario={scenario}
+                        onExploreHandler={onExplore}
+                      />
+                    </Card>
+                  );
+                })}
+              </div>
+              <div
+                className="scenarios-plot-container"
+                style={{ display: displayMode == "plot" ? "block" : "none" }}
+              >
+                <ScenariosPlot
+                  scenarios={scenarios}
+                  visible={displayMode == "plot"}
+                />
+              </div>
             </div>
           </div>
         </div>

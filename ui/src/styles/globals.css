@@ -60,15 +60,30 @@ h4, h5 {
 }
 
 /**** CHAT *****/
-.chat-container {
-  height: 95%;
-  width: 72%;
-  float: inline-start;
+.chat-container-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-.collapsed .chat-container {
-  height: 90%;
+.collapsed .chat-container-wrapper {
+  display: block;
+  height: 100%;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 95%;
   width: 100%;
+  max-width: 850px;
+  margin: auto;
+}
+
+.chat-container .chat-widget-container {
+  min-height: 100%;
 }
 
 .prompt-chat-container .ant-pro-chat-chat-list-container {
@@ -417,6 +432,8 @@ h4, h5 {
 
 /**** INPUT --> GENERATION RESULTS COLUMN LAYOUT *****/
 .prompt-chat-container {
+  display: flex;
+  width: 100%;
   height: 100%;
 }
 
@@ -533,23 +550,33 @@ h4, h5 {
 
 .title-for-collapsed-panel {
   display: none;
-  text-align: left;
 }
 
 .collapsed .title-for-collapsed-panel {
   display: block;
+  padding-left: 16px;
 }
 
 .prompt-chat-header {
   display: flex;
   align-items: center;
-  margin: 1em 0;
+  margin: 0;
   gap: 1.5em;
   padding-left: var(--standard-left-padding);
 }
 
-.collapsed  .prompt-chat-header .title-for-collapsed-panel {
+.prompt-chat-header:not(:empty) {
+  margin: 1em 0;
+}
+
+.prompt-chat-header .title-for-collapsed-panel {
+  display: none;
   margin: 0;
+  padding: 0;
+}
+
+.collapsed .prompt-chat-header .title-for-collapsed-panel {
+  display: block;
 }
 
 .prompt-chat-container.collapsed {
@@ -767,11 +794,10 @@ h4, h5 {
 /*** CREATIVE MATRIX ****/
 
 .matrix-container {
-  flex: 5;
   padding: 1em;
-  height: 95%;
-  width: 72%;
-  float: inline-start;
+  height: 90%;
+  width: 100%;
+  overflow: auto;
 }
   
 .collapsed .matrix-container {
