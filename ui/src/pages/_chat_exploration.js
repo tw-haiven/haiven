@@ -1,15 +1,21 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { Button, Flex } from "antd";
 import { RiLightbulbLine } from "react-icons/ri";
 import ChatWidget from "../app/_chat";
 
 export default function ChatExploration({ context, scenarioQueries = [] }) {
-  const previousContext = context || {};
-
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
+  const [previousContext, setPreviousContext] = useState(context);
+
+  useEffect(() => {
+    if (previousContext !== context) {
+      setPreviousContext(context);
+      setPromptStarted(false);
+    }
+  }, [context, previousContext]);
 
   const chatRef = useRef();
 
@@ -89,7 +95,7 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
   return (
     <div className="chat-exploration">
       <div className="chat-exploration__header">
-        <p>{previousContext.summary}</p>
+        <p>{previousContext?.summary || "No summary available"}</p>
       </div>
       <PossibilityPanel />
       <ProChatProvider>
