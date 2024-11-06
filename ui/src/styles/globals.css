@@ -622,16 +622,14 @@ h4, h5 {
   overflow: auto;
 }
 
+.scenarios-collection .ant-card-head {
+  height: 75px;
+}
+
 .scenarios-collection .cards-container {
   display:flex;
   flex-direction: row;
   flex-wrap: wrap;
-}
-
-.scenarios-collection .scenario-card-content {
-  padding-top: 0.5em;
-  padding-bottom: 0;
-  overflow-y: auto;
 }
 
 .scenario-card-content ul {
@@ -647,8 +645,10 @@ h4, h5 {
 .scenarios-collection .card-actions-footer {
   display: flex;
   justify-content: flex-end;
-  padding-bottom: 8px;
+  position: absolute;
+  right: 0;
   bottom: 0;
+  padding-bottom: 8px;
 }
 
 .scenarios-collection .card-actions-footer li {
@@ -678,17 +678,22 @@ h4, h5 {
 
 .scenario {
   width: 350px;
+  height: 400px;
   display: flex;
   flex-direction: column;
   margin: 0.8em;
-  padding-top: 0.8em;
-  height: 400px;
+  border: 1px solid var(--color-light-gray);
+  box-shadow: none !important;
 }
 
 .scenario .scenario-card-content {
   height: 270px;
   overflow-y: auto;
   font-size: small;
+  padding-top: 0.5em;
+  padding-bottom: 0;
+  bottom: 40px;
+  position: absolute;
 }
 
 .scenario .q-a-card-content {
@@ -702,11 +707,6 @@ h4, h5 {
   min-height: auto;
 }
 
-.scenarios-collection .ant-card {
-  border: 1px solid var(--color-light-gray);
-  box-shadow: none;
-}
-
 .ant-card-head {
   border-bottom: 1px solid var(--color-light-gray) !important;
   justify-content: top  !important;
@@ -715,7 +715,6 @@ h4, h5 {
 .ant-card-head-title {
   font-weight: var(--font-weight-semi-bold);
   white-space: normal !important;
-  padding-bottom: 1em;
 }
 
 .ant-card-actions, .card-actions-footer {
