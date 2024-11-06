@@ -561,7 +561,7 @@ h4, h5 {
   align-items: center;
   margin: 0;
   gap: 1.5em;
-  padding-left: var(--standard-left-padding);
+  padding-left: 2em;
 }
 
 .prompt-chat-header:not(:empty) {

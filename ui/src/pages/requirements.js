@@ -52,7 +52,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   const router = useRouter();
 
   function abortLoad() {
-    ctrl && ctrl.abort();
+    ctrl && ctrl.abort("Request aborted");
     setLoading(false);
   }
 

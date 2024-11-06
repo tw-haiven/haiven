@@ -35,7 +35,7 @@ export default function CardActions({ scenario, onExploreHandler }) {
 
   return (
     <div className="card-actions-footer">
-      <Tooltip title="Chat With Haiven" key="chat">
+      <Tooltip title="Chat with Haiven" key="chat">
         <Button type="link" onClick={() => onExploreHandler(scenario)}>
           <RiChat2Line fontSize="large" />
         </Button>

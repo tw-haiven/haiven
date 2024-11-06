@@ -111,7 +111,7 @@ const CreativeMatrix = ({ models }) => {
   };
 
   function abortLoad() {
-    ctrl && ctrl.abort();
+    ctrl && ctrl.abort("Request aborted");
     setLoading(false);
   }
 
