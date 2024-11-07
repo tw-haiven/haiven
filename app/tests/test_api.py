@@ -420,7 +420,7 @@ class TestApi(unittest.TestCase):
             "/api/story-validation/scenarios",
             json={
                 "chat_session_id": None,
-                "answers": [{"question": "some question 1", "answer": "answer1"}],
+                "answers": [{"title": "some question 1", "summary": "answer1"}],
                 "input": "some original requirement",
             },
         )
