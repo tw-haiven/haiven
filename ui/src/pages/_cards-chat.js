@@ -52,9 +52,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
       const firstStepEntry = prompts.find(
         (entry) => entry.value === selectedPromptId,
       );
-      if (!firstStepEntry) {
-        message.error(`Prompt with id '${selectedPromptId}' not found`);
-      } else {
+      if (firstStepEntry) {
         firstStepEntry.followUps.forEach((followUp) => {
           followUpResults[followUp.identifier] = "";
         });
