@@ -30,24 +30,26 @@ const Sidebar = ({ prompts }) => {
   useEffect(() => {
     const menuCategories = initialiseMenuCategoriesForSidebar();
 
-    prompts.forEach((prompt) => {
-      const url = typeToUrlMap[prompt.type] || "/chat";
-      prompt.categories.forEach((category) => {
-        const menuCategory =
-          menuCategories[category] || menuCategories["other"];
-        menuCategory.children.push({
-          key: category + "-" + prompt.identifier,
-          label: (
-            <Link
-              href={`${url}?prompt=${prompt.identifier}`}
-              className="submenu-entry"
-            >
-              {prompt.title}
-            </Link>
-          ),
+    prompts
+      .filter((prompt) => prompt.show !== false)
+      .forEach((prompt) => {
+        const url = typeToUrlMap[prompt.type] || "/chat";
+        prompt.categories.forEach((category) => {
+          const menuCategory =
+            menuCategories[category] || menuCategories["other"];
+          menuCategory.children.push({
+            key: category + "-" + prompt.identifier,
+            label: (
+              <Link
+                href={`${url}?prompt=${prompt.identifier}`}
+                className="submenu-entry"
+              >
+                {prompt.title}
+              </Link>
+            ),
+          });
         });
       });
-    });
 
     const finalMenuItems = [];
     Object.keys(menuCategories).forEach((key) => {

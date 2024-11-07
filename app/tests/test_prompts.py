@@ -48,6 +48,7 @@ def test_init_should_set_defaults_for_metadata():
     assert prompt_to_assert.metadata["categories"] == []
     assert prompt_to_assert.metadata["type"] == "chat"
     assert prompt_to_assert.metadata["editable"] is False
+    assert prompt_to_assert.metadata["show"] is True
 
 
 def test_init_should_load_all_metadata():

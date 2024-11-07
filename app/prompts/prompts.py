@@ -57,6 +57,8 @@ class PromptList:
                 prompt.metadata["type"] = "chat"
             if "editable" not in prompt.metadata:
                 prompt.metadata["editable"] = False
+            if "show" not in prompt.metadata:
+                prompt.metadata["show"] = True
 
         self.prompt_flows = self.load_prompt_flows(
             os.path.join(directory, "prompt_flows.yaml")
@@ -296,9 +298,8 @@ class PromptList:
                 "help_user_input": prompt.metadata.get("help_user_input"),
                 "follow_ups": follow_ups,
                 "type": prompt.metadata.get("type", "chat"),
-                "editable": prompt.metadata.get(
-                    "editable"
-                ),  # Ensure "editable" is included
+                "editable": prompt.metadata.get("editable"),
+                "show": prompt.metadata.get("show"),
             }
             prompts_with_follow_ups.append(prompt_data)
         return prompts_with_follow_ups

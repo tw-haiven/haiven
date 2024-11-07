@@ -62,10 +62,13 @@ export default function ChatDashboard() {
     };
 
     getPrompts((data) => {
-      data.forEach((prompt) => {
-        const url = typeToUrlMap[prompt.type] || "/chat";
-        prompt.link = `${url}?prompt=${prompt.identifier}`;
-      });
+      data = data
+        .filter((prompt) => prompt.show !== false)
+        .map((prompt) => {
+          const url = typeToUrlMap[prompt.type] || "/chat";
+          prompt.link = `${url}?prompt=${prompt.identifier}`;
+          return prompt;
+        });
 
       // add the "static" features
       data = data.concat(staticFeaturesForDashboard());
