@@ -80,16 +80,16 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     setSelectedContext(value);
   };
 
-  const onExplore = (id) => {
-    setCardExplorationDrawerTitle("Explore scenario: " + scenarios[id].title);
+  const onExplore = (scenario) => {
+    setCardExplorationDrawerTitle("Explore scenario: " + scenario.title);
     setChatContext({
-      id: id,
+      id: scenario.id,
       firstStepInput: promptInput,
       type: "prompt",
       previousPromptId: selectedPromptId,
       context: selectedContext,
-      itemSummary: scenarioToText(scenarios[id]),
-      ...scenarios[id],
+      itemSummary: scenarioToText(scenario),
+      ...scenario,
     });
     setCardExplorationDrawerOpen(true);
   };
