@@ -99,7 +99,6 @@ const StoryValidation = ({ contexts, models }) => {
         onMessageHandle: (data, response) => {
           try {
             ms += data.data;
-            console.log(data.data);
             ms = ms.trim().replace(/^[^[]+/, "");
             if (ms.startsWith("[")) {
               try {

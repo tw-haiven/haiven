@@ -10,8 +10,10 @@ class StoryValidationQuestions(BaseModel):
 
 
 class QuestionAnswer(BaseModel):
-    question: str
-    answer: str
+    # In parallel we're building the new reusable follow-up functionality, need to use the new generic property names for compatibility
+    title: str  # question
+    summary: str  # answer
+    thought: str = None
 
 
 class StoryValidationScenarios(BaseModel):
@@ -21,7 +23,7 @@ class StoryValidationScenarios(BaseModel):
 
 def _concat_questions_answers(validationScenarios: StoryValidationScenarios):
     return [
-        f"**Your question:** {qa.question}\n**My REVISED ANSWER:** {qa.answer}"
+        f"**Your question:** {qa.title}\n**My REVISED ANSWER:** {qa.summary}"
         for qa in validationScenarios.answers
     ]
 
