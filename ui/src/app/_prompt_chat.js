@@ -66,14 +66,15 @@ const PromptChat = ({
     };
   };
 
-  const startNewChat = async () => {
+  const startNewChat = async (userInput = null) => {
     if (chatRef.current) {
       // the ProChat controls the flow - let it know we have a new message,
       // the ultimate request will come back to "submitPromptToBackend" function here
       setChatSessionId(undefined);
       setConversationStarted(false);
-
-      let userInput = buildUserInput();
+      if (!userInput) {
+        userInput = buildUserInput();
+      }
       chatRef.current.startNewConversation(userInput);
       setIsExpanded(false);
     }
@@ -240,9 +241,12 @@ const PromptChat = ({
       {contextSection}
       <div className="prompt-chat-options-section">
         {showTextSnippets && (
-          <PromptPreview buildRenderPromptRequest={buildRenderPromptRequest} />
+          <PromptPreview
+            buildRenderPromptRequest={buildRenderPromptRequest}
+            startNewChat={startNewChat}
+          />
         )}
-        <Button onClick={startNewChat} className="go-button">
+        <Button onClick={() => startNewChat(null)} className="go-button">
           START CHAT
         </Button>
       </div>

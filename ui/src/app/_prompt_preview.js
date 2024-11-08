@@ -14,7 +14,10 @@ import { getRenderedPrompt } from "./_boba_api";
       - promptid
       - document
 */
-export default function PromptPreview({ buildRenderPromptRequest }) {
+export default function PromptPreview({
+  buildRenderPromptRequest,
+  startNewChat,
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [promptWithDiffHighlights, setPromptWithDiffHighlights] = useState("");
   const [promptData, setPromptData] = useState({});
@@ -91,6 +94,7 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
 
   const onRenderPrompt = () => {
     const requestData = buildRenderPromptRequest();
+    console.log("Request Data:", requestData);
     getRenderedPrompt(requestData, (response) => {
       setPromptData({
         renderedPrompt: response.prompt,
@@ -146,7 +150,7 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
         title="View/Edit Prompt"
         open={isModalOpen}
         onOk={closeModal}
-        onCancel={closeModal}
+        onCancel={handleClose}
         width={800}
         okButtonProps={{
           style: { display: "none" },
@@ -211,6 +215,10 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
             <Button
               className="prompt-preview-start-chat-btn"
               disabled={!startPromptEdit}
+              onClick={() => {
+                closeModal();
+                startNewChat(promptWithDiffHighlights);
+              }}
             >
               START CHAT
             </Button>
