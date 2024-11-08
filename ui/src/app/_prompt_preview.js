@@ -3,10 +3,12 @@ import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Modal, Button } from "antd";
-import { RiClipboardLine } from "react-icons/ri";
+import { RiClipboardLine, RiEdit2Line } from "react-icons/ri";
 import * as Diff from "diff";
 import { getRenderedPrompt } from "./_boba_api";
+import dynamic from "next/dynamic";
 
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 /*
  * buildRenderPromptRequest: function that returns an object with
       - userinput
@@ -17,6 +19,7 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [promptWithDiffHighlights, setPromptWithDiffHighlights] = useState("");
   const [promptData, setPromptData] = useState({});
+  const [viewMode, setViewMode] = useState("preview-mode");
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -121,7 +124,7 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
       </Button>
 
       <Modal
-        title="Prompt preview"
+        title="View/Edit Prompt"
         open={isModalOpen}
         onOk={closeModal}
         onCancel={closeModal}
@@ -133,31 +136,46 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
           style: { display: "none" },
         }}
       >
-        <p>
-          This is the text that will be sent to the AI model. It includes your
-          input and any contexts you selected.
-        </p>
+        <div className="prompt-preview-header">
+          <p>
+            This is the text that will be sent to the AI model. It includes your
+            input and any contexts you selected.
+          </p>
 
-        <Button className="prompt-preview-copy-btn" onClick={handleCopy}>
-          <RiClipboardLine
-            style={{
-              fontSize: "large",
-            }}
-          />{" "}
-          COPY
+          <div className="prompt-preview-actions">
+            <Button className="prompt-preview-edit-btn" onClick={handleCopy}>
+              <RiEdit2Line
+                style={{
+                  fontSize: "large",
+                }}
+              />{" "}
+              EDIT
+            </Button>
+            <Button className="prompt-preview-copy-btn" onClick={handleCopy}>
+              <RiClipboardLine
+                style={{
+                  fontSize: "large",
+                }}
+              />{" "}
+              COPY
+            </Button>
+          </div>
+        </div>
+        <div className={`prompt-preview ${viewMode}`}>
+          <MDEditor
+            // previewOptions={{
+            //   className: {`${viewMode? "preview-mode": "edit-mode"}`},
+            // }}
+            hideToolbar="true"
+            height={400}
+            value={promptWithDiffHighlights}
+            onChange={setPromptWithDiffHighlights}
+          />
+        </div>
+
+        <Button className="prompt-preview-close-btn" onClick={closeModal}>
+          CLOSE
         </Button>
-
-        <ReactMarkdown
-          className="prompt-preview"
-          remarkPlugins={[[remarkGfm]]}
-          components={{
-            del(props) {
-              return highlightDiffs(props);
-            },
-          }}
-        >
-          {promptWithDiffHighlights}
-        </ReactMarkdown>
       </Modal>
     </>
   );
