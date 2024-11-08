@@ -88,6 +88,10 @@ const thenStopButtonIsDisplayed = () => {
   expect(screen.getByTestId("stop-button")).toBeInTheDocument();
 };
 
+const thenPromptPanelIsHidden = () => {
+  expect(screen.getByTestId("user-input")).not.toBeVisible();
+};
+
 const thenScenariosAreRendered = () => {
   expect(screen.getByText(someScenarios[0].title)).toBeInTheDocument();
   expect(screen.getByText(someScenarios[0].summary)).toBeInTheDocument();
@@ -162,6 +166,7 @@ describe("CardsChat Component", () => {
     whenGenerateIsClicked();
 
     await waitFor(async () => {
+      thenPromptPanelIsHidden();
       thenStopButtonIsDisplayed();
       thenScenariosAreRendered();
       whenFollowUpGenerateIsClicked();

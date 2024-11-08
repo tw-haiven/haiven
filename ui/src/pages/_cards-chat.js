@@ -138,6 +138,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   };
 
   const sendFirstStepPrompt = () => {
+    setIsExpanded(false);
     const uri = "/api/prompt";
 
     let ms = "";
