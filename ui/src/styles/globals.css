@@ -601,11 +601,27 @@ h4, h5 {
   padding-left: 0;
 }
 
+.prompt-preview-header {
+  display: flex;
+  flex-direction: row;
+}
+
+.prompt-preview-actions {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+}
+
 .prompt-preview-copy-btn {
-  position: absolute;
-  right: 24px;
   background-color: var(--color-dark-gray);
-  margin: 1em;
+}
+
+.prompt-preview-edit-btn {
+  background-color: var(--color-dark-gray);
+}
+
+.prompt-preview-close-btn {
+  background-color: var(--color-dark-gray);
 }
 
 .prompt-preview-diff-highlight {
