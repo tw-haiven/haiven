@@ -124,6 +124,7 @@ class Server:
                 "knowledge",
                 "knowledge-chat",
                 "chat",
+                "cards",
                 "scenarios",
                 "threat-modelling",
                 "creative-matrix",
