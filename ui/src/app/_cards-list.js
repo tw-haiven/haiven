@@ -1,18 +1,19 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
-import Disclaimer from "../pages/_disclaimer";
 import CardActions, { scenarioToText } from "./_card_actions";
 import ScenariosPlotProbabilityImpact from "../pages/_plot_prob_impact";
 import { RiStackLine, RiGridLine, RiFileCopyLine } from "react-icons/ri";
+import ReactMarkdown from "react-markdown";
+import { Card, Button, Input, Radio, message } from "antd";
+const { TextArea } = Input;
 
-import { Card, Button, Radio, message } from "antd";
 const CardsList = ({
   scenarios,
-  models,
   title,
   matrixMode: matrix,
   onExplore,
   stopLoadComponent,
+  onScenariosEdit,
 }) => {
   const [displayMode, setDisplayMode] = useState("grid");
 
@@ -26,9 +27,35 @@ const CardsList = ({
     message.success("Content copied successfully!");
   };
 
+  const camelCaseToHumanReadable = (str) => {
+    return str
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase());
+  };
+
+  const renderScenarioDetails = (scenario) => {
+    return Object.keys(scenario).map((key) => {
+      if (key === "title" || key === "summary" || key === "hidden") return null;
+      const value = scenario[key];
+      return (
+        <div key={key}>
+          <strong>{camelCaseToHumanReadable(key)}:</strong>
+          {Array.isArray(value) ? (
+            <ul>
+              {value.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          ) : (
+            <span> {value}</span>
+          )}
+        </div>
+      );
+    });
+  };
+
   return (
-    <div className="chat-container-wrapper">
-      <Disclaimer models={models} />
+    <>
       <div className="prompt-chat-header">
         <h1 className="title-for-collapsed-panel">{title}</h1>
         {stopLoadComponent}
@@ -61,28 +88,26 @@ const CardsList = ({
             return (
               <Card title={scenario.title} key={i} className="scenario">
                 <div className="scenario-card-content">
-                  {scenario.category && (
-                    <div className="card-prop stackable">
-                      <div className="card-prop-name">Category</div>
-                      <div className="card-prop-value">{scenario.category}</div>
-                    </div>
+                  {onScenariosEdit !== undefined ? (
+                    <TextArea
+                      value={scenario.summary}
+                      onChange={(e) => {
+                        const updatedScenarios = [...scenarios];
+                        updatedScenarios[i].summary = e.target.value;
+                        onScenariosEdit(updatedScenarios);
+                      }}
+                      rows={4}
+                      data-testid={`scenario-summary-${i}`}
+                    />
+                  ) : (
+                    <ReactMarkdown
+                      className="scenario-summary"
+                      data-testid={`scenario-summary-${i}`}
+                    >
+                      {scenario.summary}
+                    </ReactMarkdown>
                   )}
-                  <div className="card-prop-name">Description</div>
-                  <div className="scenario-summary">{scenario.summary}</div>
-                  {scenario.probability && (
-                    <div className="card-prop stackable">
-                      <div className="card-prop-name">Probability</div>
-                      <div className="card-prop-value">
-                        {scenario.probability}
-                      </div>
-                    </div>
-                  )}
-                  {scenario.impact && (
-                    <div className="card-prop stackable">
-                      <div className="card-prop-name">Potential impact</div>
-                      <div className="card-prop-value">{scenario.impact}</div>
-                    </div>
-                  )}
+                  {renderScenarioDetails(scenario)}
                 </div>
                 <CardActions scenario={scenario} onExploreHandler={onExplore} />
               </Card>
@@ -103,7 +128,7 @@ const CardsList = ({
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

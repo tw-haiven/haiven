@@ -6,6 +6,7 @@ import { MenuFoldOutlined } from "@ant-design/icons";
 import { Drawer, Button, Input, message, Collapse } from "antd";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
+import Disclaimer from "./_disclaimer";
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
@@ -197,14 +198,16 @@ const ThreatModelling = ({ contexts, models }) => {
               <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
           />
-          <CardsList
-            models={models}
-            scenarios={scenarios}
-            title="Threat Modelling"
-            matrixMode={true}
-            onExplore={onExplore}
-            stopLoadComponent={<StopLoad />}
-          />
+          <div className="chat-container-wrapper">
+            <Disclaimer models={models} />
+            <CardsList
+              scenarios={scenarios}
+              title="Threat Modelling"
+              matrixMode={true}
+              onExplore={onExplore}
+              stopLoadComponent={<StopLoad />}
+            />
+          </div>
         </div>
       </div>
     </>

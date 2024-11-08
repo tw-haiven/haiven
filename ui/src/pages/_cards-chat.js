@@ -1,28 +1,18 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState, useEffect } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import {
-  Drawer,
-  Card,
-  Spin,
-  Button,
-  Input,
-  Collapse,
-  Tooltip,
-  message,
-} from "antd";
+import { Drawer, Button, Input, Collapse, message } from "antd";
 const { TextArea } = Input;
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
-import { RiFileCopyLine, RiChat2Line, RiPushpinLine } from "react-icons/ri";
+import { RiFileCopyLine } from "react-icons/ri";
 import { MenuFoldOutlined } from "@ant-design/icons";
 import ReactMarkdown from "react-markdown";
+import Disclaimer from "./_disclaimer";
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
-import Disclaimer from "./_disclaimer";
-import { addToPinboard } from "../app/_local_store";
-import CardActions from "../app/_card_actions";
+import CardsList from "../app/_cards-list";
 import useLoader from "../hooks/useLoader";
 
 const CardsChat = ({ promptId, contexts, models, prompts }) => {
@@ -91,26 +81,6 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
 
   const copySuccess = () => {
     message.success("Content copied successfully!");
-  };
-
-  const onCopyAll = () => {
-    const allScenarios = scenarios.map(scenarioToText);
-    navigator.clipboard.writeText(allScenarios.join("\n\n"));
-    copySuccess();
-  };
-
-  const onCopy = (id) => {
-    navigator.clipboard.writeText(scenarioToText(scenarios[id]));
-
-    copySuccess();
-  };
-
-  const onPin = (id) => {
-    const timestamp = Math.floor(Date.now()).toString();
-    addToPinboard(
-      timestamp,
-      "## " + scenarios[id].title + "\n\n" + scenarios[id].summary,
-    );
   };
 
   const onCopyFollowUp = (id) => {
@@ -321,33 +291,6 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     },
   ];
 
-  const camelCaseToHumanReadable = (str) => {
-    return str
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (str) => str.toUpperCase());
-  };
-
-  const renderScenarioDetails = (scenario) => {
-    return Object.keys(scenario).map((key) => {
-      if (key === "title" || key === "summary" || key === "hidden") return null;
-      const value = scenario[key];
-      return (
-        <div key={key}>
-          <strong>{camelCaseToHumanReadable(key)}:</strong>
-          {Array.isArray(value) ? (
-            <ul>
-              {value.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          ) : (
-            <span> {value}</span>
-          )}
-        </div>
-      );
-    });
-  };
-
   return (
     <>
       <Drawer
@@ -385,65 +328,27 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           />
           <div className="chat-container-wrapper">
             <Disclaimer models={models} />
-            <div className="prompt-chat-header">
-              <h1 className="title-for-collapsed-panel">
-                {selectedPromptConfiguration.title}
-              </h1>
-              <StopLoad />
-              {scenarios && scenarios.length > 0 && (
-                <Button type="link" className="copy-all" onClick={onCopyAll}>
-                  <RiFileCopyLine fontSize="large" /> COPY ALL
-                </Button>
-              )}
-            </div>
-            <div className={"scenarios-collection grid-display"}>
-              <div className="cards-container">
-                {scenarios.map((scenario, i) => {
-                  return (
-                    <Card title={scenario.title} key={i} className="scenario">
-                      <div className="scenario-card-content">
-                        {selectedPromptConfiguration.editable ? (
-                          <TextArea
-                            value={scenario.summary}
-                            onChange={(e) => {
-                              const updatedScenarios = [...scenarios];
-                              updatedScenarios[i].summary = e.target.value;
-                              setScenarios(updatedScenarios);
-                            }}
-                            rows={4}
-                            data-testid={`scenario-summary-${i}`}
-                          />
-                        ) : (
-                          <ReactMarkdown
-                            className="scenario-summary"
-                            data-testid={`scenario-summary-${i}`}
-                          >
-                            {scenario.summary}
-                          </ReactMarkdown>
-                        )}
-                        {renderScenarioDetails(scenario)}
-                      </div>
-                      <CardActions
-                        scenario={scenario}
-                        onExploreHandler={onExplore}
-                      />
-                    </Card>
-                  );
-                })}
-              </div>
-              {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
-                <div className="follow-up-container">
-                  <div style={{ marginTop: "1em" }}>
-                    <h3>What you can do next</h3>
-                  </div>
-                  <Collapse
-                    items={followUpCollapseItems}
-                    className="second-step-collapsable"
-                    data-testid="follow-up-collapse"
-                  />
+            <CardsList
+              title={selectedPromptConfiguration.title}
+              scenarios={scenarios}
+              onScenariosEdit={
+                selectedPromptConfiguration.editable ? setScenarios : undefined
+              }
+              onExplore={onExplore}
+              stopLoadComponent={<StopLoad />}
+            />
+            {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
+              <div className="follow-up-container">
+                <div style={{ marginTop: "1em" }}>
+                  <h3>What you can do next</h3>
                 </div>
-              )}
-            </div>
+                <Collapse
+                  items={followUpCollapseItems}
+                  className="second-step-collapsable"
+                  data-testid="follow-up-collapse"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
