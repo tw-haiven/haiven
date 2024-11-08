@@ -2,35 +2,22 @@
 import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
 import { MenuFoldOutlined } from "@ant-design/icons";
-import { RiStackLine, RiGridLine, RiFileCopyLine } from "react-icons/ri";
 
-import {
-  Card,
-  Drawer,
-  Spin,
-  Button,
-  Radio,
-  Input,
-  message,
-  Collapse,
-} from "antd";
+import { Drawer, Button, Input, message, Collapse } from "antd";
 const { TextArea } = Input;
-import ScenariosPlotProbabilityImpact from "./_plot_prob_impact";
 import { parse } from "best-effort-json-parser";
-import { useRouter } from "next/router";
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
-import Disclaimer from "./_disclaimer";
-import CardActions, { scenarioToText } from "../app/_card_actions";
+import CardsList from "../app/_cards-list";
+import { scenarioToText } from "../app/_card_actions";
 import ChatExploration from "./_chat_exploration";
 
-let ctrl;
+import useLoader from "../hooks/useLoader";
 
 const ThreatModelling = ({ contexts, models }) => {
   const [scenarios, setScenarios] = useState([]);
-  const [isLoading, setLoading] = useState(false);
-  const [displayMode, setDisplayMode] = useState("grid");
+  const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
   const [isExpanded, setIsExpanded] = useState(true);
@@ -38,29 +25,12 @@ const ThreatModelling = ({ contexts, models }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [chatContext, setChatContext] = useState({});
 
-  const router = useRouter();
-
-  function abortLoad() {
-    ctrl && ctrl.abort("User aborted");
-    setLoading(false);
-  }
-
   const handleContextSelection = (value) => {
     setSelectedContext(value);
   };
 
-  const onSelectDisplayMode = (event) => {
-    setDisplayMode(event.target.value);
-  };
-
   const onCollapsibleIconClick = (e) => {
     setIsExpanded(!isExpanded);
-  };
-
-  const onCopyAll = () => {
-    const allScenarios = scenarios.map(scenarioToText);
-    navigator.clipboard.writeText(allScenarios.join("\n\n\n"));
-    message.success("Content copied successfully!");
   };
 
   const onExplore = (scenario) => {
@@ -86,9 +56,6 @@ const ThreatModelling = ({ contexts, models }) => {
   };
 
   const onSubmitPrompt = (event) => {
-    abortLoad();
-    ctrl = new AbortController();
-    setLoading(true);
     setIsExpanded(false);
 
     const uri = "/api/prompt";
@@ -100,13 +67,13 @@ const ThreatModelling = ({ contexts, models }) => {
       uri,
       {
         method: "POST",
-        signal: ctrl.signal,
+        signal: startLoad(),
         body: JSON.stringify(buildRequestData()),
       },
       {
         json: true,
         onErrorHandle: () => {
-          abortLoad(ctrl);
+          abortLoad();
         },
         onFinish: () => {
           if (ms == "") {
@@ -114,7 +81,7 @@ const ThreatModelling = ({ contexts, models }) => {
               "Model failed to respond rightly, please rewrite your message and try again",
             );
           }
-          setLoading(false);
+          abortLoad();
         },
         onMessageHandle: (data) => {
           ms += data.data;
@@ -129,7 +96,7 @@ const ThreatModelling = ({ contexts, models }) => {
             if (Array.isArray(output)) {
               setScenarios(output);
             } else {
-              abortLoad(ctrl);
+              abortLoad();
               message.warning(
                 "Model failed to respond rightly, please rewrite your message and try again",
               );
@@ -144,7 +111,7 @@ const ThreatModelling = ({ contexts, models }) => {
   const placeholderHelp =
     "Describe your users, the assets to protect, and how data flows through your system.";
 
-  const promptMenu = (
+  const promptPanel = (
     <div>
       <div className="prompt-chat-options-section">
         <h1>Threat Modelling</h1>
@@ -175,7 +142,7 @@ const ThreatModelling = ({ contexts, models }) => {
           <Button
             onClick={onSubmitPrompt}
             className="go-button"
-            disabled={isLoading}
+            disabled={loading}
           >
             GENERATE
           </Button>
@@ -188,7 +155,7 @@ const ThreatModelling = ({ contexts, models }) => {
     {
       key: "1",
       label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
-      children: promptMenu,
+      children: promptPanel,
     },
   ];
 
@@ -230,104 +197,14 @@ const ThreatModelling = ({ contexts, models }) => {
               <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
           />
-          <div className="chat-container-wrapper">
-            <Disclaimer models={models} />
-            <div className="prompt-chat-header">
-              <h1 className="title-for-collapsed-panel">Threat Modelling</h1>
-              {isLoading && (
-                <div className="user-input">
-                  <Spin />
-                  <Button
-                    type="secondary"
-                    danger
-                    onClick={abortLoad}
-                    className="stop-button"
-                  >
-                    STOP
-                  </Button>
-                </div>
-              )}
-              {scenarios && scenarios.length > 0 && (
-                <Button type="link" className="copy-all" onClick={onCopyAll}>
-                  <RiFileCopyLine fontSize="large" /> COPY ALL
-                </Button>
-              )}
-              {scenarios && scenarios.length > 0 && (
-                <div className="scenarios-actions">
-                  <Radio.Group
-                    className="display-mode-choice"
-                    onChange={onSelectDisplayMode}
-                    defaultValue="grid"
-                    size="small"
-                  >
-                    <Radio.Button value="grid">
-                      <RiStackLine /> CARD VIEW
-                    </Radio.Button>
-                    <Radio.Button value="plot">
-                      <RiGridLine /> MATRIX VIEW
-                    </Radio.Button>
-                  </Radio.Group>
-                </div>
-              )}
-            </div>
-            <div className={"scenarios-collection " + displayMode + "-display"}>
-              <div className="cards-container with-display-mode">
-                {scenarios.map((scenario, i) => {
-                  return (
-                    <Card title={scenario.title} key={i} className="scenario">
-                      <div className="scenario-card-content">
-                        {scenario.category && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">Category</div>
-                            <div className="card-prop-value">
-                              {scenario.category}
-                            </div>
-                          </div>
-                        )}
-                        <div className="card-prop-name">Description</div>
-                        <div className="scenario-summary">
-                          {scenario.summary}
-                        </div>
-                        {scenario.probability && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">Probability</div>
-                            <div className="card-prop-value">
-                              {scenario.probability}
-                            </div>
-                          </div>
-                        )}
-                        {scenario.impact && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">
-                              Potential impact
-                            </div>
-                            <div className="card-prop-value">
-                              {scenario.impact}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      <CardActions
-                        scenario={scenario}
-                        onExploreHandler={onExplore}
-                      />
-                    </Card>
-                  );
-                })}
-                <div
-                  className="scenarios-plot-container"
-                  style={{
-                    display: displayMode == "plot" ? "block" : "none",
-                  }}
-                >
-                  <ScenariosPlotProbabilityImpact
-                    scenarios={scenarios}
-                    visible={displayMode == "plot"}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <CardsList
+            models={models}
+            scenarios={scenarios}
+            title="Threat Modelling"
+            matrixMode={true}
+            onExplore={onExplore}
+            stopLoadComponent={<StopLoad />}
+          />
         </div>
       </div>
     </>
