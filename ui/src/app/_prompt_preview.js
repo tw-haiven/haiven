@@ -19,14 +19,17 @@ export default function PromptPreview({
   startNewChat,
   useOriginalPrompt,
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [promptWithDiffHighlights, setPromptWithDiffHighlights] = useState("");
+  const [isPromptPreviewModalVisible, setPromptPreviewModalVisible] =
+    useState(false);
+  const [prompt, setPrompt] = useState("");
   const [promptData, setPromptData] = useState({});
-  const [isEdit, setIsEdit] = useState(false);
-  const [startPromptEdit, setStartPromptEdit] = useState(false);
+  const [onEditMode, setOnEditMode] = useState(false);
+  const [anyUnsavedChanges, setAnyUnsavedChanges] = useState(false);
+  const [isCloseConfirmationModalVisible, setIsCloseConfirmationModalVisible] =
+    useState(false);
 
   const closeModal = () => {
-    setIsModalOpen(false);
+    setPromptPreviewModalVisible(false);
   };
 
   const logDiff = (diff) => {
@@ -89,7 +92,7 @@ export default function PromptPreview({
       // setPromptWithDiffHighlights(processedPrompt);
 
       // Switch off the highlighted diff for now, it's too error-prone
-      setPromptWithDiffHighlights(promptData.renderedPrompt);
+      setPrompt(promptData.renderedPrompt);
     }
   };
 
@@ -100,7 +103,8 @@ export default function PromptPreview({
         renderedPrompt: response.prompt,
         template: response.template,
       });
-      setIsModalOpen(true);
+      setPromptPreviewModalVisible(true);
+      setOnEditMode(false);
     });
   };
 
@@ -110,29 +114,19 @@ export default function PromptPreview({
   };
 
   useEffect(() => {
-    formatPromptForPreview(promptData);
+    setPrompt(promptData.renderedPrompt);
   }, [promptData]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(
-      promptWithDiffHighlights || promptData.renderedPrompt,
-    );
+    navigator.clipboard.writeText(prompt || promptData.renderedPrompt);
   };
 
-  const handleClose = () => {
-    if (isEdit) {
-      const confirmClose = window.confirm(
-        "Are you sure you want to close the prompt preview?",
-      );
-      if (confirmClose) {
-        setIsModalOpen(false);
-      } else {
-        return;
-      }
+  const onClosePromptPreviewModal = () => {
+    if (onEditMode) {
+      setIsCloseConfirmationModalVisible(true);
     }
-    setIsEdit(false);
-    setStartPromptEdit(false);
-    setIsModalOpen(false);
+    setAnyUnsavedChanges(false);
+    setPromptPreviewModalVisible(false);
   };
 
   return (
@@ -147,10 +141,10 @@ export default function PromptPreview({
 
       <Modal
         className="prompt-preview-modal"
-        title="View/Edit Prompt"
-        open={isModalOpen}
+        title="View / Edit Prompt"
+        open={isPromptPreviewModalVisible}
         onOk={closeModal}
-        onCancel={handleClose}
+        onCancel={onClosePromptPreviewModal}
         width={800}
         okButtonProps={{
           style: { display: "none" },
@@ -168,8 +162,8 @@ export default function PromptPreview({
           <div className="prompt-preview-actions">
             <Button
               className="prompt-preview-edit-btn"
-              onClick={() => setIsEdit(true)}
-              disabled={isEdit}
+              onClick={() => setOnEditMode(true)}
+              disabled={onEditMode}
             >
               <RiEdit2Line
                 style={{
@@ -188,13 +182,13 @@ export default function PromptPreview({
             </Button>
           </div>
         </div>
-        {isEdit ? (
+        {onEditMode ? (
           <textarea
             className="prompt-editor"
-            defaultValue={promptWithDiffHighlights}
+            defaultValue={prompt}
             onChange={(e) => {
-              setPromptWithDiffHighlights(e.target.value);
-              setStartPromptEdit(true);
+              setPrompt(e.target.value);
+              setAnyUnsavedChanges(true);
             }}
           ></textarea>
         ) : (
@@ -207,20 +201,23 @@ export default function PromptPreview({
               },
             }}
           >
-            {promptWithDiffHighlights}
+            {prompt}
           </ReactMarkdown>
         )}
         <div className="button-container">
-          <Button className="prompt-preview-close-btn" onClick={handleClose}>
+          <Button
+            className="prompt-preview-close-btn"
+            onClick={onClosePromptPreviewModal}
+          >
             CLOSE
           </Button>
-          {isEdit && (
+          {onEditMode && (
             <Button
               className="prompt-preview-start-chat-btn"
-              disabled={!startPromptEdit}
+              disabled={!anyUnsavedChanges}
               onClick={() => {
                 closeModal();
-                startNewChat(promptWithDiffHighlights);
+                startNewChat(prompt);
                 useOriginalPrompt(false);
               }}
             >
@@ -228,6 +225,24 @@ export default function PromptPreview({
             </Button>
           )}
         </div>
+      </Modal>
+      <Modal
+        className="close-confirmation-modal"
+        title="Are you sure you want to close?"
+        open={isCloseConfirmationModalVisible}
+        onOk={() => {
+          setIsCloseConfirmationModalVisible(false);
+        }}
+        okText="CLOSE ANYWAY"
+        cancelText="GO BACK"
+        closable={false}
+        onCancel={() => {
+          setIsCloseConfirmationModalVisible(false);
+          setPromptPreviewModalVisible(true);
+        }}
+      >
+        You have unsaved edits in the prompt. By closing any unsaved changes
+        will be lost.
       </Modal>
     </>
   );

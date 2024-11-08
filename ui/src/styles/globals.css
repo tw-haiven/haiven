@@ -655,6 +655,14 @@ h4, h5 {
   font-weight: var(--font-weight-semi-bold);
 }
 
+.close-confirmation-modal .ant-modal-content {
+  height: 200px;
+  width: 400px;
+}
+
+.close-confirmation-modal .ant-modal-body {
+  height: 80% !important;
+}
 /****** SCENARIO CARDS *******/
 .scenarios-collection {
   padding: 0 var(--standard-left-padding) var(--standard-left-padding) var(--standard-left-padding) ;
