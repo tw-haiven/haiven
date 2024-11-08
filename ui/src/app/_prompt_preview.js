@@ -94,7 +94,6 @@ export default function PromptPreview({
 
   const onRenderPrompt = () => {
     const requestData = buildRenderPromptRequest();
-    console.log("Request Data:", requestData);
     getRenderedPrompt(requestData, (response) => {
       setPromptData({
         renderedPrompt: response.prompt,
@@ -192,7 +191,10 @@ export default function PromptPreview({
           <textarea
             className="prompt-editor"
             defaultValue={promptWithDiffHighlights}
-            onChange={(e) => setPromptWithDiffHighlights(e.target.value)}
+            onChange={(e) => {
+              setPromptWithDiffHighlights(e.target.value);
+              setStartPromptEdit(true);
+            }}
           ></textarea>
         ) : (
           <ReactMarkdown
