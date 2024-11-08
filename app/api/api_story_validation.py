@@ -4,21 +4,16 @@ from pydantic import BaseModel
 from api.api_basics import HaivenBaseApi
 
 
-class StoryValidationQuestions(BaseModel):
-    userinput: str
-    context: str = None
-
-
 class QuestionAnswer(BaseModel):
     # In parallel we're building the new reusable follow-up functionality, need to use the new generic property names for compatibility
-    title: str  # question
-    summary: str  # answer
+    title: str = None  # question
+    summary: str = None  # answer
     thought: str = None
 
 
 class StoryValidationScenarios(BaseModel):
-    input: str
-    answers: List[QuestionAnswer]
+    input: str = None
+    answers: List[QuestionAnswer] = []
 
 
 def _concat_questions_answers(validationScenarios: StoryValidationScenarios):
