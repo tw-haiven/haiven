@@ -1,12 +1,13 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+
 import { useState, useEffect } from "react";
 import { Modal, Button } from "antd";
 import { RiClipboardLine, RiEdit2Line } from "react-icons/ri";
 import * as Diff from "diff";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { getRenderedPrompt } from "./_boba_api";
-import dynamic from "next/dynamic";
 
-const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 /*
  * buildRenderPromptRequest: function that returns an object with
       - userinput
@@ -17,7 +18,6 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [promptWithDiffHighlights, setPromptWithDiffHighlights] = useState("");
   const [promptData, setPromptData] = useState({});
-  const [viewMode, setViewMode] = useState("preview-mode");
   const [isEdit, setIsEdit] = useState(false);
   const [startPromptEdit, setStartPromptEdit] = useState(false);
 
@@ -142,6 +142,7 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
       </Button>
 
       <Modal
+        className="prompt-preview-modal"
         title="View/Edit Prompt"
         open={isModalOpen}
         onOk={closeModal}
@@ -183,20 +184,25 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
             </Button>
           </div>
         </div>
-        <div className={`prompt-preview ${viewMode}`}>
-          <MDEditor
-            // previewOptions={{
-            //   className: `${viewMode ? "preview-mode" : "edit-mode"}`,
-            // }}
-            hideToolbar={true}
-            height={400}
-            value={promptWithDiffHighlights}
-            onChange={(value) => {
-              setStartPromptEdit(true);
-              setPromptWithDiffHighlights(value);
+        {isEdit ? (
+          <textarea
+            className="prompt-editor"
+            defaultValue={promptWithDiffHighlights}
+            onChange={(e) => setPromptWithDiffHighlights(e.target.value)}
+          ></textarea>
+        ) : (
+          <ReactMarkdown
+            className="prompt-preview"
+            remarkPlugins={[[remarkGfm]]}
+            components={{
+              del(props) {
+                return highlightDiffs(props);
+              },
             }}
-          />
-        </div>
+          >
+            {promptWithDiffHighlights}
+          </ReactMarkdown>
+        )}
         <div className="button-container">
           <Button className="prompt-preview-close-btn" onClick={handleClose}>
             CLOSE
