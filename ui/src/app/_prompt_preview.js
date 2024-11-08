@@ -1,7 +1,5 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { useState, useEffect } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Modal, Button } from "antd";
 import { RiClipboardLine, RiEdit2Line } from "react-icons/ri";
 import * as Diff from "diff";
@@ -20,6 +18,8 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
   const [promptWithDiffHighlights, setPromptWithDiffHighlights] = useState("");
   const [promptData, setPromptData] = useState({});
   const [viewMode, setViewMode] = useState("preview-mode");
+  const [isEdit, setIsEdit] = useState(false);
+  const [startPromptEdit, setStartPromptEdit] = useState(false);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -110,7 +110,25 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
   }, [promptData]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(promptData.renderedPrompt);
+    navigator.clipboard.writeText(
+      promptWithDiffHighlights || promptData.renderedPrompt,
+    );
+  };
+
+  const handleClose = () => {
+    if (isEdit) {
+      const confirmClose = window.confirm(
+        "Are you sure you want to close the prompt preview?",
+      );
+      if (confirmClose) {
+        setIsModalOpen(false);
+      } else {
+        return;
+      }
+    }
+    setIsEdit(false);
+    setStartPromptEdit(false);
+    setIsModalOpen(false);
   };
 
   return (
@@ -143,7 +161,11 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
           </p>
 
           <div className="prompt-preview-actions">
-            <Button className="prompt-preview-edit-btn" onClick={handleCopy}>
+            <Button
+              className="prompt-preview-edit-btn"
+              onClick={() => setIsEdit(true)}
+              disabled={isEdit}
+            >
               <RiEdit2Line
                 style={{
                   fontSize: "large",
@@ -164,18 +186,30 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
         <div className={`prompt-preview ${viewMode}`}>
           <MDEditor
             // previewOptions={{
-            //   className: {`${viewMode? "preview-mode": "edit-mode"}`},
+            //   className: `${viewMode ? "preview-mode" : "edit-mode"}`,
             // }}
-            hideToolbar="true"
+            hideToolbar={true}
             height={400}
             value={promptWithDiffHighlights}
-            onChange={setPromptWithDiffHighlights}
+            onChange={(value) => {
+              setStartPromptEdit(true);
+              setPromptWithDiffHighlights(value);
+            }}
           />
         </div>
-
-        <Button className="prompt-preview-close-btn" onClick={closeModal}>
-          CLOSE
-        </Button>
+        <div className="button-container">
+          <Button className="prompt-preview-close-btn" onClick={handleClose}>
+            CLOSE
+          </Button>
+          {isEdit && (
+            <Button
+              className="prompt-preview-start-chat-btn"
+              disabled={!startPromptEdit}
+            >
+              START CHAT
+            </Button>
+          )}
+        </div>
       </Modal>
     </>
   );

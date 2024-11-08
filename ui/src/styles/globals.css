@@ -595,6 +595,7 @@ h4, h5 {
   height: 70svh;
   padding: 1em;
   overflow: auto;
+  margin-bottom: 10px;
 }
 
 .prompt-preview-btn {
@@ -620,8 +621,21 @@ h4, h5 {
   background-color: var(--color-dark-gray);
 }
 
-.prompt-preview-close-btn {
+.button-container {
+  display: flex;
+}
+
+.prompt-preview-close-btn{
   background-color: var(--color-dark-gray);
+  width: 100%;
+  height: 40px;
+}
+
+.prompt-preview-start-chat-btn {
+  background-color: var(--color-light-gray);
+  width: 100%;
+  height: 40px;
+  color: #2d2d2d;
 }
 
 .prompt-preview-diff-highlight {
