@@ -17,6 +17,7 @@ import { getRenderedPrompt } from "./_boba_api";
 export default function PromptPreview({
   buildRenderPromptRequest,
   startNewChat,
+  useOriginalPrompt,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [promptWithDiffHighlights, setPromptWithDiffHighlights] = useState("");
@@ -220,6 +221,7 @@ export default function PromptPreview({
               onClick={() => {
                 closeModal();
                 startNewChat(promptWithDiffHighlights);
+                useOriginalPrompt(false);
               }}
             >
               START CHAT

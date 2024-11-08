@@ -41,6 +41,7 @@ const PromptChat = ({
   const [chatSessionId, setChatSessionId] = useState();
   const [showChat, setShowChat] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [usePromptId, setUsePromptId] = useState(true);
 
   // Rendered prompt
   const [renderedPromptData, setRenderedPromptData] = useState({});
@@ -59,7 +60,7 @@ const PromptChat = ({
   const buildRequestBody = (userInput) => {
     return {
       userinput: userInput,
-      promptid: selectedPrompt?.identifier,
+      promptid: usePromptId ? selectedPrompt?.identifier : undefined,
       chatSessionId: chatSessionId,
       ...(selectedContext !== "base" && { context: selectedContext }),
       ...(selectedDocument !== "base" && { document: selectedDocument }),
@@ -78,6 +79,10 @@ const PromptChat = ({
       chatRef.current.startNewConversation(userInput);
       setIsExpanded(false);
     }
+  };
+
+  const useOriginalPrompt = async (usePromptId = true) => {
+    setUsePromptId(usePromptId);
   };
 
   const submitPromptToBackend = async (messages) => {
@@ -244,6 +249,7 @@ const PromptChat = ({
           <PromptPreview
             buildRenderPromptRequest={buildRenderPromptRequest}
             startNewChat={startNewChat}
+            useOriginalPrompt={useOriginalPrompt}
           />
         )}
         <Button onClick={() => startNewChat(null)} className="go-button">
