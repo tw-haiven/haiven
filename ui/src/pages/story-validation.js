@@ -2,16 +2,7 @@
 import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
 import { MenuFoldOutlined } from "@ant-design/icons";
-import {
-  Alert,
-  Button,
-  Card,
-  Input,
-  Space,
-  Spin,
-  Collapse,
-  message,
-} from "antd";
+import { Button, Card, Input, Collapse, message } from "antd";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import ReactMarkdown from "react-markdown";
@@ -21,28 +12,18 @@ import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
+import useLoader from "../hooks/useLoader";
 
 const StoryValidation = ({ contexts, models }) => {
   const [questions, setQuestions] = useState([]);
   const [storyScenarios, setStoryScenarios] = useState();
   const [storySummary, setStorySummary] = useState();
   const [scopeCritique, setScopeCritique] = useState();
-  const [isLoading, setLoading] = useState(false);
+  const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
-  const [currentAbortController, setCurrentAbortController] = useState();
   const [isExpanded, setIsExpanded] = useState(true);
   const placeholderHelp = "Describe all details of your user story here.";
-
-  function abortLoad(abortController) {
-    setLoading(false);
-    abortController && abortController.abort("User aborted");
-  }
-
-  function abortCurrentLoad() {
-    setLoading(false);
-    currentAbortController && currentAbortController.abort("User aborted");
-  }
 
   const handleContextSelection = (value) => {
     setSelectedContext(value);
@@ -64,12 +45,8 @@ const StoryValidation = ({ contexts, models }) => {
   };
 
   const onGenerateQuestions = () => {
-    abortCurrentLoad();
     clearAll();
 
-    const ctrl = new AbortController();
-    setCurrentAbortController(ctrl);
-    setLoading(true);
     setIsExpanded(false);
 
     const uri = "/api/prompt";
@@ -81,12 +58,12 @@ const StoryValidation = ({ contexts, models }) => {
       uri,
       {
         body: JSON.stringify(buildRequestData()),
-        signal: ctrl.signal,
+        signal: startLoad(),
       },
       {
         json: true,
         onErrorHandle: () => {
-          abortLoad(ctrl);
+          abortLoad();
         },
         onFinish: () => {
           if (ms == "") {
@@ -94,7 +71,7 @@ const StoryValidation = ({ contexts, models }) => {
               "Model failed to respond rightly, please rewrite your message and try again",
             );
           }
-          setLoading(false);
+          abortLoad();
         },
         onMessageHandle: (data, response) => {
           try {
@@ -109,7 +86,7 @@ const StoryValidation = ({ contexts, models }) => {
               if (Array.isArray(output)) {
                 setQuestions(output);
               } else {
-                abortLoad(ctrl);
+                abortLoad();
                 message.warning(
                   "Model failed to respond rightly, please rewrite your message and try again",
                 );
@@ -125,11 +102,6 @@ const StoryValidation = ({ contexts, models }) => {
   };
 
   const onSecondStep = (apiEndpoint, onData) => {
-    abortCurrentLoad();
-    const ctrl = new AbortController();
-    setCurrentAbortController(ctrl);
-    setLoading(true);
-
     let ms = "";
 
     fetchSSE(
@@ -139,11 +111,11 @@ const StoryValidation = ({ contexts, models }) => {
           input: promptInput,
           answers: questions,
         }),
-        signal: ctrl.signal,
+        signal: startLoad(),
       },
       {
         onErrorHandle: () => {
-          abortLoad(ctrl);
+          abortLoad();
         },
         onMessageHandle: (data) => {
           try {
@@ -155,7 +127,7 @@ const StoryValidation = ({ contexts, models }) => {
           }
         },
         onFinish: () => {
-          setLoading(false);
+          abortLoad();
         },
       },
     );
@@ -202,7 +174,7 @@ const StoryValidation = ({ contexts, models }) => {
           <Button
             onClick={onGenerateSummary}
             className="go-button"
-            disabled={isLoading}
+            disabled={loading}
           >
             GENERATE SUMMARY
           </Button>
@@ -232,7 +204,7 @@ const StoryValidation = ({ contexts, models }) => {
           <Button
             onClick={onGenerateScenarios}
             className="go-button"
-            disabled={isLoading}
+            disabled={loading}
           >
             GENERATE ACs
           </Button>
@@ -260,7 +232,7 @@ const StoryValidation = ({ contexts, models }) => {
           <Button
             onClick={onGenerateScopeCritique}
             className="go-button"
-            disabled={isLoading}
+            disabled={loading}
           >
             EVALUATE USER STORY SCOPE
           </Button>
@@ -313,7 +285,7 @@ const StoryValidation = ({ contexts, models }) => {
         <Button
           onClick={onGenerateQuestions}
           className="go-button"
-          disabled={isLoading}
+          disabled={loading}
         >
           GENERATE QUESTIONS
         </Button>
@@ -352,19 +324,7 @@ const StoryValidation = ({ contexts, models }) => {
               <h1 className="title-for-collapsed-panel">
                 Validate and Refine a User Story
               </h1>
-              {isLoading && (
-                <div className="user-input">
-                  <Spin />
-                  <Button
-                    type="secondary"
-                    danger
-                    onClick={abortLoad}
-                    className="stop-button"
-                  >
-                    STOP
-                  </Button>
-                </div>
-              )}
+              <StopLoad />
             </div>
             <div className={"scenarios-collection cards-display"}>
               {questions.length > 0 && <h2>Questions</h2>}

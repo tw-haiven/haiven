@@ -4,16 +4,7 @@ import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
 import { parse } from "best-effort-json-parser";
 import { MenuFoldOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Card,
-  Drawer,
-  Input,
-  Spin,
-  Select,
-  message,
-  Collapse,
-} from "antd";
+import { Button, Card, Drawer, Input, Select, message, Collapse } from "antd";
 const { TextArea } = Input;
 import { RiFileCopyLine } from "react-icons/ri";
 import ReactMarkdown from "react-markdown";
@@ -23,12 +14,11 @@ import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
 import CardActions, { scenarioToText } from "../app/_card_actions";
 import ChatExploration from "./_chat_exploration";
-
-let ctrl;
+import useLoader from "../hooks/useLoader";
 
 const RequirementsBreakdown = ({ contexts, models }) => {
   const [scenarios, setScenarios] = useState([]);
-  const [isLoading, setLoading] = useState(false);
+  const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
   const [variations, setVariations] = useState([
@@ -50,11 +40,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     "Describe the requirements that you'd like to break down";
 
   const router = useRouter();
-
-  function abortLoad() {
-    ctrl && ctrl.abort("Request aborted");
-    setLoading(false);
-  }
 
   const onCopyAll = () => {
     const allScenarios = scenarios.map(scenarioToText);
@@ -90,9 +75,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   };
 
   const onSubmitPrompt = () => {
-    abortLoad();
-    ctrl = new AbortController();
-    setLoading(true);
     setIsExpanded(false);
 
     const uri = "/api/requirements?variation=" + selectedVariation;
@@ -107,13 +89,13 @@ const RequirementsBreakdown = ({ contexts, models }) => {
       {
         method: "POST",
         credentials: "include",
-        signal: ctrl.signal,
+        signal: startLoad(),
         body: JSON.stringify(requestData),
       },
       {
         json: true,
         onErrorHandle: () => {
-          abortLoad(ctrl);
+          abortLoad();
         },
         onFinish: () => {
           if (ms == "") {
@@ -121,7 +103,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
               "Model failed to respond rightly, please rewrite your message and try again",
             );
           }
-          setLoading(false);
+          abortLoad();
         },
         onMessageHandle: (data) => {
           ms += data.data;
@@ -135,7 +117,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
             if (Array.isArray(output)) {
               setScenarios(output);
             } else {
-              abortLoad(ctrl);
+              abortLoad();
               message.warning(
                 "Model failed to respond rightly, please rewrite your message and try again",
               );
@@ -192,7 +174,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
           <Button
             onClick={onSubmitPrompt}
             className="go-button"
-            disabled={isLoading}
+            disabled={loading}
           >
             GENERATE
           </Button>
@@ -253,19 +235,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
               <h1 className="title-for-collapsed-panel">
                 Requirements Breakdown
               </h1>
-              {isLoading && (
-                <div className="user-input">
-                  <Spin />
-                  <Button
-                    type="secondary"
-                    danger
-                    onClick={abortLoad}
-                    className="stop-button"
-                  >
-                    STOP
-                  </Button>
-                </div>
-              )}
+              <StopLoad />
               {scenarios && scenarios.length > 0 && (
                 <Button type="link" className="copy-all" onClick={onCopyAll}>
                   <RiFileCopyLine fontSize="large" /> COPY ALL

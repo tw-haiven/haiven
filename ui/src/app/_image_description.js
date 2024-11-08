@@ -3,12 +3,11 @@ import React, { useState, useEffect } from "react";
 import { Flex, message, Upload, Button, Spin } from "antd";
 import { fetchSSE } from "./_fetch_sse";
 import { RiImageAddLine } from "react-icons/ri";
-
-let ctrl;
+import useLoader from "../hooks/useLoader";
 
 const DescribeImage = ({ onImageDescriptionChange }) => {
   const [image, setImage] = useState();
-  const [descriptionLoading, setDescriptionLoading] = useState(false);
+  const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [fileList, setFileList] = useState([]);
 
   const beforeUpload = async (file) => {
@@ -24,18 +23,10 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
     return isJpgOrPng && isLt2M;
   };
 
-  function abortDescriptionLoad() {
-    ctrl && ctrl.abort("User aborted");
-    setDescriptionLoading(false);
-  }
-
   const describeImage = async (image) => {
     const formData = new FormData();
     formData.append("file", image);
     formData.append("prompt", "Describe this technical diagram to me");
-
-    setDescriptionLoading(true);
-    ctrl = new AbortController();
 
     let ms = "";
     onImageDescriptionChange(ms);
@@ -47,15 +38,15 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
         credentials: "include",
         headers: {},
         body: formData,
-        signal: ctrl.signal,
+        signal: startLoad(),
       },
       {
         onErrorHandle: () => {
           onImageDescriptionChange("Error loading image description");
-          abortDescriptionLoad(false);
+          abortLoad();
         },
         onFinish: () => {
-          setDescriptionLoading(false);
+          abortLoad();
         },
         onMessageHandle: (data) => {
           try {
@@ -89,7 +80,7 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
         className="image-uploader"
         beforeUpload={beforeUpload}
         onChange={handleChange}
-        disabled={descriptionLoading}
+        disabled={loading}
         fileList={fileList}
       >
         <Button
@@ -105,19 +96,7 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
         </Button>
       </Upload>
 
-      {descriptionLoading && (
-        <div style={{ marginBottom: "1em", marginTop: "-1em" }}>
-          <Spin />
-          <Button
-            type="secondary"
-            danger
-            onClick={abortDescriptionLoad}
-            className="stop-button"
-          >
-            STOP
-          </Button>
-        </div>
-      )}
+      <StopLoad />
     </Flex>
   );
 };

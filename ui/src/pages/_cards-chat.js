@@ -23,8 +23,7 @@ import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
 import { addToPinboard } from "../app/_local_store";
 import CardActions from "../app/_card_actions";
-
-let ctrl;
+import useLoader from "../hooks/useLoader";
 
 const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const [selectedPromptId, setSelectedPromptId] = useState(promptId); // via query parameter
@@ -32,7 +31,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     useState({});
 
   const [scenarios, setScenarios] = useState([]);
-  const [isLoading, setLoading] = useState(false);
+  const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
 
@@ -40,8 +39,6 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     useState(false);
   const [cardExplorationDrawerTitle, setCardExplorationDrawerTitle] =
     useState("Explore");
-
-  const [currentAbortController, setCurrentAbortController] = useState();
 
   const [followUpResults, setFollowUpResults] = useState({});
   const [chatContext, setChatContext] = useState({});
@@ -65,16 +62,6 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const onCollapsibleIconClick = (e) => {
     setIsExpanded(!isExpanded);
   };
-
-  function abortLoad() {
-    ctrl && ctrl.abort("User aborted");
-    setLoading(false);
-  }
-
-  function abortCurrentLoad() {
-    setLoading(false);
-    currentAbortController && currentAbortController.abort("User aborted");
-  }
 
   const handleContextSelection = (value) => {
     setSelectedContext(value);
@@ -151,10 +138,6 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   };
 
   const sendFirstStepPrompt = () => {
-    abortLoad();
-    ctrl = new AbortController();
-    setLoading(true);
-
     const uri = "/api/prompt";
 
     let ms = "";
@@ -164,13 +147,13 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
       uri,
       {
         method: "POST",
-        signal: ctrl.signal,
+        signal: startLoad(),
         body: JSON.stringify(buildRequestDataFirstStep()),
       },
       {
         json: true,
         onErrorHandle: () => {
-          abortLoad(ctrl);
+          abortLoad();
         },
         onFinish: () => {
           if (ms == "") {
@@ -178,7 +161,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
               "Model failed to respond rightly, please rewrite your message and try again",
             );
           }
-          setLoading(false);
+          abortLoad();
         },
         onMessageHandle: (data) => {
           ms += data.data;
@@ -192,7 +175,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
             if (Array.isArray(output)) {
               setScenarios(output);
             } else {
-              abortLoad(ctrl);
+              abortLoad();
               if (ms.includes("Error code:")) {
                 message.error(ms);
               } else {
@@ -209,22 +192,17 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   };
 
   const sendFollowUpPrompt = (apiEndpoint, onData, followUpId) => {
-    abortCurrentLoad();
-    const ctrl = new AbortController();
-    setCurrentAbortController(ctrl);
-    setLoading(true);
-
     let ms = "";
 
     fetchSSE(
       apiEndpoint,
       {
         body: JSON.stringify(buildRequestDataSecondStep(followUpId)),
-        signal: ctrl.signal,
+        signal: startLoad(),
       },
       {
         onErrorHandle: () => {
-          abortLoad(ctrl);
+          abortLoad();
         },
         onMessageHandle: (data) => {
           try {
@@ -236,7 +214,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           }
         },
         onFinish: () => {
-          setLoading(false);
+          abortLoad();
         },
       },
     );
@@ -325,7 +303,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           <Button
             onClick={sendFirstStepPrompt}
             className="go-button"
-            disabled={isLoading}
+            disabled={loading}
           >
             GENERATE
           </Button>
@@ -410,19 +388,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
               <h1 className="title-for-collapsed-panel">
                 {selectedPromptConfiguration.title}
               </h1>
-              {isLoading && (
-                <div className="user-input">
-                  <Spin />
-                  <Button
-                    type="secondary"
-                    danger
-                    onClick={abortLoad}
-                    className="stop-button"
-                  >
-                    STOP
-                  </Button>
-                </div>
-              )}
+              <StopLoad />
               {scenarios && scenarios.length > 0 && (
                 <Button type="link" className="copy-all" onClick={onCopyAll}>
                   <RiFileCopyLine fontSize="large" /> COPY ALL

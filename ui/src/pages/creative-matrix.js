@@ -1,13 +1,12 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
-import { Input, Button, Spin, Select, Collapse, message } from "antd";
+import { Input, Button, Select, Collapse, message } from "antd";
 import { MenuFoldOutlined } from "@ant-design/icons";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import { fetchSSE } from "../app/_fetch_sse";
 import Disclaimer from "./_disclaimer";
-
-let ctrl;
+import useLoader from "../hooks/useLoader";
 
 const CreativeMatrix = ({ models }) => {
   const [rowsCSV, setRowsCSV] = useState("For Customers, For Employees");
@@ -24,7 +23,7 @@ const CreativeMatrix = ({ models }) => {
     columnsCSV.split(",").map((v) => v.trim()),
   );
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isLoading, setLoading] = useState(false);
+  const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [matrix, setMatrix] = useState([]);
   const [templates, setTemplates] = useState([
     {
@@ -110,15 +109,7 @@ const CreativeMatrix = ({ models }) => {
     return ret.ideas || [];
   };
 
-  function abortLoad() {
-    ctrl && ctrl.abort("Request aborted");
-    setLoading(false);
-  }
-
   const onGenerateMatrix = () => {
-    abortLoad();
-    ctrl = new AbortController();
-    setLoading(true);
     setIsExpanded(false);
 
     const uri =
@@ -134,16 +125,15 @@ const CreativeMatrix = ({ models }) => {
       numberOfIdeas;
 
     let ms = "";
-    let isLoadingXhr = true;
     let output = [];
     try {
       fetchSSE(
         uri,
-        { method: "GET", signal: ctrl.signal },
+        { method: "GET", signal: startLoad() },
         {
           json: true,
           onErrorHandle: () => {
-            abortLoad(ctrl);
+            abortLoad();
           },
           onFinish: () => {
             if (ms == "") {
@@ -151,13 +141,9 @@ const CreativeMatrix = ({ models }) => {
                 "Model failed to respond rightly, please rewrite your message and try again",
               );
             }
-            setLoading(false);
+            abortLoad();
           },
           onMessageHandle: (data) => {
-            if (!isLoadingXhr) {
-              console.log("is loading xhr", isLoadingXhr);
-              return;
-            }
             ms += data.data;
             ms = ms.trim().replace(/^[^[]+/, "");
             if (ms.startsWith("[")) {
@@ -169,7 +155,7 @@ const CreativeMatrix = ({ models }) => {
               if (Array.isArray(output)) {
                 setMatrix(output);
               } else {
-                abortLoad(ctrl);
+                abortLoad();
                 message.warning(
                   "Model failed to respond rightly, please rewrite your message and try again",
                 );
@@ -181,8 +167,7 @@ const CreativeMatrix = ({ models }) => {
       );
     } catch (error) {
       console.log("error", error);
-      setLoading(false);
-      isLoadingXhr = false;
+
       abortLoad();
     }
   };
@@ -208,7 +193,7 @@ const CreativeMatrix = ({ models }) => {
           placeholder="Prompt for the intersection of row and column"
           value={prompt}
           onChange={onChangePrompt}
-          disabled={isLoading}
+          disabled={loading}
         />
       </div>
       <div className="user-input">
@@ -217,7 +202,7 @@ const CreativeMatrix = ({ models }) => {
           placeholder="Comma-separated list of values"
           value={rowsCSV}
           onChange={onChangeRowsCSV}
-          disabled={isLoading}
+          disabled={loading}
         />
       </div>
       <div className="user-input">
@@ -227,7 +212,7 @@ const CreativeMatrix = ({ models }) => {
           placeholder="Comma-separated list of values"
           value={columnsCSV}
           onChange={onChangeColumnsCSV}
-          disabled={isLoading}
+          disabled={loading}
         />
       </div>
       <div className="user-input">
@@ -235,7 +220,7 @@ const CreativeMatrix = ({ models }) => {
         <Select
           defaultValue={"3"}
           onChange={handleSelectChange}
-          disabled={isLoading}
+          disabled={loading}
           className="small"
           options={[
             { value: "1", label: "1 idea" },
@@ -254,7 +239,7 @@ const CreativeMatrix = ({ models }) => {
           mode="tags"
           placeholder="List of adjectives/qualifiers"
           onChange={onChangeIdeaQualifiers}
-          disabled={isLoading}
+          disabled={loading}
           options={[
             { value: "utopian", label: "Utopian" },
             { value: "dystopian", label: "Dystopian" },
@@ -274,7 +259,7 @@ const CreativeMatrix = ({ models }) => {
         <Button
           onClick={onGenerateMatrix}
           className="go-button"
-          disabled={isLoading}
+          disabled={loading}
         >
           GENERATE MATRIX
         </Button>
@@ -306,19 +291,7 @@ const CreativeMatrix = ({ models }) => {
           <Disclaimer models={models} />
           <div className="prompt-chat-header">
             <h1 className="title-for-collapsed-panel">Creative Matrix</h1>
-            {isLoading && (
-              <div className="user-input">
-                <Spin />
-                <Button
-                  type="secondary"
-                  danger
-                  onClick={abortLoad}
-                  className="stop-button"
-                >
-                  STOP
-                </Button>
-              </div>
-            )}
+            <StopLoad />
           </div>
           <div className="matrix-container">
             <div>

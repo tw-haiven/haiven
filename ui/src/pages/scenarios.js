@@ -9,7 +9,6 @@ import {
   Checkbox,
   Input,
   Select,
-  Spin,
   Radio,
   message,
   Collapse,
@@ -30,13 +29,13 @@ import {
 } from "react-icons/ri";
 import Disclaimer from "./_disclaimer";
 import CardActions, { scenarioToText } from "../app/_card_actions";
-let ctrl;
+import useLoader from "../hooks/useLoader";
 import ChatExploration from "./_chat_exploration";
 
 const Home = ({ models }) => {
   const [numOfScenarios, setNumOfScenarios] = useState("6");
   const [scenarios, setScenarios] = useState([]);
-  const [isLoading, setLoading] = useState(false);
+  const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [isDetailed, setDetailed] = useState(false);
   const [displayMode, setDisplayMode] = useState("grid");
   const [prompt, setPrompt] = useState("");
@@ -50,29 +49,24 @@ const Home = ({ models }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [chatContext, setChatContext] = useState({});
 
-  function abortLoad() {
-    ctrl && ctrl.abort("User aborted");
-    setLoading(false);
-  }
-
   function handleSelectChange(value) {
     setNumOfScenarios(value);
-    setLoading(false);
+    abortLoad();
   }
 
   function handleSelectTimeHorizonChange(value) {
     setTimeHorizon(value);
-    setLoading(false);
+    abortLoad();
   }
 
   function handleSelectOptimismChange(value) {
     setOptimism(value);
-    setLoading(false);
+    abortLoad();
   }
 
   function handleSelectRealismChange(value) {
     setRealism(value);
-    setLoading(false);
+    abortLoad();
   }
 
   const onCopyAll = () => {
@@ -109,11 +103,7 @@ const Home = ({ models }) => {
   };
 
   const onSubmitPrompt = async () => {
-    abortLoad();
-    ctrl = new AbortController();
-    setLoading(true);
     setIsExpanded(false);
-    // setPrompt(value);
 
     const uri =
       "/api/make-scenario" +
@@ -139,11 +129,11 @@ const Home = ({ models }) => {
 
     fetchSSE(
       uri,
-      { method: "GET", signal: ctrl.signal },
+      { method: "GET", signal: startLoad() },
       {
         json: true,
         onErrorHandle: () => {
-          abortLoad(ctrl);
+          abortLoad();
         },
         onFinish: () => {
           if (ms == "") {
@@ -151,7 +141,7 @@ const Home = ({ models }) => {
               "Model failed to respond rightly, please rewrite your message and try again",
             );
           }
-          setLoading(false);
+          abortLoad();
         },
         onMessageHandle: (data) => {
           try {
@@ -166,7 +156,7 @@ const Home = ({ models }) => {
               if (Array.isArray(output)) {
                 setScenarios(output);
               } else {
-                abortLoad(ctrl);
+                abortLoad();
                 message.warning(
                   "Model failed to respond rightly, please rewrite your message and try again",
                 );
@@ -192,7 +182,7 @@ const Home = ({ models }) => {
           <Select
             defaultValue={"5"}
             onChange={handleSelectChange}
-            disabled={isLoading}
+            disabled={loading}
             options={[
               { value: "1", label: "1 scenario" },
               { value: "3", label: "3 scenarios" },
@@ -205,7 +195,7 @@ const Home = ({ models }) => {
           <Select
             defaultValue={"10-year"}
             onChange={handleSelectTimeHorizonChange}
-            disabled={isLoading}
+            disabled={loading}
             options={[
               { value: "5-year", label: "5-year horizon" },
               { value: "10-year", label: "10-year horizon" },
@@ -217,7 +207,7 @@ const Home = ({ models }) => {
           <Select
             defaultValue={"optimistic"}
             onChange={handleSelectOptimismChange}
-            disabled={isLoading}
+            disabled={loading}
             options={[
               {
                 value: "optimistic",
@@ -248,7 +238,7 @@ const Home = ({ models }) => {
           <Select
             defaultValue={"futuristic sci-fi"}
             onChange={handleSelectRealismChange}
-            disabled={isLoading}
+            disabled={loading}
             options={[
               {
                 value: "realistic",
@@ -287,7 +277,7 @@ const Home = ({ models }) => {
           ></Select>
         </div>
         <div className="user-input">
-          <Checkbox onChange={handleDetailCheck} disabled={isLoading}>
+          <Checkbox onChange={handleDetailCheck} disabled={loading}>
             Add details (signals, threats, opportunties)
           </Checkbox>
         </div>
@@ -295,7 +285,7 @@ const Home = ({ models }) => {
         <div className="user-input">
           <label>Strategic prompt</label>
           <TextArea
-            disabled={isLoading}
+            disabled={loading}
             value={prompt}
             onChange={(e, v) => {
               setPrompt(e.target.value);
@@ -307,7 +297,7 @@ const Home = ({ models }) => {
           <Button
             onClick={onSubmitPrompt}
             className="go-button"
-            disabled={isLoading}
+            disabled={loading}
           >
             GENERATE
           </Button>
@@ -366,19 +356,7 @@ const Home = ({ models }) => {
             <Disclaimer models={models} />
             <div className="prompt-chat-header">
               <h1 className="title-for-collapsed-panel">Scenarios</h1>
-              {isLoading && (
-                <div className="user-input">
-                  <Spin />
-                  <Button
-                    type="secondary"
-                    danger
-                    onClick={abortLoad}
-                    className="stop-button"
-                  >
-                    STOP
-                  </Button>
-                </div>
-              )}
+              <StopLoad />
               {scenarios && scenarios.length > 0 && (
                 <Button type="link" className="copy-all" onClick={onCopyAll}>
                   <RiFileCopyLine fontSize="large" /> COPY ALL
