@@ -28,10 +28,6 @@ export default function PromptPreview({
   const [isCloseConfirmationModalVisible, setIsCloseConfirmationModalVisible] =
     useState(false);
 
-  const closeModal = () => {
-    setPromptPreviewModalVisible(false);
-  };
-
   const logDiff = (diff) => {
     let text = part.added
       ? "XX"
@@ -122,11 +118,11 @@ export default function PromptPreview({
   };
 
   const onClosePromptPreviewModal = () => {
-    if (onEditMode) {
+    if (onEditMode && anyUnsavedChanges) {
       setIsCloseConfirmationModalVisible(true);
+    } else {
+      setPromptPreviewModalVisible(false);
     }
-    setAnyUnsavedChanges(false);
-    setPromptPreviewModalVisible(false);
   };
 
   return (
@@ -136,22 +132,15 @@ export default function PromptPreview({
         type="link"
         onClick={onRenderPrompt}
       >
-        Preview prompt
+        View/Edit Prompt
       </Button>
 
       <Modal
         className="prompt-preview-modal"
-        title="View / Edit Prompt"
+        title="View/Edit Prompt"
         open={isPromptPreviewModalVisible}
-        onOk={closeModal}
         onCancel={onClosePromptPreviewModal}
         width={800}
-        okButtonProps={{
-          style: { display: "none" },
-        }}
-        cancelButtonProps={{
-          style: { display: "none" },
-        }}
       >
         <div className="prompt-preview-header">
           <p>
@@ -195,11 +184,6 @@ export default function PromptPreview({
           <ReactMarkdown
             className="prompt-preview"
             remarkPlugins={[[remarkGfm]]}
-            components={{
-              del(props) {
-                return highlightDiffs(props);
-              },
-            }}
           >
             {prompt}
           </ReactMarkdown>
@@ -216,7 +200,7 @@ export default function PromptPreview({
               className="prompt-preview-start-chat-btn"
               disabled={!anyUnsavedChanges}
               onClick={() => {
-                closeModal();
+                setPromptPreviewModalVisible(false);
                 startNewChat(prompt);
                 useOriginalPrompt(false);
               }}
@@ -230,19 +214,32 @@ export default function PromptPreview({
         className="close-confirmation-modal"
         title="Are you sure you want to close?"
         open={isCloseConfirmationModalVisible}
-        onOk={() => {
-          setIsCloseConfirmationModalVisible(false);
-        }}
-        okText="CLOSE ANYWAY"
-        cancelText="GO BACK"
         closable={false}
-        onCancel={() => {
-          setIsCloseConfirmationModalVisible(false);
-          setPromptPreviewModalVisible(true);
-        }}
       >
-        You have unsaved edits in the prompt. By closing any unsaved changes
-        will be lost.
+        <p>
+          You have unsaved edits in the prompt. By closing any unsaved changes
+          will be lost.
+        </p>
+
+        <div className="confirmation-modal-footer">
+          <Button
+            className="confirmation-modal-close-btn"
+            onClick={() => {
+              setPromptPreviewModalVisible(false);
+              setIsCloseConfirmationModalVisible(false);
+            }}
+          >
+            CLOSE ANYWAY
+          </Button>
+          <Button
+            className="confirmation-modal-cancel-btn"
+            onClick={() => {
+              setIsCloseConfirmationModalVisible(false);
+            }}
+          >
+            GO BACK
+          </Button>
+        </div>
       </Modal>
     </>
   );
