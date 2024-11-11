@@ -81,10 +81,6 @@ const PromptChat = ({
     }
   };
 
-  const useOriginalPrompt = async (usePromptId = true) => {
-    setUsePromptId(usePromptId);
-  };
-
   const submitPromptToBackend = async (messages) => {
     const lastMessage = messages[messages.length - 1];
     let requestData;
@@ -249,7 +245,7 @@ const PromptChat = ({
           <PromptPreview
             buildRenderPromptRequest={buildRenderPromptRequest}
             startNewChat={startNewChat}
-            useOriginalPrompt={useOriginalPrompt}
+            setUsePromptId={setUsePromptId}
           />
         )}
         <Button onClick={() => startNewChat(null)} className="go-button">

@@ -17,7 +17,7 @@ import { getRenderedPrompt } from "./_boba_api";
 export default function PromptPreview({
   buildRenderPromptRequest,
   startNewChat,
-  useOriginalPrompt,
+  setUsePromptId,
 }) {
   const [isPromptPreviewModalVisible, setPromptPreviewModalVisible] =
     useState(false);
@@ -93,7 +93,9 @@ export default function PromptPreview({
   };
 
   const onRenderPrompt = () => {
+    setUsePromptId(true);
     const requestData = buildRenderPromptRequest();
+    console.log("requestData", requestData);
     getRenderedPrompt(requestData, (response) => {
       setPromptData({
         renderedPrompt: response.prompt,
@@ -200,9 +202,11 @@ export default function PromptPreview({
               className="prompt-preview-start-chat-btn"
               disabled={!anyUnsavedChanges}
               onClick={() => {
-                setPromptPreviewModalVisible(false);
+                setUsePromptId(false);
                 startNewChat(prompt);
-                useOriginalPrompt(false);
+
+                setUsePromptId(true);
+                setPromptPreviewModalVisible(false);
               }}
             >
               START CHAT
