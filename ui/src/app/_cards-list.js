@@ -82,12 +82,15 @@ const CardsList = ({
           </div>
         )}
       </div>
-      <div className={"scenarios-collection " + displayMode + "-display"}>
+      <div
+        className={"scenarios-collection " + displayMode + "-display"}
+        style={{ height: "auto", flex: "none" }}
+      >
         <div className="cards-container with-display-mode">
           {scenarios.map((scenario, i) => {
             return (
               <Card title={scenario.title} key={i} className="scenario">
-                <div className="scenario-card-content">
+                <div className="scenario-card-content" style={{ width: "80%" }}>
                   {onScenariosEdit !== undefined ? (
                     <TextArea
                       value={scenario.summary}
@@ -96,7 +99,7 @@ const CardsList = ({
                         updatedScenarios[i].summary = e.target.value;
                         onScenariosEdit(updatedScenarios);
                       }}
-                      rows={4}
+                      rows={10}
                       data-testid={`scenario-summary-${i}`}
                     />
                   ) : (

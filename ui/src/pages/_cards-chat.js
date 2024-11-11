@@ -326,7 +326,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
               <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
             )}
           />
-          <div className="chat-container-wrapper">
+          <div className="chat-container-wrapper" style={{ display: "flex" }}>
             <Disclaimer models={models} />
             <CardsList
               title={selectedPromptConfiguration.title}
