@@ -656,7 +656,7 @@ h4, h5 {
   font-weight: var(--font-weight-semi-bold);
 }
 
-.confirmation-modal-footer {
+.close-confirmation-modal {
   .ant-modal-content {
     height: 190px;
     width: 350px;
@@ -683,7 +683,7 @@ h4, h5 {
         }
       }
 
-    .modal-footer {
+    .confirmation-modal-footer {
       width: 100%;
       position: absolute;
       bottom: 0;
