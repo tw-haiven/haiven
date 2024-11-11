@@ -561,7 +561,7 @@ h4, h5 {
   align-items: center;
   margin: 0;
   gap: 1.5em;
-  padding-left: 2em;
+  padding-left: var(--standard-left-padding);
 }
 
 .prompt-chat-header:not(:empty) {
@@ -681,7 +681,8 @@ h4, h5 {
   height: 400px;
   display: flex;
   flex-direction: column;
-  margin: 0.8em;
+  margin-right: 1.6em;
+  margin-bottom: 1.6em;
   border: 1px solid var(--color-light-gray);
   box-shadow: none !important;
 }
@@ -755,6 +756,12 @@ h4, h5 {
 .follow-up-container {
   display: flex;
   flex-direction: column;
+  padding-left: var(--standard-left-padding);
+  padding-bottom: var(--standard-left-padding);
+}
+
+.follow-up-container .ant-collapse-item {
+  margin-bottom: 0.3em;
 }
 
 /**** STORY VALIDATION ******/
