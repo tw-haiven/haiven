@@ -4,16 +4,15 @@ import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
 import { parse } from "best-effort-json-parser";
 import { MenuFoldOutlined } from "@ant-design/icons";
-import { Button, Card, Drawer, Input, Select, message, Collapse } from "antd";
+import { Button, Drawer, Input, Select, message, Collapse } from "antd";
 const { TextArea } = Input;
-import { RiFileCopyLine } from "react-icons/ri";
-import ReactMarkdown from "react-markdown";
 
 import ContextChoice from "../app/_context_choice";
 import HelpTooltip from "../app/_help_tooltip";
 import Disclaimer from "./_disclaimer";
-import CardActions, { scenarioToText } from "../app/_card_actions";
+import { scenarioToText } from "../app/_card_actions";
 import ChatExploration from "./_chat_exploration";
+import CardsList from "../app/_cards-list";
 import useLoader from "../hooks/useLoader";
 
 const RequirementsBreakdown = ({ contexts, models }) => {
@@ -129,10 +128,12 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     );
   };
 
+  const promptTitle = "Requirements Breakdown";
+
   const promptMenu = (
     <div>
       <div className="prompt-chat-options-section">
-        <h1>Requirements Breakdown</h1>
+        <h1>{promptTitle}</h1>
         <p>
           Haiven will help you break down your requirement into multiple work
           packages.
@@ -231,37 +232,12 @@ const RequirementsBreakdown = ({ contexts, models }) => {
           />
           <div className="chat-container-wrapper">
             <Disclaimer models={models} />
-            <div className="prompt-chat-header">
-              <h1 className="title-for-collapsed-panel">
-                Requirements Breakdown
-              </h1>
-              <StopLoad />
-              {scenarios && scenarios.length > 0 && (
-                <Button type="link" className="copy-all" onClick={onCopyAll}>
-                  <RiFileCopyLine fontSize="large" /> COPY ALL
-                </Button>
-              )}
-            </div>
-
-            <div className={"scenarios-collection grid-display"}>
-              <div className="cards-container">
-                {scenarios.map((scenario, i) => {
-                  return (
-                    <Card title={scenario.title} key={i} className="scenario">
-                      <div className="scenario-card-content">
-                        <ReactMarkdown className="scenario-summary">
-                          {scenario.summary}
-                        </ReactMarkdown>
-                      </div>
-                      <CardActions
-                        scenario={scenario}
-                        onExploreHandler={onExplore}
-                      />
-                    </Card>
-                  );
-                })}
-              </div>
-            </div>
+            <CardsList
+              scenarios={scenarios}
+              title={promptTitle}
+              onExplore={onExplore}
+              stopLoadComponent={<StopLoad />}
+            />
           </div>
         </div>
       </div>
