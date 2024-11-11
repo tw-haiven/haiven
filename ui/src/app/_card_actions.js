@@ -6,7 +6,7 @@ import { Button, Tooltip, message } from "antd";
 export const scenarioToText = (scenario) => {
   let markdown = `## ${scenario.title}\n\n`;
   Object.keys(scenario).map((key) => {
-    if (key !== "title") {
+    if (key !== "title" && key !== "hidden") {
       const value = scenario[key];
       if (Array.isArray(value)) {
         markdown += `**${key.charAt(0).toUpperCase() + key.slice(1)}:**\n${value.map((item) => `- ${item}`).join("\n")}\n\n`;
