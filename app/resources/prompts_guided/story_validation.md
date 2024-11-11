@@ -34,6 +34,6 @@ Come up with 5-10 questions that you would ask to clarify the user story:
 
 You will respond with only a valid JSON array of title-summary objects, where the title is the question, and the summary is the answer. Each object will have the following schema:
 
-    - "thought": <string>,
+    - "hidden": <string>, (the thought you had)
     - "title": <string>, (the question)
     - "summary": <string>, (the suggeste answer)
