@@ -1,4 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+import json
 import os
 from typing import List
 from litellm import completion
@@ -38,6 +39,54 @@ class HaivenSystemMessage(HaivenMessage):
         return SystemMessage(content=self.content)
 
 
+class MockDelta(BaseModel):
+    content: str
+
+
+class MockChoice(BaseModel):
+    delta: MockDelta
+
+
+class MockResult(BaseModel):
+    choices: List[MockChoice]
+
+
+class MockModelClient:
+    def completion(self, messages, model=None, **kwargs):
+        message = messages[0]["content"]
+        test_data = [
+            "[Mock response]",
+            "User Stories:",
+            "\n\n",
+            "1. As a customer, I want to be able to browse the available items in the online store so that",
+            " I can find something to add to my basket.",
+            "\n",
+            "2. As a customer, I want to be able to search for specific items in the online store",
+            " so that I can quickly find and add them to my basket.",
+            "\n",
+        ]
+        if "json" in message.lower():
+            full_test_scenario = {
+                "title": "Full mocked scenario",
+                "summary": "A description",
+                "probability": "Low - Most users would have no reason to deny",
+                "impact": "Medium - This could lead to accountability issues",
+            }
+            test_data = [
+                "[ {",
+                ' "title": ',
+                ' "Mock scenario 1"',
+                ', "summary": ',
+                ' "scenario description" ' " }, { ",
+                ' "title": ',
+                ' "Hello scenario 2" }',
+                json.dumps(full_test_scenario),
+                "]",
+            ]
+        for chunk in test_data:
+            yield MockResult(choices=[MockChoice(delta=MockDelta(content=chunk))])
+
+
 class ChatClient:
     def __init__(self, model_config: ModelConfig):
         self.model_config = model_config
@@ -48,9 +97,13 @@ class ChatClient:
         else:
             return {}
 
-    def stream(self, messages: List[HaivenMessage]):
+    def stream(self, messages: List[HaivenMessage], mock: bool = False):
         json_messages = [message.to_json() for message in messages]
-        for result in completion(
+        if os.environ.get("MOCK_AI", False):
+            completion_fn = MockModelClient().completion
+        else:
+            completion_fn = completion
+        for result in completion_fn(
             model=self.model_config.lite_id,
             messages=json_messages,
             stream=True,
