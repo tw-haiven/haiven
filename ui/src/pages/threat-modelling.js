@@ -112,10 +112,12 @@ const ThreatModelling = ({ contexts, models }) => {
   const placeholderHelp =
     "Describe your users, the assets to protect, and how data flows through your system.";
 
+  const promptTitle = "Threat Modelling";
+
   const promptPanel = (
     <div>
       <div className="prompt-chat-options-section">
-        <h1>Threat Modelling</h1>
+        <h1>{promptTitle}</h1>
       </div>
 
       <div className="prompt-chat-options-section">
@@ -203,7 +205,7 @@ const ThreatModelling = ({ contexts, models }) => {
             <Disclaimer models={models} />
             <CardsList
               scenarios={scenarios}
-              title="Threat Modelling"
+              title={promptTitle}
               matrixMode={true}
               onExplore={onExplore}
               stopLoadComponent={<StopLoad />}

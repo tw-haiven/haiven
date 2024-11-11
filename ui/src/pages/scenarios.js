@@ -4,46 +4,38 @@ import { fetchSSE } from "../app/_fetch_sse";
 import { MenuFoldOutlined } from "@ant-design/icons";
 import {
   Button,
-  Card,
   Drawer,
   Checkbox,
   Input,
   Select,
-  Radio,
   message,
   Collapse,
 } from "antd";
-import ScenariosPlot from "./_plot";
 import { parse } from "best-effort-json-parser";
 const { TextArea } = Input;
 
 import {
-  RiStackLine,
-  RiGridLine,
   RiThumbDownLine,
   RiThumbUpLine,
   RiRocket2Line,
   RiFileImageLine,
   RiAliensLine,
-  RiFileCopyLine,
 } from "react-icons/ri";
 import Disclaimer from "./_disclaimer";
-import CardActions, { scenarioToText } from "../app/_card_actions";
+import { scenarioToText } from "../app/_card_actions";
 import useLoader from "../hooks/useLoader";
 import ChatExploration from "./_chat_exploration";
+import CardsList from "../app/_cards-list";
 
 const Home = ({ models }) => {
   const [numOfScenarios, setNumOfScenarios] = useState("6");
   const [scenarios, setScenarios] = useState([]);
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [isDetailed, setDetailed] = useState(false);
-  const [displayMode, setDisplayMode] = useState("grid");
   const [prompt, setPrompt] = useState("");
   const [timeHorizon, setTimeHorizon] = useState("5 years");
   const [optimism, setOptimism] = useState("optimistic");
   const [realism, setRealism] = useState("scifi");
-  const [strangeness, setStrangeness] = useState("neutral");
-  const [voice, setVoice] = useState("serious");
   const [isExpanded, setIsExpanded] = useState(true);
   const [drawerTitle, setDrawerTitle] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -81,10 +73,6 @@ const Home = ({ models }) => {
     else setDisplayMode("grid");
   };
 
-  const onSelectDisplayMode = (event) => {
-    setDisplayMode(event.target.value);
-  };
-
   const onCollapsibleIconClick = (e) => {
     setIsExpanded(!isExpanded);
   };
@@ -118,11 +106,7 @@ const Home = ({ models }) => {
       "&optimism=" +
       encodeURIComponent(optimism) +
       "&realism=" +
-      encodeURIComponent(realism) +
-      "&strangeness=" +
-      encodeURIComponent(strangeness) +
-      "&voice=" +
-      encodeURIComponent(voice);
+      encodeURIComponent(realism);
 
     let ms = "";
     let output = [];
@@ -171,10 +155,16 @@ const Home = ({ models }) => {
     );
   };
 
+  const promptTitle = "Scenario Design";
+
   const promptMenu = (
     <div>
       <div className="prompt-chat-options-section">
-        <h1>Scenarios</h1>
+        <h1>{promptTitle}</h1>
+        <p>
+          Brainstorm a range of scenarios for your product domain based on
+          criteria like time horizon, realism, and optimism.
+        </p>
       </div>
       <div className="prompt-chat-options-section">
         <div className="user-input">
@@ -354,111 +344,12 @@ const Home = ({ models }) => {
           />
           <div className="chat-container-wrapper">
             <Disclaimer models={models} />
-            <div className="prompt-chat-header">
-              <h1 className="title-for-collapsed-panel">Scenarios</h1>
-              <StopLoad />
-              {scenarios && scenarios.length > 0 && (
-                <Button type="link" className="copy-all" onClick={onCopyAll}>
-                  <RiFileCopyLine fontSize="large" /> COPY ALL
-                </Button>
-              )}
-              {scenarios && scenarios.length > 0 && (
-                <div className="scenarios-actions">
-                  <Radio.Group
-                    className="display-mode-choice"
-                    onChange={onSelectDisplayMode}
-                    defaultValue="grid"
-                    style={{ float: "right" }}
-                    size="small"
-                  >
-                    <Radio.Button value="grid">
-                      <RiStackLine /> CARD VIEW
-                    </Radio.Button>
-                    <Radio.Button value="plot">
-                      <RiGridLine /> MATRIX VIEW
-                    </Radio.Button>
-                  </Radio.Group>
-                </div>
-              )}
-            </div>
-            <div className={"scenarios-collection " + displayMode + "-display"}>
-              <div className="cards-container with-display-mode">
-                {scenarios.map((scenario, i) => {
-                  return (
-                    <Card title={scenario.title} key={i} className="scenario">
-                      <div className="scenario-card-content">
-                        <div className="scenario-summary">
-                          {scenario.summary}
-                        </div>
-                        {scenario.horizon && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">Horizon</div>
-                            <div className="card-prop-value">
-                              {scenario.horizon}
-                            </div>
-                          </div>
-                        )}
-                        {scenario.plausibility && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">Plausibility</div>
-                            <div className="card-prop-value">
-                              {scenario.plausibility}
-                            </div>
-                          </div>
-                        )}
-                        {scenario.probability && (
-                          <div className="card-prop stackable">
-                            <div className="card-prop-name">Probability</div>
-                            <div className="card-prop-value">
-                              {scenario.probability}
-                            </div>
-                          </div>
-                        )}
-                        {scenario.signals && (
-                          <div className="card-prop">
-                            <div className="card-prop-name">
-                              Signals/Driving Forces
-                            </div>
-                            <div className="card-prop-value">
-                              {(scenario.signals || []).join(", ")}
-                            </div>
-                          </div>
-                        )}
-                        {scenario.threats && (
-                          <div className="card-prop">
-                            <div className="card-prop-name">Threats</div>
-                            <div className="card-prop-value">
-                              {(scenario.threats || []).join(", ")}
-                            </div>
-                          </div>
-                        )}
-                        {scenario.opportunities && (
-                          <div className="card-prop">
-                            <div className="card-prop-name">Opportunities</div>
-                            <div className="card-prop-value">
-                              {(scenario.opportunities || []).join(", ")}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      <CardActions
-                        scenario={scenario}
-                        onExploreHandler={onExplore}
-                      />
-                    </Card>
-                  );
-                })}
-              </div>
-              <div
-                className="scenarios-plot-container"
-                style={{ display: displayMode == "plot" ? "block" : "none" }}
-              >
-                <ScenariosPlot
-                  scenarios={scenarios}
-                  visible={displayMode == "plot"}
-                />
-              </div>
-            </div>
+            <CardsList
+              scenarios={scenarios}
+              title={promptTitle}
+              onExplore={onExplore}
+              stopLoadComponent={<StopLoad />}
+            />
           </div>
         </div>
       </div>
