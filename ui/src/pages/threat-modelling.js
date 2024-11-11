@@ -131,6 +131,7 @@ const ThreatModelling = ({ contexts, models }) => {
               setPromptInput(e.target.value);
             }}
             rows={10}
+            data-testid="user-input"
           />
         </div>
         <ContextChoice
