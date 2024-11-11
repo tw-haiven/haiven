@@ -47,7 +47,10 @@ const PromptChat = ({
   const [renderedPromptData, setRenderedPromptData] = useState({});
   const [showRenderedPrompt, setShowRenderedPrompt] = useState(false);
 
-  useEffect(() => setShowChat(false), []);
+  useEffect(() => {
+    setShowChat(false);
+    setUsePromptId(true);
+  });
 
   const buildUserInput = () => {
     let userInput = promptInput;

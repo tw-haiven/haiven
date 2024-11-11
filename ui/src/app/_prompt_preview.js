@@ -93,7 +93,6 @@ export default function PromptPreview({
   };
 
   const onRenderPrompt = () => {
-    setUsePromptId(true);
     const requestData = buildRenderPromptRequest();
     console.log("requestData", requestData);
     getRenderedPrompt(requestData, (response) => {
@@ -204,8 +203,6 @@ export default function PromptPreview({
               onClick={() => {
                 setUsePromptId(false);
                 startNewChat(prompt);
-
-                setUsePromptId(true);
                 setPromptPreviewModalVisible(false);
               }}
             >
