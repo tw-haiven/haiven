@@ -35,11 +35,13 @@ export default function CardActions({ scenario, onExploreHandler }) {
 
   return (
     <div className="card-actions-footer">
-      <Tooltip title="Chat with Haiven" key="chat">
-        <Button type="link" onClick={() => onExploreHandler(scenario)}>
-          <RiChat2Line fontSize="large" />
-        </Button>
-      </Tooltip>
+      {onExploreHandler && (
+        <Tooltip title="Chat with Haiven" key="chat">
+          <Button type="link" onClick={() => onExploreHandler(scenario)}>
+            <RiChat2Line fontSize="large" />
+          </Button>
+        </Tooltip>
+      )}
       <Tooltip title="Copy" key="copy">
         <Button type="link" onClick={() => onCopyOne(scenario)}>
           <RiFileCopyLine fontSize="large" />
