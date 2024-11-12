@@ -6,8 +6,8 @@ function ContextChoice({ contexts, value, onChange }) {
   return (
     <div className="user-input">
       <label>
-        Contexts
-        <HelpTooltip text="You can define reusable descriptions of your domain and architecture in your knowledge pack, and pull them into the prompt here." />
+        Your Context
+        <HelpTooltip text="Choose a context that is relevant to your domain / industry / situation / organisation." />
       </label>
       <Select
         onChange={onChange}
