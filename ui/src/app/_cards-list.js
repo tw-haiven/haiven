@@ -9,11 +9,13 @@ const { TextArea } = Input;
 
 const CardsList = ({
   scenarios,
+  setScenarios,
   title,
-  matrixMode: matrix,
   onExplore,
   stopLoadComponent,
-  onScenariosEdit,
+  matrixMode: matrix,
+  editable,
+  selectable,
 }) => {
   const [displayMode, setDisplayMode] = useState("grid");
 
@@ -27,6 +29,20 @@ const CardsList = ({
     message.success("Content copied successfully!");
   };
 
+  const onScenarioDescriptionChanged = (e, i) => {
+    const updatedScenarios = [...scenarios];
+    updatedScenarios[i].summary = e.target.value;
+    setScenarios(updatedScenarios);
+  };
+
+  const onScenarioSelectionChanged = (e, i) => {
+    const scenarioElement = document.querySelectorAll(".scenario")[i];
+    scenarioElement.classList.toggle("excluded");
+    const updatedScenarios = [...scenarios];
+    updatedScenarios[i].exclude = !e.target.checked;
+    setScenarios(updatedScenarios);
+  };
+
   const camelCaseToHumanReadable = (str) => {
     return str
       .replace(/([A-Z])/g, " $1")
@@ -35,7 +51,13 @@ const CardsList = ({
 
   const renderScenarioDetails = (scenario) => {
     return Object.keys(scenario).map((key) => {
-      if (key === "title" || key === "summary" || key === "hidden") return null;
+      if (
+        key === "title" ||
+        key === "summary" ||
+        key === "hidden" ||
+        key === "exclude"
+      )
+        return null;
       const value = scenario[key];
       return (
         <div key={key}>
@@ -91,13 +113,11 @@ const CardsList = ({
             return (
               <Card title={scenario.title} key={i} className="scenario">
                 <div className="scenario-card-content">
-                  {onScenariosEdit !== undefined ? (
+                  {editable === true ? (
                     <TextArea
                       value={scenario.summary}
                       onChange={(e) => {
-                        const updatedScenarios = [...scenarios];
-                        updatedScenarios[i].summary = e.target.value;
-                        onScenariosEdit(updatedScenarios);
+                        onScenarioDescriptionChanged(e, i);
                       }}
                       rows={10}
                       data-testid={`scenario-summary-${i}`}
@@ -112,7 +132,17 @@ const CardsList = ({
                   )}
                   {renderScenarioDetails(scenario)}
                 </div>
-                <CardActions scenario={scenario} onExploreHandler={onExplore} />
+                <CardActions
+                  scenario={scenario}
+                  onExploreHandler={onExplore}
+                  onScenarioSelectionHandler={
+                    selectable === true
+                      ? (e) => {
+                          onScenarioSelectionChanged(e, i);
+                        }
+                      : undefined
+                  }
+                />
               </Card>
             );
           })}

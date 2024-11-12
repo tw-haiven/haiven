@@ -101,8 +101,9 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
       userinput: promptInput,
       context: selectedContext,
       promptid: followUpId,
-
-      scenarios: scenarios.map(scenarioToJson), // title, content
+      scenarios: scenarios
+        .filter((scenario) => scenario.exclude !== true)
+        .map(scenarioToJson),
       previous_promptid: selectedPromptConfiguration.identifier,
     };
   };
@@ -332,8 +333,11 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
             <CardsList
               title={selectedPromptConfiguration.title}
               scenarios={scenarios}
-              onScenariosEdit={
-                selectedPromptConfiguration.editable ? setScenarios : undefined
+              setScenarios={setScenarios}
+              editable={selectedPromptConfiguration.editable}
+              selectable={
+                selectedPromptConfiguration.followUps !== undefined &&
+                selectedPromptConfiguration.followUps.length > 0
               }
               onExplore={onExplore}
               stopLoadComponent={<StopLoad />}
@@ -342,6 +346,10 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
               <div className="follow-up-container">
                 <div style={{ marginTop: "1em" }}>
                   <h3>What you can do next</h3>
+                  <p>
+                    Generate more content based on the cards selected above.
+                    Deselect cards to exclude them from the next step.
+                  </p>
                 </div>
                 <Collapse
                   items={followUpCollapseItems}

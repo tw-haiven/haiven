@@ -84,8 +84,19 @@ const whenGenerateIsClicked = () => {
   fireEvent.click(mainGenerateButton);
 };
 
+const whenScenarioIsDeselected = () => {
+  const includeCheckBoxes = screen.getAllByTestId("scenario-include-checkbox");
+  expect(includeCheckBoxes.length).toBe(someScenarios.length);
+  includeCheckBoxes.forEach((checkbox) => {
+    checkbox.checked = true;
+  });
+
+  fireEvent.click(includeCheckBoxes[includeCheckBoxes.length - 1]);
+};
+
 const thenStopButtonIsDisplayed = () => {
   expect(screen.getByTestId("stop-button")).toBeInTheDocument();
+  expect(screen.getByTestId("stop-button")).toBeVisible();
 };
 
 const thenPromptPanelIsHidden = () => {
@@ -113,6 +124,7 @@ const thenScenariosAreRendered = () => {
   expect(nonEditableSummary).toBeInTheDocument();
   expect(nonEditableSummary.tagName.toLowerCase()).not.toBe("textarea");
 };
+
 describe("CardsChat Component", () => {
   afterEach(() => {
     vi.clearAllMocks();
@@ -129,18 +141,23 @@ describe("CardsChat Component", () => {
       const body = JSON.parse(bodyString);
       expect(body.userinput).toBe(someUserInput);
       expect(body.promptid).toBe(mockPrompts[0].followUps[0].identifier);
+      expect(body.scenarios.length).toBe(someScenarios.length - 1); // one scenario is deselected
       expect(body.scenarios[0].title).toBe(someScenarios[0].title);
       expect(body.previous_promptid).toBe(mockPrompts[0].identifier);
     };
 
     const whenFollowUpGenerateIsClicked = () => {
       const followUpCollapse = screen.getByTestId("follow-up-collapse");
-      const firstFollowUp = within(followUpCollapse).getByText(/Follow Up 1/i);
-      expect(firstFollowUp).toBeInTheDocument();
-      fireEvent.click(firstFollowUp);
-      const followUpGenerateButton =
-        within(followUpCollapse).getAllByText(/GENERATE/i)[0];
-      fireEvent.click(followUpGenerateButton);
+      const firstFollowUpArea = within(followUpCollapse).getByText(
+        mockPrompts[0].followUps[0].title,
+      );
+      expect(firstFollowUpArea).toBeInTheDocument();
+      fireEvent.click(firstFollowUpArea);
+
+      const followUpGenerateButtons =
+        within(followUpCollapse).getAllByText(/GENERATE/i);
+      expect(followUpGenerateButtons.length).toBe(1);
+      fireEvent.click(followUpGenerateButtons[0]);
     };
 
     const thenFollowUpIsRendered = () => {
@@ -169,6 +186,8 @@ describe("CardsChat Component", () => {
       thenPromptPanelIsHidden();
       thenStopButtonIsDisplayed();
       thenScenariosAreRendered();
+
+      whenScenarioIsDeselected();
       whenFollowUpGenerateIsClicked();
       expect(fetchSSE).toHaveBeenCalledTimes(2);
 
