@@ -590,6 +590,11 @@ h4, h5 {
   font-weight: var(--font-weight-semi-bold);
 }
 
+.prompt-preview-btn {
+  float: right;
+  padding-right: 0px;
+}
+
 .prompt-preview-modal {
   top: 50px;
 
@@ -642,10 +647,6 @@ h4, h5 {
       padding-top: 2em;
     }
 
-    .prompt-preview-btn {
-      padding-left: 0;
-    }
-
     .prompt-preview-actions {
       display: flex;
       gap: 1em;
@@ -682,6 +683,11 @@ h4, h5 {
       .prompt-preview-start-chat-btn,
       .prompt-preview-start-chat-btn:hover {
         background-color: var(--color-flamingo);
+      }
+
+      .prompt-preview-start-chat-btn:disabled {
+        color: #a7b0b3;
+        background-color: var(--color-light-gray);
       }
     }
   }
