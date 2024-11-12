@@ -69,8 +69,6 @@ const Home = ({ models }) => {
 
   const handleDetailCheck = (event) => {
     setDetailed(event.target.checked);
-    if (event.target.checked) setDisplayMode("list");
-    else setDisplayMode("grid");
   };
 
   const onCollapsibleIconClick = (e) => {
