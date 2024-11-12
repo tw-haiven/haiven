@@ -228,7 +228,7 @@ h4, h5 {
 
 .section-header .tooltip-help {
   margin-left: 0.5em;
-  fill: var(--color-sapphire)
+  fill: var(--color-sapphire);
 }
 
 .config-icon {
