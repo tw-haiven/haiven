@@ -24,6 +24,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
+  const [iterationPrompt, setIterationPrompt] = useState("");
 
   const [cardExplorationDrawerOpen, setCardExplorationDrawerOpen] =
     useState(false);
@@ -33,6 +34,8 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const [followUpResults, setFollowUpResults] = useState({});
   const [chatContext, setChatContext] = useState({});
   const [isExpanded, setIsExpanded] = useState(true);
+
+  const [chatSessionId, setChatSessionId] = useState();
 
   useEffect(() => {
     if (selectedPromptId !== undefined && selectedPromptId !== null) {
@@ -97,6 +100,10 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   };
 
   const buildRequestDataSecondStep = (followUpId) => {
+    // add IDs to the scenarios
+    scenarios.forEach((scenario, i) => {
+      if (scenario.id === undefined) scenario.id = i;
+    });
     return {
       userinput: promptInput,
       context: selectedContext,
@@ -105,6 +112,22 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
         .filter((scenario) => scenario.exclude !== true)
         .map(scenarioToJson),
       previous_promptid: selectedPromptConfiguration.identifier,
+    };
+  };
+
+  const buildRequestDataIterate = () => {
+    // add IDs to the scenarios
+    scenarios.forEach((scenario, i) => {
+      if (scenario.id === undefined) scenario.id = i + 1;
+    });
+    return {
+      userinput: iterationPrompt,
+      scenarios: JSON.stringify(
+        scenarios
+          .filter((scenario) => scenario.exclude !== true)
+          .map(scenarioToJson),
+      ),
+      chatSessionId: chatSessionId,
     };
   };
 
@@ -135,7 +158,10 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           }
           abortLoad();
         },
-        onMessageHandle: (data) => {
+        onMessageHandle: (data, response) => {
+          const chatId = response.headers.get("X-Chat-ID");
+          setChatSessionId(chatId);
+
           ms += data.data;
           ms = ms.trim().replace(/^[^[]+/, "");
           if (ms.startsWith("[")) {
@@ -187,6 +213,81 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
         },
         onFinish: () => {
           abortLoad();
+        },
+      },
+    );
+  };
+
+  const iterateScenarios = (partiallyParsed) => {
+    partiallyParsed.forEach((parsedScenario) => {
+      const existingScenario = scenarios.find(
+        (scenario) => scenario.id === parsedScenario.id,
+      );
+      if (existingScenario) {
+        Object.assign(existingScenario, parsedScenario);
+        console.log(JSON.stringify(existingScenario));
+        // Remove any empty properties (sometimes happens with partial parsing)
+        Object.keys(existingScenario).forEach(
+          (key) =>
+            existingScenario[key] === "" ||
+            (existingScenario[key] === undefined &&
+              delete existingScenario[key]),
+        );
+      }
+    });
+    setScenarios([...scenarios]);
+  };
+
+  const sendIteration = () => {
+    setIsExpanded(false);
+    const uri = "/api/prompt/iterate";
+
+    let ms = "";
+    let output = [];
+
+    fetchSSE(
+      uri,
+      {
+        method: "POST",
+        signal: startLoad(),
+        body: JSON.stringify(buildRequestDataIterate()),
+      },
+      {
+        json: true,
+        onErrorHandle: () => {
+          abortLoad();
+        },
+        onFinish: () => {
+          if (ms == "") {
+            message.warning(
+              "Model failed to respond rightly, please rewrite your message and try again",
+            );
+          }
+          abortLoad();
+        },
+        onMessageHandle: (data) => {
+          ms += data.data;
+          ms = ms.trim().replace(/^[^[]+/, "");
+          if (ms.startsWith("[")) {
+            try {
+              output = parse(ms || "[]");
+            } catch (error) {
+              console.log("error", error);
+            }
+            if (Array.isArray(output)) {
+              iterateScenarios(output);
+            } else {
+              abortLoad();
+              if (ms.includes("Error code:")) {
+                message.error(ms);
+              } else {
+                message.warning(
+                  "Model failed to respond rightly, please rewrite your message and try again",
+                );
+              }
+              console.log("response is not parseable into an array");
+            }
+          }
         },
       },
     );
@@ -330,6 +431,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           />
           <div className="chat-container-wrapper" style={{ display: "flex" }}>
             <Disclaimer models={models} />
+
             <CardsList
               title={selectedPromptConfiguration.title}
               scenarios={scenarios}
@@ -342,6 +444,23 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
               onExplore={onExplore}
               stopLoadComponent={<StopLoad />}
             />
+            {scenarios.length > 0 && (
+              <div style={{ width: "50%", paddingLeft: "2em" }}>
+                <Input
+                  value={iterationPrompt}
+                  onChange={(e, v) => {
+                    setIterationPrompt(e.target.value);
+                  }}
+                />
+                <Button
+                  onClick={sendIteration}
+                  size="small"
+                  className="go-button"
+                >
+                  GENERATE
+                </Button>
+              </div>
+            )}
             {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
               <div className="follow-up-container">
                 <div style={{ marginTop: "1em" }}>

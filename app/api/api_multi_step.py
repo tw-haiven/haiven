@@ -10,9 +10,8 @@ class TitleContent(BaseModel):
     content: str = None
 
 
-class FollowUpPromptInput(BaseModel):
-    input: str
-    scenarios: List[TitleContent]
+class IterateRequest(PromptRequestBody):
+    scenarios: str
 
 
 class FollowUpRequest(PromptRequestBody):
@@ -36,12 +35,6 @@ class ApiMultiStep(HaivenBaseApi):
 
     def __init__(self, app, chat_session_memory, model_key, prompt_list):
         super().__init__(app, chat_session_memory, model_key, prompt_list)
-
-        # - Input for frontend: a list of promptIds - first step, multiple prompt options for next step?
-        # - First step always returns cards, which are then editable in the UI
-        # - Other steps always return text
-        #       !! could that just be the break-out chat?!
-        # 1. call POST api/prompt with the first prompt id to
 
         @app.post("/api/prompt/follow-up")
         def generate_follow_up(prompt_data: FollowUpRequest):
@@ -141,6 +134,53 @@ I want to focus on this item:
                     chat_category="explore",
                     chat_session_key_value=prompt_data.chatSessionId,
                     document_key=prompt_data.document,
+                )
+
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+
+        @app.post("/api/prompt/iterate")
+        def iterate(prompt_data: IterateRequest):
+            try:
+                if prompt_data.chatSessionId is None or prompt_data.chatSessionId == "":
+                    raise HTTPException(
+                        status_code=400, detail="chatSessionId is required"
+                    )
+                stream_fn = self.stream_json_chat
+
+                rendered_prompt = (
+                    f"""
+                    
+                    My new request:
+                    {prompt_data.userinput}
+                    """
+                    + """
+
+                    ### Output format: JSON with at least the "id" property repeated
+
+                    Here is my current working state of the data, iterate on those objects based on that request,
+                    and only return your new list of the objects in JSON format, nothing else.
+                    Be sure to repeat back to me the JSON that I already have, and only update it with my new request.
+
+                    Definitely repeat back to me the "id" property, so I can track your changes back to my original data.
+
+                    For example, if I give you
+                    [ { "title": "Paris", "id": 1 }, { "title": "London", "id": 2 } ]
+                    and ask you to add information about what you know about each of these cities, then return to me
+                    [ { "summary": "capital of France", "id": 1 }, { "summary": "Capital of the UK", "id": 2 } ]
+"""
+                    + f"""
+                    ### Current JSON data
+                    {prompt_data.scenarios}
+
+                    Please iterate on this data based on my request. Apply my request to ALL of the objects.
+                """
+                )
+
+                return stream_fn(
+                    prompt=rendered_prompt,
+                    chat_category="boba-chat",
+                    chat_session_key_value=prompt_data.chatSessionId,
                 )
 
             except Exception as e:

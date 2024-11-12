@@ -60,6 +60,13 @@ const someScenarios = [
 ];
 const someUserInput = "Here is my prompt input";
 const followUpResponse = "Follow-up response";
+const mockResponseObj = {
+  headers: {
+    get: () => {
+      return "";
+    },
+  },
+};
 
 const setup = async () => {
   await act(async () => {
@@ -169,13 +176,19 @@ describe("CardsChat Component", () => {
         thenFirstPromptRequestHappens(options.body);
 
         const scenarioString = JSON.stringify(someScenarios);
-        onMessageHandle({ data: scenarioString.substring(0, 10) });
-        onMessageHandle({ data: scenarioString.substring(10) });
+        onMessageHandle(
+          { data: scenarioString.substring(0, 10) },
+          mockResponseObj,
+        );
+        onMessageHandle(
+          { data: scenarioString.substring(10) },
+          mockResponseObj,
+        );
       })
       .mockImplementationOnce((url, options, { onMessageHandle }) => {
         thenFollowUpPromptRequestHappens(options.body);
 
-        onMessageHandle(followUpResponse);
+        onMessageHandle(followUpResponse, mockResponseObj);
       });
 
     await setup();
@@ -207,8 +220,11 @@ describe("CardsChat Component", () => {
 
     fetchSSE.mockImplementationOnce((url, options, { onMessageHandle }) => {
       const scenarioString = JSON.stringify(someScenarios);
-      onMessageHandle({ data: scenarioString.substring(0, 10) });
-      onMessageHandle({ data: scenarioString.substring(10) });
+      onMessageHandle(
+        { data: scenarioString.substring(0, 10) },
+        mockResponseObj,
+      );
+      onMessageHandle({ data: scenarioString.substring(10) }, mockResponseObj);
     });
 
     await act(async () => {
@@ -241,7 +257,7 @@ describe("CardsChat Component", () => {
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
           const scenariosArrayString = JSON.stringify(someScenarios);
-          onMessageHandle({ data: scenariosArrayString });
+          onMessageHandle({ data: scenariosArrayString }, mockResponseObj);
           onFinish();
         },
       );
@@ -259,9 +275,12 @@ describe("CardsChat Component", () => {
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
           const scenariosArrayString = JSON.stringify(someScenarios);
-          onMessageHandle({
-            data: "```Here is your json:" + scenariosArrayString,
-          });
+          onMessageHandle(
+            {
+              data: "```Here is your json:" + scenariosArrayString,
+            },
+            mockResponseObj,
+          );
           onFinish();
         },
       );
@@ -279,7 +298,10 @@ describe("CardsChat Component", () => {
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
           const scenariosString = JSON.stringify(someScenarios);
-          onMessageHandle({ data: scenariosString + "```Here is your json:" });
+          onMessageHandle(
+            { data: scenariosString + "```Here is your json:" },
+            mockResponseObj,
+          );
           onFinish();
         },
       );
@@ -299,7 +321,7 @@ describe("CardsChat Component", () => {
         (url, options, { onMessageHandle, onFinish }) => {
           const streamingData = { response: someScenarios };
           const streamingDataAsString = JSON.stringify(streamingData);
-          onMessageHandle({ data: streamingDataAsString });
+          onMessageHandle({ data: streamingDataAsString }, mockResponseObj);
           onFinish();
         },
       );
@@ -317,7 +339,7 @@ describe("CardsChat Component", () => {
       vi.spyOn(message, "warning");
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
-          onMessageHandle({ data: '{"title": "some title"}' });
+          onMessageHandle({ data: '{"title": "some title"}' }, mockResponseObj);
           onFinish();
         },
       );
@@ -335,7 +357,7 @@ describe("CardsChat Component", () => {
       vi.spyOn(message, "warning");
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
-          onMessageHandle({ data: "not a json object" });
+          onMessageHandle({ data: "not a json object" }, mockResponseObj);
           onFinish();
         },
       );

@@ -268,7 +268,10 @@ const PromptChat = ({
 
   return (
     <>
-      <div className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}>
+      <div
+        className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
+        style={{ height: "100%" }}
+      >
         <Collapse
           className="prompt-chat-options-container"
           items={collapseItem}
