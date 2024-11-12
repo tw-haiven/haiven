@@ -41,12 +41,16 @@ const PromptChat = ({
   const [chatSessionId, setChatSessionId] = useState();
   const [showChat, setShowChat] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [usePromptId, setUsePromptId] = useState(true);
 
   // Rendered prompt
   const [renderedPromptData, setRenderedPromptData] = useState({});
   const [showRenderedPrompt, setShowRenderedPrompt] = useState(false);
 
-  useEffect(() => setShowChat(false), []);
+  useEffect(() => {
+    setShowChat(false);
+    setUsePromptId(true);
+  });
 
   const buildUserInput = () => {
     let userInput = promptInput;
@@ -59,21 +63,22 @@ const PromptChat = ({
   const buildRequestBody = (userInput) => {
     return {
       userinput: userInput,
-      promptid: selectedPrompt?.identifier,
+      promptid: usePromptId ? selectedPrompt?.identifier : undefined,
       chatSessionId: chatSessionId,
       ...(selectedContext !== "base" && { context: selectedContext }),
       ...(selectedDocument !== "base" && { document: selectedDocument }),
     };
   };
 
-  const startNewChat = async () => {
+  const startNewChat = async (userInput = null) => {
     if (chatRef.current) {
       // the ProChat controls the flow - let it know we have a new message,
       // the ultimate request will come back to "submitPromptToBackend" function here
       setChatSessionId(undefined);
       setConversationStarted(false);
-
-      let userInput = buildUserInput();
+      if (!userInput) {
+        userInput = buildUserInput();
+      }
       chatRef.current.startNewConversation(userInput);
       setIsExpanded(false);
     }
@@ -240,9 +245,13 @@ const PromptChat = ({
       {contextSection}
       <div className="prompt-chat-options-section">
         {showTextSnippets && (
-          <PromptPreview buildRenderPromptRequest={buildRenderPromptRequest} />
+          <PromptPreview
+            buildRenderPromptRequest={buildRenderPromptRequest}
+            startNewChat={startNewChat}
+            setUsePromptId={setUsePromptId}
+          />
         )}
-        <Button onClick={startNewChat} className="go-button">
+        <Button onClick={() => startNewChat(null)} className="go-button">
           START CHAT
         </Button>
       </div>

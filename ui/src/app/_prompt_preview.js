@@ -1,29 +1,32 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+
 import { useState, useEffect } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Modal, Button } from "antd";
 import { RiClipboardLine, RiEdit2Line } from "react-icons/ri";
 import * as Diff from "diff";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { getRenderedPrompt } from "./_boba_api";
-import dynamic from "next/dynamic";
 
-const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 /*
  * buildRenderPromptRequest: function that returns an object with
       - userinput
       - promptid
       - document
 */
-export default function PromptPreview({ buildRenderPromptRequest }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [promptWithDiffHighlights, setPromptWithDiffHighlights] = useState("");
+export default function PromptPreview({
+  buildRenderPromptRequest,
+  startNewChat,
+  setUsePromptId,
+}) {
+  const [isPromptPreviewModalVisible, setPromptPreviewModalVisible] =
+    useState(false);
+  const [prompt, setPrompt] = useState("");
   const [promptData, setPromptData] = useState({});
-  const [viewMode, setViewMode] = useState("preview-mode");
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  const [onEditMode, setOnEditMode] = useState(false);
+  const [anyUnsavedChanges, setAnyUnsavedChanges] = useState(false);
+  const [isCloseConfirmationModalVisible, setIsCloseConfirmationModalVisible] =
+    useState(false);
 
   const logDiff = (diff) => {
     let text = part.added
@@ -85,18 +88,20 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
       // setPromptWithDiffHighlights(processedPrompt);
 
       // Switch off the highlighted diff for now, it's too error-prone
-      setPromptWithDiffHighlights(promptData.renderedPrompt);
+      setPrompt(promptData.renderedPrompt);
     }
   };
 
   const onRenderPrompt = () => {
     const requestData = buildRenderPromptRequest();
+    console.log("requestData", requestData);
     getRenderedPrompt(requestData, (response) => {
       setPromptData({
         renderedPrompt: response.prompt,
         template: response.template,
       });
-      setIsModalOpen(true);
+      setPromptPreviewModalVisible(true);
+      setOnEditMode(false);
     });
   };
 
@@ -106,11 +111,19 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
   };
 
   useEffect(() => {
-    formatPromptForPreview(promptData);
+    setPrompt(promptData.renderedPrompt);
   }, [promptData]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(promptData.renderedPrompt);
+    navigator.clipboard.writeText(prompt || promptData.renderedPrompt);
+  };
+
+  const onClosePromptPreviewModal = () => {
+    if (onEditMode && anyUnsavedChanges) {
+      setIsCloseConfirmationModalVisible(true);
+    } else {
+      setPromptPreviewModalVisible(false);
+    }
   };
 
   return (
@@ -120,21 +133,15 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
         type="link"
         onClick={onRenderPrompt}
       >
-        Preview prompt
+        View/Edit Prompt
       </Button>
 
       <Modal
+        className="prompt-preview-modal"
         title="View/Edit Prompt"
-        open={isModalOpen}
-        onOk={closeModal}
-        onCancel={closeModal}
+        open={isPromptPreviewModalVisible}
+        onCancel={onClosePromptPreviewModal}
         width={800}
-        okButtonProps={{
-          style: { display: "none" },
-        }}
-        cancelButtonProps={{
-          style: { display: "none" },
-        }}
       >
         <div className="prompt-preview-header">
           <p>
@@ -143,7 +150,11 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
           </p>
 
           <div className="prompt-preview-actions">
-            <Button className="prompt-preview-edit-btn" onClick={handleCopy}>
+            <Button
+              className="prompt-preview-edit-btn"
+              onClick={() => setOnEditMode(true)}
+              disabled={onEditMode}
+            >
               <RiEdit2Line
                 style={{
                   fontSize: "large",
@@ -161,21 +172,75 @@ export default function PromptPreview({ buildRenderPromptRequest }) {
             </Button>
           </div>
         </div>
-        <div className={`prompt-preview ${viewMode}`}>
-          <MDEditor
-            // previewOptions={{
-            //   className: {`${viewMode? "preview-mode": "edit-mode"}`},
-            // }}
-            hideToolbar="true"
-            height={400}
-            value={promptWithDiffHighlights}
-            onChange={setPromptWithDiffHighlights}
-          />
+        {onEditMode ? (
+          <textarea
+            className="prompt-editor"
+            defaultValue={prompt}
+            onChange={(e) => {
+              setPrompt(e.target.value);
+              setAnyUnsavedChanges(true);
+            }}
+          ></textarea>
+        ) : (
+          <ReactMarkdown
+            className="prompt-preview"
+            remarkPlugins={[[remarkGfm]]}
+          >
+            {prompt}
+          </ReactMarkdown>
+        )}
+        <div className="button-container">
+          <Button
+            className="prompt-preview-close-btn"
+            onClick={onClosePromptPreviewModal}
+          >
+            CLOSE
+          </Button>
+          {onEditMode && (
+            <Button
+              className="prompt-preview-start-chat-btn"
+              disabled={!anyUnsavedChanges}
+              onClick={() => {
+                setUsePromptId(false);
+                startNewChat(prompt);
+                setPromptPreviewModalVisible(false);
+              }}
+            >
+              START CHAT
+            </Button>
+          )}
         </div>
+      </Modal>
+      <Modal
+        className="close-confirmation-modal"
+        title="Are you sure you want to close?"
+        open={isCloseConfirmationModalVisible}
+        closable={false}
+      >
+        <p>
+          You have unsaved edits in the prompt. By closing any unsaved changes
+          will be lost.
+        </p>
 
-        <Button className="prompt-preview-close-btn" onClick={closeModal}>
-          CLOSE
-        </Button>
+        <div className="confirmation-modal-footer">
+          <Button
+            className="confirmation-modal-close-btn"
+            onClick={() => {
+              setPromptPreviewModalVisible(false);
+              setIsCloseConfirmationModalVisible(false);
+            }}
+          >
+            CLOSE ANYWAY
+          </Button>
+          <Button
+            className="confirmation-modal-cancel-btn"
+            onClick={() => {
+              setIsCloseConfirmationModalVisible(false);
+            }}
+          >
+            GO BACK
+          </Button>
+        </div>
       </Modal>
     </>
   );
