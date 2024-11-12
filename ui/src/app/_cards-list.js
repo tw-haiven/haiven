@@ -90,7 +90,7 @@ const CardsList = ({
           {scenarios.map((scenario, i) => {
             return (
               <Card title={scenario.title} key={i} className="scenario">
-                <div className="scenario-card-content" style={{ width: "80%" }}>
+                <div className="scenario-card-content">
                   {onScenariosEdit !== undefined ? (
                     <TextArea
                       value={scenario.summary}

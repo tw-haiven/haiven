@@ -35,23 +35,25 @@ export default function CardActions({ scenario, onExploreHandler }) {
 
   return (
     <div className="card-actions-footer">
-      {onExploreHandler && (
-        <Tooltip title="Chat with Haiven" key="chat">
-          <Button type="link" onClick={() => onExploreHandler(scenario)}>
-            <RiChat2Line fontSize="large" />
+      <div className="actions-container">
+        {onExploreHandler && (
+          <Tooltip title="Chat with Haiven" key="chat">
+            <Button type="link" onClick={() => onExploreHandler(scenario)}>
+              <RiChat2Line fontSize="large" />
+            </Button>
+          </Tooltip>
+        )}
+        <Tooltip title="Copy" key="copy">
+          <Button type="link" onClick={() => onCopyOne(scenario)}>
+            <RiFileCopyLine fontSize="large" />
           </Button>
         </Tooltip>
-      )}
-      <Tooltip title="Copy" key="copy">
-        <Button type="link" onClick={() => onCopyOne(scenario)}>
-          <RiFileCopyLine fontSize="large" />
-        </Button>
-      </Tooltip>
-      <Tooltip title="Pin to pinboard" key="pin">
-        <Button type="link" onClick={() => onPin()}>
-          <RiPushpinLine fontSize="large" />
-        </Button>
-      </Tooltip>
+        <Tooltip title="Pin to pinboard" key="pin">
+          <Button type="link" onClick={() => onPin()}>
+            <RiPushpinLine fontSize="large" />
+          </Button>
+        </Tooltip>
+      </div>
     </div>
   );
 }

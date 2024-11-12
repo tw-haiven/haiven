@@ -776,11 +776,9 @@ h4, h5 {
 
 .scenarios-collection .card-actions-footer {
   display: flex;
-  justify-content: flex-end;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  padding-bottom: 8px;
+  justify-content: flex-end; /* space-between for when checkbox gets introduced */
+  align-items: center;
+  margin-top: 1em;
 }
 
 .scenarios-collection .card-actions-footer li {
@@ -789,6 +787,14 @@ h4, h5 {
 
 .scenarios-collection .card-actions-footer button:hover, .copy-all:hover {
   color: #CA6070 !important;
+}
+
+.scenarios-collection .card-actions-footer .selection-container {
+  flex: 1;
+}
+
+.scenarios-collection .card-actions-footer .actions-container {
+  display: flex;
 }
 
 .copy-all {
@@ -820,13 +826,9 @@ h4, h5 {
 }
 
 .scenario .scenario-card-content {
-  height: 270px;
+  height: 260px;
   overflow-y: auto;
   font-size: small;
-  padding-top: 0.5em;
-  padding-bottom: 0;
-  bottom: 40px;
-  position: absolute;
 }
 
 .scenario .q-a-card-content {
