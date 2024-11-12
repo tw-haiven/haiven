@@ -590,71 +590,101 @@ h4, h5 {
   font-weight: var(--font-weight-semi-bold);
 }
 
-.prompt-preview {
-  background-color: var(--color-light-gray);
-  height: 70svh;
-  padding: 1em;
-  overflow: auto;
-  margin-bottom: 10px;
-}
-
-.prompt-preview-btn {
-  padding-left: 0;
-}
-
-.prompt-preview-header {
-  display: flex;
-  flex-direction: row;
-}
-
-.prompt-preview-actions {
-  display: flex;
-  gap: 1em;
-  align-items: center;
-}
-
-.prompt-preview-copy-btn {
-  background-color: var(--color-dark-gray);
-}
-
-.prompt-preview-edit-btn {
-  background-color: var(--color-dark-gray);
-}
-
-
-.button-container {
-  display: flex;
-  gap: 2px;
-}
-
 .prompt-preview-modal {
   top: 50px;
-}
 
-.prompt-editor {
-  font-family: inherit;
-  line-height: 1.75em;
-  width: 99%;
-  resize: none;
-  height: 500px;
-}
+  .ant-modal-header {
+    margin-left: 3em;
+    margin-bottom: 0;
 
-.prompt-preview-close-btn {
-  background-color: var(--color-dark-gray);
-  width: 100%;
-  height: 40px;
-}
+    .ant-modal-title {
+      font-size: large;
+    }
+  }
 
-.prompt-preview-start-chat-btn {
-  background-color: var(--color-flamingo);
-  width: 100%;
-  height: 40px;
-  color: #2d2d2d;
-}
+  .ant-modal-content {
+    padding: 0;
+    padding-top: 2em;
+  }
 
-.prompt-preview-diff-highlight {
-  color: var(--color-flamingo);
-  font-weight: var(--font-weight-semi-bold);
+  .ant-modal-body {
+    .prompt-preview-header {
+      display: flex;
+      flex-direction: row;
+      margin-left: 3em;
+      margin-right: 2em;
+      gap: 100px;
+    }
+
+    .prompt-preview {
+      height: 70svh;
+      overflow: auto;
+      margin-bottom: 10px;
+      margin-left: 3em;
+      margin-right: 2em;
+      border-top: 1px solid var(--color-light-gray);
+      overflow: auto;
+    }
+
+    .prompt-editor {
+      background-color: var(--color-light-gray);
+      font-family: inherit;
+      line-height: 1.75em;
+      resize: none;
+      height: 500px;
+      border: none;
+      width: 90%;
+      margin-left: 1em;
+      margin-right: 1em;
+      margin-bottom: 1em;
+      padding-left: 2em;
+      padding-right: 2em;
+      padding-top: 2em;
+    }
+
+    .prompt-preview-btn {
+      padding-left: 0;
+    }
+
+    .prompt-preview-actions {
+      display: flex;
+      gap: 1em;
+      align-items: center;
+
+      button {
+        font-weight: 500;
+      }
+
+      .prompt-preview-edit-btn {
+        background-color: var(--color-dark-gray);
+      }
+
+      .prompt-preview-copy-btn {
+        background-color: var(--color-dark-gray);
+      }
+    }
+
+    .button-container {
+      display: flex;
+      gap: 2px;
+
+      button {
+        height: 45px;
+        width: 100%;
+        font-weight: 600;
+      }
+
+      .prompt-preview-close-btn,
+      .prompt-preview-close-btn:hover {
+        background-color: var(--color-dark-gray);
+      }
+
+      .prompt-preview-start-chat-btn,
+      .prompt-preview-start-chat-btn:hover {
+        background-color: var(--color-flamingo);
+      }
+    }
+  }
 }
 
 .close-confirmation-modal {
@@ -693,7 +723,7 @@ h4, h5 {
         color: white;
         width: 50%;
         height: 45px;
-        font-weight: var(--font-weight-semi-bold);
+        font-weight: 600;
       }
 
       .confirmation-modal-close-btn,
