@@ -82,15 +82,11 @@ h4, h5 {
 }
 
 .chat-container .chat-widget-container {
-  min-height: 100%;
+  height: 100%;
 }
 
 .prompt-chat-container .ant-pro-chat-chat-list-container {
-  height: inherit !important;
-}
-
-.prompt-chat-container.collapsed .ant-pro-chat-chat-list-container {
-  height: 85% !important;
+  max-height: 100% !important;
 }
 
 .ant-pro-chat {
@@ -99,6 +95,7 @@ h4, h5 {
   width: 100%;
   height: 80%;
   overflow: auto; /* Adds scrollbars to ant-pro-chat if content overflows */
+  justify-content: end !important;
 }
 
 .ant-pro-chat p {
