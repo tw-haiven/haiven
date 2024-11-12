@@ -170,6 +170,8 @@ describe("CardsChat Component", () => {
       thenStopButtonIsDisplayed();
       thenScenariosAreRendered();
       whenFollowUpGenerateIsClicked();
+      expect(fetchSSE).toHaveBeenCalledTimes(2);
+
       await waitFor(() => {
         thenStopButtonIsDisplayed();
         // TODO: Currently the follow-up text is not streamed, so this test is timing out
