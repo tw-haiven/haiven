@@ -180,8 +180,8 @@ default_models:
   chat: ${ENABLED_CHAT_MODEL}
   vision: some-vision-model
 models:
-  - id: azure-gpt4
-    name: GPT-4
+  - id: azure-gpt-4o
+    name: GPT-4o
     provider: azure
           """
         config_path = "test-env-config.yaml"
@@ -193,7 +193,7 @@ models:
             config_service.get_default_chat_model()
 
         chat_model: str = config_service.get_default_chat_model()
-        assert chat_model == "azure-gpt4"
+        assert chat_model == "azure-gpt-4o"
 
     def test_should_raise_error_when_knowledge_pack_not_found(self):
         exception_raised = False

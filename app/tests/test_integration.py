@@ -17,9 +17,9 @@ from tests.utils import get_app_path
 
 def _get_azure_config():
     return ModelConfig(
-        "azure-gpt4",
+        "azure-gpt-4o",
         "azure",
-        "GPT4 on Azure",
+        "GPT-4o on Azure",
         config={
             "azure_deployment": os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME_GPT4"),
             "api_version": os.environ.get("AZURE_OPENAI_API_VERSION"),

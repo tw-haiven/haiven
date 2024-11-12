@@ -204,7 +204,7 @@ class ConfigService:
             enabled_provider = self.load_enabled_providers()[0]
             match enabled_provider:
                 case "azure":
-                    default_chat_model = "azure-gpt4"
+                    default_chat_model = "azure-gpt-4o"
                 case "gcp":
                     default_chat_model = "google-gemini"
                 case "aws":
