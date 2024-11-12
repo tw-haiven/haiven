@@ -250,7 +250,7 @@ h4, h5 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 0.8em var(--standard-left-padding);
   color: white;
 }
 
@@ -430,7 +430,6 @@ h4, h5 {
 .prompt-chat-container {
   display: flex;
   width: 100%;
-  height: 100%;
 }
 
 .social-preview, .social-preview-image {
@@ -522,7 +521,9 @@ h4, h5 {
 .collapsed .prompt-chat-options-container {
   padding-bottom: 0px;
   background-color: inherit !important;
-  height: 5%;
+  height: 3em;
+  overflow-x: hidden;
+  overflow-y: hidden;
   box-shadow: none;
   border-bottom: 1px solid var(--color-light-gray);
 }
@@ -1195,13 +1196,13 @@ h4, h5 {
 
 }
 
-.disclaimer{
+.disclaimer {
   align-content: center;
   text-align: right;
-  height: 5%;
+  height: 4.6em; /* !! Needs to align somehow with the collapsed prompt options panel */
   color: #666666ff;
-  padding-right: 35px;
-  font-size: 12px;
+  padding-right: var(--standard-left-padding);
+  font-size: 70%;
   border-bottom: 1px solid var(--color-light-gray);
   float: none;
 }

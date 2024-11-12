@@ -315,7 +315,6 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
       <div id="canvas">
         <div
           className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
-          style={{ height: "auto" }}
         >
           <Collapse
             className="prompt-chat-options-container"
