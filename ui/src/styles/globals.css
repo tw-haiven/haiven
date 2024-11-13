@@ -522,7 +522,8 @@ h4, h5 {
 .collapsed .prompt-chat-options-container {
   padding-bottom: 0px;
   background-color: inherit !important;
-  height: 5%;
+  height: 3em;
+  overflow: hidden;
   box-shadow: none;
   border-bottom: 1px solid var(--color-light-gray);
 }
@@ -1198,10 +1199,10 @@ h4, h5 {
 .disclaimer{
   align-content: center;
   text-align: right;
-  height: 5%;
+  height: 4em;
   color: #666666ff;
-  padding-right: 35px;
-  font-size: 12px;
+  padding-right: var(--standard-left-padding);
+  font-size: 70%;
   border-bottom: 1px solid var(--color-light-gray);
   float: none;
 }

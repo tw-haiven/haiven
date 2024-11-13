@@ -104,10 +104,7 @@ const CardsList = ({
           </div>
         )}
       </div>
-      <div
-        className={"scenarios-collection " + displayMode + "-display"}
-        style={{ height: "auto", flex: "none" }}
-      >
+      <div className={"scenarios-collection " + displayMode + "-display"}>
         <div className="cards-container with-display-mode">
           {scenarios.map((scenario, i) => {
             return (
