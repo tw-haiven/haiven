@@ -193,8 +193,7 @@ describe("CardsChat Component", () => {
 
       await waitFor(() => {
         thenStopButtonIsDisplayed();
-        // TODO: Currently the follow-up text is not streamed, so this test is timing out
-        // thenFollowUpIsRendered();
+        thenFollowUpIsRendered();
       });
     });
   });

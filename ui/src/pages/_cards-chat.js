@@ -196,9 +196,10 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     sendFollowUpPrompt(
       "/api/prompt/follow-up",
       (result) => {
-        console.log("updating follow up result", followUpId);
-        followUpResults[followUpId] = result;
-        setFollowUpResults(followUpResults);
+        setFollowUpResults((prevResults) => ({
+          ...prevResults,
+          [followUpId]: result,
+        }));
       },
       followUpId,
     );
