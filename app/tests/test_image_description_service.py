@@ -17,10 +17,10 @@ class TestImageDescriptionService:
         buffered.seek(0)
         return Image.open(buffered)
 
-    @patch("llms.image_description_service.AzureOpenAI")
+    @patch("llms.image_description_service.completion")
     def test_describe_with_azure(
         self,
-        mock_azure_openai,
+        mock_completion,
     ):
         model = ModelConfig(
             provider="azure",
@@ -38,29 +38,22 @@ class TestImageDescriptionService:
         test_image = self.get_test_image()
         user_input = "Describe this image"
 
-        mock_azure_openai_instance = mock_azure_openai.return_value
-
         mock_response = [
             MagicMock(choices=[MagicMock(delta=MagicMock(content="Test "))]),
             MagicMock(choices=[MagicMock(delta=MagicMock(content="description"))]),
         ]
 
-        mock_azure_openai_instance.chat.completions.create.return_value = iter(
-            mock_response
-        )
+        mock_completion.return_value = iter(mock_response)
 
-        result = image_description_service._describe_image_with_azure(
+        result = image_description_service.prompt_with_image(
             image=test_image, user_input=user_input
         )
 
         assert next(result) == "Test "
         assert next(result) == "description"
-        mock_azure_openai_instance.chat.completions.create.assert_called_once()
-        args, kwargs = mock_azure_openai_instance.chat.completions.create.call_args
+        mock_completion.assert_called_once()
+        args, kwargs = mock_completion.call_args
 
-        kwargs["model"] == "some-image-model"
+        assert kwargs["model"] == "azure/test_deployment"
         assert len(kwargs["messages"]) == 2
-        print("Actual value:", kwargs["messages"][1]["content"][0]["text"])
         assert kwargs["messages"][1]["content"][0]["text"] == "Describe this image"
-
-        assert image_description_service.model_client is not None
