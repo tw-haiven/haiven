@@ -6,7 +6,7 @@ function ContextChoice({ contexts, value, onChange }) {
   return (
     <div className="user-input">
       <label>
-        Your Context
+        Your context
         <HelpTooltip text="Choose a context that is relevant to your domain / industry / situation / organisation." />
       </label>
       <Select

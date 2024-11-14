@@ -52,7 +52,7 @@ describe("PromptChat Component", () => {
     expect(screen.getByPlaceholderText(/Default Intro/i)).toBeInTheDocument();
     expect(screen.getByText(/Upload image/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Document/i)[0]).toBeInTheDocument();
-    expect(screen.getByText(/Your Context/i)).toBeInTheDocument();
+    expect(screen.getByText(/Your context/i)).toBeInTheDocument();
     expect(startChatButton).toBeInTheDocument();
   });
 });
