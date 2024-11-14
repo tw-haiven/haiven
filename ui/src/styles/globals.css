@@ -83,6 +83,7 @@ h4, h5 {
 
 .chat-container .chat-widget-container {
   height: 100%;
+  overflow: auto;
 }
 
 .prompt-chat-container .ant-pro-chat-chat-list-container {
