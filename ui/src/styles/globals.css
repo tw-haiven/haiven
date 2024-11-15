@@ -748,7 +748,13 @@ a.feedback:hover {
         background-color: var(--color-light-gray);
       }
     }
+
   }
+}
+
+.prompt-preview-diff-highlight {
+  color: var(--color-flamingo);
+  font-weight: var(--font-weight-semi-bold);
 }
 
 .close-confirmation-modal {
