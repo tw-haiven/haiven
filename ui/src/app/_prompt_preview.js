@@ -28,6 +28,14 @@ export default function PromptPreview({
   const [isCloseConfirmationModalVisible, setIsCloseConfirmationModalVisible] =
     useState(false);
 
+  useEffect(() => {
+    setPrompt(promptData.renderedPrompt);
+
+    if (isPromptPreviewModalVisible) {
+      setAnyUnsavedChanges(false);
+    }
+  }, [promptData, isPromptPreviewModalVisible]);
+
   const logDiff = (diff) => {
     let text = part.added
       ? "XX"
@@ -109,10 +117,6 @@ export default function PromptPreview({
     const { node, ...rest } = props;
     return <span className="prompt-preview-diff-highlight" {...rest} />;
   };
-
-  useEffect(() => {
-    setPrompt(promptData.renderedPrompt);
-  }, [promptData]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(prompt || promptData.renderedPrompt);
