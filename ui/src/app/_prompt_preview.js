@@ -189,6 +189,11 @@ export default function PromptPreview({
           <ReactMarkdown
             className="prompt-preview"
             remarkPlugins={[[remarkGfm]]}
+            components={{
+              del(props) {
+                return highlightDiffs(props);
+              },
+            }}
           >
             {prompt}
           </ReactMarkdown>
