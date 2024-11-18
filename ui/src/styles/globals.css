@@ -659,6 +659,11 @@ h4, h5 {
         background-color: var(--color-dark-gray);
       }
 
+      .prompt-preview-edit-btn:disabled {
+        color: #a7b0b3;
+        background-color: var(--color-light-gray);
+      }
+
       .prompt-preview-copy-btn {
         background-color: var(--color-dark-gray);
       }
