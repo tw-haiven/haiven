@@ -8,12 +8,16 @@ export const getPrompts = async (onSuccess) => {
     },
   }).then((response) => {
     response.json().then((data) => {
-      const formattedForDropdown = data.map((item) => ({
-        ...item,
-        value: item.identifier,
-        label: item.title,
-        followUps: item.follow_ups,
-      }));
+      const formattedForDropdown = data
+        .filter((item) => {
+          return item.identifier !== "journey-to-stories-d6de9661d893";
+        })
+        .map((item) => ({
+          ...item,
+          value: item.identifier,
+          label: item.title,
+          followUps: item.follow_ups,
+        }));
       onSuccess(formattedForDropdown);
     });
   });

@@ -69,11 +69,6 @@ export default function ChatDashboard() {
           prompt.link = `${url}?prompt=${prompt.identifier}`;
           return prompt;
         });
-
-      //remove the "Create Stories From a User Journey Flow" feature
-      data = data.filter(
-        (prompt) => prompt.label !== "Create Stories From a User Journey Flow",
-      );
       // add the "static" features
       data = data.concat(staticFeaturesForDashboard());
 
@@ -103,6 +98,8 @@ export default function ChatDashboard() {
         ...new Set(data.flatMap((prompt) => prompt.categories)),
       ];
       categories.push("other");
+
+      console.log("prompts:", data);
 
       sortCategoriesByOrder(categories);
       setAllCategories(categories);
