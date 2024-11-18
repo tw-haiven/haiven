@@ -70,6 +70,10 @@ export default function ChatDashboard() {
           return prompt;
         });
 
+      //remove the "Create Stories From a User Journey Flow" feature
+      data = data.filter(
+        (prompt) => prompt.label !== "Create Stories From a User Journey Flow",
+      );
       // add the "static" features
       data = data.concat(staticFeaturesForDashboard());
 
