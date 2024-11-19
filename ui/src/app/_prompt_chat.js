@@ -108,16 +108,12 @@ const PromptChat = ({
       });
 
       if (!response.ok) {
-        try {
-          const errorBody = await response.json();
-          const detailedErrorMessage =
-            errorBody.detail || "An unknown error occurred.";
-          const errorMessage = `ERROR: ${detailedErrorMessage}`;
+        const errorBody = await response.json();
+        const detailedErrorMessage =
+          errorBody.detail || "An unknown error occurred.";
+        const errorMessage = `ERROR: ${detailedErrorMessage}`;
 
-          throw new Error(errorMessage);
-        } catch (error) {
-          throw new Error(`ERROR: ${response.status} - ${response.statusText}`);
-        }
+        throw new Error(errorMessage);
       }
 
       const chatId = response.headers.get("X-Chat-ID");

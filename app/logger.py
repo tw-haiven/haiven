@@ -25,6 +25,9 @@ class HaivenLogger:
     def analytics(self, message, extra=None):
         self.logger.log("ANALYTICS", message, extra=extra)
 
+    def error(self, message, extra=None):
+        self.logger.error(message, extra=extra)
+
     @staticmethod
     def get():
         if HaivenLogger.__instance is None:

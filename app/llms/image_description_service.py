@@ -66,6 +66,8 @@ class ImageDescriptionService:
                         yield delta.content
 
         except Exception as error:
+            if not str(error).strip():
+                error = "Error while the model was processing the input"
             yield f"[ERROR]: {str(error)}"
 
     def _get_image_bytes(self, image):

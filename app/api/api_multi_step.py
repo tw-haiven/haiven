@@ -3,6 +3,7 @@ from typing import List
 from fastapi import HTTPException
 from pydantic import BaseModel
 from api.api_basics import HaivenBaseApi, PromptRequestBody
+from logger import HaivenLogger
 
 
 class TitleContent(BaseModel):
@@ -77,8 +78,11 @@ class ApiMultiStep(HaivenBaseApi):
                     document_key=prompt_data.document,
                 )
 
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+            except Exception as error:
+                HaivenLogger.get().error(str(error))
+                raise HTTPException(
+                    status_code=500, detail=f"Server error: {str(error)}"
+                )
 
         @app.post("/api/prompt/explore")
         def kick_off_explore(prompt_data: ExploreRequest):
@@ -143,5 +147,8 @@ I want to focus on this item:
                     document_key=prompt_data.document,
                 )
 
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+            except Exception as error:
+                HaivenLogger.get().error(str(error))
+                raise HTTPException(
+                    status_code=500, detail=f"Server error: {str(error)}"
+                )

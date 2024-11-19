@@ -14,6 +14,7 @@ from llms.model_config import ModelConfig
 from llms.image_description_service import ImageDescriptionService
 from prompts.prompts import PromptList
 from config_service import ConfigService
+from logger import HaivenLogger
 
 
 class PromptRequestBody(BaseModel):
@@ -68,8 +69,8 @@ class HaivenBaseApi:
                 headers=streaming_headers(chat_session_key_value),
             )
 
-        except Exception as e:
-            raise Exception(e)
+        except Exception as error:
+            raise Exception(error)
 
     def stream_text_chat(
         self, prompt, chat_category, chat_session_key_value=None, document_key=None
@@ -106,8 +107,8 @@ class HaivenBaseApi:
                 headers=streaming_headers(chat_session_key_value),
             )
 
-        except Exception as e:
-            raise Exception(e)
+        except Exception as error:
+            raise Exception(error)
 
 
 class ApiBasics(HaivenBaseApi):
@@ -147,8 +148,11 @@ class ApiBasics(HaivenBaseApi):
                     }
                 )
 
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+            except Exception as error:
+                HaivenLogger.get().error(str(error))
+                raise HTTPException(
+                    status_code=500, detail=f"Server error: {str(error)}"
+                )
 
         @app.get("/api/prompts")
         def get_prompts(request: Request):
@@ -156,8 +160,11 @@ class ApiBasics(HaivenBaseApi):
                 response_data = prompts_chat.get_prompts_with_follow_ups()
                 return JSONResponse(response_data)
 
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+            except Exception as error:
+                HaivenLogger.get().error(str(error))
+                raise HTTPException(
+                    status_code=500, detail=f"Server error: {str(error)}"
+                )
 
         @app.get("/api/knowledge/snippets")
         def get_knowledge_snippets(request: Request):
@@ -175,8 +182,11 @@ class ApiBasics(HaivenBaseApi):
 
                 return JSONResponse(response_data)
 
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+            except Exception as error:
+                HaivenLogger.get().error(str(error))
+                raise HTTPException(
+                    status_code=500, detail=f"Server error: {str(error)}"
+                )
 
         @app.get("/api/knowledge/documents")
         def get_knowledge_documents(request: Request):
@@ -205,8 +215,11 @@ class ApiBasics(HaivenBaseApi):
 
                 return JSONResponse(response_data)
 
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+            except Exception as error:
+                HaivenLogger.get().error(str(error))
+                raise HTTPException(
+                    status_code=500, detail=f"Server error: {str(error)}"
+                )
 
         @app.post("/api/prompt")
         def chat(prompt_data: PromptRequestBody):
@@ -237,8 +250,11 @@ class ApiBasics(HaivenBaseApi):
                     document_key=prompt_data.document,
                 )
 
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+            except Exception as error:
+                HaivenLogger.get().error(str(error))
+                raise HTTPException(
+                    status_code=500, detail=f"Server error: {str(error)}"
+                )
 
         @app.post("/api/prompt/render")
         def render_prompt(prompt_data: PromptRequestBody):
@@ -280,5 +296,8 @@ class ApiBasics(HaivenBaseApi):
                     media_type=streaming_media_type(),
                     headers=streaming_headers(None),
                 )
-            except Exception as e:
-                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+            except Exception as error:
+                HaivenLogger.get().error(str(error))
+                raise HTTPException(
+                    status_code=500, detail=f"Server error: {str(error)}"
+                )

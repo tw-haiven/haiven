@@ -244,8 +244,8 @@ class Server:
                 StaticFiles(directory=Path(Server.boba_build_dir_path), html=True),
                 name="out",
             )
-        except Exception as e:
-            print(f"WARNING: Boba UI cannot be mounted {e}")
+        except Exception as error:
+            HaivenLogger.get().error(f"WARNING: Boba UI cannot be mounted {error}")
 
     def serve_static_from_knowledge_pack(self, app):
         knowledge_pack_path = self.config_service.load_knowledge_pack_path()
