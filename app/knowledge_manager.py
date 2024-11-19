@@ -30,10 +30,9 @@ class KnowledgeManager:
         knowledge_base_markdown = KnowledgeBaseMarkdown()
         try:
             knowledge_base_markdown.load_for_base(self.knowledge_pack_definition.path)
-        except FileNotFoundError as e:
-            # TODO: Should this be an analytics() log?
-            HaivenLogger.get().analytics(
-                "KnowledgePackKnowledgeNotFound", {"error": str(e)}
+        except FileNotFoundError as error:
+            HaivenLogger.get().error(
+                str(error), extra={"ERROR": "KnowledgePackKnowledgeNotFound"}
             )
 
         return knowledge_base_markdown
@@ -48,9 +47,9 @@ class KnowledgeManager:
 
         try:
             knowledge_base_documents.load_documents_for_base(base_embeddings_path)
-        except FileNotFoundError as e:
-            HaivenLogger.get().analytics(
-                "KnowledgePackEmbeddingsNotFound", {"error": str(e)}
+        except FileNotFoundError as error:
+            HaivenLogger.get().error(
+                str(error), extra={"ERROR": "KnowledgePackEmbeddingsNotFound"}
             )
 
         return knowledge_base_documents
@@ -71,9 +70,9 @@ class KnowledgeManager:
             self.knowledge_base_markdown.load_for_context(
                 knowledge_context.name, path=context_path
             )
-        except FileNotFoundError as e:
-            HaivenLogger.get().analytics(
-                "KnowledgePackContextNotFound", {"error": str(e)}
+        except FileNotFoundError as error:
+            HaivenLogger.get().error(
+                str(error), extra={"ERROR": "KnowledgePackContextNotFound"}
             )
 
     def _load_context_documents_knowledge(self):
@@ -95,9 +94,9 @@ class KnowledgeManager:
             self.knowledge_base_documents.load_documents_for_context(
                 knowledge_context.name, context_embeddings_path
             )
-        except FileNotFoundError as e:
-            HaivenLogger.get().analytics(
-                "KnowledgePackEmbeddingsNotFound", {"error": str(e)}
+        except FileNotFoundError as error:
+            HaivenLogger.get().error(
+                str(error), extra={"ERROR": "KnowledgePackEmbeddingsNotFound"}
             )
 
     def on_context_selected(self, context_name: str) -> str:

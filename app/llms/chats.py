@@ -134,6 +134,7 @@ class StreamingChat(HaivenBaseChat):
         except Exception as error:
             if not str(error).strip():
                 error = "Error while the model was processing the input"
+            print(f"[ERROR]: {str(error)}")
             yield f"[ERROR]: {str(error)}"
 
     def run_with_document(
@@ -172,6 +173,7 @@ class StreamingChat(HaivenBaseChat):
         except Exception as error:
             if not str(error).strip():
                 error = "Error while the model was processing the input"
+            print(f"[ERROR]: {str(error)}")
             yield f"[ERROR]: {str(error)}", ""
 
 
@@ -282,6 +284,7 @@ class JSONChat(HaivenBaseChat):
         except Exception as error:
             if not str(error).strip():
                 error = "Error while the model was processing the input"
+            print(f"[ERROR]: {str(error)}")
             yield f"[ERROR]: {str(error)}"
 
     def run(self, message: str):
@@ -306,6 +309,7 @@ class JSONChat(HaivenBaseChat):
         except Exception as error:
             if not str(error).strip():
                 error = "Error while the model was processing the input"
+            print(f"[ERROR]: {str(error)}")
             yield f"[ERROR]: {str(error)}"
 
 

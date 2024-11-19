@@ -93,6 +93,7 @@ class HaivenBaseApi:
                 except Exception as error:
                     if not str(error).strip():
                         error = "Error while the model was processing the input"
+                    print(f"[ERROR]: {str(error)}")
                     yield f"[ERROR]: {str(error)}"
 
             chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
