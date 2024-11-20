@@ -128,7 +128,7 @@ class ApiBasics(HaivenBaseApi):
         super().__init__(app, chat_manager, model_config, prompts_guided)
 
         @app.get("/api/models")
-        @logger.catch()
+        @logger.catch(reraise=True)
         def get_models(request: Request):
             try:
                 embeddings = config_service.load_embedding_model()
@@ -158,7 +158,7 @@ class ApiBasics(HaivenBaseApi):
                 )
 
         @app.get("/api/prompts")
-        @logger.catch()
+        @logger.catch(reraise=True)
         def get_prompts(request: Request):
             try:
                 response_data = prompts_chat.get_prompts_with_follow_ups()
@@ -171,7 +171,7 @@ class ApiBasics(HaivenBaseApi):
                 )
 
         @app.get("/api/knowledge/snippets")
-        @logger.catch()
+        @logger.catch(reraise=True)
         def get_knowledge_snippets(request: Request):
             try:
                 all_contexts = knowledge_manager.get_all_context_keys()
@@ -194,7 +194,7 @@ class ApiBasics(HaivenBaseApi):
                 )
 
         @app.get("/api/knowledge/documents")
-        @logger.catch()
+        @logger.catch(reraise=True)
         def get_knowledge_documents(request: Request):
             try:
                 base_context = None
@@ -228,7 +228,7 @@ class ApiBasics(HaivenBaseApi):
                 )
 
         @app.post("/api/prompt")
-        @logger.catch()
+        @logger.catch(reraise=True)
         def chat(prompt_data: PromptRequestBody):
             try:
                 stream_fn = self.stream_text_chat
@@ -264,7 +264,7 @@ class ApiBasics(HaivenBaseApi):
                 )
 
         @app.post("/api/prompt/render")
-        @logger.catch()
+        @logger.catch(reraise=True)
         def render_prompt(prompt_data: PromptRequestBody):
             if prompt_data.promptid:
                 prompts = (
@@ -289,7 +289,7 @@ class ApiBasics(HaivenBaseApi):
                 )
 
         @app.post("/api/prompt/image")
-        @logger.catch()
+        @logger.catch(reraise=True)
         async def describe_image(prompt: str = Form(...), file: UploadFile = File(...)):
             try:
 
