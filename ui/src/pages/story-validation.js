@@ -349,7 +349,7 @@ const StoryValidation = ({ contexts, models }) => {
                                 value={question.summary}
                                 onChange={(e) => {
                                   const updatedQuestions = [...questions];
-                                  updatedQuestions[i].answer = e.target.value;
+                                  updatedQuestions[i].summary = e.target.value;
                                   setQuestions(updatedQuestions);
                                 }}
                                 rows={8}
