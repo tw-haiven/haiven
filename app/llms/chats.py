@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from config_service import ConfigService
 from knowledge_manager import KnowledgeManager
 from embeddings.documents import DocumentsUtils
+from litellm import completion
 from llms.clients import (
     ChatClient,
     ChatClientFactory,
@@ -57,15 +58,29 @@ class HaivenBaseChat:
             it is more important that a similarity search would find relevant information based on the summary."""
             )
         )
-        summary = self.chat_client(copy_of_history)
-        return summary.content
+        history_content = [
+            message.content
+            for message in copy_of_history
+            if isinstance(message, HaivenHumanMessage)
+        ]
+
+        summary = completion(
+            self.chat_client.model_config.lite_id,
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": " ".join(history_content)},
+            ],
+        )
+        return summary.choices[0].message.content
 
     def _similarity_search_based_on_history(
         self, message, knowledge_document_key, knowledge_context
     ):
-        if len(self.memory) > 2:
+        if len(self.memory) > 5:
+            print("Summarising conversation")
             summary = self._summarise_conversation()
         else:
+            print("Not enough history to summarise")
             summary = "\n".join([message.content for message in self.memory])
 
         similarity_query = f"""
@@ -119,6 +134,7 @@ class StreamingChat(HaivenBaseChat):
         stream_in_chunks: bool = False,
     ):
         super().__init__(chat_client, knowledge_manager, system_message)
+        print("Creating a new streaming chat session:", stream_in_chunks)
         self.stream_in_chunks = stream_in_chunks
 
     def run(self, message: str):
@@ -144,12 +160,12 @@ class StreamingChat(HaivenBaseChat):
         message: str = None,
     ):
         try:
+            print("Using document")
             context_for_prompt, sources_markdown = (
                 self._similarity_search_based_on_history(
                     message, knowledge_document_key, knowledge_context
                 )
             )
-
             user_request = (
                 message
                 or "Based on our conversation so far, what do you think is relevant to me with the CONTEXT information I gathered?"
@@ -362,6 +378,9 @@ class ServerChatSessionMemory:
                 f"Invalid identifier {session_key}, your chat session might have expired"
             )
         self.USER_CHATS[session_key]["last_access"] = time.time()
+        print(
+            "Accessing a chat session from memory", self.USER_CHATS[session_key]["chat"]
+        )
         return self.USER_CHATS[session_key]["chat"]
 
     def delete_entry(self, session_key):
@@ -429,6 +448,7 @@ class ChatManager:
         options: ChatOptions = None,
     ):
         chat_client = self.llm_chat_factory.new_chat_client(model_config)
+        print("Creating a new streaming chat session:", session_id)
         return self.chat_session_memory.get_or_create_chat(
             lambda: StreamingChat(
                 chat_client,

@@ -103,6 +103,7 @@ class ChatClient:
             completion_fn = MockModelClient().completion
         else:
             completion_fn = completion
+        print(f"message that pausing to llm:{json_messages}")
         for result in completion_fn(
             model=self.model_config.lite_id,
             messages=json_messages,

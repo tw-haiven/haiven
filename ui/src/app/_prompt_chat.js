@@ -94,6 +94,7 @@ const PromptChat = ({
       requestData = {
         userinput: lastMessage?.content,
         chatSessionId: chatSessionId,
+        ...(selectedDocument !== "base" && { document: selectedDocument }),
       };
     }
 
@@ -115,7 +116,7 @@ const PromptChat = ({
 
         throw new Error(errorMessage);
       }
-
+      console.log("RequestBody:", requestData);
       const chatId = response.headers.get("X-Chat-ID");
 
       if (!conversationStarted) {

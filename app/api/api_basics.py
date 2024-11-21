@@ -81,6 +81,7 @@ class HaivenBaseApi:
             def stream(chat_session: StreamingChat, prompt):
                 try:
                     if document_key:
+                        print(f"Document selected: {document_key}")
                         sources = ""
                         for chunk, sources in chat_session.run_with_document(
                             document_key, None, prompt
@@ -89,6 +90,7 @@ class HaivenBaseApi:
                             yield chunk
                         yield "\n\n" + sources
                     else:
+                        print("No Document Selected")
                         for chunk in chat_session.run(prompt):
                             yield chunk
                 except Exception as error:
