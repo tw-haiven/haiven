@@ -52,7 +52,9 @@ models:
       - stop-sequence
     config:
       model_id: anthropic.claude-v2
-      region_name: ${AWS_BEDROCK_REGION}
+      aws_region_name: ${AWS_BEDROCK_REGION}
+      aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+      aws_access_key_id: ${AWS_ACCESS_KEY_ID}
 
   - id: aws-claude-v3
     name: Claude v3 on AWS
@@ -64,7 +66,9 @@ models:
     config:
       model_id: anthropic.claude-3-sonnet-20240229-v1:0
       anthropic_version: bedrock-2023-05-31
-      region_name: ${AWS_BEDROCK_REGION}
+      aws_region_name: ${AWS_BEDROCK_REGION}
+      aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+      aws_access_key_id: ${AWS_ACCESS_KEY_ID}
 
   - id: openai-gpt35
     name: GPT-3.5 on OpenAI
