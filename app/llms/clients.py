@@ -98,12 +98,15 @@ class ChatClient:
             return {}
 
     def stream(self, messages: List[HaivenMessage], mock: bool = False):
-        json_messages = [message.to_json() for message in messages]
+        json_messages = [messages[0].to_json()] + [
+            message.to_json() for message in messages[-4:]
+        ]
+        # json_messages = [message.to_json() for message in messages]
         if os.environ.get("MOCK_AI", False):
             completion_fn = MockModelClient().completion
         else:
             completion_fn = completion
-        print(f"message that pausing to llm:{json_messages}")
+        print(f"messages that going to llm:{json_messages}")
         for result in completion_fn(
             model=self.model_config.lite_id,
             messages=json_messages,

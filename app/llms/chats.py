@@ -47,7 +47,7 @@ class HaivenBaseChat:
 
     def _summarise_conversation(self):
         copy_of_history = []
-        copy_of_history.extend(self.memory)
+        copy_of_history.extend(self.memory[: len(self.memory) - 3])
         copy_of_history.append(
             HaivenHumanMessage(
                 content="""
@@ -76,9 +76,10 @@ class HaivenBaseChat:
     def _similarity_search_based_on_history(
         self, message, knowledge_document_key, knowledge_context
     ):
-        if len(self.memory) > 5:
+        if len(self.memory) > 4:
             print("Summarising conversation")
             summary = self._summarise_conversation()
+            summary += "\n".join(self.memory[-3:])
         else:
             print("Not enough history to summarise")
             summary = "\n".join([message.content for message in self.memory])
@@ -134,7 +135,6 @@ class StreamingChat(HaivenBaseChat):
         stream_in_chunks: bool = False,
     ):
         super().__init__(chat_client, knowledge_manager, system_message)
-        print("Creating a new streaming chat session:", stream_in_chunks)
         self.stream_in_chunks = stream_in_chunks
 
     def run(self, message: str):
@@ -160,7 +160,6 @@ class StreamingChat(HaivenBaseChat):
         message: str = None,
     ):
         try:
-            print("Using document")
             context_for_prompt, sources_markdown = (
                 self._similarity_search_based_on_history(
                     message, knowledge_document_key, knowledge_context
