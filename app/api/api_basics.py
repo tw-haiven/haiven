@@ -16,6 +16,7 @@ from prompts.prompts import PromptList
 from config_service import ConfigService
 from logger import HaivenLogger
 from loguru import logger
+import hashlib
 
 
 class PromptRequestBody(BaseModel):
@@ -24,6 +25,7 @@ class PromptRequestBody(BaseModel):
     chatSessionId: str = None
     context: str = None
     document: str = None
+    promptIdForLogging: str = None
 
 
 def streaming_media_type() -> str:
@@ -54,14 +56,39 @@ class HaivenBaseApi:
         self.model_config = model_config
         self.prompt_list = prompt_list
 
+    def get_hashed_user_id(self, request):
+        if request.session and request.session.get("user"):
+            user_id = request.session.get("user").get("email")
+            hashed_user_id = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
+            return hashed_user_id
+        else:
+            return None
+
     def stream_json_chat(
-        self, prompt, chat_category, chat_session_key_value=None, document_key=None
+        self,
+        prompt,
+        chat_category,
+        chat_session_key_value=None,
+        document_key=None,
+        prompt_id=None,
+        user_identifier=None,
+        context=None,
+        prompt_id_for_logging=None,
     ):
         try:
             chat_session_key_value, chat_session = self.chat_manager.json_chat(
                 model_config=self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(category=chat_category),
+            )
+
+            chat_session.log_run(
+                {
+                    "user_id": user_identifier,
+                    "session": chat_session_key_value,
+                    "prompt_id": prompt_id_for_logging,
+                    "context": context,
+                }
             )
 
             return StreamingResponse(
@@ -74,7 +101,15 @@ class HaivenBaseApi:
             raise Exception(error)
 
     def stream_text_chat(
-        self, prompt, chat_category, chat_session_key_value=None, document_key=None
+        self,
+        prompt,
+        chat_category,
+        chat_session_key_value=None,
+        document_key=None,
+        prompt_id=None,
+        user_identifier=None,
+        context=None,
+        prompt_id_for_logging=None,
     ):
         try:
 
@@ -101,6 +136,15 @@ class HaivenBaseApi:
                 model_config=self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(in_chunks=True, category=chat_category),
+            )
+
+            chat_session.log_run(
+                {
+                    "user_id": user_identifier,
+                    "session": chat_session_key_value,
+                    "prompt_id": prompt_id_for_logging,
+                    "context": context,
+                }
             )
 
             return StreamingResponse(
@@ -229,7 +273,7 @@ class ApiBasics(HaivenBaseApi):
 
         @app.post("/api/prompt")
         @logger.catch(reraise=True)
-        def chat(prompt_data: PromptRequestBody):
+        def chat(request: Request, prompt_data: PromptRequestBody):
             try:
                 stream_fn = self.stream_text_chat
                 if prompt_data.promptid:
@@ -255,6 +299,12 @@ class ApiBasics(HaivenBaseApi):
                     chat_category="boba-chat",
                     chat_session_key_value=prompt_data.chatSessionId,
                     document_key=prompt_data.document,
+                    prompt_id=prompt_data.promptid,
+                    user_identifier=self.get_hashed_user_id(request),
+                    context=prompt_data.context,
+                    prompt_id_for_logging=prompt_data.promptIdForLogging
+                    if not prompt_data.promptid
+                    else prompt_data.promptid,
                 )
 
             except Exception as error:

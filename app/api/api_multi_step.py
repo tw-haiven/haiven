@@ -1,6 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from typing import List
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from pydantic import BaseModel
 from api.api_basics import HaivenBaseApi, PromptRequestBody
 from logger import HaivenLogger
@@ -45,7 +45,7 @@ class ApiMultiStep(HaivenBaseApi):
         # 1. call POST api/prompt with the first prompt id to
 
         @app.post("/api/prompt/follow-up")
-        def generate_follow_up(prompt_data: FollowUpRequest):
+        def generate_follow_up(request: Request, prompt_data: FollowUpRequest):
             try:
                 stream_fn = self.stream_text_chat
                 prompts = self.prompt_list
@@ -76,6 +76,8 @@ class ApiMultiStep(HaivenBaseApi):
                     chat_category="follow-up",
                     chat_session_key_value=prompt_data.chatSessionId,
                     document_key=prompt_data.document,
+                    user_identifier=self.get_hashed_user_id(request),
+                    prompt_id_for_logging=prompt_data.previous_promptid,
                 )
 
             except Exception as error:
@@ -85,7 +87,7 @@ class ApiMultiStep(HaivenBaseApi):
                 )
 
         @app.post("/api/prompt/explore")
-        def kick_off_explore(prompt_data: ExploreRequest):
+        def kick_off_explore(request: Request, prompt_data: ExploreRequest):
             try:
                 stream_fn = self.stream_text_chat
                 prompts = self.prompt_list
@@ -145,6 +147,8 @@ I want to focus on this item:
                     chat_category="explore",
                     chat_session_key_value=prompt_data.chatSessionId,
                     document_key=prompt_data.document,
+                    user_identifier=self.get_hashed_user_id(request),
+                    prompt_id_for_logging=prompt_data.previous_promptid,
                 )
 
             except Exception as error:

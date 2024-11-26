@@ -64,6 +64,7 @@ const PromptChat = ({
     return {
       userinput: userInput,
       promptid: usePromptId ? selectedPrompt?.identifier : undefined,
+      promptIdForLogging: promptId ? promptId : "",
       chatSessionId: chatSessionId,
       ...(selectedContext !== "base" && { context: selectedContext }),
       ...(selectedDocument !== "base" && { document: selectedDocument }),
@@ -87,13 +88,13 @@ const PromptChat = ({
   const submitPromptToBackend = async (messages) => {
     const lastMessage = messages[messages.length - 1];
     let requestData;
-
     if (!conversationStarted) {
       requestData = buildRequestBody(lastMessage?.content);
     } else {
       requestData = {
         userinput: lastMessage?.content,
         chatSessionId: chatSessionId,
+        promptIdForLogging: promptId ? promptId : "",
       };
     }
 

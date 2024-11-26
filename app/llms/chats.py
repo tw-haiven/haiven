@@ -35,7 +35,7 @@ class HaivenBaseChat:
         class_name = self.__class__.__name__
         extra_info = {
             "chat_type": class_name,
-            "conversation": {"length": len(self.memory)},
+            "numberOfMessages": len(self.memory),
         }
         extra_info.update(extra)
 
@@ -123,7 +123,6 @@ class StreamingChat(HaivenBaseChat):
 
     def run(self, message: str):
         self.memory.append(HaivenHumanMessage(content=message))
-        self.log_run()
         try:
             for i, chunk in enumerate(self.chat_client.stream(self.memory)):
                 if i == 0:
@@ -196,7 +195,6 @@ class DocumentsChat(HaivenBaseChat):
         return load_qa_chain(llm=chat_client, chain_type="stuff")
 
     def run(self, message: str):
-        self.log_run({"knowledge": self.knowledge})
         self.memory.append(HaivenHumanMessage(content=message))
         self.chain.llm_chain.llm = (
             self.chat_client

@@ -25,6 +25,8 @@ const StoryValidation = ({ contexts, models }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const placeholderHelp = "Describe all details of your user story here.";
 
+  const promptId = "guided-story-validation";
+
   const handleContextSelection = (value) => {
     setSelectedContext(value);
   };
@@ -40,7 +42,7 @@ const StoryValidation = ({ contexts, models }) => {
     return {
       userinput: promptInput,
       context: selectedContext,
-      promptid: "guided-story-validation",
+      promptid: promptId,
     };
   };
 
@@ -110,6 +112,7 @@ const StoryValidation = ({ contexts, models }) => {
         body: JSON.stringify({
           input: promptInput,
           answers: questions,
+          promptId: promptId,
         }),
         signal: startLoad(),
       },

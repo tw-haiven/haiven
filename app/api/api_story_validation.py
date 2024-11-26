@@ -2,6 +2,7 @@
 from typing import List
 from pydantic import BaseModel
 from api.api_basics import HaivenBaseApi
+from fastapi import Request
 
 
 class QuestionAnswer(BaseModel):
@@ -14,6 +15,7 @@ class QuestionAnswer(BaseModel):
 class StoryValidationScenarios(BaseModel):
     input: str = None
     answers: List[QuestionAnswer] = []
+    promptIdForLogging: str = None
 
 
 def _concat_questions_answers(validationScenarios: StoryValidationScenarios):
@@ -148,19 +150,34 @@ class ApiStoryValidation(HaivenBaseApi):
         super().__init__(app, chat_session_memory, model_key, prompt_list)
 
         @app.post("/api/story-validation/summary")
-        def generate_summary(body: StoryValidationScenarios):
+        def generate_summary(request: Request, body: StoryValidationScenarios):
             prompt = get_summary_prompt(body)
 
-            return self.stream_text_chat(prompt, "story-validation-summary")
+            return self.stream_text_chat(
+                prompt=prompt,
+                chat_category="story-validation-summary",
+                user_identifier=self.get_hashed_user_id(request),
+                prompt_id_for_logging=body.promptIdForLogging,
+            )
 
         @app.post("/api/story-validation/scenarios")
-        def generate_scenarios(body: StoryValidationScenarios):
+        def generate_scenarios(request: Request, body: StoryValidationScenarios):
             prompt = get_given_when_then_generation_prompt(body)
 
-            return self.stream_text_chat(prompt, "story-validation-scenarios")
+            return self.stream_text_chat(
+                prompt=prompt,
+                chat_category="story-validation-scenarios",
+                user_identifier=self.get_hashed_user_id(request),
+                prompt_id_for_logging=body.promptIdForLogging,
+            )
 
         @app.post("/api/story-validation/invest")
-        def generate_invest_critique(body: StoryValidationScenarios):
+        def generate_invest_critique(request: Request, body: StoryValidationScenarios):
             prompt = get_invest_critique_prompt(body)
 
-            return self.stream_text_chat(prompt, "story-validation-invest")
+            return self.stream_text_chat(
+                prompt=prompt,
+                chat_category="story-validation-invest",
+                user_identifier=self.get_hashed_user_id(request),
+                prompt_id_for_logging=body.promptIdForLogging,
+            )
