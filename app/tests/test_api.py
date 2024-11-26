@@ -12,11 +12,13 @@ from api.api_story_validation import ApiStoryValidation
 from api.api_creative_matrix import ApiCreativeMatrix
 from prompts.prompts_factory import PromptsFactory
 from tests.utils import get_test_data_path
+from starlette.middleware.sessions import SessionMiddleware
 
 
 class TestApi(unittest.TestCase):
     def setUp(self):
         self.app = FastAPI()
+        self.app.add_middleware(SessionMiddleware, secret_key="some-random-string")
         self.client = TestClient(self.app)
 
     def tearDown(self):
