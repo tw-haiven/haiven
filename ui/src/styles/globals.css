@@ -54,6 +54,14 @@ h4, h5 {
   font-size: 1.1em;
 }
 
+.feedback {
+  position: fixed;
+  right: 1em;
+  bottom: 1em;
+  font-size: 3em;
+  color: var(--color-dark-blue);
+}
+
 .ant-btn-secondary {
   background-color: var(--color-dark-gray);
   color: white;

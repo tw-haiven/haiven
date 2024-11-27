@@ -1,7 +1,8 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 "use client";
 import { useEffect, useState } from "react";
-import { Layout, ConfigProvider } from "antd";
+import { Button, Tooltip, Layout, ConfigProvider } from "antd";
+import { BsChatHeartFill } from "react-icons/bs";
 import Head from "next/head";
 import Header from "./_header";
 import "../styles/globals.css";
@@ -165,6 +166,15 @@ export default function App({
               />
             </Layout.Content>
           </Layout>
+          <Tooltip title="Share feedback">
+            <Button
+              className="feedback"
+              type="link"
+              href="https://docs.google.com/forms/d/e/1FAIpQLSdo6QhkuCMfWqjFAXnYabW7BBGn1wLxk9dfIsmSPMg1Hcurng/viewform"
+              target="_blank"
+              icon={<BsChatHeartFill />}
+            ></Button>
+          </Tooltip>
         </Layout>
       </ConfigProvider>
     </>
