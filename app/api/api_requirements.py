@@ -58,6 +58,8 @@ class ApiRequirementsBreakdown(HaivenBaseApi):
                 chat_category=chat_category,
                 chat_session_key_value=prompt_data.chatSessionId,
                 document_key=prompt_data.document,
+                user_identifier=self.get_hashed_user_id(request),
+                context=prompt_data.context,
                 origin_url=origin_url,
                 prompt_id_for_logging=chat_category,
             )
