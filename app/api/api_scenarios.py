@@ -9,6 +9,8 @@ class ApiScenarios(HaivenBaseApi):
 
         @app.get("/api/make-scenario")
         def make_scenario(request: Request):
+            origin_url = request.headers.get("referer")
+            chat_category = "scenarios"
             variables = {
                 "input": request.query_params.get(
                     "input", "productization of consulting"
@@ -30,4 +32,9 @@ class ApiScenarios(HaivenBaseApi):
                 warnings=[],
             )
 
-            return self.stream_json_chat(prompt, "scenarios")
+            return self.stream_json_chat(
+                prompt,
+                chat_category=chat_category,
+                origin_url=origin_url,
+                prompt_id_for_logging=chat_category,
+            )

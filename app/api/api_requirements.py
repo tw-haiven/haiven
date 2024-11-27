@@ -1,5 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-from fastapi import Query
+from fastapi import Query, Request
 from api.api_basics import HaivenBaseApi, PromptRequestBody
 
 
@@ -37,8 +37,12 @@ class ApiRequirementsBreakdown(HaivenBaseApi):
 
         @app.post("/api/requirements")
         def requirements(
-            prompt_data: PromptRequestBody, variation: str = Query("workflow")
+            request: Request,
+            prompt_data: PromptRequestBody,
+            variation: str = Query("workflow"),
         ):
+            origin_url = request.headers.get("referer")
+            chat_category = "boba-requirements"
             variation_prompt = _get_variation_prompt(variation)
 
             rendered_prompt, _ = self.prompt_list.render_prompt(
@@ -51,7 +55,9 @@ class ApiRequirementsBreakdown(HaivenBaseApi):
 
             return self.stream_json_chat(
                 prompt=rendered_prompt,
-                chat_category="boba-requirements",
+                chat_category=chat_category,
                 chat_session_key_value=prompt_data.chatSessionId,
                 document_key=prompt_data.document,
+                origin_url=origin_url,
+                prompt_id_for_logging=chat_category,
             )

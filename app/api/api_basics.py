@@ -73,6 +73,7 @@ class HaivenBaseApi:
         prompt_id=None,
         user_identifier=None,
         context=None,
+        origin_url=None,
         prompt_id_for_logging=None,
     ):
         try:
@@ -84,6 +85,7 @@ class HaivenBaseApi:
 
             chat_session.log_run(
                 {
+                    "url": origin_url,
                     "user_id": user_identifier,
                     "session": chat_session_key_value,
                     "prompt_id": prompt_id_for_logging,
@@ -109,6 +111,7 @@ class HaivenBaseApi:
         prompt_id=None,
         user_identifier=None,
         context=None,
+        origin_url=None,
         prompt_id_for_logging=None,
     ):
         try:
@@ -140,6 +143,7 @@ class HaivenBaseApi:
 
             chat_session.log_run(
                 {
+                    "url": origin_url,
                     "user_id": user_identifier,
                     "session": chat_session_key_value,
                     "prompt_id": prompt_id_for_logging,
@@ -274,6 +278,7 @@ class ApiBasics(HaivenBaseApi):
         @app.post("/api/prompt")
         @logger.catch(reraise=True)
         def chat(request: Request, prompt_data: PromptRequestBody):
+            origin_url = request.headers.get("referer")
             try:
                 stream_fn = self.stream_text_chat
                 if prompt_data.promptid:
@@ -302,6 +307,7 @@ class ApiBasics(HaivenBaseApi):
                     prompt_id=prompt_data.promptid,
                     user_identifier=self.get_hashed_user_id(request),
                     context=prompt_data.context,
+                    origin_url=origin_url,
                     prompt_id_for_logging=prompt_data.promptIdForLogging
                     if not prompt_data.promptid
                     else prompt_data.promptid,

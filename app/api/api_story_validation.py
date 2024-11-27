@@ -151,33 +151,39 @@ class ApiStoryValidation(HaivenBaseApi):
 
         @app.post("/api/story-validation/summary")
         def generate_summary(request: Request, body: StoryValidationScenarios):
+            origin_url = request.headers.get("referer")
             prompt = get_summary_prompt(body)
 
             return self.stream_text_chat(
                 prompt=prompt,
                 chat_category="story-validation-summary",
                 user_identifier=self.get_hashed_user_id(request),
+                origin_url=origin_url,
                 prompt_id_for_logging=body.promptIdForLogging,
             )
 
         @app.post("/api/story-validation/scenarios")
         def generate_scenarios(request: Request, body: StoryValidationScenarios):
+            origin_url = request.headers.get("referer")
             prompt = get_given_when_then_generation_prompt(body)
 
             return self.stream_text_chat(
                 prompt=prompt,
                 chat_category="story-validation-scenarios",
                 user_identifier=self.get_hashed_user_id(request),
+                origin_url=origin_url,
                 prompt_id_for_logging=body.promptIdForLogging,
             )
 
         @app.post("/api/story-validation/invest")
         def generate_invest_critique(request: Request, body: StoryValidationScenarios):
+            origin_url = request.headers.get("referer")
             prompt = get_invest_critique_prompt(body)
 
             return self.stream_text_chat(
                 prompt=prompt,
                 chat_category="story-validation-invest",
                 user_identifier=self.get_hashed_user_id(request),
+                origin_url=origin_url,
                 prompt_id_for_logging=body.promptIdForLogging,
             )

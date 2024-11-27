@@ -9,6 +9,8 @@ class ApiCreativeMatrix(HaivenBaseApi):
 
         @app.get("/api/creative-matrix")
         async def creative_matrix(request: Request):
+            origin_url = request.headers.get("referer")
+
             variables = {
                 "rows": request.query_params.get("rows"),
                 "columns": request.query_params.get("columns"),
@@ -25,4 +27,6 @@ class ApiCreativeMatrix(HaivenBaseApi):
                 warnings=[],
             )
 
-            return self.stream_json_chat(prompt, "creative-matrix")
+            return self.stream_json_chat(
+                prompt, "creative-matrix", origin_url=origin_url
+            )

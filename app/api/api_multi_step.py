@@ -46,6 +46,8 @@ class ApiMultiStep(HaivenBaseApi):
 
         @app.post("/api/prompt/follow-up")
         def generate_follow_up(request: Request, prompt_data: FollowUpRequest):
+            origin_url = request.headers.get("referer")
+
             try:
                 stream_fn = self.stream_text_chat
                 prompts = self.prompt_list
@@ -77,6 +79,7 @@ class ApiMultiStep(HaivenBaseApi):
                     chat_session_key_value=prompt_data.chatSessionId,
                     document_key=prompt_data.document,
                     user_identifier=self.get_hashed_user_id(request),
+                    origin_url=origin_url,
                     prompt_id_for_logging=prompt_data.previous_promptid,
                 )
 
@@ -88,6 +91,8 @@ class ApiMultiStep(HaivenBaseApi):
 
         @app.post("/api/prompt/explore")
         def kick_off_explore(request: Request, prompt_data: ExploreRequest):
+            origin_url = request.headers.get("referer")
+
             try:
                 stream_fn = self.stream_text_chat
                 prompts = self.prompt_list
@@ -148,6 +153,7 @@ I want to focus on this item:
                     chat_session_key_value=prompt_data.chatSessionId,
                     document_key=prompt_data.document,
                     user_identifier=self.get_hashed_user_id(request),
+                    origin_url=origin_url,
                     prompt_id_for_logging=prompt_data.previous_promptid,
                 )
 
