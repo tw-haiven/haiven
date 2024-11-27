@@ -136,7 +136,7 @@ class KnowledgeBaseDocuments:
     def _load_document_into_store(self, document_path: str, context: str) -> None:
         document = frontmatter.load(document_path)
         if (
-            document.metadata.get("provider")
+            document.metadata.get("provider").lower()
             == self._embeddings_provider.embedding_model.provider.lower()
         ):
             folder_path = Path(document_path).parent
