@@ -15,7 +15,6 @@ class QuestionAnswer(BaseModel):
 class StoryValidationScenarios(BaseModel):
     input: str = None
     answers: List[QuestionAnswer] = []
-    promptIdForLogging: str = None
 
 
 def _concat_questions_answers(validationScenarios: StoryValidationScenarios):
@@ -159,7 +158,6 @@ class ApiStoryValidation(HaivenBaseApi):
                 chat_category="story-validation-summary",
                 user_identifier=self.get_hashed_user_id(request),
                 origin_url=origin_url,
-                prompt_id_for_logging=body.promptIdForLogging,
             )
 
         @app.post("/api/story-validation/scenarios")
@@ -172,7 +170,6 @@ class ApiStoryValidation(HaivenBaseApi):
                 chat_category="story-validation-scenarios",
                 user_identifier=self.get_hashed_user_id(request),
                 origin_url=origin_url,
-                prompt_id_for_logging=body.promptIdForLogging,
             )
 
         @app.post("/api/story-validation/invest")
@@ -185,5 +182,4 @@ class ApiStoryValidation(HaivenBaseApi):
                 chat_category="story-validation-invest",
                 user_identifier=self.get_hashed_user_id(request),
                 origin_url=origin_url,
-                prompt_id_for_logging=body.promptIdForLogging,
             )

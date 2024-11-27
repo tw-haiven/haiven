@@ -37,5 +37,4 @@ class ApiScenarios(HaivenBaseApi):
                 chat_category=chat_category,
                 user_identifier=self.get_hashed_user_id(request),
                 origin_url=origin_url,
-                prompt_id_for_logging=chat_category,
             )

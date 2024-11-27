@@ -64,7 +64,6 @@ const PromptChat = ({
     return {
       userinput: userInput,
       promptid: usePromptId ? selectedPrompt?.identifier : undefined,
-      promptIdForLogging: promptId ? promptId : "",
       chatSessionId: chatSessionId,
       ...(selectedContext !== "base" && { context: selectedContext }),
       ...(selectedDocument !== "base" && { document: selectedDocument }),
@@ -94,7 +93,6 @@ const PromptChat = ({
       requestData = {
         userinput: lastMessage?.content,
         chatSessionId: chatSessionId,
-        promptIdForLogging: promptId ? promptId : "",
       };
     }
 

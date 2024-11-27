@@ -112,7 +112,6 @@ const StoryValidation = ({ contexts, models }) => {
         body: JSON.stringify({
           input: promptInput,
           answers: questions,
-          promptId: promptId,
         }),
         signal: startLoad(),
       },
