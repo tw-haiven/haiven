@@ -140,6 +140,42 @@ h4, h5 {
   height: 1.4em;
 }
 
+.chat-text-area {
+ margin: 0;
+ padding: 16px;
+}
+
+.chat-text-area textarea {
+  margin: 0;
+  padding: 16px;
+  padding-right: 84px;
+  background-color: white;
+  border: 2px solid var(--color-medium-gray);
+}
+
+.chat-text-area textarea:hover {
+  border: 2px solid var(--color-medium-gray);
+  background-color: white;
+}
+
+.chat-text-area textarea:focus {
+  box-shadow: none;
+  border: 2px solid var(--color-dark-gray);
+  background-color: white;
+}
+.chat-text-area-submit {
+  position: absolute;
+  right: 26px;
+  bottom: 2px;
+}
+
+.chat-text-area-submit button {
+  font-weight: var(--font-weight-semi-bold);
+  padding-top: 8px;
+  padding-bottom: 8px;
+  height: fit-content;
+}
+
 .chat-message {
   background-color: white;
   line-height: 1.5;

@@ -1,8 +1,9 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { ActionIconGroup, ProChat, useProChat } from "@ant-design/pro-chat";
 import { css, cx, useTheme } from "antd-style";
-import { message } from "antd";
+import { Button, Form, Input, message } from "antd";
 import { PinIcon, RotateCw, Trash, Copy } from "lucide-react";
+import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -13,6 +14,8 @@ const ChatWidget = forwardRef(
     const proChat = useProChat();
 
     const [chatIsVisible, setChatIsVisible] = useState(visible);
+    const [isLoading, setIsLoading] = useState(false);
+
     const pin = {
       icon: PinIcon,
       key: "pin",
@@ -92,6 +95,56 @@ const ChatWidget = forwardRef(
       },
     }));
 
+    const inputAreaRender = (_, onMessageSend) => {
+      const [form] = Form.useForm();
+
+      const handleKeyDown = (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          form.submit();
+        }
+      };
+
+      return (
+        <Form
+          onFinish={async (value) => {
+            const { question } = value;
+            await onMessageSend(question);
+            form.resetFields();
+          }}
+          form={form}
+          initialValues={{ question: "" }}
+        >
+          <Form.Item name="question" className="chat-text-area">
+            <Input.TextArea
+              disabled={isLoading}
+              placeholder="Please enter a message..."
+              autoSize={{ minRows: 1, maxRows: 4 }}
+              onKeyDown={handleKeyDown}
+            />
+          </Form.Item>
+          <Form.Item className="chat-text-area-submit">
+            {isLoading ? (
+              <Button
+                type="secondary"
+                icon={<RiStopCircleFill fontSize="large" />}
+                onClick={() => proChat.stopGenerateMessage()}
+              >
+                STOP
+              </Button>
+            ) : (
+              <Button
+                htmlType="submit"
+                icon={<RiSendPlane2Line fontSize="large" />}
+              >
+                SEND
+              </Button>
+            )}
+          </Form.Item>
+        </Form>
+      );
+    };
+
     return (
       chatIsVisible && (
         <ProChat
@@ -115,6 +168,12 @@ const ChatWidget = forwardRef(
           request={onSubmit}
           chatItemRenderConfig={{
             contentRender: (props, _defaultDom) => {
+              if (props.loading) {
+                setIsLoading(true);
+              } else {
+                setIsLoading(false);
+              }
+
               const isError = props.message.startsWith("[ERROR]: ")
                 ? props.message.replace("[ERROR]: ", "")
                 : null;
@@ -145,6 +204,7 @@ const ChatWidget = forwardRef(
               );
             },
           }}
+          inputAreaRender={inputAreaRender}
         />
       )
     );
