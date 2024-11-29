@@ -20,6 +20,7 @@ def backwards_compat_env_vars():
     os.environ["AZURE_API_BASE"] = os.environ.get("AZURE_OPENAI_API_BASE", "")
     os.environ["AZURE_API_VERSION"] = os.environ.get("AZURE_OPENAI_API_VERSION", "")
     os.environ["AWS_REGION_NAME"] = os.environ.get("AWS_BEDROCK_REGION", "")
+    os.environ["ANTHROPIC_API_KEY"] = os.environ.get("ANTHROPIC_API_KEY", "")
     os.environ["GEMINI_API_KEY"] = os.environ.get("GOOGLE_API_KEY", "")
 
 

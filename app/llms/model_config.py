@@ -35,6 +35,8 @@ class ModelConfig:
             )
         elif self.provider.lower() == "aws":
             self.lite_id = "bedrock/" + self.config["model_id"]
+        elif self.provider.lower() == "anthropic":
+            self.lite_id = "anthropic/" + self.config["model_id"]
         elif self.provider.lower() == "google":
             self.lite_id = "gemini/" + self.config["model"]
         elif self.provider.lower() == "ollama":

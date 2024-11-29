@@ -70,6 +70,17 @@ models:
       aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
       aws_access_key_id: ${AWS_ACCESS_KEY_ID}
 
+  - id: anthropic-claude-3.5
+    name: Claude 3.5 on Anthropic
+    provider: Anthropic
+    features:
+      - text-generation
+      - stop-sequence
+      - image-to-text
+    config:
+      model_id: claude-3-5-sonnet-20240620
+      api_key: ${ANTHROPIC_API_KEY}
+
   - id: openai-gpt35
     name: GPT-3.5 on OpenAI
     provider: OPENAI

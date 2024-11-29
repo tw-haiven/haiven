@@ -209,6 +209,8 @@ class ConfigService:
                     default_chat_model = "google-gemini"
                 case "aws":
                     default_chat_model = "aws-claude-v3"
+                case "anthropic":
+                    default_chat_model = "anthropic-claude-3.5"
                 case "ollama":
                     default_chat_model = "ollama-local-llama3"
         return default_chat_model
