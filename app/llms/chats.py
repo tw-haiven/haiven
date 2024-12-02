@@ -60,19 +60,52 @@ class HaivenBaseChat:
         summary = self.chat_client(copy_of_history)
         return summary.content
 
+    def _similarity_query(self, message):
+        if len(self.memory) == 1:
+            return message
+
+        if len(self.memory) > 5:
+            conversation = "\n".join(
+                [message.content for message in (self.memory[:2] + self.memory[-4:])]
+            )
+        else:
+            conversation = "\n".join([message.content for message in self.memory])
+
+        system_message = f"""You are a helpful assistant.
+        Your task is create a single search query to find relevant information, based on the conversation and the current user message.
+        Rules: 
+        - Search query should find relevant information for the current user message only.
+        - Include important key words and phrases that would help find relevant information from the summary.
+        - If the current user message does not need to search for additional information, return NONE.
+        - Only return the single standalone search query or NONE. No explanations needed.
+        
+        Conversation:
+        {conversation}
+        """
+        prompt = [HaivenSystemMessage(content=system_message)]
+        prompt.append(
+            HaivenHumanMessage(content=f"Current user message: {message} \n Query:")
+        )
+
+        stream = self.chat_client.stream(prompt)
+        query = ""
+        for chunk in stream:
+            query += chunk["content"]
+
+        if "none" in query.lower():
+            return None
+        elif "query:" in query.lower():
+            return query.split("query:")[1].strip()
+        else:
+            return query
+
     def _similarity_search_based_on_history(
         self, message, knowledge_document_key, knowledge_context
     ):
-        if len(self.memory) > 2:
-            summary = self._summarise_conversation()
-        else:
-            summary = "\n".join([message.content for message in self.memory])
-
-        similarity_query = f"""
-            {summary}
-
-            {message or ""}
-        """
+        similarity_query = self._similarity_query(message)
+        print("Similarity Query:", similarity_query)
+        if similarity_query is None:
+            return None, None
 
         if knowledge_document_key == "all":
             context_documents = (
@@ -159,7 +192,7 @@ class StreamingChat(HaivenBaseChat):
             {user_request}
 
             ---- Here is some additional CONTEXT that might be relevant to this:
-            {context_for_prompt}
+            {context_for_prompt or ""} 
 
             -------
             Do not provide any advice that is outside of the CONTEXT I provided.
