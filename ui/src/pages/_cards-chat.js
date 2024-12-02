@@ -5,7 +5,7 @@ import { Drawer, Button, Input, Collapse, message } from "antd";
 const { TextArea } = Input;
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
-import { RiFileCopyLine } from "react-icons/ri";
+import { RiFileCopyLine, RiPushpinLine } from "react-icons/ri";
 import { MenuFoldOutlined } from "@ant-design/icons";
 import ReactMarkdown from "react-markdown";
 import Disclaimer from "./_disclaimer";
@@ -14,6 +14,7 @@ import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import CardsList from "../app/_cards-list";
 import useLoader from "../hooks/useLoader";
+import { addToPinboard } from "../app/_local_store";
 
 const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const [selectedPromptId, setSelectedPromptId] = useState(promptId); // via query parameter
@@ -86,6 +87,11 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const onCopyFollowUp = (id) => {
     navigator.clipboard.writeText(followUpResults[id]);
     copySuccess();
+  };
+
+  const onPinFollowUp = (id) => {
+    const timestamp = Math.floor(Date.now()).toString();
+    addToPinboard(timestamp, followUpResults[id]);
   };
 
   const buildRequestDataFirstStep = () => {
@@ -226,12 +232,22 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
                   <Button
                     type="link"
                     onClick={() => {
+                      onPinFollowUp(followUp.identifier);
+                    }}
+                    className="icon-button"
+                  >
+                    <RiPushpinLine fontSize="large" />
+                  </Button>
+                  <Button
+                    type="link"
+                    onClick={() => {
                       onCopyFollowUp(followUp.identifier);
                     }}
                     className="icon-button"
                   >
                     <RiFileCopyLine fontSize="large" />
                   </Button>
+
                   <ReactMarkdown>
                     {followUpResults[followUp.identifier]}
                   </ReactMarkdown>
