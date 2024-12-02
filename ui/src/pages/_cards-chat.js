@@ -35,6 +35,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const [chatContext, setChatContext] = useState({});
   const [isExpanded, setIsExpanded] = useState(true);
   const [usePromptId, setUsePromptId] = useState(true);
+  const [chatSessionIdFirstStep, setChatSessionIdFirstStep] = useState();
 
   useEffect(() => {
     if (selectedPromptId !== undefined && selectedPromptId !== null) {
@@ -106,6 +107,17 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     };
   };
 
+  const buildRequestDataGetMore = () => {
+    return {
+      userinput:
+        "Give me some additional ones, in the same JSON format. Only return JSON, nothing else.",
+      context: selectedContext,
+      promptid: undefined,
+      chatSessionId: chatSessionIdFirstStep,
+      json: true,
+    };
+  };
+
   const buildRequestDataSecondStep = (followUpId) => {
     return {
       userinput: promptInput,
@@ -118,7 +130,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     };
   };
 
-  const sendFirstStepPrompt = () => {
+  const sendCardBuildingPrompt = (requestDataBuilder) => {
     setIsExpanded(false);
     const uri = "/api/prompt";
 
@@ -130,7 +142,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
       {
         method: "POST",
         signal: startLoad(),
-        body: JSON.stringify(buildRequestDataFirstStep()),
+        body: JSON.stringify(requestDataBuilder()),
       },
       {
         json: true,
@@ -145,7 +157,14 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           }
           abortLoad();
         },
-        onMessageHandle: (data) => {
+        onMessageHandle: (data, response) => {
+          const chatId = response.headers.get("X-Chat-ID");
+          setChatSessionIdFirstStep(chatId);
+
+          const existingScenarios = scenarios.map((scenario) => ({
+            ...scenario,
+          }));
+
           ms += data.data;
           ms = ms.trim().replace(/^[^[]+/, "");
           if (ms.startsWith("[")) {
@@ -155,7 +174,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
               console.log("error", error);
             }
             if (Array.isArray(output)) {
-              setScenarios(output);
+              setScenarios([...existingScenarios, ...output]);
             } else {
               abortLoad();
               if (ms.includes("Error code:")) {
@@ -171,6 +190,14 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
         },
       },
     );
+  };
+
+  const sendFirstStepPrompt = () => {
+    sendCardBuildingPrompt(buildRequestDataFirstStep);
+  };
+
+  const sendGetMorePrompt = () => {
+    sendCardBuildingPrompt(buildRequestDataGetMore);
   };
 
   const sendFollowUpPrompt = (apiEndpoint, onData, followUpId) => {
@@ -366,13 +393,24 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
               onExplore={onExplore}
               stopLoadComponent={<StopLoad />}
             />
+            {scenarios.length > 0 && (
+              <div className="generate-more">
+                <Button
+                  onClick={sendGetMorePrompt}
+                  className="go-button"
+                  disabled={loading}
+                >
+                  GENERATE MORE CARDS
+                </Button>
+              </div>
+            )}
             {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
               <div className="follow-up-container">
                 <div style={{ marginTop: "1em" }}>
                   <h3>What you can do next</h3>
                   <p>
-                    Generate more content based on the cards selected above.
-                    Deselect cards to exclude them from the next step.
+                    Generate content based on the cards selected above. Deselect
+                    cards to exclude them from the next step.
                   </p>
                 </div>
                 <Collapse

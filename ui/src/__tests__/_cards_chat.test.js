@@ -61,6 +61,10 @@ const someScenarios = [
 const someUserInput = "Here is my prompt input";
 const followUpResponse = "Follow-up response";
 
+const mockResponseHeadersWithChatId = {
+  headers: { get: () => "some-chat-id" },
+};
+
 const setup = async () => {
   await act(async () => {
     render(
@@ -169,13 +173,19 @@ describe("CardsChat Component", () => {
         thenFirstPromptRequestHappens(options.body);
 
         const scenarioString = JSON.stringify(someScenarios);
-        onMessageHandle({ data: scenarioString.substring(0, 10) });
-        onMessageHandle({ data: scenarioString.substring(10) });
+        onMessageHandle(
+          { data: scenarioString.substring(0, 10) },
+          mockResponseHeadersWithChatId,
+        );
+        onMessageHandle(
+          { data: scenarioString.substring(10) },
+          mockResponseHeadersWithChatId,
+        );
       })
       .mockImplementationOnce((url, options, { onMessageHandle }) => {
         thenFollowUpPromptRequestHappens(options.body);
 
-        onMessageHandle(followUpResponse);
+        onMessageHandle(followUpResponse, mockResponseHeadersWithChatId);
       });
 
     await setup();
@@ -206,8 +216,14 @@ describe("CardsChat Component", () => {
 
     fetchSSE.mockImplementationOnce((url, options, { onMessageHandle }) => {
       const scenarioString = JSON.stringify(someScenarios);
-      onMessageHandle({ data: scenarioString.substring(0, 10) });
-      onMessageHandle({ data: scenarioString.substring(10) });
+      onMessageHandle(
+        { data: scenarioString.substring(0, 10) },
+        mockResponseHeadersWithChatId,
+      );
+      onMessageHandle(
+        { data: scenarioString.substring(10) },
+        mockResponseHeadersWithChatId,
+      );
     });
 
     await act(async () => {
@@ -240,7 +256,10 @@ describe("CardsChat Component", () => {
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
           const scenariosArrayString = JSON.stringify(someScenarios);
-          onMessageHandle({ data: scenariosArrayString });
+          onMessageHandle(
+            { data: scenariosArrayString },
+            mockResponseHeadersWithChatId,
+          );
           onFinish();
         },
       );
@@ -258,9 +277,12 @@ describe("CardsChat Component", () => {
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
           const scenariosArrayString = JSON.stringify(someScenarios);
-          onMessageHandle({
-            data: "```Here is your json:" + scenariosArrayString,
-          });
+          onMessageHandle(
+            {
+              data: "```Here is your json:" + scenariosArrayString,
+            },
+            mockResponseHeadersWithChatId,
+          );
           onFinish();
         },
       );
@@ -278,7 +300,10 @@ describe("CardsChat Component", () => {
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
           const scenariosString = JSON.stringify(someScenarios);
-          onMessageHandle({ data: scenariosString + "```Here is your json:" });
+          onMessageHandle(
+            { data: scenariosString + "```Here is your json:" },
+            mockResponseHeadersWithChatId,
+          );
           onFinish();
         },
       );
@@ -298,7 +323,10 @@ describe("CardsChat Component", () => {
         (url, options, { onMessageHandle, onFinish }) => {
           const streamingData = { response: someScenarios };
           const streamingDataAsString = JSON.stringify(streamingData);
-          onMessageHandle({ data: streamingDataAsString });
+          onMessageHandle(
+            { data: streamingDataAsString },
+            mockResponseHeadersWithChatId,
+          );
           onFinish();
         },
       );
@@ -316,7 +344,10 @@ describe("CardsChat Component", () => {
       vi.spyOn(message, "warning");
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
-          onMessageHandle({ data: '{"title": "some title"}' });
+          onMessageHandle(
+            { data: '{"title": "some title"}' },
+            mockResponseHeadersWithChatId,
+          );
           onFinish();
         },
       );
@@ -334,7 +365,10 @@ describe("CardsChat Component", () => {
       vi.spyOn(message, "warning");
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
-          onMessageHandle({ data: "not a json object" });
+          onMessageHandle(
+            { data: "not a json object" },
+            mockResponseHeadersWithChatId,
+          );
           onFinish();
         },
       );

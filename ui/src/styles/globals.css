@@ -811,7 +811,7 @@ a.feedback:hover {
 
 /****** SCENARIO CARDS *******/
 .scenarios-collection {
-  padding: 0 var(--standard-left-padding) var(--standard-left-padding) var(--standard-left-padding) ;
+  padding: 0 var(--standard-left-padding) 0 var(--standard-left-padding) ;
   display: block !important;
   flex: 3 !important;
   height: 85%;
@@ -976,7 +976,12 @@ a.feedback:hover {
   margin-bottom: 0.3em;
 }
 
-/**** STORY VALIDATION ******/
+.generate-more {
+  padding: var(--standard-left-padding);
+  padding-top: 0;
+}
+
+/**** FOLLOW UPs ******/
 
 .second-step-collapsable .ant-collapse-header {
   background-color: var(--color-light-gray);

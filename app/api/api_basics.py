@@ -25,6 +25,7 @@ class PromptRequestBody(BaseModel):
     chatSessionId: str = None
     context: str = None
     document: str = None
+    json: bool = False
 
 
 def streaming_media_type() -> str:
@@ -295,6 +296,9 @@ class ApiBasics(HaivenBaseApi):
                         stream_fn = self.stream_json_chat
                 else:
                     rendered_prompt = prompt_data.userinput
+
+                if prompt_data.json is True:
+                    stream_fn = self.stream_json_chat
 
                 return stream_fn(
                     prompt=rendered_prompt,
