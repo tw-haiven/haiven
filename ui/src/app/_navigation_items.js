@@ -75,12 +75,7 @@ export const initialiseMenuCategoriesForSidebar = () => {
       key: "architecture",
       label: "Architecture",
       icon: <RiCompasses2Line style={{ fontSize: "large" }} />,
-      children: [
-        {
-          key: "threat-modelling",
-          label: <Link href="/threat-modelling">Threat Modelling: STRIDE</Link>,
-        },
-      ],
+      children: [],
     },
     other: {
       key: "other",
@@ -119,15 +114,6 @@ export const staticFeaturesForDashboard = () => {
       categories: ["analysis"],
       type: "static",
       link: "/requirements",
-    },
-    {
-      identifier: "boba-threat-modelling",
-      title: "Threat modelling",
-      help_prompt_description:
-        "Brainstorm threat modelling scenarios based on the STRIDE approach.",
-      categories: ["architecture"],
-      type: "static",
-      link: "/threat-modelling",
     },
   ];
 };

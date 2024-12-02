@@ -5,13 +5,10 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { initialiseMenuCategoriesForSidebar } from "../app/_navigation_items";
 
-import { RiChat2Line } from "react-icons/ri";
-
 const Sidebar = ({ prompts }) => {
   const pathToKey = {
     "/scenarios": "scenarios",
     "/creative-matrix": "creative-matrix",
-    "/threat-modelling": "threat-modelling",
     "/requirements": "requirements",
     "/knowledge-chat": "knowledgeChat",
     "/": "dashboard",
