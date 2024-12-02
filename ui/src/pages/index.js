@@ -99,8 +99,6 @@ export default function ChatDashboard() {
       ];
       categories.push("other");
 
-      console.log("prompts:", data);
-
       sortCategoriesByOrder(categories);
       setAllCategories(categories);
       setSelectedCategories(categories);
