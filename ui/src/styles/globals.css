@@ -1003,10 +1003,14 @@ a.feedback:hover {
 
 .generated-text-results {
   margin-top: 1em;
+  max-width: 700px;
+  padding-left: 1em;
+  border-left: 2px solid var(--color-light-gray);
 }
 
 .generated-text-results .icon-button {
   float: right;
+  padding: 0.3em;
 }
 
 .generated-text-results h1 {
