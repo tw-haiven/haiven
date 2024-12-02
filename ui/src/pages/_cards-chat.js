@@ -34,6 +34,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const [followUpResults, setFollowUpResults] = useState({});
   const [chatContext, setChatContext] = useState({});
   const [isExpanded, setIsExpanded] = useState(true);
+  const [usePromptId, setUsePromptId] = useState(true);
 
   useEffect(() => {
     if (selectedPromptId !== undefined && selectedPromptId !== null) {
@@ -48,6 +49,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
         setSelectedPromptConfiguration(firstStepEntry);
       }
     }
+    setUsePromptId(true);
   }, [promptId, prompts]);
 
   const onCollapsibleIconClick = (e) => {
@@ -98,7 +100,9 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     return {
       userinput: promptInput,
       context: selectedContext,
-      promptid: selectedPromptConfiguration.identifier,
+      promptid: usePromptId
+        ? selectedPromptConfiguration?.identifier
+        : undefined,
     };
   };
 
@@ -288,7 +292,11 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           value={selectedContext?.key}
         />
         <div className="user-input">
-          <PromptPreview buildRenderPromptRequest={buildRequestDataFirstStep} />
+          <PromptPreview
+            buildRenderPromptRequest={buildRequestDataFirstStep}
+            setUsePromptId={setUsePromptId}
+            startNewChat={sendFirstStepPrompt}
+          />
           <Button
             onClick={sendFirstStepPrompt}
             className="go-button"
