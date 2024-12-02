@@ -8,7 +8,6 @@ from fastapi import FastAPI
 from api.api_basics import ApiBasics
 from api.api_multi_step import ApiMultiStep
 from api.api_scenarios import ApiScenarios
-from api.api_story_validation import ApiStoryValidation
 from api.api_creative_matrix import ApiCreativeMatrix
 from prompts.prompts_factory import PromptsFactory
 from tests.utils import get_test_data_path
@@ -396,49 +395,6 @@ class TestApi(unittest.TestCase):
         args, kwargs = mock_chat_manager.streaming_chat.call_args
         assert kwargs["options"].category == "explore"
         assert kwargs["session_id"] == ""
-
-    @patch("llms.chats.ChatManager")
-    @patch("prompts.prompts.PromptList")
-    @patch("llms.chats.StreamingChat")
-    def test_post_story_validation_scenarios(
-        self,
-        mock_streaming_chat,
-        mock_prompt_list,
-        mock_chat_manager,
-    ):
-        mock_streaming_chat.run.return_value = "some response from the model"
-        mock_chat_manager.streaming_chat.return_value = (
-            "some_session_key",
-            mock_streaming_chat,
-        )
-
-        mock_prompt_list.render_prompt.return_value = "some prompt", "template"
-        ApiStoryValidation(
-            self.app, mock_chat_manager, "some_model_key", mock_prompt_list
-        )
-
-        # Make the request to the endpoint
-        response = self.client.post(
-            "/api/story-validation/scenarios",
-            json={
-                "chat_session_id": None,
-                "answers": [{"title": "some question 1", "summary": "answer1"}],
-                "input": "some original requirement",
-            },
-        )
-
-        # Assert the response
-        assert response.status_code == 200
-        streamed_content = response.content.decode("utf-8")
-        assert streamed_content == "some response from the model"
-
-        assert mock_streaming_chat.run.call_count == 1
-        args, kwargs = mock_streaming_chat.run.call_args
-        prompt_argument = args[0]
-        assert "some question 1" in prompt_argument
-
-        args, kwargs = mock_chat_manager.streaming_chat.call_args
-        assert kwargs["session_id"] is None
 
     @patch("llms.chats.ChatManager")
     @patch("llms.chats.StreamingChat")

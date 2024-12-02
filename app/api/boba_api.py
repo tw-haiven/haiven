@@ -4,7 +4,6 @@ from api.api_basics import ApiBasics
 from api.api_multi_step import ApiMultiStep
 from api.api_scenarios import ApiScenarios
 from api.api_requirements import ApiRequirementsBreakdown
-from api.api_story_validation import ApiStoryValidation
 from api.api_creative_matrix import ApiCreativeMatrix
 from llms.chats import (
     ChatManager,
@@ -61,12 +60,6 @@ class BobaApi:
         )
 
         ApiRequirementsBreakdown(
-            app,
-            self.chat_manager,
-            self.model_config,
-            self.prompts_guided,
-        )
-        ApiStoryValidation(
             app,
             self.chat_manager,
             self.model_config,

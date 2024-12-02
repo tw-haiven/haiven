@@ -13,7 +13,6 @@ const Sidebar = ({ prompts }) => {
     "/creative-matrix": "creative-matrix",
     "/threat-modelling": "threat-modelling",
     "/requirements": "requirements",
-    "/story-validation": "story-validation",
     "/knowledge-chat": "knowledgeChat",
     "/": "dashboard",
   };
