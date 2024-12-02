@@ -267,12 +267,10 @@ class JSONChat(HaivenBaseChat):
         # Transition to new frontend SSE implementation: Add "data: " and "[DONE]" vs not doing that
         self.event_stream_standard = event_stream_standard
 
-    def stream_from_model(self, prompt):
+    def stream_from_model(self, new_message):
         try:
-            messages = [HaivenHumanMessage(content=prompt)]
-            stream = self.chat_client.stream(
-                messages
-            )  # TODO: Previously this was a new object, does this still work?
+            self.memory.append(HaivenHumanMessage(content=new_message))
+            stream = self.chat_client.stream(self.memory)
             for chunk in stream:
                 yield chunk["content"]
 
@@ -287,7 +285,6 @@ class JSONChat(HaivenBaseChat):
 
     def run(self, message: str):
         try:
-            self.memory.append(HaivenHumanMessage(content=message))
             data = enumerate(self.stream_from_model(message))
             for i, chunk in data:
                 if i == 0:
