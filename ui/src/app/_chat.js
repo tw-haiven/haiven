@@ -10,10 +10,9 @@ import remarkGfm from "remark-gfm";
 import { addToPinboard } from "./_local_store";
 
 const ChatWidget = forwardRef(
-  ({ onSubmitMessage, helloMessage, visible }, ref) => {
+  ({ onSubmitMessage, helloMessage, placeholder }, ref) => {
     const proChat = useProChat();
 
-    const [chatIsVisible, setChatIsVisible] = useState(visible);
     const [isLoading, setIsLoading] = useState(false);
 
     const pin = {
@@ -89,7 +88,6 @@ const ChatWidget = forwardRef(
 
     useImperativeHandle(ref, () => ({
       async startNewConversation(message) {
-        setChatIsVisible(true);
         proChat.clearMessage();
         return await proChat.sendMessage(message);
       },
@@ -118,7 +116,7 @@ const ChatWidget = forwardRef(
           <Form.Item name="question" className="chat-text-area">
             <Input.TextArea
               disabled={isLoading}
-              placeholder="Please enter a message..."
+              placeholder={placeholder}
               autoSize={{ minRows: 1, maxRows: 4 }}
               onKeyDown={handleKeyDown}
             />
@@ -146,67 +144,65 @@ const ChatWidget = forwardRef(
     };
 
     return (
-      chatIsVisible && (
-        <ProChat
-          style={{
-            height: "100%", // this is important for the chat_exploration styling!
-          }}
-          className={ChatStylingClass}
-          showTitle
-          assistantMeta={{
-            avatar: "/boba/shining-fill-white.svg",
-            title: "Haiven",
-            backgroundColor: "#003d4f",
-          }}
-          userMeta={{
-            avatar: userProfile.avatar ?? userProfile.name,
-            title: userProfile.name,
-            backgroundColor: "#47a1ad",
-          }}
-          locale="en-US"
-          helloMessage={helloMessage}
-          request={onSubmit}
-          chatItemRenderConfig={{
-            contentRender: (props, _defaultDom) => {
-              if (props.loading) {
-                setIsLoading(true);
-              } else {
-                setIsLoading(false);
-              }
+      <ProChat
+        style={{
+          height: "100%", // this is important for the chat_exploration styling!
+        }}
+        className={ChatStylingClass}
+        showTitle
+        assistantMeta={{
+          avatar: "/boba/shining-fill-white.svg",
+          title: "Haiven",
+          backgroundColor: "#003d4f",
+        }}
+        userMeta={{
+          avatar: userProfile.avatar ?? userProfile.name,
+          title: userProfile.name,
+          backgroundColor: "#47a1ad",
+        }}
+        locale="en-US"
+        helloMessage={helloMessage}
+        request={onSubmit}
+        chatItemRenderConfig={{
+          contentRender: (props, _defaultDom) => {
+            if (props.loading) {
+              setIsLoading(true);
+            } else {
+              setIsLoading(false);
+            }
 
-              const isError = props.message.startsWith("[ERROR]: ")
-                ? props.message.replace("[ERROR]: ", "")
-                : null;
-              return (
-                <div
-                  className={`chat-message ${props.primary ? "user" : "assistant"}`}
-                >
-                  {isError ? (
-                    <p style={{ color: "red" }}>{isError}</p>
-                  ) : (
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {props.message}
-                    </ReactMarkdown>
-                  )}
-                </div>
-              );
-            },
-            actionsRender: (props, _defaultDom) => {
-              return (
-                <ActionIconGroup
-                  items={defaultActions}
-                  dropdownMenu={extendedActions}
-                  onActionClick={(action) => {
-                    action.item.execute(props);
-                  }}
-                  type="ghost"
-                />
-              );
-            },
-          }}
-          inputAreaRender={inputAreaRender}
-        />
-      )
+            const isError = props.message.startsWith("[ERROR]: ")
+              ? props.message.replace("[ERROR]: ", "")
+              : null;
+            return (
+              <div
+                className={`chat-message ${props.primary ? "user" : "assistant"}`}
+              >
+                {isError ? (
+                  <p style={{ color: "red" }}>{isError}</p>
+                ) : (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {props.message}
+                  </ReactMarkdown>
+                )}
+              </div>
+            );
+          },
+          actionsRender: (props, _defaultDom) => {
+            return (
+              <ActionIconGroup
+                items={defaultActions}
+                dropdownMenu={extendedActions}
+                onActionClick={(action) => {
+                  action.item.execute(props);
+                }}
+                type="ghost"
+              />
+            );
+          },
+        }}
+        inputAreaRender={inputAreaRender}
+      />
     );
   },
 );

@@ -10,7 +10,7 @@ import ChatWidget from "./_chat";
 import DescribeImage from "./_image_description";
 import HelpTooltip from "./_help_tooltip";
 import ContextChoice from "./_context_choice";
-import Disclaimer from "../pages/_disclaimer";
+import ChatHeader from "../pages/_chat_header";
 import PromptPreview from "./_prompt_preview";
 
 const PromptChat = ({
@@ -39,16 +39,11 @@ const PromptChat = ({
   // Chat state
   const [conversationStarted, setConversationStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
-  const [showChat, setShowChat] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [usePromptId, setUsePromptId] = useState(true);
-
-  // Rendered prompt
-  const [renderedPromptData, setRenderedPromptData] = useState({});
-  const [showRenderedPrompt, setShowRenderedPrompt] = useState(false);
+  const [placeholder, setPlaceholder] = useState("");
 
   useEffect(() => {
-    setShowChat(false);
     setUsePromptId(true);
   });
 
@@ -116,11 +111,11 @@ const PromptChat = ({
       }
 
       const chatId = response.headers.get("X-Chat-ID");
+      setPlaceholder("");
 
       if (!conversationStarted) {
         setConversationStarted(true);
         setChatSessionId(chatId);
-        setShowChat(true);
       }
 
       return response;
@@ -134,6 +129,7 @@ const PromptChat = ({
       (prompt) => prompt.identifier === value,
     );
     setPromptSelection(selectedPrompt);
+    setPlaceholder(selectedPrompt?.help_user_input || pageIntro);
   }
 
   const handleContextSelection = (value) => {
@@ -264,7 +260,6 @@ const PromptChat = ({
   const collapseItem = [
     {
       key: "1",
-      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
       children: promptMenu,
     },
   ];
@@ -282,7 +277,7 @@ const PromptChat = ({
           expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
         />
         <div className="chat-container-wrapper">
-          <Disclaimer models={models} />
+          <ChatHeader models={models} />
           <div className="chat-container">
             <h1 className="title-for-collapsed-panel">
               {selectedPrompt?.title || pageTitle}
@@ -292,10 +287,10 @@ const PromptChat = ({
                 <ChatWidget
                   onSubmitMessage={submitPromptToBackend}
                   ref={chatRef}
-                  visible={showChat}
                   helloMessage={
                     "Fill in some input on the left and hit 'Generate'"
                   }
+                  placeholder={placeholder}
                 />
               </ProChatProvider>
             </div>

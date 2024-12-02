@@ -13,20 +13,6 @@
   --link-text-color-visited: var(--color-flamingo);
 }
 
-.disclaimer {
-  background-color: var(--color-flamingo);
-  font-weight: bold;
-  padding-left: 0.5em;
-}
-
-.disclaimer p {
-  color: white !important;
-}
-
-.disclaimer a {
-  color: white !important;
-}
-
 .model-settings-service label .wrap {
   font-size: 0.9em !important;
   background-color: var(--checkbox-label-background-fill) !important;

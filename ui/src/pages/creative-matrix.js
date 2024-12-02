@@ -5,7 +5,7 @@ import { MenuFoldOutlined } from "@ant-design/icons";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import { fetchSSE } from "../app/_fetch_sse";
-import Disclaimer from "./_disclaimer";
+import ChatHeader from "./_chat_header";
 import useLoader from "../hooks/useLoader";
 
 const CreativeMatrix = ({ models }) => {
@@ -270,7 +270,6 @@ const CreativeMatrix = ({ models }) => {
   const collapseItem = [
     {
       key: "1",
-      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
       children: promptMenu,
     },
   ];
@@ -288,7 +287,7 @@ const CreativeMatrix = ({ models }) => {
           expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
         />
         <div className="chat-container-wrapper">
-          <Disclaimer models={models} />
+          <ChatHeader models={models} />
           <div className="prompt-chat-header">
             <h1 className="title-for-collapsed-panel">Creative Matrix</h1>
             <StopLoad />

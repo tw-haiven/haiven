@@ -8,7 +8,7 @@ import { parse } from "best-effort-json-parser";
 import { RiFileCopyLine, RiPushpinLine } from "react-icons/ri";
 import { MenuFoldOutlined } from "@ant-design/icons";
 import ReactMarkdown from "react-markdown";
-import Disclaimer from "./_disclaimer";
+import ChatHeader from "./_chat_header";
 import ContextChoice from "../app/_context_choice";
 import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
@@ -453,7 +453,6 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const collapseItem = [
     {
       key: "1",
-      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
       children: promptMenu,
     },
   ];
@@ -495,7 +494,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
             )}
           />
           <div className="chat-container-wrapper">
-            <Disclaimer models={models} />
+            <ChatHeader models={models} />
             <CardsList
               title={selectedPromptConfiguration.title}
               scenarios={scenarios}

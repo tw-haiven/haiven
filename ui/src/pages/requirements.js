@@ -9,7 +9,7 @@ const { TextArea } = Input;
 
 import ContextChoice from "../app/_context_choice";
 import HelpTooltip from "../app/_help_tooltip";
-import Disclaimer from "./_disclaimer";
+import ChatHeader from "./_chat_header";
 import { scenarioToText } from "../app/_card_actions";
 import ChatExploration from "./_chat_exploration";
 import CardsList from "../app/_cards-list";
@@ -186,7 +186,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   const collapseItem = [
     {
       key: "1",
-      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
       children: promptMenu,
     },
   ];
@@ -230,7 +229,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
             )}
           />
           <div className="chat-container-wrapper">
-            <Disclaimer models={models} />
+            <ChatHeader models={models} />
             <CardsList
               scenarios={scenarios}
               title={promptTitle}

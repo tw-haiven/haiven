@@ -1281,15 +1281,29 @@ a.feedback:hover {
 
 }
 
-.disclaimer{
-  align-content: center;
-  text-align: right;
-  height: 4em;
-  color: #666666ff;
-  padding-right: var(--standard-left-padding);
-  font-size: 70%;
+.chat-header {
+  height: 5em;
   border-bottom: 1px solid var(--color-light-gray);
-  float: none;
+  display: flex;
+  padding-left: 3em;
+  padding-right: 3em;
+
+  .title {
+   text-align: left;
+   font-weight: var(--font-weight-semi-bold);
+   font-size: medium;
+   color: black;
+   flex: 50%;
+   align-content: center;
+  }
+
+  .model-disclaimer {
+    text-align: right;
+    flex: 50%;
+    align-content: center;
+    font-size: 85%;
+    color: #666666ff;
+  }
 }
 
 /****** KNOWLEDGE OVERVIEW ******/
