@@ -129,7 +129,6 @@ class Server:
                 "threat-modelling",
                 "creative-matrix",
                 "requirements",
-                "story-validation",
             ]
             paths = request.url.path.split("/")
             if (

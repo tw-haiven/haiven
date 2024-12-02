@@ -1,6 +1,0 @@
-- firstStep:
-    identifier: guided-story-validation
-  followUps:
-    - identifier: guided-story-validation-01-summary
-    - identifier: guided-given-when-then-4a7b021a
-    - identifier: guided-invest-critique-983b8b

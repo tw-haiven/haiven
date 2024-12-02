@@ -57,10 +57,6 @@ export const initialiseMenuCategoriesForSidebar = () => {
           key: "requirements",
           label: <Link href="/requirements">Requirements Breakdown</Link>,
         },
-        {
-          key: "story-validation",
-          label: <Link href="/story-validation">User Story Refinement</Link>,
-        },
       ],
     },
     coding: {
@@ -123,15 +119,6 @@ export const staticFeaturesForDashboard = () => {
       categories: ["analysis"],
       type: "static",
       link: "/requirements",
-    },
-    {
-      identifier: "boba-story-validation",
-      title: "User Story Refinement",
-      help_prompt_description:
-        "Get asked questions about your requirement to discover gaps. In a second step, you can generate a draft for a user story.",
-      categories: ["analysis"],
-      type: "static",
-      link: "/story-validation",
     },
     {
       identifier: "boba-threat-modelling",
