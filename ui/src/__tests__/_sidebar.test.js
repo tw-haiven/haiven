@@ -45,7 +45,7 @@ describe("Sidebar Component", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/Ideate/i)).toBeInTheDocument();
     expect(screen.getByText(/Analyse/i)).toBeInTheDocument();
-    expect(screen.getByText(/Architecture/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Architecture/i)).not.toBeInTheDocument(); // No hard-coded entry, so it shouldn't show up
   });
 
   it("should render menu items with prompts", async () => {

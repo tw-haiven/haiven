@@ -126,7 +126,6 @@ class Server:
                 "chat",
                 "cards",
                 "scenarios",
-                "threat-modelling",
                 "creative-matrix",
                 "requirements",
             ]
