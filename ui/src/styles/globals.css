@@ -62,6 +62,12 @@ h4, h5 {
   color: var(--color-dark-blue);
 }
 
+@media screen and (max-width: 1230px) {
+  .feedback {
+    bottom: 2em;
+  }
+}
+
 a.feedback:hover {
   color: var(--color-sapphire) !important;
 }
