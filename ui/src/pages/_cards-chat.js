@@ -225,10 +225,9 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
             <p>{followUp.help_prompt_description}</p>
             <Button
               onClick={() => onFollowUp(followUp.identifier)}
-              size="small"
               className="go-button"
             >
-              GENERATE
+              {followUpResults[followUp.identifier] ? "REGENERATE" : "GENERATE"}
             </Button>
             {followUpResults[followUp.identifier] && (
               <>
