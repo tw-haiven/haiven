@@ -142,7 +142,6 @@ const ThreatModelling = ({ contexts, models }) => {
           value={selectedContext?.key}
         />
         <div className="user-input">
-          <PromptPreview buildRenderPromptRequest={buildRequestData} />
           <Button
             onClick={onSubmitPrompt}
             className="go-button"

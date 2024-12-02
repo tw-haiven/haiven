@@ -283,7 +283,6 @@ const StoryValidation = ({ contexts, models }) => {
           contexts={contexts}
           value={selectedContext?.key}
         />
-        <PromptPreview buildRenderPromptRequest={buildRequestData} />
         <Button
           onClick={onGenerateQuestions}
           className="go-button"

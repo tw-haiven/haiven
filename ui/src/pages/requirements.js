@@ -160,7 +160,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
           value={selectedContext?.key}
         />
         <div className="user-input">
-          {/* <PromptPreview buildRenderPromptRequest={buildRequestData} /> */}
           <label>
             Style of breakdown
             <HelpTooltip text="There are different approaches to breaking down a requirement into smaller work packages, try different ones and see which one fits your situation best." />
