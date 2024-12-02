@@ -31,6 +31,17 @@ describe("PromptChat Component", () => {
   ];
 
   it("should render the default user input fields and options when no prompt is selected", async () => {
+
+    vitest.mock("@ant-design/pro-chat", () => ({
+      __esModule: true,
+      ProChat: () => {
+        return <div></div>;
+      },
+      ProChatProvider: () => {
+        return <div></div>;
+      },
+    }));
+
     await act(async () => {
       render(
         <PromptChat
