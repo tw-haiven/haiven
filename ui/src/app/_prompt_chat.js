@@ -129,7 +129,11 @@ const PromptChat = ({
       (prompt) => prompt.identifier === value,
     );
     setPromptSelection(selectedPrompt);
-    setPlaceholder(selectedPrompt?.help_user_input || pageIntro);
+    setPlaceholder(
+      selectedPrompt && selectedPrompt.help_user_input
+        ? "Your input should " + selectedPrompt.help_user_input
+        : pageIntro,
+    );
   }
 
   const handleContextSelection = (value) => {
@@ -201,21 +205,19 @@ const PromptChat = ({
       <></>
     );
 
+  const title = (
+    <div className="title">
+      <h3>
+        {selectedPrompt?.title || pageTitle}
+        {headerTooltip && (
+          <HelpTooltip text="This prompt comes from the connected knowledge pack, where you can customize it if you don't like the results." />
+        )}
+      </h3>
+    </div>
+  );
+
   const promptMenu = (
     <div>
-      <div className="prompt-chat-options-section">
-        <h1>
-          {selectedPrompt?.title || pageTitle}
-          {headerTooltip && (
-            <HelpTooltip text="This prompt comes from the connected knowledge pack, where you can customize it if you don't like the results." />
-          )}
-        </h1>
-        <div className={headerTooltip ? "" : "prompt-chat-description"}>
-          {selectedPrompt?.help_prompt_description ||
-            "Ask general questions & document based queries"}
-        </div>
-      </div>
-
       <div className="prompt-chat-options-section">
         <div>
           <div className="user-input">
@@ -278,7 +280,7 @@ const PromptChat = ({
           expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
         />
         <div className="chat-container-wrapper">
-          <ChatHeader models={models} />
+          <ChatHeader models={models} titleComponent={title} />
           <div className="chat-container">
             <h1 className="title-for-collapsed-panel">
               {selectedPrompt?.title || pageTitle}
