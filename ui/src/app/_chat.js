@@ -1,19 +1,26 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { ActionIconGroup, ProChat, useProChat } from "@ant-design/pro-chat";
 import { css, cx, useTheme } from "antd-style";
-import { Button, Form, Input, message } from "antd";
+import { Button, Collapse, Form, Input, message } from "antd";
+import { UpOutlined } from "@ant-design/icons";
 import { PinIcon, RotateCw, Trash, Copy } from "lucide-react";
 import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
+import { GiSettingsKnobs } from "react-icons/gi";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { addToPinboard } from "./_local_store";
 
 const ChatWidget = forwardRef(
-  ({ onSubmitMessage, helloMessage, placeholder }, ref) => {
+  (
+    { onSubmitMessage, helloMessage, placeholder, promptPreviewComponent },
+    ref,
+  ) => {
     const proChat = useProChat();
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
+      useState(false);
 
     const pin = {
       icon: PinIcon,
@@ -93,6 +100,10 @@ const ChatWidget = forwardRef(
       },
     }));
 
+    const onClickAdvancedPromptOptions = (e) => {
+      setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
+    };
+
     const inputAreaRender = (_, onMessageSend) => {
       const [form] = Form.useForm();
 
@@ -103,43 +114,72 @@ const ChatWidget = forwardRef(
         }
       };
 
+      const items = [
+        {
+          key: "1",
+          label: (
+            <div className="advanced-prompting">
+              <GiSettingsKnobs className="advanced-prompting-icon" />{" "}
+              <span>Advanced Prompting</span>{" "}
+              <UpOutlined
+                className="advanced-prompting-collapse-icon"
+                rotate={isPromptOptionsMenuExpanded ? 180 : 0}
+              />
+            </div>
+          ),
+          children: <div>prompt options</div>,
+          extra: promptPreviewComponent,
+          showArrow: false,
+        },
+      ];
       return (
-        <Form
-          onFinish={async (value) => {
-            const { question } = value;
-            await onMessageSend(question);
-            form.resetFields();
-          }}
-          form={form}
-          initialValues={{ question: "" }}
-        >
-          <Form.Item name="question" className="chat-text-area">
-            <Input.TextArea
-              disabled={isLoading}
-              placeholder={placeholder}
-              autoSize={{ minRows: 1, maxRows: 4 }}
-              onKeyDown={handleKeyDown}
-            />
-          </Form.Item>
-          <Form.Item className="chat-text-area-submit">
-            {isLoading ? (
-              <Button
-                type="secondary"
-                icon={<RiStopCircleFill fontSize="large" />}
-                onClick={() => proChat.stopGenerateMessage()}
-              >
-                STOP
-              </Button>
-            ) : (
-              <Button
-                htmlType="submit"
-                icon={<RiSendPlane2Line fontSize="large" />}
-              >
-                SEND
-              </Button>
-            )}
-          </Form.Item>
-        </Form>
+        <div>
+          <Collapse
+            className="prompt-options-menu"
+            items={items}
+            defaultActiveKey={["1"]}
+            ghost={isPromptOptionsMenuExpanded}
+            activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
+            onChange={onClickAdvancedPromptOptions}
+            collapsible="header"
+          />
+          <Form
+            onFinish={async (value) => {
+              const { question } = value;
+              await onMessageSend(question);
+              form.resetFields();
+            }}
+            form={form}
+            initialValues={{ question: "" }}
+          >
+            <Form.Item name="question" className="chat-text-area">
+              <Input.TextArea
+                disabled={isLoading}
+                placeholder={placeholder}
+                autoSize={{ minRows: 1, maxRows: 4 }}
+                onKeyDown={handleKeyDown}
+              />
+            </Form.Item>
+            <Form.Item className="chat-text-area-submit">
+              {isLoading ? (
+                <Button
+                  type="secondary"
+                  icon={<RiStopCircleFill fontSize="large" />}
+                  onClick={() => proChat.stopGenerateMessage()}
+                >
+                  STOP
+                </Button>
+              ) : (
+                <Button
+                  htmlType="submit"
+                  icon={<RiSendPlane2Line fontSize="large" />}
+                >
+                  SEND
+                </Button>
+              )}
+            </Form.Item>
+          </Form>
+        </div>
       );
     };
 

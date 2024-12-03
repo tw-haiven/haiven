@@ -243,19 +243,20 @@ const PromptChat = ({
       </div>
       {contextSection}
       <div className="prompt-chat-options-section">
-        {showTextSnippets && (
-          <PromptPreview
-            buildRenderPromptRequest={buildRenderPromptRequest}
-            startNewChat={startNewChat}
-            setUsePromptId={setUsePromptId}
-          />
-        )}
         <Button onClick={() => startNewChat(null)} className="go-button">
           START CHAT
         </Button>
       </div>
     </div>
   );
+
+  const promptPreview = showTextSnippets ? (
+    <PromptPreview
+      buildRenderPromptRequest={buildRenderPromptRequest}
+      startNewChat={startNewChat}
+      setUsePromptId={setUsePromptId}
+    />
+  ) : null;
 
   const collapseItem = [
     {
@@ -291,6 +292,7 @@ const PromptChat = ({
                     "Fill in some input on the left and hit 'Generate'"
                   }
                   placeholder={placeholder}
+                  promptPreviewComponent={promptPreview}
                 />
               </ProChatProvider>
             </div>

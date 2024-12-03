@@ -1281,8 +1281,28 @@ a.feedback:hover {
 
 }
 
+.advanced-prompting {
+  display: flex;
+  gap: 0.5em;
+}
+
+.advanced-prompting-collapse-icon {
+  position: relative;
+  top: 1px;
+  font-size: small;
+  svg {
+    transition: transform 0.3s;
+  }
+}
+
+.advanced-prompting-icon {
+  transform: rotate(90deg);
+  position: relative;
+  top: 4px;
+}
+
 .chat-header {
-  height: 5em;
+  height: 4em;
   border-bottom: 1px solid var(--color-light-gray);
   display: flex;
   padding-left: 3em;
