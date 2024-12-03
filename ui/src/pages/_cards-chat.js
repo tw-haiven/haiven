@@ -14,17 +14,23 @@ import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import CardsList from "../app/_cards-list";
 import useLoader from "../hooks/useLoader";
-import { addToPinboard } from "../app/_local_store";
+import {
+  addToPinboard,
+  getFeatureToggleConfiguration,
+} from "../app/_local_store";
 
 const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const [selectedPromptId, setSelectedPromptId] = useState(promptId); // via query parameter
   const [selectedPromptConfiguration, setSelectedPromptConfiguration] =
     useState({});
 
+  const [featureToggleConfig, setFeatureToggleConfig] = useState({});
+
   const [scenarios, setScenarios] = useState([]);
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
+  const [iterationPrompt, setIterationPrompt] = useState("");
 
   const [cardExplorationDrawerOpen, setCardExplorationDrawerOpen] =
     useState(false);
@@ -35,7 +41,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const [chatContext, setChatContext] = useState({});
   const [isExpanded, setIsExpanded] = useState(true);
   const [usePromptId, setUsePromptId] = useState(true);
-  const [chatSessionIdFirstStep, setChatSessionIdFirstStep] = useState();
+  const [chatSessionIdCardBuilding, setChatSessionIdCardBuilding] = useState();
 
   useEffect(() => {
     if (selectedPromptId !== undefined && selectedPromptId !== null) {
@@ -51,6 +57,9 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
       }
     }
     setUsePromptId(true);
+
+    const toggleConfig = getFeatureToggleConfiguration() || "{}";
+    setFeatureToggleConfig(JSON.parse(toggleConfig));
   }, [promptId, prompts]);
 
   const onCollapsibleIconClick = (e) => {
@@ -97,7 +106,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     addToPinboard(timestamp, followUpResults[id]);
   };
 
-  const buildRequestDataFirstStep = () => {
+  const buildRequestDataCardBuilding = () => {
     return {
       userinput: promptInput,
       context: selectedContext,
@@ -108,17 +117,24 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   };
 
   const buildRequestDataGetMore = () => {
+    const exampleScenario = scenarios.length > 0 ? scenarios[0] : undefined;
     return {
       userinput:
-        "Give me some additional ones, in the same JSON format. Only return JSON, nothing else.",
+        "Give me some additional ones, in the same JSON format.\n\n" +
+        exampleScenario
+          ? "To recap, this is what the JSON structure of each one looks like right now, give me additional ones with all of these properties:\n" +
+            JSON.stringify(exampleScenario)
+          : "" +
+            "To recap, this is what the structure of each one looks like right now, give me additional ones with all of these attributes:\n" +
+            "\n\nOnly return JSON, nothing else.\n",
       context: selectedContext,
       promptid: undefined,
-      chatSessionId: chatSessionIdFirstStep,
+      chatSessionId: chatSessionIdCardBuilding,
       json: true,
     };
   };
 
-  const buildRequestDataSecondStep = (followUpId) => {
+  const buildRequestDataFollowUp = (followUpId) => {
     return {
       userinput: promptInput,
       context: selectedContext,
@@ -159,7 +175,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
         },
         onMessageHandle: (data, response) => {
           const chatId = response.headers.get("X-Chat-ID");
-          setChatSessionIdFirstStep(chatId);
+          setChatSessionIdCardBuilding(chatId);
 
           const existingScenarios = scenarios.map((scenario) => ({
             ...scenario,
@@ -193,12 +209,111 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   };
 
   const sendFirstStepPrompt = () => {
-    sendCardBuildingPrompt(buildRequestDataFirstStep);
+    sendCardBuildingPrompt(buildRequestDataCardBuilding);
   };
 
   const sendGetMorePrompt = () => {
     sendCardBuildingPrompt(buildRequestDataGetMore);
   };
+
+  /** ITERATION EXPERIMENT
+   * (behind feature toggle, experimental implementation)
+   *
+   * Switch on with:
+   * window.localStorage.setItem("toggles", '{ "cards-iteration": true }')
+   * */
+  const buildRequestDataIterate = () => {
+    // add IDs to the scenarios
+    scenarios.forEach((scenario, i) => {
+      if (scenario.id === undefined) scenario.id = i + 1;
+    });
+    return {
+      userinput: iterationPrompt,
+      scenarios: JSON.stringify(
+        scenarios
+          .filter((scenario) => scenario.exclude !== true)
+          .map(scenarioToJson),
+      ),
+      chatSessionId: chatSessionIdCardBuilding,
+    };
+  };
+
+  const iterateScenarios = (partiallyParsed) => {
+    partiallyParsed.forEach((parsedScenario) => {
+      const existingScenario = scenarios.find(
+        (scenario) => scenario.id === parsedScenario.id,
+      );
+      if (existingScenario) {
+        Object.assign(existingScenario, parsedScenario);
+        console.log(JSON.stringify(existingScenario));
+        // Remove any empty properties (sometimes happens with partial parsing)
+        Object.keys(existingScenario).forEach(
+          (key) =>
+            existingScenario[key] === "" ||
+            (existingScenario[key] === undefined &&
+              delete existingScenario[key]),
+        );
+      }
+    });
+    setScenarios([...scenarios]);
+  };
+
+  const sendIteration = () => {
+    setIsExpanded(false);
+    const uri = "/api/prompt/iterate";
+
+    let ms = "";
+    let output = [];
+
+    fetchSSE(
+      uri,
+      {
+        method: "POST",
+        signal: startLoad(),
+        body: JSON.stringify(buildRequestDataIterate()),
+      },
+      {
+        json: true,
+        onErrorHandle: () => {
+          abortLoad();
+        },
+        onFinish: () => {
+          if (ms == "") {
+            message.warning(
+              "Model failed to respond rightly, please rewrite your message and try again",
+            );
+          }
+          abortLoad();
+        },
+        onMessageHandle: (data) => {
+          ms += data.data;
+          ms = ms.trim().replace(/^[^[]+/, "");
+          if (ms.startsWith("[")) {
+            try {
+              output = parse(ms || "[]");
+            } catch (error) {
+              console.log("error", error);
+            }
+            if (Array.isArray(output)) {
+              iterateScenarios(output);
+            } else {
+              abortLoad();
+              if (ms.includes("Error code:")) {
+                message.error(ms);
+              } else {
+                message.warning(
+                  "Model failed to respond rightly, please rewrite your message and try again",
+                );
+              }
+              console.log("response is not parseable into an array");
+            }
+          }
+        },
+      },
+    );
+  };
+
+  /** END ITERATION EXPERIMENT CODE */
 
   const sendFollowUpPrompt = (apiEndpoint, onData, followUpId) => {
     let ms = "";
@@ -206,7 +321,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     fetchSSE(
       apiEndpoint,
       {
-        body: JSON.stringify(buildRequestDataSecondStep(followUpId)),
+        body: JSON.stringify(buildRequestDataFollowUp(followUpId)),
         signal: startLoad(),
       },
       {
@@ -319,7 +434,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
         />
         <div className="user-input">
           <PromptPreview
-            buildRenderPromptRequest={buildRequestDataFirstStep}
+            buildRenderPromptRequest={buildRequestDataCardBuilding}
             setUsePromptId={setUsePromptId}
             startNewChat={sendFirstStepPrompt}
           />
@@ -404,6 +519,27 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
                 </Button>
               </div>
             )}
+            {/* Iteration experiment */}
+            {featureToggleConfig["cards-iteration"] === true &&
+              scenarios.length > 0 && (
+                <div style={{ width: "50%", paddingLeft: "2em" }}>
+                  <p>[EXPERIMENT] What else do you want to add to the cards?</p>
+                  <Input
+                    value={iterationPrompt}
+                    onChange={(e, v) => {
+                      setIterationPrompt(e.target.value);
+                    }}
+                  />
+                  <Button
+                    onClick={sendIteration}
+                    size="small"
+                    className="go-button"
+                  >
+                    ENRICH CARDS
+                  </Button>
+                </div>
+              )}
+            {/* / End iteration experiment */}
             {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
               <div className="follow-up-container">
                 <div style={{ marginTop: "1em" }}>
