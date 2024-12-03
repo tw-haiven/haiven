@@ -44,22 +44,6 @@ class HaivenBaseChat:
     def memory_as_text(self):
         return "\n".join([str(message) for message in self.memory])
 
-    def _summarise_conversation(self):
-        copy_of_history = []
-        copy_of_history.extend(self.memory)
-        copy_of_history.append(
-            HaivenHumanMessage(
-                content="""
-            Summarise the conversation we've had so far in maximum 2 paragraphs.
-            I want to use the summary to start a search for other relevant information for my task,
-            so please make sure to include important key words and phrases that would help
-            me find relevant information. It is not important that the summary is polished sentences,
-            it is more important that a similarity search would find relevant information based on the summary."""
-            )
-        )
-        summary = self.chat_client(copy_of_history)
-        return summary.content
-
     def _similarity_query(self, message):
         if len(self.memory) == 1:
             return message
@@ -75,7 +59,7 @@ class HaivenBaseChat:
         Your task is create a single search query to find relevant information, based on the conversation and the current user message.
         Rules: 
         - Search query should find relevant information for the current user message only.
-        - Include important key words and phrases that would help find relevant information from the summary.
+        - Include all important key words and phrases in query that would help to search for relevant information.
         - If the current user message does not need to search for additional information, return NONE.
         - Only return the single standalone search query or NONE. No explanations needed.
         
@@ -154,11 +138,13 @@ class StreamingChat(HaivenBaseChat):
         super().__init__(chat_client, knowledge_manager, system_message)
         self.stream_in_chunks = stream_in_chunks
 
-    def run(self, message: str):
+    def run(self, message: str, user_query: str = None):
         self.memory.append(HaivenHumanMessage(content=message))
         try:
             for i, chunk in enumerate(self.chat_client.stream(self.memory)):
                 if i == 0:
+                    if user_query:
+                        self.memory[-1].content = user_query
                     self.memory.append(HaivenAIMessage(content=""))
                 self.memory[-1].content += chunk["content"]
                 yield chunk["content"]
@@ -187,19 +173,21 @@ class StreamingChat(HaivenBaseChat):
                 or "Based on our conversation so far, what do you think is relevant to me with the CONTEXT information I gathered?"
             )
 
-            prompt = f"""
-            
-            {user_request}
+            if context_for_prompt:
+                prompt = f"""
+                {user_request}
 
-            ---- Here is some additional CONTEXT that might be relevant to this:
-            {context_for_prompt or ""} 
+                ---- Here is some additional CONTEXT that might be relevant to this:
+                {context_for_prompt} 
 
-            -------
-            Do not provide any advice that is outside of the CONTEXT I provided.
-            """
+                -------
+                Do not provide any advice that is outside of the CONTEXT I provided.
+                """
+            else:
+                prompt = user_request
 
             # ask the LLM for the advice
-            for chunk in self.run(prompt):
+            for chunk in self.run(prompt, user_request):
                 yield chunk, sources_markdown
 
         except Exception as error:

@@ -122,7 +122,7 @@ class HaivenBaseApi:
                         ):
                             sources = sources
                             yield chunk
-                        yield "\n\n" + sources
+                        yield "\n\n" + sources if sources else ""
                     else:
                         for chunk in chat_session.run(prompt):
                             yield chunk
