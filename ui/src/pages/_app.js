@@ -7,6 +7,7 @@ import Head from "next/head";
 import Header from "./_header";
 import "../styles/globals.css";
 import Sidebar from "./_sidebar";
+import { initializeLocalStorage } from "../app/_local_store";
 
 import {
   getPrompts,
@@ -14,7 +15,6 @@ import {
   getDocuments,
   getModels,
 } from "../app/_boba_api";
-import { get } from "http";
 
 export default function App({
   Component,
@@ -63,6 +63,7 @@ export default function App({
       setDocuments(updatedDocuments);
     });
     getModels(setModels);
+    initializeLocalStorage();
   }, []);
 
   return (
