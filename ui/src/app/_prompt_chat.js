@@ -129,15 +129,11 @@ const PromptChat = ({
       (prompt) => prompt.identifier === value,
     );
     setPromptSelection(selectedPrompt);
-<<<<<<< HEAD
     setPlaceholder(
       selectedPrompt && selectedPrompt.help_user_input
         ? "Your input should " + selectedPrompt.help_user_input
         : pageIntro,
     );
-=======
-    setPlaceholder(selectedPrompt?.help_user_input || pageIntro);
->>>>>>> 3485106 (Display Prompt description as Chat Input text area Placeholder. Add page title)
   }
 
   const handleContextSelection = (value) => {
