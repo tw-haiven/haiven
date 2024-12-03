@@ -165,11 +165,11 @@ const PromptChat = ({
     <></>
   );
 
-  const documentChoiceUserInput =
+  const documentsMenu =
     showDocuments && documents ? (
       <div className="user-input">
         <label>
-          Document
+          Select document
           <HelpTooltip text="Select a document from your knowledge pack that might have useful information for your context. Haiven will try to find useful information in this document during the first chat interaction." />
         </label>
         <Select
@@ -183,7 +183,7 @@ const PromptChat = ({
       <></>
     );
 
-  const textSnippetsUserInput = showTextSnippets ? (
+  const contextsMenu = showTextSnippets ? (
     <ContextChoice
       onChange={handleContextSelection}
       contexts={contexts}
@@ -192,18 +192,6 @@ const PromptChat = ({
   ) : (
     <></>
   );
-
-  const contextSection =
-    showTextSnippets || showDocuments ? (
-      <div className="prompt-chat-options-section">
-        <div>
-          {textSnippetsUserInput}
-          {documentChoiceUserInput}
-        </div>
-      </div>
-    ) : (
-      <></>
-    );
 
   const title = (
     <div className="title">
@@ -243,7 +231,6 @@ const PromptChat = ({
           {imageDescriptionUserInput}
         </div>
       </div>
-      {contextSection}
       <div className="prompt-chat-options-section">
         <Button onClick={() => startNewChat(null)} className="go-button">
           START CHAT
@@ -295,6 +282,8 @@ const PromptChat = ({
                   }
                   placeholder={placeholder}
                   promptPreviewComponent={promptPreview}
+                  documentsMenu={documentsMenu}
+                  contextsMenu={contextsMenu}
                 />
               </ProChatProvider>
             </div>

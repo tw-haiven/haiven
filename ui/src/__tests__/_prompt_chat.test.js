@@ -31,7 +31,6 @@ describe("PromptChat Component", () => {
   ];
 
   it("should render the default user input fields and options when no prompt is selected", async () => {
-
     vitest.mock("@ant-design/pro-chat", () => ({
       __esModule: true,
       ProChat: () => {
@@ -62,8 +61,6 @@ describe("PromptChat Component", () => {
     expect(screen.getAllByText(/Default Title/i)[0]).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Default Intro/i)).toBeInTheDocument();
     expect(screen.getByText(/Upload image/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/Document/i)[0]).toBeInTheDocument();
-    expect(screen.getByText(/Your context/i)).toBeInTheDocument();
     expect(startChatButton).toBeInTheDocument();
   });
 });

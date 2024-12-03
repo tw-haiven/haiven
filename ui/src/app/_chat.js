@@ -13,7 +13,14 @@ import { addToPinboard } from "./_local_store";
 
 const ChatWidget = forwardRef(
   (
-    { onSubmitMessage, helloMessage, placeholder, promptPreviewComponent },
+    {
+      onSubmitMessage,
+      helloMessage,
+      placeholder,
+      promptPreviewComponent,
+      documentsMenu,
+      contextsMenu,
+    },
     ref,
   ) => {
     const proChat = useProChat();
@@ -127,7 +134,12 @@ const ChatWidget = forwardRef(
               />
             </div>
           ),
-          children: <div>prompt options</div>,
+          children: (
+            <div className="prompting-dropdown-menu">
+              {contextsMenu}
+              {documentsMenu}
+            </div>
+          ),
           extra: promptPreviewComponent,
           showArrow: false,
         },

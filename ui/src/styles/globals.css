@@ -494,6 +494,56 @@ a.feedback:hover {
   visibility: hidden;
 }
 
+.advanced-prompting {
+  display: flex;
+  gap: 0.5em;
+}
+
+.advanced-prompting-collapse-icon {
+  position: relative;
+  top: 1px;
+  font-size: small;
+
+  svg {
+    transition: transform 0.3s;
+  }
+}
+
+.advanced-prompting-icon {
+  transform: rotate(90deg);
+  position: relative;
+  top: 4px;
+}
+
+.prompt-options-menu {
+  .ant-collapse-header {
+    padding-bottom: 0px;
+  }
+  .ant-collapse-content {
+    border-top: 1px solid var(--color-light-gray) !important;
+  }
+  .prompting-dropdown-menu {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+
+    .user-input {
+      label {
+        width: 100%;
+        display: block;
+        font-weight: 500;
+      }
+
+      .ant-select {
+        width: 100%;
+        display: block;
+        margin-top: 0.5em;
+        margin-bottom: 1em;
+        height: 35px;
+      }
+    }
+  }
+}
 .prompt-chat-options-section .prompt-chat-description {
   padding-bottom: 30px;
   border-bottom: 1px solid var(--color-medium-gray);
@@ -581,10 +631,6 @@ a.feedback:hover {
   overflow: hidden;
   box-shadow: none;
   border-bottom: 1px solid var(--color-light-gray);
-}
-
-.prompt-chat-container .ant-collapse-content-box {
-  padding: 0px !important;
 }
 
 .prompt-chat-options-container .ant-collapse-header {
@@ -1279,26 +1325,6 @@ a.feedback:hover {
     } */
   }
 
-}
-
-.advanced-prompting {
-  display: flex;
-  gap: 0.5em;
-}
-
-.advanced-prompting-collapse-icon {
-  position: relative;
-  top: 1px;
-  font-size: small;
-  svg {
-    transition: transform 0.3s;
-  }
-}
-
-.advanced-prompting-icon {
-  transform: rotate(90deg);
-  position: relative;
-  top: 4px;
 }
 
 .chat-header {
