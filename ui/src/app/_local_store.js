@@ -1,6 +1,15 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { message } from "antd";
 
+export const initializeLocalStorage = () => {
+  if (!localStorage.getItem("pinboard")) {
+    localStorage.setItem("pinboard", JSON.stringify({}));
+  }
+  if (!localStorage.getItem("toggles")) {
+    localStorage.setItem("toggles", JSON.stringify({}));
+  }
+};
+
 export const addToPinboard = (key, content) => {
   try {
     var pinboard = localStorage.getItem("pinboard");
@@ -18,4 +27,8 @@ export const addToPinboard = (key, content) => {
     message.error("Failed to pin the content");
   }
   message.success("Text pinned successfully! You can view it on the Pinboard.");
+};
+
+export const getFeatureToggleConfiguration = () => {
+  return localStorage.getItem("toggles");
 };
