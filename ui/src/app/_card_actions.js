@@ -7,7 +7,12 @@ import { useState } from "react";
 export const scenarioToText = (scenario) => {
   let markdown = `## ${scenario.title}\n\n`;
   Object.keys(scenario).map((key) => {
-    if (key !== "title" && key !== "hidden" && key !== "exclude") {
+    if (
+      key !== "title" &&
+      key !== "hidden" &&
+      key !== "exclude" &&
+      key !== "id"
+    ) {
       const value = scenario[key];
       if (Array.isArray(value)) {
         markdown += `**${key.charAt(0).toUpperCase() + key.slice(1)}:**\n${value.map((item) => `- ${item}`).join("\n")}\n\n`;

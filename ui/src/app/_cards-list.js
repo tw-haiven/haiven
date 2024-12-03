@@ -55,7 +55,8 @@ const CardsList = ({
         key === "title" ||
         key === "summary" ||
         key === "hidden" ||
-        key === "exclude"
+        key === "exclude" ||
+        key === "id"
       )
         return null;
       const value = scenario[key];
