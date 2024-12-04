@@ -118,7 +118,7 @@ class HaivenBaseApi:
                     if document_key:
                         sources = ""
                         for chunk, sources in chat_session.run_with_document(
-                            document_key, None, prompt
+                            document_key, prompt
                         ):
                             sources = sources
                             yield chunk

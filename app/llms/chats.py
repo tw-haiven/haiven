@@ -3,7 +3,6 @@ import json
 import time
 import uuid
 
-from langchain.chains.question_answering import load_qa_chain
 from pydantic import BaseModel
 from config_service import ConfigService
 from knowledge_manager import KnowledgeManager
@@ -83,21 +82,13 @@ class HaivenBaseChat:
         else:
             return query
 
-    def _similarity_search_based_on_history(
-        self, message, knowledge_document_key, knowledge_context
-    ):
+    def _similarity_search_based_on_history(self, message, knowledge_document_key):
         similarity_query = self._similarity_query(message)
         print("Similarity Query:", similarity_query)
         if similarity_query is None:
             return None, None
 
-        if knowledge_document_key == "all":
-            context_documents = (
-                self.knowledge_manager.knowledge_base_documents.similarity_search(
-                    similarity_query, knowledge_context
-                )
-            )
-        else:
+        if knowledge_document_key:
             knowledge_document = (
                 self.knowledge_manager.knowledge_base_documents.get_document(
                     knowledge_document_key
@@ -108,6 +99,8 @@ class HaivenBaseChat:
                 document_key=knowledge_document.key,
                 context=knowledge_document.context,
             )
+        else:
+            return None, None
 
         context_for_prompt = "\n---".join(
             [f"{document.page_content}" for document in context_documents]
@@ -158,13 +151,12 @@ class StreamingChat(HaivenBaseChat):
     def run_with_document(
         self,
         knowledge_document_key: str,
-        knowledge_context: str,
         message: str = None,
     ):
         try:
             context_for_prompt, sources_markdown = (
                 self._similarity_search_based_on_history(
-                    message, knowledge_document_key, knowledge_context
+                    message, knowledge_document_key
                 )
             )
 
@@ -176,17 +168,14 @@ class StreamingChat(HaivenBaseChat):
             if context_for_prompt:
                 prompt = f"""
                 {user_request}
-
                 ---- Here is some additional CONTEXT that might be relevant to this:
                 {context_for_prompt} 
-
                 -------
                 Do not provide any advice that is outside of the CONTEXT I provided.
                 """
             else:
                 prompt = user_request
 
-            # ask the LLM for the advice
             for chunk in self.run(prompt, user_request):
                 yield chunk, sources_markdown
 
@@ -195,86 +184,6 @@ class StreamingChat(HaivenBaseChat):
                 error = "Error while the model was processing the input"
             print(f"[ERROR]: {str(error)}")
             yield f"[ERROR]: {str(error)}", ""
-
-
-class DocumentsChat(HaivenBaseChat):
-    def __init__(
-        self,
-        chat_client: ChatClient,
-        knowledge_manager: KnowledgeManager,
-        knowledge: str,
-        context: str,
-        system_message: str = "You are a helpful assistant",
-    ):
-        super().__init__(chat_client, knowledge_manager, system_message)
-        self.context = context
-        self.knowledge = knowledge
-        self.chain = DocumentsChat._create_chain(self.chat_client)
-
-    @staticmethod
-    def _create_chain(chat_client):
-        return load_qa_chain(llm=chat_client, chain_type="stuff")
-
-    def run(self, message: str):
-        self.memory.append(HaivenHumanMessage(content=message))
-        self.chain.llm_chain.llm = (
-            self.chat_client
-        )  # TODO: Previously this created a new object, is this still working?
-
-        if self.knowledge == "all":
-            search_results = (
-                self.knowledge_manager.knowledge_base_documents.similarity_search(
-                    query=message, context=self.context, k=10
-                )
-            )
-        else:
-            search_results = self.knowledge_manager.knowledge_base_documents.similarity_search_on_single_document(
-                query=message, document_key=self.knowledge, context=self.context
-            )
-
-        template = self._build_prompt(message)
-
-        ai_message = self.chain(
-            {"input_documents": search_results, "question": template}
-        )
-        self.memory.append(HaivenAIMessage(content=ai_message["output_text"]))
-
-        de_duplicated_sources = DocumentsUtils.get_unique_sources(search_results)
-
-        sources_markdown = (
-            "**These sources were searched as input to try and answer the question:**\n"
-            + "\n".join(
-                [
-                    f"- {DocumentsUtils.get_search_result_item(document.metadata)}"
-                    for document in de_duplicated_sources
-                ]
-            )
-        )
-        self.memory.append(HaivenAIMessage(content=sources_markdown))
-
-        return ai_message["output_text"], sources_markdown
-
-    def _build_prompt(self, question) -> str:
-        return (
-            """Provide information over the following pieces of CONTEXT to answer the QUESTION at the end.
-
-        CONTEXT:
-        ```
-        {context}
-        ```
-        QUESTION:
-        ```
-        In that CONTEXT, consider the following question: """
-            + question
-            + """
-        ```
-
-        You can only answer based on the provided context. If an answer cannot be formed strictly using the context,
-        say you cannot find information about that topic in the given context.
-
-        Please provide an answer to the question based on the context in Markdown format.
-        """
-        )
 
 
 class JSONChat(HaivenBaseChat):
