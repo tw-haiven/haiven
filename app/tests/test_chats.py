@@ -2,63 +2,13 @@
 import os
 import unittest
 
-from langchain.docstore.document import Document
-from llms.chats import DocumentsChat, ServerChatSessionMemory, StreamingChat
+from llms.chats import ServerChatSessionMemory, StreamingChat
 from unittest.mock import MagicMock, patch
 
 from llms.clients import HaivenAIMessage, HaivenHumanMessage, HaivenSystemMessage
 
 
 class TestChats(unittest.TestCase):
-    @patch("llms.chats.DocumentsChat._create_chain")
-    @patch("knowledge_manager.KnowledgeManager")
-    @patch("logger.HaivenLogger.get")
-    def test_documents_chat(
-        self, mock_logger, mock_knowledge_manager, mock_create_chain
-    ):
-        os.environ["USE_AZURE"] = "true"
-
-        document_embedding_mock = MagicMock()
-        document_embedding_mock.retriever = MagicMock()
-
-        expected_documents = [
-            Document(
-                page_content="Some doc content",
-                metadata={"source": "http://somewebsite.com", "title": "Some Website"},
-            )
-        ]
-
-        mock_knowledge_base_documents = MagicMock()
-        mock_knowledge_manager.knowledge_base_documents = mock_knowledge_base_documents
-        mock_knowledge_base_documents.similarity_search_on_single_document.return_value = [
-            document for document in expected_documents
-        ]
-
-        chain_fn_mock = MagicMock()
-        chain_fn_mock.return_value = {
-            "output_text": "Paris",
-            "source_documents": expected_documents,
-        }
-        mock_create_chain.return_value = chain_fn_mock
-
-        documents_chat = DocumentsChat(
-            chat_client=MagicMock(),
-            knowledge_manager=mock_knowledge_manager,
-            knowledge="a-document-key",
-            context="test_context",
-        )
-
-        question = "What is the capital of France?"
-        answer, sources_markdown = documents_chat.run(question)
-
-        args, _ = chain_fn_mock.call_args
-        assert args[0]["input_documents"] == expected_documents
-        assert question in args[0]["question"]
-
-        assert answer == "Paris"
-        assert "These sources were searched" in sources_markdown
-        assert "Some Website" in sources_markdown
-
     @patch("knowledge_manager.KnowledgeManager")
     @patch("logger.HaivenLogger.get")
     def test_streaming_chat(self, mock_logger, mock_knowledge_manager):
