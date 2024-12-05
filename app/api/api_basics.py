@@ -248,6 +248,9 @@ class ApiBasics(HaivenBaseApi):
         def get_knowledge_documents(request: Request):
             try:
                 base_context = None
+                # For the user, it doesn't make a difference anymore where the documents are coming from
+                # But we're still loading the ones from contexts as well, for backwards compatibility with
+                # older knowledge packs
                 all_contexts = knowledge_manager.get_all_context_keys()
 
                 all_contexts.append(base_context)

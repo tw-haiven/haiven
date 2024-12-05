@@ -95,8 +95,9 @@ class KnowledgeBaseDocuments:
             all_embeddings.extend(store.get_documents())
 
         if context is not None and context != "":
-            store = self._document_stores[context]
-            all_embeddings.extend(store.get_documents())
+            store = self._document_stores.get(context)
+            if store is not None:
+                all_embeddings.extend(store.get_documents())
 
         return all_embeddings
 
