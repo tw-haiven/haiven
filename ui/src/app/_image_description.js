@@ -1,14 +1,16 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState, useEffect } from "react";
-import { Flex, message, Upload, Button, Spin } from "antd";
+import { message, Upload, Button, Modal, Input } from "antd";
 import { fetchSSE } from "./_fetch_sse";
 import { RiImageAddLine } from "react-icons/ri";
 import useLoader from "../hooks/useLoader";
+const { TextArea } = Input;
 
-const DescribeImage = ({ onImageDescriptionChange }) => {
+const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
   const [image, setImage] = useState();
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [fileList, setFileList] = useState([]);
+  const [showImageDescriptionModal, setShowImageDescriptionModal] = useState(false);
 
   const beforeUpload = async (file) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -21,6 +23,10 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
     }
 
     return isJpgOrPng && isLt2M;
+  };
+
+  const disableImageDescriptionLink = () => {
+    return imageDescription == null || imageDescription === "";
   };
 
   const describeImage = async (image) => {
@@ -74,7 +80,7 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
   };
 
   return (
-    <Flex gap="middle" wrap>
+    <div class="upload-image-menu">
       <Upload
         name="file"
         className="image-uploader"
@@ -84,20 +90,50 @@ const DescribeImage = ({ onImageDescriptionChange }) => {
         fileList={fileList}
       >
         <Button
+          className="upload-button"
           icon={
-            <RiImageAddLine style={{ fontSize: "2em", color: "#666666ff" }} />
+            <RiImageAddLine/>
           }
           style={{
             backgroundColor: "#edf1f3",
             color: "#666666ff",
           }}
         >
-          Click or drag to upload
+          <div className="upload-placeholder">
+            Drop your image here, or <span className="upload-text">upload</span>
+          </div>
         </Button>
+
       </Upload>
 
-      <StopLoad />
-    </Flex>
+      <div className="upload-image-content">
+        <div className="loading-image">
+          <StopLoad />
+        </div>
+
+        {disableImageDescriptionLink() ?
+          null :
+          (
+            <Button
+              className="view-image-description-link"
+              type="link"
+              onClick={() => setShowImageDescriptionModal(true)}
+            >
+              View Image Description
+            </Button>
+          )}
+      </div>
+
+      <Modal
+        className="image-description-modal"
+        title="View image description"
+        open={showImageDescriptionModal}
+        closable={true}
+        onCancel={() => setShowImageDescriptionModal(false)}
+      >
+        <TextArea value={imageDescription}/>
+      </Modal>
+    </div>
   );
 };
 export default DescribeImage;

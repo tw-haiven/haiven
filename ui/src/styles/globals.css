@@ -160,7 +160,7 @@ a.feedback:hover {
 
 .chat-text-area {
  margin: 0;
- padding: 16px;
+ padding: 0 16px 16px 16px;
 }
 
 .chat-text-area textarea {
@@ -509,6 +509,91 @@ a.feedback:hover {
   }
 }
 
+.image-content {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  gap: 47px
+}
+
+.upload-image-menu {
+  display: flex;
+  flex-direction: row;
+
+  .image-uploader {
+    display: flex;
+    flex-direction: row;
+    width: 50%;
+
+    .ant-upload {
+      .upload-button {
+        width: 175px;
+        height: 113px;
+        margin-top: 7px;
+        border: 1px dashed var(--color-dark-gray);
+        padding-top: 5px;
+        display: flex;
+        flex-direction: column;
+
+        .upload-placeholder {
+          width: 100%;
+          text-wrap: auto;
+          color: #989595;
+
+          .upload-text {
+            color: var(--color-flamingo);
+            display: inline-flex;
+            font-weight: 500;
+          }
+        }
+
+        .ant-btn-icon {
+          font-size: 2em;
+          color: #666666ff;
+        }
+      }
+    }
+
+    .ant-upload-list-item {
+      margin-top: 2px !important;
+      font-size: 12px !important;
+      width: 225px;
+
+      .ant-upload-icon {
+        top: 3px;
+        position: relative;
+      }
+      .ant-upload-list-item-name {
+        padding: 0 !important;
+      }
+    }
+
+    .ant-upload-list-item {
+      margin-left: 5px;
+    }
+  }
+
+  .upload-image-content {
+    margin-top: auto;
+    .loading-image {
+      margin-left: 103px;
+      margin-bottom: 30px;
+
+      .user-input {
+        padding-left: 0 !important;
+        width: 110px !important;
+
+          .ant-spin {
+            top: 6px;
+          }
+        }
+    }
+    .view-image-description-link {
+      padding-left: 3.5em;
+    }
+  }
+}
+
 .advanced-prompting-icon {
   transform: rotate(90deg);
   position: relative;
@@ -521,15 +606,22 @@ a.feedback:hover {
   }
   .ant-collapse-content {
     border-top: 1px solid var(--color-light-gray) !important;
+    .ant-collapse-content-box {
+      padding-bottom: 0 !important;
+      padding-left: 0 !important;
+    }
   }
+
   .prompting-dropdown-menu {
-    width: 50%;
+    flex-wrap: wrap;
     display: flex;
     flex-direction: column;
+    height: 157px;
 
     .user-input {
+      width: 50%;
+      padding-left: 16px;
       label {
-        width: 100%;
         display: block;
         font-weight: 500;
       }
@@ -544,6 +636,14 @@ a.feedback:hover {
     }
   }
 }
+
+.image-description-modal {
+  textarea {
+    resize: none;
+    height: 400px;
+  }
+}
+
 .prompt-chat-options-section .prompt-chat-description {
   padding-bottom: 30px;
   border-bottom: 1px solid var(--color-medium-gray);
@@ -603,21 +703,6 @@ a.feedback:hover {
   &.small {
     width: 30%;
   }
-}
-
-.ant-upload {
-  width: 100%;
-}
-
-.prompt-chat-options-container .image-uploader {
-  display: block;
-  width: 100%;
-}
-
-.prompt-chat-options-container .image-uploader .ant-upload button {
-  height: 50px;
-  width: 100%;
-  border: 1px dashed var(--color-dark-gray);
 }
 
 .prompt-chat-options-container .prompt-chat-options-section {
@@ -851,7 +936,7 @@ a.feedback:hover {
     }
   }
 }
-.prompt-preview-modal .ant-modal-footer, .close-confirmation-modal .ant-modal-footer {
+.prompt-preview-modal .ant-modal-footer, .close-confirmation-modal .ant-modal-footer, .image-description-modal .ant-modal-footer {
   display: none;
 }
 

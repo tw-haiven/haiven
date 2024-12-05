@@ -3,7 +3,6 @@
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
 import { Input, Select, Button, message, Collapse } from "antd";
-import { MenuFoldOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
 import ChatWidget from "./_chat";
@@ -158,8 +157,7 @@ const PromptChat = ({
         Upload image
         <HelpTooltip text="Get AI to describe an image (e.g. a diagram) to help with your input. You can edit this description before you start the chat." />
       </label>
-      <DescribeImage onImageDescriptionChange={setImageDescription} />
-      {imageDescription && <TextArea value={imageDescription} rows={6} />}
+      <DescribeImage onImageDescriptionChange={setImageDescription} imageDescription={imageDescription}/>
     </div>
   ) : (
     <></>
@@ -257,7 +255,7 @@ const PromptChat = ({
   return (
     <>
       <div className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}>
-        <Collapse
+        {/* <Collapse
           className="prompt-chat-options-container"
           items={collapseItem}
           defaultActiveKey={["1"]}
@@ -265,7 +263,7 @@ const PromptChat = ({
           activeKey={isExpanded ? "1" : ""}
           onChange={onCollapsibleIconClick}
           expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
-        />
+        /> */}
         <div className="chat-container-wrapper">
           <ChatHeader models={models} titleComponent={title} />
           <div className="chat-container">
@@ -284,6 +282,7 @@ const PromptChat = ({
                   promptPreviewComponent={promptPreview}
                   documentsMenu={documentsMenu}
                   contextsMenu={contextsMenu}
+                  uploadImageMenu={imageDescriptionUserInput}
                 />
               </ProChatProvider>
             </div>
