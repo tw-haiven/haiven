@@ -41,6 +41,8 @@ Haiven lets you codify your practices and knowledge and make it available to an 
 
 *Disclaimer: As the majority of developers in Thoughtworks are using MacOS, all shell-related instructions are currently only build for and tested on MacOS.*
 
+You can run the application with the public sample knowledge pack `haiven-sample-knowledge-pack`, which is very rudimentary. Or, if you work at Thoughtworks, you can request access to our private knowledge pack `haiven-tw-knowledge-pack` [via this form](https://docs.google.com/forms/d/e/1FAIpQLSf-9pXjm_bGJNtGaXUnkh1MgLS6uNqQySA4nkk3LmOZY3tjxA/viewform).
+
 ### With Azure OpenAI
 
 - Create a `.env` file with the content of [app/.env.azure.template](app/.env.azure.template)
