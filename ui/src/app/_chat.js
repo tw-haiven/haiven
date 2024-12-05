@@ -18,9 +18,7 @@ const ChatWidget = forwardRef(
       helloMessage,
       placeholder,
       promptPreviewComponent,
-      documentsMenu,
-      contextsMenu,
-      uploadImageMenu
+      advancedPromptingMenu,
     },
     ref,
   ) => {
@@ -136,11 +134,9 @@ const ChatWidget = forwardRef(
             </div>
           ),
           children: (
-            <div className="prompting-dropdown-menu">
-              {contextsMenu}
-              {documentsMenu}
-              {uploadImageMenu}
-            </div>
+            <>
+            {advancedPromptingMenu}
+            </>
           ),
           extra: promptPreviewComponent,
           showArrow: false,

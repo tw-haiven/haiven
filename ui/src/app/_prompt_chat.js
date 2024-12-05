@@ -252,6 +252,14 @@ const PromptChat = ({
     },
   ];
 
+  const advancedPromptingMenu = (
+    <div className="prompting-dropdown-menu">
+      {contextsMenu}
+      {documentsMenu}
+      {imageDescriptionUserInput}
+    </div>
+  );
+
   return (
     <>
       <div className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}>
@@ -280,9 +288,7 @@ const PromptChat = ({
                   }
                   placeholder={placeholder}
                   promptPreviewComponent={promptPreview}
-                  documentsMenu={documentsMenu}
-                  contextsMenu={contextsMenu}
-                  uploadImageMenu={imageDescriptionUserInput}
+                  advancedPromptingMenu={advancedPromptingMenu}
                 />
               </ProChatProvider>
             </div>
