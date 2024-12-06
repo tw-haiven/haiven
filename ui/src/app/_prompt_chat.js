@@ -157,7 +157,10 @@ const PromptChat = ({
         Upload image
         <HelpTooltip text="Get AI to describe an image (e.g. a diagram) to help with your input. You can edit this description before you start the chat." />
       </label>
-      <DescribeImage onImageDescriptionChange={setImageDescription} imageDescription={imageDescription}/>
+      <DescribeImage
+        onImageDescriptionChange={setImageDescription}
+        imageDescription={imageDescription}
+      />
     </div>
   ) : (
     <></>

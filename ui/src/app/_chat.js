@@ -133,11 +133,7 @@ const ChatWidget = forwardRef(
               />
             </div>
           ),
-          children: (
-            <>
-            {advancedPromptingMenu}
-            </>
-          ),
+          children: <>{advancedPromptingMenu}</>,
           extra: promptPreviewComponent,
           showArrow: false,
         },

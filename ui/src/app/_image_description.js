@@ -10,7 +10,8 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
   const [image, setImage] = useState();
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [fileList, setFileList] = useState([]);
-  const [showImageDescriptionModal, setShowImageDescriptionModal] = useState(false);
+  const [showImageDescriptionModal, setShowImageDescriptionModal] =
+    useState(false);
 
   const beforeUpload = async (file) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -91,9 +92,7 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
       >
         <Button
           className="upload-button"
-          icon={
-            <RiImageAddLine/>
-          }
+          icon={<RiImageAddLine />}
           style={{
             backgroundColor: "#edf1f3",
             color: "#666666ff",
@@ -103,7 +102,6 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
             Drop your image here, or <span className="upload-text">upload</span>
           </div>
         </Button>
-
       </Upload>
 
       <div className="upload-image-content">
@@ -111,17 +109,15 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
           <StopLoad />
         </div>
 
-        {disableImageDescriptionLink() ?
-          null :
-          (
-            <Button
-              className="view-image-description-link"
-              type="link"
-              onClick={() => setShowImageDescriptionModal(true)}
-            >
-              View Image Description
-            </Button>
-          )}
+        {disableImageDescriptionLink() ? null : (
+          <Button
+            className="view-image-description-link"
+            type="link"
+            onClick={() => setShowImageDescriptionModal(true)}
+          >
+            View Image Description
+          </Button>
+        )}
       </div>
 
       <Modal
@@ -131,7 +127,7 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
         closable={true}
         onCancel={() => setShowImageDescriptionModal(false)}
       >
-        <TextArea value={imageDescription}/>
+        <TextArea value={imageDescription} />
       </Modal>
     </div>
   );

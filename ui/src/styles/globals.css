@@ -644,6 +644,19 @@ a.feedback:hover {
   }
 }
 
+.prompt-chat-options-section .scenario-user-input {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 8px 0;
+}
+
+.prompt-chat-options-section .scenario-user-input .ant-select {
+  flex: 1 1 calc(50% - 16px) !important;
+}
+
+
 .prompt-chat-options-section .prompt-chat-description {
   padding-bottom: 30px;
   border-bottom: 1px solid var(--color-medium-gray);
