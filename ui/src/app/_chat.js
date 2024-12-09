@@ -163,7 +163,11 @@ const ChatWidget = forwardRef(
             form={form}
             initialValues={{ question: "" }}
           >
-            <Form.Item name="question" className="chat-text-area">
+            <Form.Item
+              name="question"
+              rules={[{ required: true, message: "" }]}
+              className="chat-text-area"
+            >
               <Input.TextArea
                 disabled={isLoading}
                 placeholder={placeholder}

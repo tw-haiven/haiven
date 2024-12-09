@@ -34,7 +34,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     },
   ]);
   const [selectedVariation, setSelectedVariation] = useState(variations[0]);
-  const [isExpanded, setIsExpanded] = useState(true);
   const [drawerTitle, setDrawerTitle] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [chatContext, setChatContext] = useState({});
@@ -178,14 +177,18 @@ const RequirementsBreakdown = ({ contexts, models }) => {
         <Form
           onFinish={async (value) => {
             const { question } = value;
-            setPrompt(question);
+            setPromptInput(question);
             await onSubmitPrompt();
             form.resetFields();
           }}
           form={form}
           initialValues={{ question: "" }}
         >
-          <Form.Item name="question" className="chat-text-area">
+          <Form.Item
+            name="question"
+            rules={[{ required: true, message: "" }]}
+            className="chat-text-area"
+          >
             <Input.TextArea
               disabled={loading}
               placeholder="Describe the requirements that you'd like to break down"

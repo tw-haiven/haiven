@@ -105,6 +105,7 @@ a.feedback:hover {
   justify-content: space-between;
   height: 94%;
   width: 100%;
+  overflow: auto;
 }
 
 .card-chat-input-container {
@@ -1000,6 +1001,14 @@ a.feedback:hover {
   overflow: auto;
 }
 
+/* Added to make the chat container scrollable   */
+.card-chat-overflow .scenarios-collection {
+  padding: 0 var(--standard-left-padding) 0 var(--standard-left-padding) ;
+  display: block !important;
+  flex: 3 !important;
+  height: fit-content; 
+  overflow: unset;
+}
 
 .scenarios-collection .cards-container {
   display:flex;
