@@ -97,14 +97,16 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
       <div className="chat-exploration__header">
         <p>{previousContext?.summary || "No summary available"}</p>
       </div>
-      <PossibilityPanel />
+      {scenarioQueries.length > 0 ? <PossibilityPanel /> : null}
       <ProChatProvider>
         <ChatWidget
           onSubmitMessage={submitPromptToBackend}
           ref={chatRef}
           visible={true}
           helloMessage={
-            "Chat with me! Click on one of the suggested questions, or type your own below."
+            scenarioQueries.length > 0
+              ? "Chat with me! Click on one of the suggested questions, or type your own below."
+              : "Chat with me! Type your question below."
           }
         />
       </ProChatProvider>
