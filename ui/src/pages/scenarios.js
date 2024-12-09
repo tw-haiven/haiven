@@ -33,13 +33,13 @@ import HelpTooltip from "../app/_help_tooltip";
 const Home = ({ models }) => {
   const [numOfScenarios, setNumOfScenarios] = useState("6");
   const [scenarios, setScenarios] = useState([]);
+  const [disableChatInput, setDisableChatInput] = useState(false);
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [isDetailed, setDetailed] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [timeHorizon, setTimeHorizon] = useState("5 years");
   const [optimism, setOptimism] = useState("optimistic");
   const [realism, setRealism] = useState("scifi");
-  const [isExpanded, setIsExpanded] = useState(true);
   const [drawerTitle, setDrawerTitle] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [chatContext, setChatContext] = useState({});
@@ -88,7 +88,7 @@ const Home = ({ models }) => {
   };
 
   const onSubmitPrompt = async () => {
-    setIsExpanded(false);
+    setDisableChatInput(true);
 
     const uri =
       "/api/make-scenario" +
@@ -192,8 +192,12 @@ const Home = ({ models }) => {
       },
     ];
 
+    if (disableChatInput) {
+      return null;
+    }
+
     return (
-      <div>
+      <div className="card-chat-input-container">
         <Collapse
           className="prompt-options-menu"
           items={items}
@@ -245,10 +249,7 @@ const Home = ({ models }) => {
   };
 
   const advancedPromptingMenu = (
-    <div
-      className="prompt-chat-options-section"
-      style={{ paddingLeft: "16px" }}
-    >
+    <div className="prompt-chat-options-section">
       <label>Generate</label>
       <div className="scenario-user-input">
         <Select
@@ -272,6 +273,8 @@ const Home = ({ models }) => {
             { value: "100-year", label: "100-year horizon" },
           ]}
         />
+      </div>
+      <div className="scenario-user-input">
         <Select
           defaultValue={"optimistic"}
           onChange={handleSelectOptimismChange}
@@ -374,16 +377,16 @@ const Home = ({ models }) => {
         />
       </Drawer>
       <div id="canvas">
-        <div
-          className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
-        >
+        <div className="prompt-chat-container">
           <div className="chat-container-wrapper">
             <ChatHeader models={models} titleComponent={title} />
-            <div className="chat-container">
-              <div className="chat-widget-container">
-                <CardsList scenarios={scenarios} onExplore={onExplore} />
-              </div>
-              <div style={{ position: "relative" }}>{inputAreaRender()}</div>
+            <div className="card-chat-container">
+              <CardsList
+                scenarios={scenarios}
+                onExplore={onExplore}
+                stopLoadComponent={<StopLoad />}
+              />
+              {inputAreaRender()}
             </div>
           </div>
         </div>

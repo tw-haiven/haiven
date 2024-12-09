@@ -3,9 +3,10 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
 import { parse } from "best-effort-json-parser";
-import { MenuFoldOutlined } from "@ant-design/icons";
-import { Button, Drawer, Input, Select, message, Collapse } from "antd";
-const { TextArea } = Input;
+import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
+import { UpOutlined } from "@ant-design/icons";
+import { GiSettingsKnobs } from "react-icons/gi";
+import { Button, Drawer, Input, Select, message, Form, Collapse } from "antd";
 
 import ContextChoice from "../app/_context_choice";
 import HelpTooltip from "../app/_help_tooltip";
@@ -19,6 +20,9 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   const [scenarios, setScenarios] = useState([]);
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [selectedContext, setSelectedContext] = useState("");
+  const [disableChatInput, setDisableChatInput] = useState(false);
+  const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
+    useState(false);
   const [promptInput, setPromptInput] = useState("");
   const [variations, setVariations] = useState([
     { value: "workflow", label: "By workflow" },
@@ -35,18 +39,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [chatContext, setChatContext] = useState({});
 
-  const placeholderHelp =
-    "Describe the requirements that you'd like to break down";
-
-  const router = useRouter();
-
-  const onCopyAll = () => {
-    const allScenarios = scenarios.map(scenarioToText);
-    navigator.clipboard.writeText(allScenarios.join("\n\n"));
-
-    message.success("Content copied successfully!");
-  };
-
   const buildRequestData = () => {
     return {
       userinput: promptInput,
@@ -55,8 +47,8 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     };
   };
 
-  const onCollapsibleIconClick = (e) => {
-    setIsExpanded(!isExpanded);
+  const onClickAdvancedPromptOptions = (e) => {
+    setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
   };
 
   const onExplore = (scenario) => {
@@ -74,7 +66,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   };
 
   const onSubmitPrompt = () => {
-    setIsExpanded(false);
+    setDisableChatInput(true);
 
     const uri = "/api/requirements?variation=" + selectedVariation;
 
@@ -128,37 +120,105 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     );
   };
 
-  const promptTitle = "Requirements Breakdown";
-
-  const promptMenu = (
-    <div>
-      <div className="prompt-chat-options-section">
-        <h1>{promptTitle}</h1>
-        <p>
-          Haiven will help you break down your requirement into multiple work
-          packages.
-        </p>
-      </div>
-      <div className="prompt-chat-options-section">
-        <div className="user-input">
-          <label>
-            Your input
-            <HelpTooltip text={placeholderHelp} />
-          </label>
-          <TextArea
-            placeholder={placeholderHelp}
-            value={promptInput}
-            onChange={(e, v) => {
-              setPromptInput(e.target.value);
-            }}
-            rows={10}
-          />
-        </div>
-        <ContextChoice
-          onChange={setSelectedContext}
-          contexts={contexts}
-          value={selectedContext?.key}
+  const title = (
+    <div className="title">
+      <h3>
+        Requirements Breakdown
+        <HelpTooltip
+          text="Haiven will help you break down your requirement into multiple work
+          packages."
         />
+      </h3>
+    </div>
+  );
+
+  const inputAreaRender = () => {
+    const [form] = Form.useForm();
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.submit();
+      }
+    };
+
+    const items = [
+      {
+        key: "1",
+        label: (
+          <div className="advanced-prompting">
+            <GiSettingsKnobs className="advanced-prompting-icon" />{" "}
+            <span>Advanced Prompting</span>{" "}
+            <UpOutlined
+              className="advanced-prompting-collapse-icon"
+              rotate={isPromptOptionsMenuExpanded ? 180 : 0}
+            />
+          </div>
+        ),
+        children: advancedPromptingMenu,
+        showArrow: false,
+      },
+    ];
+
+    if (disableChatInput) {
+      return null;
+    }
+
+    return (
+      <div className="card-chat-input-container">
+        <Collapse
+          className="prompt-options-menu"
+          items={items}
+          defaultActiveKey={["1"]}
+          ghost={isPromptOptionsMenuExpanded}
+          activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
+          onChange={onClickAdvancedPromptOptions}
+          collapsible="header"
+        />
+        <Form
+          onFinish={async (value) => {
+            const { question } = value;
+            setPrompt(question);
+            await onSubmitPrompt();
+            form.resetFields();
+          }}
+          form={form}
+          initialValues={{ question: "" }}
+        >
+          <Form.Item name="question" className="chat-text-area">
+            <Input.TextArea
+              disabled={loading}
+              placeholder="Describe the requirements that you'd like to break down"
+              autoSize={{ minRows: 1, maxRows: 4 }}
+              onKeyDown={handleKeyDown}
+            />
+          </Form.Item>
+          <Form.Item className="chat-text-area-submit">
+            {loading ? (
+              <Button
+                type="secondary"
+                icon={<RiStopCircleFill fontSize="large" />}
+                onClick={() => abortLoad()}
+              >
+                STOP
+              </Button>
+            ) : (
+              <Button
+                htmlType="submit"
+                icon={<RiSendPlane2Line fontSize="large" />}
+              >
+                SEND
+              </Button>
+            )}
+          </Form.Item>
+        </Form>
+      </div>
+    );
+  };
+
+  const advancedPromptingMenu = (
+    <div className="prompt-chat-options-section">
+      <div className="requirement-user-input">
         <div className="user-input">
           <label>
             Style of breakdown
@@ -171,24 +231,15 @@ const RequirementsBreakdown = ({ contexts, models }) => {
             value={selectedVariation}
             defaultValue="workflow"
           />
-          <Button
-            onClick={onSubmitPrompt}
-            className="go-button"
-            disabled={loading}
-          >
-            GENERATE
-          </Button>
         </div>
+        <ContextChoice
+          onChange={setSelectedContext}
+          contexts={contexts}
+          value={selectedContext?.key}
+        />
       </div>
     </div>
   );
-
-  const collapseItem = [
-    {
-      key: "1",
-      children: promptMenu,
-    },
-  ];
 
   return (
     <>
@@ -214,28 +265,17 @@ const RequirementsBreakdown = ({ contexts, models }) => {
         />
       </Drawer>
       <div id="canvas">
-        <div
-          className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
-        >
-          <Collapse
-            className="prompt-chat-options-container"
-            items={collapseItem}
-            defaultActiveKey={["1"]}
-            ghost={isExpanded}
-            activeKey={isExpanded ? "1" : ""}
-            onChange={onCollapsibleIconClick}
-            expandIcon={() => (
-              <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
-            )}
-          />
+        <div className="prompt-chat-container">
           <div className="chat-container-wrapper">
-            <ChatHeader models={models} />
-            <CardsList
-              scenarios={scenarios}
-              title={promptTitle}
-              onExplore={onExplore}
-              stopLoadComponent={<StopLoad />}
-            />
+            <ChatHeader models={models} titleComponent={title} />
+            <div className="card-chat-container">
+              <CardsList
+                scenarios={scenarios}
+                onExplore={onExplore}
+                stopLoadComponent={<StopLoad />}
+              />
+              {inputAreaRender()}
+            </div>
           </div>
         </div>
       </div>

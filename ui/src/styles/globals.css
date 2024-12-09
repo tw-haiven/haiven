@@ -99,6 +99,21 @@ a.feedback:hover {
   margin: auto;
 }
 
+.card-chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 94%;
+  width: 100%;
+}
+
+.card-chat-input-container {
+  position: relative;
+  width: 100%;
+  max-width: 850px;
+  margin: auto;
+}
+
 .chat-container .chat-widget-container {
   height: 100%;
   overflow: auto;
@@ -644,12 +659,35 @@ a.feedback:hover {
   }
 }
 
+.prompt-chat-options-section {
+  padding-left: 16px;
+  margin-bottom: 1em;
+  label {
+    font-weight: 500;
+  }  
+  .ant-select {
+    width: 100%;
+    display: block;
+    margin-top: 0.5em;
+    height: 35px;
+  }
+}
+
 .prompt-chat-options-section .scenario-user-input {
   display: flex;
   width: 100%;
   flex-wrap: wrap;
   gap: 16px;
-  margin: 8px 0;
+  margin-bottom: 0.5em;
+}
+
+.prompt-chat-options-section .requirement-user-input {
+  display: flex;
+  gap: 16px;
+}
+
+.prompt-chat-options-section .requirement-user-input .user-input {
+  width: 50%;
 }
 
 .prompt-chat-options-section .scenario-user-input .ant-select {
