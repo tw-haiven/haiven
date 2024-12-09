@@ -536,7 +536,7 @@ a.feedback:hover {
   flex-direction: row;
 
   .image-uploader {
-    display: flex;
+    display: flex !important;
     flex-direction: row;
     width: 50%;
 

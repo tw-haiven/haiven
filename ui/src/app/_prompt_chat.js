@@ -23,7 +23,6 @@ const PromptChat = ({
   showDocuments = true,
   pageTitle,
   pageIntro,
-  headerTooltip = true,
   inputTooltip = true,
 }) => {
   const chatRef = useRef();
@@ -37,7 +36,7 @@ const PromptChat = ({
 
   // Chat state
   const [conversationStarted, setConversationStarted] = useState(false);
-  const [chatSessionId, setChatSessionId] = useState();
+  const [chatSessionId, setChatSessionId] = useState(undefined);
   const [isExpanded, setIsExpanded] = useState(true);
   const [usePromptId, setUsePromptId] = useState(true);
   const [placeholder, setPlaceholder] = useState("");
@@ -46,18 +45,22 @@ const PromptChat = ({
     setUsePromptId(true);
   });
 
-  const buildUserInput = () => {
-    let userInput = promptInput;
+  const appendImageDescription = (userInput) => {
     if (imageDescription && imageDescription !== "") {
       userInput += "\n\n" + imageDescription;
     }
     return userInput;
+  }
+
+  const buildFirstChatUserInput = () => {
+    let userInput = promptInput;
+    return appendImageDescription(userInput);
   };
 
-  const buildRequestBody = (userInput) => {
+  const buildFirstChatRequestBody = (userInput) => {
     return {
-      userinput: userInput,
-      promptid: usePromptId ? selectedPrompt?.identifier : undefined,
+      userinput: usePromptId? appendImageDescription(userInput) : userInput,
+      promptid: usePromptId? selectedPrompt?.identifier : undefined,
       chatSessionId: chatSessionId,
       ...(selectedContext !== "base" && { context: selectedContext }),
       ...(selectedDocument !== "base" && { document: selectedDocument }),
@@ -71,10 +74,9 @@ const PromptChat = ({
       setChatSessionId(undefined);
       setConversationStarted(false);
       if (!userInput) {
-        userInput = buildUserInput();
+        userInput = buildFirstChatUserInput();
       }
       chatRef.current.startNewConversation(userInput);
-      setIsExpanded(false);
     }
   };
 
@@ -82,7 +84,7 @@ const PromptChat = ({
     const lastMessage = messages[messages.length - 1];
     let requestData;
     if (!conversationStarted) {
-      requestData = buildRequestBody(lastMessage?.content);
+      requestData = buildFirstChatRequestBody(lastMessage?.content);
     } else {
       requestData = {
         userinput: lastMessage?.content,
@@ -141,11 +143,7 @@ const PromptChat = ({
   };
 
   const buildRenderPromptRequest = () => {
-    return buildRequestBody(buildUserInput());
-  };
-
-  const onCollapsibleIconClick = (e) => {
-    setIsExpanded(!isExpanded);
+    return buildFirstChatRequestBody(buildFirstChatUserInput());
   };
 
   useEffect(() => {
@@ -199,9 +197,8 @@ const PromptChat = ({
     <div className="title">
       <h3>
         {selectedPrompt?.title || pageTitle}
-        {headerTooltip && (
-          <HelpTooltip text="This prompt comes from the connected knowledge pack, where you can customize it if you don't like the results." />
-        )}
+          <HelpTooltip text={selectedPrompt?.help_prompt_description ||
+            "Ask general questions & document based queries"} />
       </h3>
     </div>
   );
@@ -249,13 +246,6 @@ const PromptChat = ({
     />
   ) : null;
 
-  const collapseItem = [
-    {
-      key: "1",
-      children: promptMenu,
-    },
-  ];
-
   const advancedPromptingMenu = (
     <div className="prompting-dropdown-menu">
       {contextsMenu}
@@ -293,6 +283,7 @@ const PromptChat = ({
                   placeholder={placeholder}
                   promptPreviewComponent={promptPreview}
                   advancedPromptingMenu={advancedPromptingMenu}
+                  conversationStarted={conversationStarted}
                 />
               </ProChatProvider>
             </div>

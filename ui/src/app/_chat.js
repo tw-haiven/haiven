@@ -19,6 +19,7 @@ const ChatWidget = forwardRef(
       placeholder,
       promptPreviewComponent,
       advancedPromptingMenu,
+      conversationStarted
     },
     ref,
   ) => {
@@ -140,6 +141,8 @@ const ChatWidget = forwardRef(
       ];
       return (
         <div>
+          { 
+          !conversationStarted?
           <Collapse
             className="prompt-options-menu"
             items={items}
@@ -148,7 +151,9 @@ const ChatWidget = forwardRef(
             activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
             onChange={onClickAdvancedPromptOptions}
             collapsible="header"
-          />
+          />:
+          null
+          }
           <Form
             onFinish={async (value) => {
               const { question } = value;
