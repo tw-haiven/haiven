@@ -104,8 +104,8 @@ a.feedback:hover {
   overflow: auto;
 }
 
-.prompt-chat-container .ant-pro-chat-chat-list-container {
-  max-height: 100% !important;
+.prompt-chat-container .ant-pro-chat-chat-list-container{
+  height: 742px !important;
 }
 
 .ant-pro-chat {
