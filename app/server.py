@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import HTMLResponse, RedirectResponse, PlainTextResponse
+from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.base_client import OAuthError
@@ -55,16 +55,6 @@ class Server:
             template = jinja_env.get_template("index.html")
             html = template.render(user=user)
             return HTMLResponse(html)
-
-        @app.get("/chat-session")
-        async def chat_session(request: Request):
-            chat_session_key = request.query_params.get("key")
-            user_id = request.session["user"]["sub"]
-            return PlainTextResponse(
-                self.chat_manager.chat_session_memory.dump_as_text(
-                    chat_session_key, user_id
-                )
-            )
 
         @app.get(self.url.login())
         async def login(request: Request):

@@ -87,6 +87,7 @@ const PromptChat = ({
       requestData = {
         userinput: lastMessage?.content,
         chatSessionId: chatSessionId,
+        ...(selectedDocument !== "base" && { document: selectedDocument }),
       };
     }
 

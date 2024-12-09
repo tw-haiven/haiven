@@ -123,11 +123,11 @@ class HaivenBaseApi:
                     if document_key:
                         sources = ""
                         for chunk, sources in chat_session.run_with_document(
-                            document_key, None, prompt
+                            document_key, prompt
                         ):
                             sources = sources
                             yield chunk
-                        yield "\n\n" + sources
+                        yield "\n\n" + sources if sources else ""
                     else:
                         for chunk in chat_session.run(prompt):
                             yield chunk
@@ -248,6 +248,9 @@ class ApiBasics(HaivenBaseApi):
         def get_knowledge_documents(request: Request):
             try:
                 base_context = None
+                # For the user, it doesn't make a difference anymore where the documents are coming from
+                # But we're still loading the ones from contexts as well, for backwards compatibility with
+                # older knowledge packs
                 all_contexts = knowledge_manager.get_all_context_keys()
 
                 all_contexts.append(base_context)
