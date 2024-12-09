@@ -23,7 +23,6 @@ const PromptChat = ({
   showDocuments = true,
   pageTitle,
   pageIntro,
-  inputTooltip = true,
 }) => {
   const chatRef = useRef();
 
@@ -31,13 +30,11 @@ const PromptChat = ({
   const [selectedPrompt, setPromptSelection] = useState(promptId); // via query parameter
   const [selectedContext, setSelectedContext] = useState("");
   const [selectedDocument, setSelectedDocument] = useState("");
-  const [promptInput, setPromptInput] = useState("");
   const [imageDescription, setImageDescription] = useState("");
 
   // Chat state
   const [conversationStarted, setConversationStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState(undefined);
-  const [isExpanded, setIsExpanded] = useState(true);
   const [usePromptId, setUsePromptId] = useState(true);
   const [placeholder, setPlaceholder] = useState("");
 
@@ -50,33 +47,29 @@ const PromptChat = ({
       userInput += "\n\n" + imageDescription;
     }
     return userInput;
-  }
-
-  const buildFirstChatUserInput = () => {
-    let userInput = promptInput;
-    return appendImageDescription(userInput);
   };
 
   const buildFirstChatRequestBody = (userInput) => {
     return {
-      userinput: usePromptId? appendImageDescription(userInput) : userInput,
-      promptid: usePromptId? selectedPrompt?.identifier : undefined,
+      userinput: usePromptId ? appendImageDescription(userInput) : userInput,
+      promptid: usePromptId ? selectedPrompt?.identifier : undefined,
       chatSessionId: chatSessionId,
       ...(selectedContext !== "base" && { context: selectedContext }),
       ...(selectedDocument !== "base" && { document: selectedDocument }),
     };
   };
 
-  const startNewChat = async (userInput = null) => {
+  const startNewChat = async (userInput) => {
     if (chatRef.current) {
-      // the ProChat controls the flow - let it know we have a new message,
-      // the ultimate request will come back to "submitPromptToBackend" function here
       setChatSessionId(undefined);
       setConversationStarted(false);
-      if (!userInput) {
-        userInput = buildFirstChatUserInput();
-      }
       chatRef.current.startNewConversation(userInput);
+    }
+  };
+
+  const renderPromptRequest = () => {
+    if (chatRef.current) {
+      return buildFirstChatRequestBody(chatRef.current.prompt);
     }
   };
 
@@ -142,10 +135,6 @@ const PromptChat = ({
     setSelectedContext(value);
   };
 
-  const buildRenderPromptRequest = () => {
-    return buildFirstChatRequestBody(buildFirstChatUserInput());
-  };
-
   useEffect(() => {
     handlePromptSelection(promptId);
   }, [promptId, prompts]);
@@ -197,50 +186,19 @@ const PromptChat = ({
     <div className="title">
       <h3>
         {selectedPrompt?.title || pageTitle}
-          <HelpTooltip text={selectedPrompt?.help_prompt_description ||
-            "Ask general questions & document based queries"} />
+        <HelpTooltip
+          text={
+            selectedPrompt?.help_prompt_description ||
+            "Ask general questions & document based queries"
+          }
+        />
       </h3>
-    </div>
-  );
-
-  const promptMenu = (
-    <div>
-      <div className="prompt-chat-options-section">
-        <div>
-          <div className="user-input">
-            <label>
-              Your input
-              {inputTooltip && (
-                <HelpTooltip
-                  text={selectedPrompt?.help_user_input || pageIntro}
-                />
-              )}
-            </label>
-
-            <TextArea
-              value={promptInput}
-              style={{ width: "100%" }}
-              placeholder={selectedPrompt?.help_user_input || pageIntro}
-              rows={10}
-              onChange={(e, v) => {
-                setPromptInput(e.target.value);
-              }}
-            />
-          </div>
-          {imageDescriptionUserInput}
-        </div>
-      </div>
-      <div className="prompt-chat-options-section">
-        <Button onClick={() => startNewChat(null)} className="go-button">
-          START CHAT
-        </Button>
-      </div>
     </div>
   );
 
   const promptPreview = showTextSnippets ? (
     <PromptPreview
-      buildRenderPromptRequest={buildRenderPromptRequest}
+      renderPromptRequest={renderPromptRequest}
       startNewChat={startNewChat}
       setUsePromptId={setUsePromptId}
     />
@@ -256,16 +214,7 @@ const PromptChat = ({
 
   return (
     <>
-      <div className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}>
-        {/* <Collapse
-          className="prompt-chat-options-container"
-          items={collapseItem}
-          defaultActiveKey={["1"]}
-          ghost={isExpanded}
-          activeKey={isExpanded ? "1" : ""}
-          onChange={onCollapsibleIconClick}
-          expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
-        /> */}
+      <div className="prompt-chat-container">
         <div className="chat-container-wrapper">
           <ChatHeader models={models} titleComponent={title} />
           <div className="chat-container">

@@ -19,13 +19,14 @@ const ChatWidget = forwardRef(
       placeholder,
       promptPreviewComponent,
       advancedPromptingMenu,
-      conversationStarted
+      conversationStarted,
     },
     ref,
   ) => {
     const proChat = useProChat();
 
     const [isLoading, setIsLoading] = useState(false);
+    const [prompt, setPrompt] = useState("");
     const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
       useState(false);
 
@@ -105,6 +106,7 @@ const ChatWidget = forwardRef(
         proChat.clearMessage();
         return await proChat.sendMessage(message);
       },
+      prompt,
     }));
 
     const onClickAdvancedPromptOptions = (e) => {
@@ -141,19 +143,17 @@ const ChatWidget = forwardRef(
       ];
       return (
         <div>
-          { 
-          !conversationStarted?
-          <Collapse
-            className="prompt-options-menu"
-            items={items}
-            defaultActiveKey={["1"]}
-            ghost={isPromptOptionsMenuExpanded}
-            activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
-            onChange={onClickAdvancedPromptOptions}
-            collapsible="header"
-          />:
-          null
-          }
+          {!conversationStarted ? (
+            <Collapse
+              className="prompt-options-menu"
+              items={items}
+              defaultActiveKey={["1"]}
+              ghost={isPromptOptionsMenuExpanded}
+              activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
+              onChange={onClickAdvancedPromptOptions}
+              collapsible="header"
+            />
+          ) : null}
           <Form
             onFinish={async (value) => {
               const { question } = value;
@@ -169,6 +169,8 @@ const ChatWidget = forwardRef(
               className="chat-text-area"
             >
               <Input.TextArea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
                 disabled={isLoading}
                 placeholder={placeholder}
                 autoSize={{ minRows: 1, maxRows: 4 }}
