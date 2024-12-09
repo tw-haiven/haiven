@@ -433,11 +433,6 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           value={selectedContext?.key}
         />
         <div className="user-input">
-          <PromptPreview
-            buildRenderPromptRequest={buildRequestDataCardBuilding}
-            setUsePromptId={setUsePromptId}
-            startNewChat={sendFirstStepPrompt}
-          />
           <Button
             onClick={sendFirstStepPrompt}
             className="go-button"
