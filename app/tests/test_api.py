@@ -369,6 +369,7 @@ class TestApi(unittest.TestCase):
 
         body_dict = {
             "userinput": "some user question",
+            "context": "some context",
             "item": "some scenario item",
             "first_step_input": "some original prompt",
             "chatSessionId": "",

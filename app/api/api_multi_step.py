@@ -97,10 +97,7 @@ class ApiMultiStep(HaivenBaseApi):
                 prompts = self.prompt_list
 
                 user_input = prompt_data.userinput
-                if (
-                    prompt_data.previous_promptid is not None
-                    and prompt_data.previous_promptid != ""
-                ):
+                if prompt_data.previous_promptid and prompt_data.context:
                     context = prompts.get_rendered_context(
                         prompt_data.context, prompt_data.previous_promptid
                     )
