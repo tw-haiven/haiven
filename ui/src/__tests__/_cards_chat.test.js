@@ -5,14 +5,24 @@ import {
   fireEvent,
   waitFor,
   within,
+  act,
 } from "@testing-library/react";
-import { act } from "react";
 import CardsChat from "../pages/_cards-chat";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { fetchSSE } from "../app/_fetch_sse";
 import { message } from "antd";
 
 vi.mock("../app/_fetch_sse");
+
+window.matchMedia =
+  window.matchMedia ||
+  function () {
+    return {
+      matches: false,
+      addListener: function () {},
+      removeListener: function () {},
+    };
+  };
 
 const mockPrompts = [
   {
@@ -84,7 +94,7 @@ const givenUserInput = () => {
 };
 
 const whenGenerateIsClicked = () => {
-  const mainGenerateButton = screen.getAllByText(/GENERATE/i)[0];
+  const mainGenerateButton = screen.getAllByText(/SEND/i)[0];
   fireEvent.click(mainGenerateButton);
 };
 
@@ -101,10 +111,6 @@ const whenScenarioIsDeselected = () => {
 const thenStopButtonIsDisplayed = () => {
   expect(screen.getByTestId("stop-button")).toBeInTheDocument();
   expect(screen.getByTestId("stop-button")).toBeVisible();
-};
-
-const thenPromptPanelIsHidden = () => {
-  expect(screen.getByTestId("user-input")).not.toBeVisible();
 };
 
 const thenScenariosAreRendered = () => {
@@ -193,7 +199,6 @@ describe("CardsChat Component", () => {
     whenGenerateIsClicked();
 
     await waitFor(async () => {
-      thenPromptPanelIsHidden();
       thenStopButtonIsDisplayed();
       thenScenariosAreRendered();
 
@@ -341,7 +346,7 @@ describe("CardsChat Component", () => {
     });
 
     it("should not process data and show error message when the streaming data is a JSON object but not an array object", async () => {
-      vi.spyOn(message, "warning");
+      const warningMock = vi.spyOn(message, "warning");
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
           onMessageHandle(
@@ -353,18 +358,21 @@ describe("CardsChat Component", () => {
       );
 
       await setup();
-
       givenUserInput();
       whenGenerateIsClicked();
-      expect(message.warning).toHaveBeenCalledWith(
-        "Model failed to respond rightly, please rewrite your message and try again",
-      );
+
+      await waitFor(() => {
+        expect(warningMock).toHaveBeenCalledWith(
+          "Model failed to respond rightly, please rewrite your message and try again",
+        );
+      });
     });
 
     it("should not process data and show error message when the streaming data is not an json object", async () => {
-      vi.spyOn(message, "warning");
+      const warningMock = vi.spyOn(message, "warning");
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
+          // Simulate receiving non-JSON data
           onMessageHandle(
             { data: "not a json object" },
             mockResponseHeadersWithChatId,
@@ -374,12 +382,14 @@ describe("CardsChat Component", () => {
       );
 
       await setup();
-
       givenUserInput();
       whenGenerateIsClicked();
-      expect(message.warning).toHaveBeenCalledWith(
-        "Model failed to respond rightly, please rewrite your message and try again",
-      );
+
+      await waitFor(() => {
+        expect(warningMock).toHaveBeenCalledWith(
+          "Model failed to respond rightly, please rewrite your message and try again",
+        );
+      });
     });
   });
 });

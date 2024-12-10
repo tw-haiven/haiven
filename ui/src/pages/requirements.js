@@ -23,7 +23,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   const [disableChatInput, setDisableChatInput] = useState(false);
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(false);
-  const [promptInput, setPromptInput] = useState("");
+  const [prompt, setPrompt] = useState("");
   const [variations, setVariations] = useState([
     { value: "workflow", label: "By workflow" },
     { value: "timeline", label: "By timeline" },
@@ -38,9 +38,9 @@ const RequirementsBreakdown = ({ contexts, models }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [chatContext, setChatContext] = useState({});
 
-  const buildRequestData = () => {
+  const buildRequestData = (prompt) => {
     return {
-      userinput: promptInput,
+      userinput: prompt,
       context: selectedContext,
       promptid: "guided-requirements",
     };
@@ -54,7 +54,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     setDrawerTitle("Explore requirement: " + scenario.title);
     setChatContext({
       id: scenario.id,
-      firstStepInput: promptInput,
+      firstStepInput: prompt,
       previousFraming:
         "We are breaking down a software requirement into smaller parts.",
       context: selectedContext,
@@ -64,12 +64,13 @@ const RequirementsBreakdown = ({ contexts, models }) => {
     setDrawerOpen(true);
   };
 
-  const onSubmitPrompt = () => {
+  const onSubmitPrompt = (prompt) => {
+    setPrompt(prompt);
     setDisableChatInput(true);
 
     const uri = "/api/requirements?variation=" + selectedVariation;
 
-    const requestData = buildRequestData();
+    const requestData = buildRequestData(prompt);
 
     let ms = "";
     let output = [];
@@ -177,8 +178,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
         <Form
           onFinish={async (value) => {
             const { question } = value;
-            setPromptInput(question);
-            await onSubmitPrompt();
+            await onSubmitPrompt(question);
             form.resetFields();
           }}
           form={form}

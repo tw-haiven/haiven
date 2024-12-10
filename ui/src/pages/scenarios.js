@@ -87,7 +87,8 @@ const Home = ({ models }) => {
     setDrawerOpen(true);
   };
 
-  const onSubmitPrompt = async () => {
+  const onSubmitPrompt = async (prompt) => {
+    setPrompt(question);
     setDisableChatInput(true);
 
     const uri =
@@ -210,8 +211,7 @@ const Home = ({ models }) => {
         <Form
           onFinish={async (value) => {
             const { question } = value;
-            setPrompt(question);
-            await onSubmitPrompt();
+            await onSubmitPrompt(question);
             form.resetFields();
           }}
           form={form}

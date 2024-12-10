@@ -104,7 +104,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     addToPinboard(timestamp, followUpResults[id]);
   };
 
-  const buildRequestDataCardBuilding = () => {
+  const buildRequestDataCardBuilding = (promptInput) => {
     return {
       userinput: promptInput,
       context: selectedContext,
@@ -144,7 +144,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     };
   };
 
-  const sendCardBuildingPrompt = (requestDataBuilder) => {
+  const sendCardBuildingPrompt = (requestData) => {
     setDisableChatInput(true);
     const uri = "/api/prompt";
 
@@ -156,7 +156,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
       {
         method: "POST",
         signal: startLoad(),
-        body: JSON.stringify(requestDataBuilder()),
+        body: JSON.stringify(requestData),
       },
       {
         json: true,
@@ -206,12 +206,13 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     );
   };
 
-  const sendFirstStepPrompt = () => {
-    sendCardBuildingPrompt(buildRequestDataCardBuilding);
+  const sendFirstStepPrompt = (question) => {
+    setPromptInput(question);
+    sendCardBuildingPrompt(buildRequestDataCardBuilding(question));
   };
 
   const sendGetMorePrompt = () => {
-    sendCardBuildingPrompt(buildRequestDataGetMore);
+    sendCardBuildingPrompt(buildRequestDataGetMore());
   };
 
   /** ITERATION EXPERIMENT
@@ -447,8 +448,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
         <Form
           onFinish={async (value) => {
             const { question } = value;
-            setPromptInput(question);
-            sendFirstStepPrompt();
+            sendFirstStepPrompt(question);
             form.resetFields();
           }}
           form={form}
