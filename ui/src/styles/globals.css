@@ -660,6 +660,56 @@ a.feedback:hover {
   }
 }
 
+.prompt-chat-creative-matrix {
+  padding-left: 16px;
+  margin-bottom: 1em;
+  background-color: white;
+}
+
+.prompt-chat-creative-matrix .firstrow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.prompt-chat-creative-matrix .secondrow {
+  display: flex;
+  gap: 16px;
+}
+
+.creative-matrix-template,
+.creative-matrix-ideas,
+.creative-matrix-generate {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.creative-matrix-template {
+  flex: 1 1 50%;
+}
+
+.creative-matrix-ideas {
+  flex: 1 1 30%;
+}
+
+.creative-matrix-generate {
+  flex: 1 1 20%;
+}
+
+.creative-matrix-rows,
+.creative-matrix-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.prompt-chat-creative-matrix label {
+  font-size: 14px;
+  font-weight: var(--font-weight-semi-bold);
+} 
+
 .prompt-chat-options-section {
   padding-left: 16px;
   margin-bottom: 1em;
