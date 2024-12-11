@@ -122,6 +122,7 @@ const CreativeMatrix = ({ models }) => {
   const onSubmitPrompt = () => {
     setIsExpanded(false);
     setPrompt("");
+    setPromptOptionsMenuExpanded(false);
 
     const uri =
       "/api/creative-matrix?rows=" +
