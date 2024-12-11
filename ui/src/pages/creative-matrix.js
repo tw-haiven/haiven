@@ -17,7 +17,7 @@ const CreativeMatrix = ({ models }) => {
     "For Tactical or Operational Tasks, For Creative or Strategic Tasks",
   );
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
-    useState(false);
+    useState(true);
   const [disableChatInput, setDisableChatInput] = useState(false);
   const [prompt, setPrompt] = useState(
     "Inspire me with generative AI use cases for Nike",

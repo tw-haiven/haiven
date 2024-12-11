@@ -686,7 +686,7 @@ a.feedback:hover {
 }
 
 .creative-matrix-template {
-  flex: 1 1 50%;
+  flex: 1 1 52%;
 }
 
 .creative-matrix-ideas {
@@ -702,7 +702,7 @@ a.feedback:hover {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 1;
+  flex: 1 1 50%;
 }
 
 .prompt-chat-creative-matrix label {
