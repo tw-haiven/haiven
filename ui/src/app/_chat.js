@@ -143,7 +143,7 @@ const ChatWidget = forwardRef(
       ];
       return (
         <div>
-          {!conversationStarted ? (
+          {advancedPromptingMenu && !conversationStarted ? (
             <Collapse
               className="prompt-options-menu"
               items={items}
@@ -172,7 +172,7 @@ const ChatWidget = forwardRef(
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 disabled={isLoading}
-                placeholder={placeholder}
+                placeholder={placeholder || "Type a message..."}
                 autoSize={{ minRows: 1, maxRows: 4 }}
                 onKeyDown={handleKeyDown}
               />
