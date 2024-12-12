@@ -1,18 +1,24 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
-import { Input, Button, Select, Collapse, message } from "antd";
-import { MenuFoldOutlined } from "@ant-design/icons";
+import { Input, Button, Select, Collapse, message, Form } from "antd";
+import { UpOutlined } from "@ant-design/icons";
+import { GiSettingsKnobs } from "react-icons/gi";
+import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import { fetchSSE } from "../app/_fetch_sse";
-import Disclaimer from "./_disclaimer";
+import ChatHeader from "./_chat_header";
 import useLoader from "../hooks/useLoader";
 
 const CreativeMatrix = ({ models }) => {
+  const [promptInput, setPromptInput] = useState("");
   const [rowsCSV, setRowsCSV] = useState("For Customers, For Employees");
   const [columnsCSV, setColumnsCSV] = useState(
     "For Tactical or Operational Tasks, For Creative or Strategic Tasks",
   );
+  const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
+    useState(true);
+  const [disableChatInput, setDisableChatInput] = useState(false);
   const [prompt, setPrompt] = useState(
     "Inspire me with generative AI use cases for Nike",
   );
@@ -77,8 +83,8 @@ const CreativeMatrix = ({ models }) => {
     setPrompt(e.target.value);
   };
 
-  const onCollapsibleIconClick = (e) => {
-    setIsExpanded(!isExpanded);
+  const onClickAdvancedPromptOptions = (e) => {
+    setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
   };
 
   const onChangeTemplate = (e) => {
@@ -109,8 +115,20 @@ const CreativeMatrix = ({ models }) => {
     return ret.ideas || [];
   };
 
-  const onGenerateMatrix = () => {
+  const PromptHeader = () => {
+    return (
+      <div className="prompt-chat-header">
+        <h1 className="title-for-collapsed-panel">Creative Matrix</h1>
+        <StopLoad />
+      </div>
+    );
+  };
+
+  const onSubmitPrompt = () => {
     setIsExpanded(false);
+    setDisableChatInput(true);
+    setPrompt("");
+    setPromptOptionsMenuExpanded(false);
 
     const uri =
       "/api/creative-matrix?rows=" +
@@ -172,97 +190,176 @@ const CreativeMatrix = ({ models }) => {
     }
   };
 
-  const promptMenu = (
-    <div>
-      <h1>Creative Matrix</h1>
+  const title = (
+    <div className="title">
+      <h3>Creative Matrix</h3>
+    </div>
+  );
 
-      <div className="user-input">
-        <Select
-          defaultValue={templates[0].name}
-          onChange={onChangeTemplate}
-          options={templates.map((t) => ({
-            value: t.name,
-            label: t.name,
-          }))}
-        ></Select>
-      </div>
+  const inputAreaRender = () => {
+    const [form] = Form.useForm();
 
-      <div className="user-input">
-        <label>Prompt</label>
-        <TextArea
-          placeholder="Prompt for the intersection of row and column"
-          value={prompt}
-          onChange={onChangePrompt}
-          disabled={loading}
-        />
-      </div>
-      <div className="user-input">
-        <label>Rows</label>
-        <TextArea
-          placeholder="Comma-separated list of values"
-          value={rowsCSV}
-          onChange={onChangeRowsCSV}
-          disabled={loading}
-        />
-      </div>
-      <div className="user-input">
-        <label>Columns</label>
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.submit();
+      }
+    };
 
-        <TextArea
-          placeholder="Comma-separated list of values"
-          value={columnsCSV}
-          onChange={onChangeColumnsCSV}
-          disabled={loading}
+    const items = [
+      {
+        key: "1",
+        label: (
+          <div className="advanced-prompting">
+            <GiSettingsKnobs className="advanced-prompting-icon" />{" "}
+            <span>Advanced Prompting</span>{" "}
+            <UpOutlined
+              className="advanced-prompting-collapse-icon"
+              rotate={isPromptOptionsMenuExpanded ? 180 : 0}
+            />
+          </div>
+        ),
+        children: advancedPromptingMenu,
+        showArrow: false,
+      },
+    ];
+
+    if (disableChatInput) {
+      return null;
+    }
+
+    return (
+      <div className="card-chat-input-container">
+        <Collapse
+          className="prompt-options-menu"
+          items={items}
+          defaultActiveKey={["1"]}
+          ghost={isPromptOptionsMenuExpanded}
+          activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
+          onChange={onClickAdvancedPromptOptions}
+          collapsible="header"
         />
-      </div>
-      <div className="user-input">
-        Generate{" "}
-        <Select
-          defaultValue={"3"}
-          onChange={handleSelectChange}
-          disabled={loading}
-          className="small"
-          options={[
-            { value: "1", label: "1 idea" },
-            { value: "2", label: "2 ideas" },
-            { value: "3", label: "3 ideas" },
-            { value: "4", label: "4 ideas" },
-            { value: "5", label: "5 ideas" },
-          ]}
-        ></Select>
-        &nbsp; per combination.
-      </div>
-      <div className="user-input">
-        <label>Each idea must be...</label>
-        <Select
-          style={{ width: "100%" }}
-          mode="tags"
-          placeholder="List of adjectives/qualifiers"
-          onChange={onChangeIdeaQualifiers}
-          disabled={loading}
-          options={[
-            { value: "utopian", label: "Utopian" },
-            { value: "dystopian", label: "Dystopian" },
-            {
-              value: "inspired by science fiction",
-              label: "Inspired by science fiction",
-            },
-            { value: "funny and bizarre", label: "Funny and bizarre" },
-            {
-              value: "written in the style of Shakespear",
-              label: "Written in the style of Shakespear",
-            },
-          ]}
-        />
-      </div>
-      <div className="user-input">
-        <Button
-          onClick={onGenerateMatrix}
-          className="go-button"
-          disabled={loading}
+        <Form
+          onFinish={async (value) => {
+            const { question } = value;
+            setPromptInput(question);
+            await onSubmitPrompt();
+            form.resetFields();
+            setPrompt("");
+          }}
+          form={form}
+          initialValues={{ question: "" }}
         >
-          GENERATE MATRIX
-        </Button>
+          <Form.Item
+            name="question"
+            rules={[{ required: true, message: "" }]}
+            className="chat-text-area"
+          >
+            <Input.TextArea
+              disabled={loading}
+              placeholder="Describe the requirements that you'd like to break down"
+              autoSize={{ minRows: 1, maxRows: 4 }}
+              onKeyDown={handleKeyDown}
+              onChange={onChangePrompt}
+            />
+          </Form.Item>
+          <Form.Item className="chat-text-area-submit">
+            {loading ? (
+              <Button
+                type="secondary"
+                icon={<RiStopCircleFill fontSize="large" />}
+                onClick={() => abortLoad()}
+              >
+                STOP
+              </Button>
+            ) : (
+              <Button
+                htmlType="submit"
+                icon={<RiSendPlane2Line fontSize="large" />}
+                onClick={onSubmitPrompt}
+                disabled={loading}
+              >
+                SEND
+              </Button>
+            )}
+          </Form.Item>
+        </Form>
+      </div>
+    );
+  };
+
+  const advancedPromptingMenu = (
+    <div className="prompt-chat-creative-matrix">
+      <div className="firstrow">
+        <div className="creative-matrix-template">
+          <label>Template</label>
+          <Select
+            defaultValue={templates[0].name}
+            onChange={onChangeTemplate}
+            options={templates.map((t) => ({
+              value: t.name,
+              label: t.name,
+            }))}
+          ></Select>
+        </div>
+        <div className="creative-matrix-ideas">
+          <label>Each idea must be...</label>
+          <Select
+            mode="tags"
+            placeholder="List of adjectives/qualifiers"
+            onChange={onChangeIdeaQualifiers}
+            disabled={loading}
+            options={[
+              { value: "utopian", label: "Utopian" },
+              { value: "dystopian", label: "Dystopian" },
+              {
+                value: "inspired by science fiction",
+                label: "Inspired by science fiction",
+              },
+              { value: "funny and bizarre", label: "Funny and bizarre" },
+              {
+                value: "written in the style of Shakespear",
+                label: "Written in the style of Shakespear",
+              },
+            ]}
+          />
+        </div>
+        <div className="creative-matrix-generate">
+          <label>Generate</label>
+          <Select
+            defaultValue={"3"}
+            onChange={handleSelectChange}
+            disabled={loading}
+            className="small"
+            options={[
+              { value: "1", label: "1 idea" },
+              { value: "2", label: "2 ideas" },
+              { value: "3", label: "3 ideas" },
+              { value: "4", label: "4 ideas" },
+              { value: "5", label: "5 ideas" },
+            ]}
+          ></Select>
+        </div>
+      </div>
+      <div className="secondrow">
+        <div className="creative-matrix-rows">
+          <label>Rows</label>
+          <TextArea
+            placeholder="Comma-separated list of values"
+            value={rowsCSV}
+            onChange={onChangeRowsCSV}
+            disabled={loading}
+          />
+        </div>
+        <div className="creative-matrix-columns">
+          <label>Columns</label>
+          <TextArea
+            placeholder="Comma-separated list of values"
+            value={columnsCSV}
+            onChange={onChangeColumnsCSV}
+            disabled={loading}
+          />
+        </div>
       </div>
     </div>
   );
@@ -270,69 +367,51 @@ const CreativeMatrix = ({ models }) => {
   const collapseItem = [
     {
       key: "1",
-      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
-      children: promptMenu,
+      children: advancedPromptingMenu,
     },
   ];
 
   return (
-    <div id="canvas">
-      <div className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}>
-        <Collapse
-          className="prompt-chat-options-container"
-          items={collapseItem}
-          defaultActiveKey={["1"]}
-          ghost={isExpanded}
-          activeKey={isExpanded ? "1" : ""}
-          onChange={onCollapsibleIconClick}
-          expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
-        />
-        <div className="chat-container-wrapper">
-          <Disclaimer models={models} />
-          <div className="prompt-chat-header">
-            <h1 className="title-for-collapsed-panel">Creative Matrix</h1>
-            <StopLoad />
-          </div>
-          <div className="matrix-container">
-            <div>
-              <table className="matrix-table">
-                <thead>
-                  <tr>
-                    <th></th>
-                    {columns.map((columnValue, index) => {
-                      return <th>{columnValue}</th>;
-                    })}
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((rowValue, rowIndex) => {
-                    return (
-                      <tr style={{ height: 50 }}>
-                        <td
-                          style={{
-                            textAlign: "center",
-                            width: "10%",
-                          }}
-                        >
-                          <b>{rowValue}</b>
-                        </td>
-                        {columns.map((columnValue, columnIndex) => {
-                          return (
-                            <td
-                              style={{
-                                textAlign: "center",
-                                border: "1px solid #e1e1e1",
-                                width: 85 / columns.length + "%",
-                              }}
-                            >
-                              <ul
+    <>
+      <div id="canvas">
+        <div className="prompt-chat-container">
+          <div className="chat-container-wrapper">
+            <ChatHeader models={models} titleComponent={title} />
+            {!isExpanded ? <PromptHeader /> : () => {}}
+            <div className="card-chat-container">
+              <div className="matrix-container">
+                <table className="matrix-table">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      {columns.map((columnValue, index) => {
+                        return <th>{columnValue}</th>;
+                      })}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((rowValue, rowIndex) => {
+                      return (
+                        <tr style={{ height: 50 }}>
+                          <td style={{ textAlign: "center", width: "10%" }}>
+                            <b>{rowValue}</b>
+                          </td>
+                          {columns.map((columnValue, columnIndex) => {
+                            return (
+                              <td
                                 style={{
-                                  textAlign: "left",
-                                  paddingLeft: 20,
+                                  textAlign: "center",
+                                  border: "1px solid #e1e1e1",
+                                  width: 85 / columns.length + "%",
                                 }}
                               >
-                                {getMatrixCellValues(rowIndex, columnIndex).map(
-                                  (idea) => {
+                                <ul
+                                  style={{ textAlign: "left", paddingLeft: 20 }}
+                                >
+                                  {getMatrixCellValues(
+                                    rowIndex,
+                                    columnIndex,
+                                  ).map((idea) => {
                                     return (
                                       <li
                                         key={"" + rowIndex + "-" + columnIndex}
@@ -344,22 +423,23 @@ const CreativeMatrix = ({ models }) => {
                                         <b>{idea.title}:</b> {idea.description}
                                       </li>
                                     );
-                                  },
-                                )}
-                              </ul>
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                                  })}
+                                </ul>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              {inputAreaRender()}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

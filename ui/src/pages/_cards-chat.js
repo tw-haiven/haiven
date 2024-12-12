@@ -1,16 +1,16 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState, useEffect } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import { Drawer, Button, Input, Collapse, message } from "antd";
-const { TextArea } = Input;
+import { Drawer, Button, Input, Collapse, Form, message } from "antd";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 import { RiFileCopyLine, RiPushpinLine } from "react-icons/ri";
-import { MenuFoldOutlined } from "@ant-design/icons";
+import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
+import { UpOutlined } from "@ant-design/icons";
+import { GiSettingsKnobs } from "react-icons/gi";
 import ReactMarkdown from "react-markdown";
-import Disclaimer from "./_disclaimer";
+import ChatHeader from "./_chat_header";
 import ContextChoice from "../app/_context_choice";
-import PromptPreview from "../app/_prompt_preview";
 import HelpTooltip from "../app/_help_tooltip";
 import CardsList from "../app/_cards-list";
 import useLoader from "../hooks/useLoader";
@@ -39,7 +39,9 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
 
   const [followUpResults, setFollowUpResults] = useState({});
   const [chatContext, setChatContext] = useState({});
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
+    useState(false);
+  const [disableChatInput, setDisableChatInput] = useState(false);
   const [usePromptId, setUsePromptId] = useState(true);
   const [chatSessionIdCardBuilding, setChatSessionIdCardBuilding] = useState();
 
@@ -62,12 +64,8 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     setFeatureToggleConfig(JSON.parse(toggleConfig));
   }, [promptId, prompts]);
 
-  const onCollapsibleIconClick = (e) => {
-    setIsExpanded(!isExpanded);
-  };
-
-  const handleContextSelection = (value) => {
-    setSelectedContext(value);
+  const onClickAdvancedPromptOptions = (e) => {
+    setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
   };
 
   const onExplore = (scenario) => {
@@ -106,7 +104,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     addToPinboard(timestamp, followUpResults[id]);
   };
 
-  const buildRequestDataCardBuilding = () => {
+  const buildRequestDataCardBuilding = (promptInput) => {
     return {
       userinput: promptInput,
       context: selectedContext,
@@ -146,8 +144,8 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     };
   };
 
-  const sendCardBuildingPrompt = (requestDataBuilder) => {
-    setIsExpanded(false);
+  const sendCardBuildingPrompt = (requestData) => {
+    setDisableChatInput(true);
     const uri = "/api/prompt";
 
     let ms = "";
@@ -158,7 +156,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
       {
         method: "POST",
         signal: startLoad(),
-        body: JSON.stringify(requestDataBuilder()),
+        body: JSON.stringify(requestData),
       },
       {
         json: true,
@@ -208,12 +206,13 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     );
   };
 
-  const sendFirstStepPrompt = () => {
-    sendCardBuildingPrompt(buildRequestDataCardBuilding);
+  const sendFirstStepPrompt = (question) => {
+    setPromptInput(question);
+    sendCardBuildingPrompt(buildRequestDataCardBuilding(question));
   };
 
   const sendGetMorePrompt = () => {
-    sendCardBuildingPrompt(buildRequestDataGetMore);
+    sendCardBuildingPrompt(buildRequestDataGetMore());
   };
 
   /** ITERATION EXPERIMENT
@@ -259,7 +258,6 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   };
 
   const sendIteration = () => {
-    setIsExpanded(false);
     const uri = "/api/prompt/iterate";
 
     let ms = "";
@@ -404,54 +402,117 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
       };
     }) || [];
 
-  const promptMenu = (
-    <div>
-      <div className="prompt-chat-options-section">
-        <h1>{selectedPromptConfiguration.title}</h1>
-        <p>{selectedPromptConfiguration.help_prompt_description}</p>
-      </div>
+  const inputAreaRender = () => {
+    const [form] = Form.useForm();
 
-      <div className="prompt-chat-options-section">
-        <div className="user-input">
-          <label>
-            Your input
-            <HelpTooltip text={selectedPromptConfiguration.help_user_input} />
-          </label>
-          <TextArea
-            placeholder={selectedPromptConfiguration.help_user_input}
-            value={promptInput}
-            onChange={(e, v) => {
-              setPromptInput(e.target.value);
-            }}
-            rows={18}
-            data-testid="user-input"
-          />
-        </div>
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.submit();
+      }
+    };
+
+    const items = [
+      {
+        key: "1",
+        label: (
+          <div className="advanced-prompting">
+            <GiSettingsKnobs className="advanced-prompting-icon" />{" "}
+            <span>Advanced Prompting</span>{" "}
+            <UpOutlined
+              className="advanced-prompting-collapse-icon"
+              rotate={isPromptOptionsMenuExpanded ? 180 : 0}
+            />
+          </div>
+        ),
+        children: advancedPromptingMenu,
+        showArrow: false,
+      },
+    ];
+
+    if (disableChatInput) {
+      return null;
+    }
+
+    return (
+      <div className="card-chat-input-container">
+        <Collapse
+          className="prompt-options-menu"
+          items={items}
+          defaultActiveKey={["1"]}
+          ghost={isPromptOptionsMenuExpanded}
+          activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
+          onChange={onClickAdvancedPromptOptions}
+          collapsible="header"
+        />
+        <Form
+          onFinish={async (value) => {
+            const { question } = value;
+            sendFirstStepPrompt(question);
+            form.resetFields();
+          }}
+          form={form}
+          initialValues={{ question: "" }}
+        >
+          <Form.Item
+            name="question"
+            rules={[{ required: true, message: "" }]}
+            className="chat-text-area"
+          >
+            <Input.TextArea
+              disabled={loading}
+              required
+              data-testid="user-input"
+              placeholder={selectedPromptConfiguration.help_user_input}
+              autoSize={{ minRows: 1, maxRows: 4 }}
+              onKeyDown={handleKeyDown}
+            />
+          </Form.Item>
+          <Form.Item className="chat-text-area-submit">
+            {loading ? (
+              <Button
+                type="secondary"
+                icon={<RiStopCircleFill fontSize="large" />}
+                onClick={() => abortLoad()}
+              >
+                STOP
+              </Button>
+            ) : (
+              <Button
+                htmlType="submit"
+                icon={<RiSendPlane2Line fontSize="large" />}
+              >
+                SEND
+              </Button>
+            )}
+          </Form.Item>
+        </Form>
+      </div>
+    );
+  };
+
+  const advancedPromptingMenu = (
+    <div className="prompt-chat-options-section">
+      <div className="requirement-user-input">
         <ContextChoice
-          onChange={handleContextSelection}
+          onChange={setSelectedContext}
           contexts={contexts}
           value={selectedContext?.key}
         />
-        <div className="user-input">
-          <Button
-            onClick={sendFirstStepPrompt}
-            className="go-button"
-            disabled={loading}
-          >
-            GENERATE
-          </Button>
-        </div>
       </div>
     </div>
   );
 
-  const collapseItem = [
-    {
-      key: "1",
-      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
-      children: promptMenu,
-    },
-  ];
+  const title = (
+    <div className="title">
+      <h3>
+        {selectedPromptConfiguration.title}
+        <HelpTooltip
+          text={selectedPromptConfiguration.help_prompt_description}
+        />
+      </h3>
+    </div>
+  );
 
   return (
     <>
@@ -472,85 +533,75 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           scenarioQueries={[]}
         />
       </Drawer>
-
       <div id="canvas">
-        <div
-          className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}
-          style={{ height: "auto" }}
-        >
-          <Collapse
-            className="prompt-chat-options-container"
-            items={collapseItem}
-            defaultActiveKey={["1"]}
-            ghost={isExpanded}
-            activeKey={isExpanded ? "1" : ""}
-            onChange={onCollapsibleIconClick}
-            expandIcon={() => (
-              <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />
-            )}
-          />
+        <div className="prompt-chat-container">
           <div className="chat-container-wrapper">
-            <Disclaimer models={models} />
-            <CardsList
-              title={selectedPromptConfiguration.title}
-              scenarios={scenarios}
-              setScenarios={setScenarios}
-              editable={selectedPromptConfiguration.editable}
-              selectable={
-                selectedPromptConfiguration.followUps !== undefined &&
-                selectedPromptConfiguration.followUps.length > 0
-              }
-              onExplore={onExplore}
-              stopLoadComponent={<StopLoad />}
-            />
-            {scenarios.length > 0 && (
-              <div className="generate-more">
-                <Button
-                  onClick={sendGetMorePrompt}
-                  className="go-button"
-                  disabled={loading}
-                >
-                  GENERATE MORE CARDS
-                </Button>
-              </div>
-            )}
-            {/* Iteration experiment */}
-            {featureToggleConfig["cards-iteration"] === true &&
-              scenarios.length > 0 && (
-                <div style={{ width: "50%", paddingLeft: "2em" }}>
-                  <p>[EXPERIMENT] What else do you want to add to the cards?</p>
-                  <Input
-                    value={iterationPrompt}
-                    onChange={(e, v) => {
-                      setIterationPrompt(e.target.value);
-                    }}
-                  />
+            <ChatHeader models={models} titleComponent={title} />
+            <div className="card-chat-container card-chat-overflow">
+              <CardsList
+                title={selectedPromptConfiguration.title}
+                scenarios={scenarios}
+                setScenarios={setScenarios}
+                editable={selectedPromptConfiguration.editable}
+                selectable={
+                  selectedPromptConfiguration.followUps !== undefined &&
+                  selectedPromptConfiguration.followUps.length > 0
+                }
+                onExplore={onExplore}
+                stopLoadComponent={<StopLoad />}
+              />
+              {inputAreaRender()}
+              {scenarios.length > 0 && (
+                <div className="generate-more">
                   <Button
-                    onClick={sendIteration}
-                    size="small"
+                    onClick={sendGetMorePrompt}
                     className="go-button"
+                    disabled={loading}
                   >
-                    ENRICH CARDS
+                    GENERATE MORE CARDS
                   </Button>
                 </div>
               )}
-            {/* / End iteration experiment */}
-            {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
-              <div className="follow-up-container">
-                <div style={{ marginTop: "1em" }}>
-                  <h3>What you can do next</h3>
-                  <p>
-                    Generate content based on the cards selected above. Deselect
-                    cards to exclude them from the next step.
-                  </p>
+              {/* Iteration experiment */}
+              {featureToggleConfig["cards-iteration"] === true &&
+                scenarios.length > 0 && (
+                  <div style={{ width: "50%", paddingLeft: "2em" }}>
+                    <p>
+                      [EXPERIMENT] What else do you want to add to the cards?
+                    </p>
+                    <Input
+                      value={iterationPrompt}
+                      onChange={(e, v) => {
+                        setIterationPrompt(e.target.value);
+                      }}
+                    />
+                    <Button
+                      onClick={sendIteration}
+                      size="small"
+                      className="go-button"
+                    >
+                      ENRICH CARDS
+                    </Button>
+                  </div>
+                )}
+              {/* / End iteration experiment */}
+              {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
+                <div className="follow-up-container">
+                  <div style={{ marginTop: "1em" }}>
+                    <h3>What you can do next</h3>
+                    <p>
+                      Generate content based on the cards selected above.
+                      Deselect cards to exclude them from the next step.
+                    </p>
+                  </div>
+                  <Collapse
+                    items={followUpCollapseItems}
+                    className="second-step-collapsable"
+                    data-testid="follow-up-collapse"
+                  />
                 </div>
-                <Collapse
-                  items={followUpCollapseItems}
-                  className="second-step-collapsable"
-                  data-testid="follow-up-collapse"
-                />
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>

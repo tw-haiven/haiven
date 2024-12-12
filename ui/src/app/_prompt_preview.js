@@ -8,14 +8,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getRenderedPrompt } from "./_boba_api";
 
-/*
- * buildRenderPromptRequest: function that returns an object with
-      - userinput
-      - promptid
-      - document
-*/
 export default function PromptPreview({
-  buildRenderPromptRequest,
+  renderPromptRequest,
   startNewChat,
   setUsePromptId,
 }) {
@@ -101,7 +95,7 @@ export default function PromptPreview({
   };
 
   const onRenderPrompt = () => {
-    const requestData = buildRenderPromptRequest();
+    const requestData = renderPromptRequest();
     console.log("requestData", requestData);
     getRenderedPrompt(requestData, (response) => {
       setPromptData({

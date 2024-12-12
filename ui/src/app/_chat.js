@@ -1,20 +1,34 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { ActionIconGroup, ProChat, useProChat } from "@ant-design/pro-chat";
 import { css, cx, useTheme } from "antd-style";
-import { Button, Form, Input, message } from "antd";
+import { Button, Collapse, Form, Input, message } from "antd";
+import { UpOutlined } from "@ant-design/icons";
 import { PinIcon, RotateCw, Trash, Copy } from "lucide-react";
 import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
+import { GiSettingsKnobs } from "react-icons/gi";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { addToPinboard } from "./_local_store";
 
 const ChatWidget = forwardRef(
-  ({ onSubmitMessage, helloMessage, visible }, ref) => {
+  (
+    {
+      onSubmitMessage,
+      helloMessage,
+      placeholder,
+      promptPreviewComponent,
+      advancedPromptingMenu,
+      conversationStarted,
+    },
+    ref,
+  ) => {
     const proChat = useProChat();
 
-    const [chatIsVisible, setChatIsVisible] = useState(visible);
     const [isLoading, setIsLoading] = useState(false);
+    const [prompt, setPrompt] = useState("");
+    const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
+      useState(false);
 
     const pin = {
       icon: PinIcon,
@@ -89,11 +103,15 @@ const ChatWidget = forwardRef(
 
     useImperativeHandle(ref, () => ({
       async startNewConversation(message) {
-        setChatIsVisible(true);
         proChat.clearMessage();
         return await proChat.sendMessage(message);
       },
+      prompt,
     }));
+
+    const onClickAdvancedPromptOptions = (e) => {
+      setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
+    };
 
     const inputAreaRender = (_, onMessageSend) => {
       const [form] = Form.useForm();
@@ -105,108 +123,143 @@ const ChatWidget = forwardRef(
         }
       };
 
+      const items = [
+        {
+          key: "1",
+          label: (
+            <div className="advanced-prompting">
+              <GiSettingsKnobs className="advanced-prompting-icon" />{" "}
+              <span>Advanced Prompting</span>{" "}
+              <UpOutlined
+                className="advanced-prompting-collapse-icon"
+                rotate={isPromptOptionsMenuExpanded ? 180 : 0}
+              />
+            </div>
+          ),
+          children: <>{advancedPromptingMenu}</>,
+          extra: promptPreviewComponent,
+          showArrow: false,
+        },
+      ];
       return (
-        <Form
-          onFinish={async (value) => {
-            const { question } = value;
-            await onMessageSend(question);
-            form.resetFields();
-          }}
-          form={form}
-          initialValues={{ question: "" }}
-        >
-          <Form.Item name="question" className="chat-text-area">
-            <Input.TextArea
-              disabled={isLoading}
-              placeholder="Please enter a message..."
-              autoSize={{ minRows: 1, maxRows: 4 }}
-              onKeyDown={handleKeyDown}
+        <div>
+          {advancedPromptingMenu && !conversationStarted ? (
+            <Collapse
+              className="prompt-options-menu"
+              items={items}
+              defaultActiveKey={["1"]}
+              ghost={isPromptOptionsMenuExpanded}
+              activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
+              onChange={onClickAdvancedPromptOptions}
+              collapsible="header"
             />
-          </Form.Item>
-          <Form.Item className="chat-text-area-submit">
-            {isLoading ? (
-              <Button
-                type="secondary"
-                icon={<RiStopCircleFill fontSize="large" />}
-                onClick={() => proChat.stopGenerateMessage()}
-              >
-                STOP
-              </Button>
-            ) : (
-              <Button
-                htmlType="submit"
-                icon={<RiSendPlane2Line fontSize="large" />}
-              >
-                SEND
-              </Button>
-            )}
-          </Form.Item>
-        </Form>
+          ) : null}
+          <Form
+            onFinish={async (value) => {
+              const { question } = value;
+              await onMessageSend(question);
+              form.resetFields();
+            }}
+            form={form}
+            initialValues={{ question: "" }}
+          >
+            <Form.Item
+              name="question"
+              rules={[{ required: true, message: "" }]}
+              className="chat-text-area"
+            >
+              <Input.TextArea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                disabled={isLoading}
+                placeholder={placeholder || "Type a message..."}
+                autoSize={{ minRows: 1, maxRows: 4 }}
+                onKeyDown={handleKeyDown}
+              />
+            </Form.Item>
+            <Form.Item className="chat-text-area-submit">
+              {isLoading ? (
+                <Button
+                  type="secondary"
+                  icon={<RiStopCircleFill fontSize="large" />}
+                  onClick={() => proChat.stopGenerateMessage()}
+                >
+                  STOP
+                </Button>
+              ) : (
+                <Button
+                  htmlType="submit"
+                  icon={<RiSendPlane2Line fontSize="large" />}
+                >
+                  SEND
+                </Button>
+              )}
+            </Form.Item>
+          </Form>
+        </div>
       );
     };
 
     return (
-      chatIsVisible && (
-        <ProChat
-          style={{
-            height: "100%", // this is important for the chat_exploration styling!
-          }}
-          className={ChatStylingClass}
-          showTitle
-          assistantMeta={{
-            avatar: "/boba/shining-fill-white.svg",
-            title: "Haiven",
-            backgroundColor: "#003d4f",
-          }}
-          userMeta={{
-            avatar: userProfile.avatar ?? userProfile.name,
-            title: userProfile.name,
-            backgroundColor: "#47a1ad",
-          }}
-          locale="en-US"
-          helloMessage={helloMessage}
-          request={onSubmit}
-          chatItemRenderConfig={{
-            contentRender: (props, _defaultDom) => {
-              if (props.loading) {
-                setIsLoading(true);
-              } else {
-                setIsLoading(false);
-              }
+      <ProChat
+        style={{
+          height: "100%", // this is important for the chat_exploration styling!
+        }}
+        className={ChatStylingClass}
+        showTitle
+        assistantMeta={{
+          avatar: "/boba/shining-fill-white.svg",
+          title: "Haiven",
+          backgroundColor: "#003d4f",
+        }}
+        userMeta={{
+          avatar: userProfile.avatar ?? userProfile.name,
+          title: userProfile.name,
+          backgroundColor: "#47a1ad",
+        }}
+        locale="en-US"
+        helloMessage={helloMessage}
+        request={onSubmit}
+        chatItemRenderConfig={{
+          contentRender: (props, _defaultDom) => {
+            if (props.loading) {
+              setIsLoading(true);
+            } else {
+              setIsLoading(false);
+            }
 
-              const isError = props.message.startsWith("[ERROR]: ")
-                ? props.message.replace("[ERROR]: ", "")
-                : null;
-              return (
-                <div
-                  className={`chat-message ${props.primary ? "user" : "assistant"}`}
-                >
-                  {isError ? (
-                    <p style={{ color: "red" }}>{isError}</p>
-                  ) : (
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {props.message}
-                    </ReactMarkdown>
-                  )}
-                </div>
-              );
-            },
-            actionsRender: (props, _defaultDom) => {
-              return (
-                <ActionIconGroup
-                  items={defaultActions}
-                  dropdownMenu={extendedActions}
-                  onActionClick={(action) => {
-                    action.item.execute(props);
-                  }}
-                  type="ghost"
-                />
-              );
-            },
-          }}
-          inputAreaRender={inputAreaRender}
-        />
-      )
+            const isError = props.message.startsWith("[ERROR]: ")
+              ? props.message.replace("[ERROR]: ", "")
+              : null;
+            return (
+              <div
+                className={`chat-message ${props.primary ? "user" : "assistant"}`}
+              >
+                {isError ? (
+                  <p style={{ color: "red" }}>{isError}</p>
+                ) : (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {props.message}
+                  </ReactMarkdown>
+                )}
+              </div>
+            );
+          },
+          actionsRender: (props, _defaultDom) => {
+            return (
+              <ActionIconGroup
+                items={defaultActions}
+                dropdownMenu={extendedActions}
+                onActionClick={(action) => {
+                  action.item.execute(props);
+                }}
+                type="ghost"
+              />
+            );
+          },
+        }}
+        inputAreaRender={inputAreaRender}
+      />
     );
   },
 );

@@ -3,14 +3,13 @@
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
 import { Input, Select, Button, message, Collapse } from "antd";
-import { MenuFoldOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
 import ChatWidget from "./_chat";
 import DescribeImage from "./_image_description";
 import HelpTooltip from "./_help_tooltip";
 import ContextChoice from "./_context_choice";
-import Disclaimer from "../pages/_disclaimer";
+import ChatHeader from "../pages/_chat_header";
 import PromptPreview from "./_prompt_preview";
 
 const PromptChat = ({
@@ -24,8 +23,6 @@ const PromptChat = ({
   showDocuments = true,
   pageTitle,
   pageIntro,
-  headerTooltip = true,
-  inputTooltip = true,
 }) => {
   const chatRef = useRef();
 
@@ -33,36 +30,28 @@ const PromptChat = ({
   const [selectedPrompt, setPromptSelection] = useState(promptId); // via query parameter
   const [selectedContext, setSelectedContext] = useState("");
   const [selectedDocument, setSelectedDocument] = useState("");
-  const [promptInput, setPromptInput] = useState("");
   const [imageDescription, setImageDescription] = useState("");
 
   // Chat state
   const [conversationStarted, setConversationStarted] = useState(false);
-  const [chatSessionId, setChatSessionId] = useState();
-  const [showChat, setShowChat] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [chatSessionId, setChatSessionId] = useState(undefined);
   const [usePromptId, setUsePromptId] = useState(true);
-
-  // Rendered prompt
-  const [renderedPromptData, setRenderedPromptData] = useState({});
-  const [showRenderedPrompt, setShowRenderedPrompt] = useState(false);
+  const [placeholder, setPlaceholder] = useState("");
 
   useEffect(() => {
-    setShowChat(false);
     setUsePromptId(true);
   });
 
-  const buildUserInput = () => {
-    let userInput = promptInput;
+  const appendImageDescription = (userInput) => {
     if (imageDescription && imageDescription !== "") {
       userInput += "\n\n" + imageDescription;
     }
     return userInput;
   };
 
-  const buildRequestBody = (userInput) => {
+  const buildFirstChatRequestBody = (userInput) => {
     return {
-      userinput: userInput,
+      userinput: usePromptId ? appendImageDescription(userInput) : userInput,
       promptid: usePromptId ? selectedPrompt?.identifier : undefined,
       chatSessionId: chatSessionId,
       ...(selectedContext !== "base" && { context: selectedContext }),
@@ -70,17 +59,17 @@ const PromptChat = ({
     };
   };
 
-  const startNewChat = async (userInput = null) => {
+  const startNewChat = async (userInput) => {
     if (chatRef.current) {
-      // the ProChat controls the flow - let it know we have a new message,
-      // the ultimate request will come back to "submitPromptToBackend" function here
       setChatSessionId(undefined);
       setConversationStarted(false);
-      if (!userInput) {
-        userInput = buildUserInput();
-      }
       chatRef.current.startNewConversation(userInput);
-      setIsExpanded(false);
+    }
+  };
+
+  const renderPromptRequest = () => {
+    if (chatRef.current) {
+      return buildFirstChatRequestBody(chatRef.current.prompt);
     }
   };
 
@@ -88,7 +77,7 @@ const PromptChat = ({
     const lastMessage = messages[messages.length - 1];
     let requestData;
     if (!conversationStarted) {
-      requestData = buildRequestBody(lastMessage?.content);
+      requestData = buildFirstChatRequestBody(lastMessage?.content);
     } else {
       requestData = {
         userinput: lastMessage?.content,
@@ -117,11 +106,11 @@ const PromptChat = ({
       }
 
       const chatId = response.headers.get("X-Chat-ID");
+      setPlaceholder("");
 
       if (!conversationStarted) {
         setConversationStarted(true);
         setChatSessionId(chatId);
-        setShowChat(true);
       }
 
       return response;
@@ -135,18 +124,15 @@ const PromptChat = ({
       (prompt) => prompt.identifier === value,
     );
     setPromptSelection(selectedPrompt);
+    setPlaceholder(
+      selectedPrompt && selectedPrompt.help_user_input
+        ? "Your input should " + selectedPrompt.help_user_input
+        : pageIntro,
+    );
   }
 
   const handleContextSelection = (value) => {
     setSelectedContext(value);
-  };
-
-  const buildRenderPromptRequest = () => {
-    return buildRequestBody(buildUserInput());
-  };
-
-  const onCollapsibleIconClick = (e) => {
-    setIsExpanded(!isExpanded);
   };
 
   useEffect(() => {
@@ -159,18 +145,20 @@ const PromptChat = ({
         Upload image
         <HelpTooltip text="Get AI to describe an image (e.g. a diagram) to help with your input. You can edit this description before you start the chat." />
       </label>
-      <DescribeImage onImageDescriptionChange={setImageDescription} />
-      {imageDescription && <TextArea value={imageDescription} rows={6} />}
+      <DescribeImage
+        onImageDescriptionChange={setImageDescription}
+        imageDescription={imageDescription}
+      />
     </div>
   ) : (
     <></>
   );
 
-  const documentChoiceUserInput =
+  const documentsMenu =
     showDocuments && documents ? (
       <div className="user-input">
         <label>
-          Document
+          Select document
           <HelpTooltip text="Select a document from your knowledge pack that might have useful information for your context. Haiven will try to find useful information in this document during the first chat interaction." />
         </label>
         <Select
@@ -184,7 +172,7 @@ const PromptChat = ({
       <></>
     );
 
-  const textSnippetsUserInput = showTextSnippets ? (
+  const contextsMenu = showTextSnippets ? (
     <ContextChoice
       onChange={handleContextSelection}
       contexts={contexts}
@@ -194,96 +182,41 @@ const PromptChat = ({
     <></>
   );
 
-  const contextSection =
-    showTextSnippets || showDocuments ? (
-      <div className="prompt-chat-options-section">
-        <div>
-          {textSnippetsUserInput}
-          {documentChoiceUserInput}
-        </div>
-      </div>
-    ) : (
-      <></>
-    );
-
-  const promptMenu = (
-    <div>
-      <div className="prompt-chat-options-section">
-        <h1>
-          {selectedPrompt?.title || pageTitle}
-          {headerTooltip && (
-            <HelpTooltip text="This prompt comes from the connected knowledge pack, where you can customize it if you don't like the results." />
-          )}
-        </h1>
-        <div className={headerTooltip ? "" : "prompt-chat-description"}>
-          {selectedPrompt?.help_prompt_description ||
-            "Ask general questions & document based queries"}
-        </div>
-      </div>
-
-      <div className="prompt-chat-options-section">
-        <div>
-          <div className="user-input">
-            <label>
-              Your input
-              {inputTooltip && (
-                <HelpTooltip
-                  text={selectedPrompt?.help_user_input || pageIntro}
-                />
-              )}
-            </label>
-
-            <TextArea
-              value={promptInput}
-              style={{ width: "100%" }}
-              placeholder={selectedPrompt?.help_user_input || pageIntro}
-              rows={10}
-              onChange={(e, v) => {
-                setPromptInput(e.target.value);
-              }}
-            />
-          </div>
-          {imageDescriptionUserInput}
-        </div>
-      </div>
-      {contextSection}
-      <div className="prompt-chat-options-section">
-        {showTextSnippets && (
-          <PromptPreview
-            buildRenderPromptRequest={buildRenderPromptRequest}
-            startNewChat={startNewChat}
-            setUsePromptId={setUsePromptId}
-          />
-        )}
-        <Button onClick={() => startNewChat(null)} className="go-button">
-          START CHAT
-        </Button>
-      </div>
+  const title = (
+    <div className="title">
+      <h3>
+        {selectedPrompt?.title || pageTitle}
+        <HelpTooltip
+          text={
+            selectedPrompt?.help_prompt_description ||
+            "Ask general questions & document based queries"
+          }
+        />
+      </h3>
     </div>
   );
 
-  const collapseItem = [
-    {
-      key: "1",
-      label: isExpanded ? "Hide Prompt Panel" : "Show Prompt Panel",
-      children: promptMenu,
-    },
-  ];
+  const promptPreview = showTextSnippets ? (
+    <PromptPreview
+      renderPromptRequest={renderPromptRequest}
+      startNewChat={startNewChat}
+      setUsePromptId={setUsePromptId}
+    />
+  ) : null;
+
+  const advancedPromptingMenu = (
+    <div className="prompting-dropdown-menu">
+      {contextsMenu}
+      {documentsMenu}
+      {imageDescriptionUserInput}
+    </div>
+  );
 
   return (
     <>
-      <div className={`prompt-chat-container ${isExpanded ? "" : "collapsed"}`}>
-        <Collapse
-          className="prompt-chat-options-container"
-          items={collapseItem}
-          defaultActiveKey={["1"]}
-          ghost={isExpanded}
-          activeKey={isExpanded ? "1" : ""}
-          onChange={onCollapsibleIconClick}
-          expandIcon={() => <MenuFoldOutlined rotate={isExpanded ? 0 : 180} />}
-        />
+      <div className="prompt-chat-container">
         <div className="chat-container-wrapper">
-          <Disclaimer models={models} />
+          <ChatHeader models={models} titleComponent={title} />
           <div className="chat-container">
             <h1 className="title-for-collapsed-panel">
               {selectedPrompt?.title || pageTitle}
@@ -293,10 +226,13 @@ const PromptChat = ({
                 <ChatWidget
                   onSubmitMessage={submitPromptToBackend}
                   ref={chatRef}
-                  visible={showChat}
                   helloMessage={
                     "Fill in some input on the left and hit 'Generate'"
                   }
+                  placeholder={placeholder}
+                  promptPreviewComponent={promptPreview}
+                  advancedPromptingMenu={advancedPromptingMenu}
+                  conversationStarted={conversationStarted}
                 />
               </ProChatProvider>
             </div>
