@@ -83,10 +83,6 @@ const CreativeMatrix = ({ models }) => {
     setPrompt(e.target.value);
   };
 
-  const onCollapsibleIconClick = (e) => {
-    setIsExpanded(!isExpanded);
-  };
-
   const onClickAdvancedPromptOptions = (e) => {
     setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
   };
@@ -121,6 +117,7 @@ const CreativeMatrix = ({ models }) => {
 
   const onSubmitPrompt = () => {
     setIsExpanded(false);
+    setDisableChatInput(true);
     setPrompt("");
     setPromptOptionsMenuExpanded(false);
 
