@@ -115,6 +115,15 @@ const CreativeMatrix = ({ models }) => {
     return ret.ideas || [];
   };
 
+  const PromptHeader = () => {
+    return (
+      <div className="prompt-chat-header">
+        <h1 className="title-for-collapsed-panel">Creative Matrix</h1>
+        <StopLoad />
+      </div>
+    );
+  };
+
   const onSubmitPrompt = () => {
     setIsExpanded(false);
     setDisableChatInput(true);
@@ -368,6 +377,7 @@ const CreativeMatrix = ({ models }) => {
         <div className="prompt-chat-container">
           <div className="chat-container-wrapper">
             <ChatHeader models={models} titleComponent={title} />
+            {!isExpanded ? <PromptHeader /> : () => {}}
             <div className="card-chat-container">
               <div className="matrix-container">
                 <table className="matrix-table">
