@@ -90,11 +90,18 @@ def cli_run():
     arg = ""
     if len(sys.argv) > 1:
         arg = sys.argv[1]
-    command = f"""
-    cd cli/haiven_cli && \
-    poetry run python main.py {arg}
-    """
-    subprocess.run(command, shell=True)
+
+    command = ["poetry", "run", "python", "main.py"]
+
+    if arg:
+        command.append(arg)
+
+    current_dir = os.getcwd()
+    try:
+        os.chdir(os.path.join(current_dir, "cli", "haiven_cli"))
+        subprocess.run(command, check=True)
+    finally:
+        os.chdir(current_dir)
 
 
 def cli_test():

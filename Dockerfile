@@ -37,12 +37,20 @@ RUN poetry config virtualenvs.create false \
 # Stage 2: Production environment
 FROM python:3.11-slim
 
+# Create a non-root user
+RUN addgroup --system --gid 999 appgroup \
+    && adduser --system --uid 999 --ingroup appgroup appuser
+
 WORKDIR /app
 
 # Copy the installed application dependencies from the builder stage
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY ./app /app
 COPY --from=node-builder /ui/out /app/resources/static/out
+
+# Ensure proper permissions for the app user
+RUN chown -R appuser:appgroup /app
+USER appuser
 
 EXPOSE 8080
 
