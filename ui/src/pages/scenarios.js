@@ -88,7 +88,7 @@ const Home = ({ models }) => {
   };
 
   const onSubmitPrompt = async (prompt) => {
-    setPrompt(question);
+    setPrompt(prompt);
     setDisableChatInput(true);
 
     const uri =
