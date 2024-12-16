@@ -2,6 +2,7 @@
 import json
 
 from fastapi.responses import FileResponse
+from fastapi.templating import Jinja2Templates
 
 from api.boba_api import BobaApi
 from config_service import ConfigService
@@ -16,7 +17,6 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.base_client import OAuthError
-from jinja2 import Environment, FileSystemLoader
 from ui.url import HaivenUrl
 import time
 import os
@@ -35,14 +35,15 @@ class Server:
         self.chat_manager = chat_manager
         self.config_service = config_service
         self.boba_api = boba_api
+        # Initialize Jinja2Templates with autoescape=True for XSS protection
+        self.templates = Jinja2Templates(directory="./resources/html_templates")
+        self.templates.env.autoescape = True
 
     def user_endpoints(self, app):
-        jinja_env = Environment(loader=FileSystemLoader("./resources/html_templates"))
-
         def auth_error_response(error):
-            template = jinja_env.get_template("auth_error.html")
-            html = template.render(error=error)
-            return HTMLResponse(html)
+            return self.templates.TemplateResponse(
+                "auth_error.html", {"request": Request, "error": error}
+            )
 
         @app.get("/")
         async def homepage(request: Request):
@@ -52,9 +53,9 @@ class Server:
             user = request.session.get("user")
             json.dumps(user)
 
-            template = jinja_env.get_template("index.html")
-            html = template.render(user=user)
-            return HTMLResponse(html)
+            return self.templates.TemplateResponse(
+                "index.html", {"request": request, "user": user}
+            )
 
         @app.get(self.url.login())
         async def login(request: Request):
