@@ -23,7 +23,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: semgrep scan --metrics=off --config "p/default" --sarif > semgrep.sarif
+      
+      - name: Run full Semgrep scan
+        run: semgrep scan --metrics=off --config "p/default" --sarif > semgrep.sarif
+
+      - name: Check for high severity issues
+        run: semgrep scan --metrics=off --config "p/default" --error --severity=HIGH
+        continue-on-error: false
 
       - name: Upload SARIF file
         uses: actions/upload-artifact@v3
