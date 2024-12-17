@@ -3,11 +3,12 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { act } from "react";
 import ChatDashboard from "../pages/index";
 import { describe, it, expect, vi } from "vitest";
-import { getPrompts } from "../app/_boba_api";
+import { getPrompts, getWelcomeMessage } from "../app/_boba_api";
 import { staticFeaturesForDashboard } from "../app/_navigation_items";
 
 vi.mock("../app/_boba_api", () => ({
   getPrompts: vi.fn(),
+  getWelcomeMessage: vi.fn(),
 }));
 
 vi.mock("../app/_navigation_items", () => ({
@@ -21,12 +22,14 @@ describe("ChatDashboard Component", () => {
       title: "User Persona Creation",
       categories: ["research"],
       help_prompt_description: "Description for user persona creation",
+      show: true,
     },
     {
       identifier: "2",
       title: "Contract Test Generation",
       categories: ["testing"],
       help_prompt_description: "Description for Contract Test Generation",
+      show: true,
     },
   ];
 
@@ -41,10 +44,23 @@ describe("ChatDashboard Component", () => {
     },
   ];
 
-  it("should correctly fetch and display prompts and static features on initial render", async () => {
+  beforeEach(() => {
+    // Setup default mocks before each test
     getPrompts.mockImplementation((onSuccess) => onSuccess(mockPrompts));
     staticFeaturesForDashboard.mockReturnValue(mockStaticFeatures);
+    getWelcomeMessage.mockImplementation((onSuccess) =>
+      onSuccess({
+        title: "Welcome",
+        content: "Welcome message",
+      }),
+    );
+  });
 
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should correctly fetch and display prompts and static features on initial render", async () => {
     await act(async () => {
       render(<ChatDashboard />);
     });
@@ -55,24 +71,19 @@ describe("ChatDashboard Component", () => {
   });
 
   it("should filter prompts based on selected categories", async () => {
-    getPrompts.mockImplementation((onSuccess) => onSuccess(mockPrompts));
-    staticFeaturesForDashboard.mockReturnValue(mockStaticFeatures);
-
     await act(async () => {
       render(<ChatDashboard />);
     });
 
-    const researchTags = screen.getAllByText("research");
-    const testingTags = screen.getAllByText("testing");
+    const researchTag = screen.getAllByText("research")[0];
 
-    // Assuming you want to click the first "research" tag
     await act(async () => {
-      fireEvent.click(researchTags[0]);
+      fireEvent.click(researchTag);
     });
 
     expect(screen.getByText("User Persona Creation")).toBeInTheDocument();
     expect(
-      screen.queryByText(/Contract Test Generation/i),
+      screen.queryByText("Contract Test Generation"),
     ).not.toBeInTheDocument();
   });
 
@@ -84,12 +95,10 @@ describe("ChatDashboard Component", () => {
       render(<ChatDashboard />);
     });
 
+    expect(screen.queryByText("User Persona Creation")).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/User Persona Creation/i),
+      screen.queryByText("Contract Test Generation"),
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(/Contract Test Generation/i),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByText(/Creative Matrix/i)).not.toBeInTheDocument();
+    expect(screen.queryByText("Creative Matrix")).not.toBeInTheDocument();
   });
 });

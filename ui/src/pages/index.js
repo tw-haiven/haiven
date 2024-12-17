@@ -2,14 +2,16 @@
 import { Card, Space, Tag } from "antd";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getPrompts } from "../app/_boba_api";
+import { getPrompts, getWelcomeMessage } from "../app/_boba_api";
 import { staticFeaturesForDashboard } from "../app/_navigation_items";
+import WelcomePopup from "../app/_welcome_popup";
 
 export default function ChatDashboard() {
   const [prompts, setPrompts] = useState([]);
   const [filteredPrompts, setFilteredPrompts] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [welcomeConfig, setWelcomeConfig] = useState({});
 
   // !! If changed, also needs to be changed in CSS, for the filter selection colors
   const categoryColors = {
@@ -60,6 +62,17 @@ export default function ChatDashboard() {
       chat: "/chat",
       cards: "/cards",
     };
+
+    getWelcomeMessage((data) => {
+      if (data) {
+        setWelcomeConfig({
+          title: data.title,
+          message: data.content,
+        });
+      } else {
+        setWelcomeConfig(null);
+      }
+    });
 
     getPrompts((data) => {
       data = data
@@ -121,63 +134,69 @@ export default function ChatDashboard() {
   }, [selectedCategories]);
 
   return (
-    <div className="dashboard">
-      <div className="headline">
-        <h1>What would you like to do today?</h1>
-        <div className="subline">
-          Haiven is your intelligent AI assistant, here to assist you to
-          kick-start your software delivery activities
+    <>
+      <WelcomePopup welcomeConfig={welcomeConfig} />
+      <div className="dashboard">
+        <div className="headline">
+          <h1>What would you like to do today?</h1>
+          <div className="subline">
+            Haiven is your intelligent AI assistant, here to assist you to
+            kick-start your software delivery activities
+          </div>
         </div>
-      </div>
-      <h2>Start with a prompt from your knowledge pack</h2>
+        <h2>Start with a prompt from your knowledge pack</h2>
 
-      <p className="dashboard-filters">
-        <b>Filter by category:</b>
-        {allCategories.map((tag) => {
-          return (
-            <Tag.CheckableTag
-              key={tag}
-              checked={selectedCategories.includes(tag)}
-              onChange={(checked) => filter(tag, checked)}
-              color="gray"
-              className={"dashboard-filter-category " + tag}
-            >
-              {tag}
-            </Tag.CheckableTag>
-          );
-        })}
-      </p>
-
-      <div className="dashboard-scenarios">
-        <Space direction="horizontal" wrap>
-          {filteredPrompts.map((prompt, index) => {
+        <p className="dashboard-filters">
+          <b>Filter by category:</b>
+          {allCategories.map((tag) => {
             return (
-              <Link href={prompt.link || "#"} key={prompt.identifier + "-href"}>
-                <Card
-                  hoverable
-                  key={prompt.identifier}
-                  title={prompt.title}
-                  className="dashboard-tile scenario-card-content"
-                  actions={prompt.categories.map((category) => {
-                    return (
-                      <Tag
-                        className="capitalize"
-                        color={
-                          categoryColors[category] || categoryColors["other"]
-                        }
-                      >
-                        {category}
-                      </Tag>
-                    );
-                  })}
-                >
-                  {prompt.help_prompt_description}
-                </Card>
-              </Link>
+              <Tag.CheckableTag
+                key={tag}
+                checked={selectedCategories.includes(tag)}
+                onChange={(checked) => filter(tag, checked)}
+                color="gray"
+                className={"dashboard-filter-category " + tag}
+              >
+                {tag}
+              </Tag.CheckableTag>
             );
           })}
-        </Space>
+        </p>
+
+        <div className="dashboard-scenarios">
+          <Space direction="horizontal" wrap>
+            {filteredPrompts.map((prompt, index) => {
+              return (
+                <Link
+                  href={prompt.link || "#"}
+                  key={prompt.identifier + "-href"}
+                >
+                  <Card
+                    hoverable
+                    key={prompt.identifier}
+                    title={prompt.title}
+                    className="dashboard-tile scenario-card-content"
+                    actions={prompt.categories.map((category) => {
+                      return (
+                        <Tag
+                          className="capitalize"
+                          color={
+                            categoryColors[category] || categoryColors["other"]
+                          }
+                        >
+                          {category}
+                        </Tag>
+                      );
+                    })}
+                  >
+                    {prompt.help_prompt_description}
+                  </Card>
+                </Link>
+              );
+            })}
+          </Space>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

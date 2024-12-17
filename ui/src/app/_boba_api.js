@@ -84,3 +84,21 @@ export const getRenderedPrompt = async (body, onSuccess) => {
     });
   });
 };
+
+export const getWelcomeMessage = async (onSuccess) => {
+  fetch("/api/welcome-message", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((response) => {
+    response.json().then((data) => {
+      if (data.enabled) {
+        onSuccess(data);
+      } else {
+        onSuccess(null);
+      }
+    });
+  });
+};

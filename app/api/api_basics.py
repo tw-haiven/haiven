@@ -14,9 +14,11 @@ from llms.model_config import ModelConfig
 from llms.image_description_service import ImageDescriptionService
 from prompts.prompts import PromptList
 from config_service import ConfigService
+from welcome_message import WelcomeMessageService
 from logger import HaivenLogger
 from loguru import logger
 import hashlib
+import json
 
 
 class PromptRequestBody(BaseModel):
@@ -174,6 +176,7 @@ class ApiBasics(HaivenBaseApi):
         prompts_chat: PromptList,
         image_service: ImageDescriptionService,
         config_service: ConfigService,
+        welcome_message: WelcomeMessageService,
     ):
         super().__init__(app, chat_manager, model_config, prompts_guided)
 
@@ -212,6 +215,23 @@ class ApiBasics(HaivenBaseApi):
         def get_prompts(request: Request):
             try:
                 response_data = prompts_chat.get_prompts_with_follow_ups()
+                return JSONResponse(response_data)
+
+            except Exception as error:
+                HaivenLogger.get().error(str(error))
+                raise HTTPException(
+                    status_code=500, detail=f"Server error: {str(error)}"
+                )
+
+        @app.get("/api/welcome-message")
+        @logger.catch(reraise=True)
+        def get_welcome_message(request: Request):
+            try:
+                if not welcome_message.is_enabled:
+                    return JSONResponse({"enabled": False, "title": "", "content": ""})
+
+                response_data = json.loads(welcome_message.fetch_welcome_message())
+                response_data["enabled"] = True
                 return JSONResponse(response_data)
 
             except Exception as error:

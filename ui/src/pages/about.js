@@ -2,8 +2,20 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Tabs } from "antd";
+import { getWelcomeMessage } from "../app/_boba_api";
 
 const AboutPage = ({}) => {
+  const [welcomeConfig, setWelcomeConfig] = useState({});
+
+  useEffect(() => {
+    getWelcomeMessage((data) => {
+      setWelcomeConfig({
+        title: data.title,
+        message: data.content,
+      });
+    });
+  }, []);
+
   const aboutText = (
     <div>
       <p>
@@ -108,6 +120,18 @@ const AboutPage = ({}) => {
       key: "data-processing",
       label: "Data processing",
       children: <div>{dataProcessingText}</div>,
+    },
+    {
+      key: "guidelines",
+      label: "Disclaimer & Guidelines",
+      children: (
+        <div
+          style={{ maxHeight: "70vh", overflowY: "auto" }}
+          dangerouslySetInnerHTML={{
+            __html: welcomeConfig?.message || "No guidelines configured.",
+          }}
+        />
+      ),
     },
   ];
 
