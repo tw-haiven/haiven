@@ -4,7 +4,6 @@ import unittest
 from unittest.mock import MagicMock, patch, ANY
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
-
 from api.api_basics import ApiBasics
 from api.api_multi_step import ApiMultiStep
 from api.api_scenarios import ApiScenarios
@@ -38,6 +37,7 @@ class TestApi(unittest.TestCase):
             prompts_guided=MagicMock(),
             knowledge_manager=MagicMock(),
             config_service=MagicMock(),
+            welcome_message=MagicMock(),
         )
 
         response = self.client.get("/api/prompts")
@@ -75,6 +75,7 @@ class TestApi(unittest.TestCase):
             prompts_guided=MagicMock(),
             knowledge_manager=MagicMock(),
             config_service=mock_config_service,
+            welcome_message=MagicMock(),
         )
 
         response = self.client.get("/api/models")
@@ -134,6 +135,7 @@ class TestApi(unittest.TestCase):
             prompts_chat=MagicMock(),
             image_service=MagicMock(),
             config_service=MagicMock(),
+            welcome_message=MagicMock(),
         )
 
         response = self.client.get("/api/knowledge/documents")
@@ -184,6 +186,7 @@ class TestApi(unittest.TestCase):
             prompts_chat=mock_prompt_list,
             image_service=MagicMock(),
             config_service=MagicMock(),
+            welcome_message=MagicMock(),
         )
 
         response = self.client.post(
@@ -228,6 +231,7 @@ class TestApi(unittest.TestCase):
             prompts_chat=MagicMock(),
             image_service=MagicMock(),
             config_service=MagicMock(),
+            welcome_message=MagicMock(),
         )
 
         # Make the request to the endpoint
