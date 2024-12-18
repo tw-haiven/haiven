@@ -1,7 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import frontmatter
 import json
-from markdown import markdown
 import os
 from config.constants import DISCLAIMER_PATH
 
@@ -27,7 +26,7 @@ class WelcomeMessageService:
             post = frontmatter.load(file)
 
         title = post.get("title", "No Title")
-        content = markdown(post.content)
+        content = post.content
         message_data = {"title": title, "content": content}
 
         return json.dumps(message_data, indent=4)

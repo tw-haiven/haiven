@@ -125,12 +125,11 @@ const AboutPage = ({}) => {
       key: "guidelines",
       label: "Disclaimer & Guidelines",
       children: (
-        <div
-          style={{ maxHeight: "70vh", overflowY: "auto" }}
-          dangerouslySetInnerHTML={{
-            __html: welcomeConfig?.message || "No guidelines configured.",
-          }}
-        />
+        <div style={{ maxHeight: "70vh", overflowY: "auto" }}>
+          <ReactMarkdown>
+            {welcomeConfig?.message || "No guidelines configured."}
+          </ReactMarkdown>
+        </div>
       ),
     },
   ];

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button } from "antd";
 import Cookies from "js-cookie";
+import ReactMarkdown from "react-markdown";
 
 const COOKIE_NAME = "haiven_welcome_shown";
 const COOKIE_EXPIRY = 365;
@@ -61,12 +62,12 @@ const WelcomePopup = ({ welcomeConfig, showBeforeLogin = false }) => {
       ]}
       centered
       style={{ height: "90%" }}
+      width={800}
       bodyStyle={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}
     >
-      <div
-        style={{ overflowY: "auto", maxHeight: "100%" }}
-        dangerouslySetInnerHTML={{ __html: welcomeConfig.message }}
-      />
+      <div style={{ overflowY: "auto", maxHeight: "100%" }}>
+        <ReactMarkdown>{welcomeConfig.message}</ReactMarkdown>
+      </div>
     </Modal>
   );
 };
