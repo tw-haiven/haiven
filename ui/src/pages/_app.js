@@ -8,13 +8,12 @@ import Header from "./_header";
 import "../styles/globals.css";
 import Sidebar from "./_sidebar";
 import { initializeLocalStorage } from "../app/_local_store";
-import WelcomePopup from "../app/_welcome_popup";
+
 import {
   getPrompts,
   getContextSnippets,
   getDocuments,
   getModels,
-  getWelcomeMessage,
 } from "../app/_boba_api";
 
 export default function App({
@@ -28,8 +27,6 @@ export default function App({
   const [contexts, setContexts] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [models, setModels] = useState([]);
-
-  const [welcomeConfig, setWelcomeConfig] = useState({});
 
   const colorlightgray = "#edf1f3";
   const colormediumgray = "#d9dfe1ff";
@@ -67,12 +64,6 @@ export default function App({
     });
     getModels(setModels);
     initializeLocalStorage();
-    getWelcomeMessage((data) => {
-      setWelcomeConfig({
-        title: data.title,
-        message: data.content,
-      });
-    });
   }, []);
 
   return (
@@ -137,7 +128,6 @@ export default function App({
             alt="haiven"
           />
         </div>
-        <WelcomePopup welcomeConfig={welcomeConfig} showBeforeLogin={true} />
         <Layout
           style={{ height: "100vh", display: "flex", flexDirection: "column" }}
         >
