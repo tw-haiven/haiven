@@ -51,7 +51,7 @@
     "@types/react": "^18.3.13",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "9.16.0",
-    "eslint-config-next": "15.0.3",
+    "eslint-config-next": "15.1.2",
     "jsdom": "^25.0.0",
     "prettier": "3.4.2",
     "typescript": "^5.7.2",
