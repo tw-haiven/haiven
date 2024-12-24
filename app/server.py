@@ -18,6 +18,7 @@ from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.base_client import OAuthError
 from ui.url import HaivenUrl
+import hashlib
 import time
 import os
 
@@ -175,10 +176,12 @@ class Server:
                 if "created_at" in session:
                     created_at = session["created_at"]
                     if current_time - created_at > session_expiry_seconds:
-                        user = session.get("user", {})
-                        user_name = user.get("name", "")
+                        user_id = session.get("user").get("email")
+                        hashed_user_id = hashlib.sha256(
+                            user_id.encode("utf-8")
+                        ).hexdigest()
                         HaivenLogger.get().logger.info(
-                            f"Session for {user_name} expired due to inactivity of {current_time - created_at} seconds."
+                            f"Session for {hashed_user_id} expired due to inactivity of {current_time - created_at} seconds."
                         )
                         request.session.clear()
                         return RedirectResponse(url="/")
