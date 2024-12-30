@@ -55,6 +55,7 @@ class ApiRequirementsBreakdown(HaivenBaseApi):
 
             return self.stream_json_chat(
                 prompt=rendered_prompt,
+                prompt_id="requirements",
                 chat_category=chat_category,
                 chat_session_key_value=prompt_data.chatSessionId,
                 document_key=prompt_data.document,

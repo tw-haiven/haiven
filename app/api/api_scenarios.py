@@ -35,6 +35,7 @@ class ApiScenarios(HaivenBaseApi):
             return self.stream_json_chat(
                 prompt,
                 chat_category=chat_category,
+                prompt_id="scenarios",
                 user_identifier=self.get_hashed_user_id(request),
                 origin_url=origin_url,
             )

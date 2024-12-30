@@ -28,5 +28,8 @@ class ApiCreativeMatrix(HaivenBaseApi):
             )
 
             return self.stream_json_chat(
-                prompt, "creative-matrix", origin_url=origin_url
+                prompt,
+                "creative-matrix",
+                origin_url=origin_url,
+                prompt_id="creative-matrix",
             )
