@@ -126,8 +126,26 @@ const AboutPage = ({}) => {
       label: "Disclaimer & Guidelines",
       children: (
         <div style={{ maxHeight: "70vh", overflowY: "auto" }}>
-          <ReactMarkdown>
-            {welcomeConfig?.message || "No guidelines configured."}
+          <ReactMarkdown
+            components={{
+              h5: ({ node, ...props }) => (
+                <h5
+                  style={{ marginBottom: "3px", marginTop: "10px" }}
+                  {...props}
+                />
+              ),
+              h3: ({ node, ...props }) => (
+                <h5
+                  style={{ marginTop: "50px", marginBottom: "5px" }}
+                  {...props}
+                />
+              ),
+              p: ({ node, ...props }) => (
+                <p style={{ marginTop: "3px" }} {...props} />
+              ),
+            }}
+          >
+            {welcomeConfig?.message ?? "No guidelines configured."}
           </ReactMarkdown>
         </div>
       ),
