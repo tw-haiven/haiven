@@ -66,7 +66,27 @@ const WelcomePopup = ({ welcomeConfig, showBeforeLogin = false }) => {
       bodyStyle={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}
     >
       <div style={{ overflowY: "auto", maxHeight: "100%" }}>
-        <ReactMarkdown>{welcomeConfig.message}</ReactMarkdown>
+        <ReactMarkdown
+          components={{
+            h5: ({ node, ...props }) => (
+              <h5
+                style={{ marginBottom: "3px", marginTop: "10px" }}
+                {...props}
+              />
+            ),
+            h3: ({ node, ...props }) => (
+              <h5
+                style={{ marginTop: "50px", marginBottom: "5px" }}
+                {...props}
+              />
+            ),
+            p: ({ node, ...props }) => (
+              <p style={{ marginTop: "3px" }} {...props} />
+            ),
+          }}
+        >
+          {welcomeConfig.message}
+        </ReactMarkdown>
       </div>
     </Modal>
   );
