@@ -10,14 +10,15 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
   const [chatSessionId, setChatSessionId] = useState();
   const [previousContext, setPreviousContext] = useState(context);
 
+  const chatRef = useRef();
+
   useEffect(() => {
     if (previousContext !== context) {
       setPreviousContext(context);
       setPromptStarted(false);
+      chatRef.current.startNewConversation();
     }
   }, [context, previousContext]);
-
-  const chatRef = useRef();
 
   const submitPromptToBackend = async (messages) => {
     const exploreUri = "/api/prompt/explore";
