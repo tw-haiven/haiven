@@ -530,7 +530,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
             name: "User",
             avatar: "/boba/user-5-fill-dark-blue.svg",
           }}
-          scenarioQueries={[]}
+          scenarioQueries={selectedPromptConfiguration.scenario_queries || []}
         />
       </Drawer>
       <div id="canvas">

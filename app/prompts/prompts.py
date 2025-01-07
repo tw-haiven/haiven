@@ -298,6 +298,7 @@ class PromptList:
                 "help_user_input": prompt.metadata.get("help_user_input"),
                 "follow_ups": follow_ups,
                 "type": prompt.metadata.get("type", "chat"),
+                "scenario_queries": prompt.metadata.get("scenario_queries"),
                 "editable": prompt.metadata.get("editable"),
                 "show": prompt.metadata.get("show"),
             }
