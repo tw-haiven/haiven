@@ -209,7 +209,6 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   };
 
   const sendFirstStepPrompt = () => {
-    setPromptInput(question);
     sendCardBuildingPrompt(buildRequestDataCardBuilding());
   };
 
