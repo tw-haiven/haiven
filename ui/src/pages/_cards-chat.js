@@ -18,6 +18,7 @@ import {
   addToPinboard,
   getFeatureToggleConfiguration,
 } from "../app/_local_store";
+import PromptPreview from "../app/_prompt_preview";
 
 const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const [selectedPromptId, setSelectedPromptId] = useState(promptId); // via query parameter
@@ -30,6 +31,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [selectedContext, setSelectedContext] = useState("");
   const [promptInput, setPromptInput] = useState("");
+
   const [iterationPrompt, setIterationPrompt] = useState("");
 
   const [cardExplorationDrawerOpen, setCardExplorationDrawerOpen] =
@@ -106,7 +108,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     addToPinboard(timestamp, followUpResults[id]);
   };
 
-  const buildRequestDataCardBuilding = (promptInput) => {
+  const buildRequestDataCardBuilding = () => {
     return {
       userinput: promptInput,
       context: selectedContext,
@@ -208,11 +210,10 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     );
   };
 
-  const sendFirstStepPrompt = async (question) => {
-    setPromptInput(question);
+  const sendFirstStepPrompt = async () => {
     setDisableChatInput(true);
     try {
-      await sendCardBuildingPrompt(buildRequestDataCardBuilding(question));
+      await sendCardBuildingPrompt(buildRequestDataCardBuilding());
       if (formRef.current) {
         formRef.current.resetFields();
       }
@@ -442,6 +443,12 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           </div>
         ),
         children: advancedPromptingMenu,
+        extra: (
+          <PromptPreview
+            renderPromptRequest={buildRequestDataCardBuilding}
+            disableEdit={true}
+          />
+        ),
         showArrow: false,
       },
     ];
@@ -462,12 +469,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           collapsible="header"
         />
         <Form
-          onFinish={async (value) => {
-            const { question } = value;
-            if (question.trim()) {
-              await sendFirstStepPrompt(question);
-            }
-          }}
+          onFinish={async () => await sendFirstStepPrompt()}
           form={form}
           initialValues={{ question: "" }}
         >
@@ -480,6 +482,8 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
               disabled={loading}
               required
               data-testid="user-input"
+              value={promptInput}
+              onChange={(e) => setPromptInput(e.target.value)}
               placeholder={selectedPromptConfiguration.help_user_input}
               autoSize={{ minRows: 1, maxRows: 4 }}
               onKeyDown={handleKeyDown}

@@ -10,8 +10,9 @@ import { getRenderedPrompt } from "./_boba_api";
 
 export default function PromptPreview({
   renderPromptRequest,
-  startNewChat,
-  setUsePromptId,
+  startNewChat = () => {},
+  setUsePromptId = () => {},
+  disableEdit = false,
 }) {
   const [isPromptPreviewModalVisible, setPromptPreviewModalVisible] =
     useState(false);
@@ -131,12 +132,12 @@ export default function PromptPreview({
         type="link"
         onClick={onRenderPrompt}
       >
-        View/Edit Prompt
+        {disableEdit ? "View Prompt" : "View/Edit Prompt"}
       </Button>
 
       <Modal
         className="prompt-preview-modal"
-        title="View/Edit Prompt"
+        title={disableEdit ? "View Prompt" : "View/Edit Prompt"}
         open={isPromptPreviewModalVisible}
         onCancel={onClosePromptPreviewModal}
         width={800}
@@ -148,18 +149,20 @@ export default function PromptPreview({
           </p>
 
           <div className="prompt-preview-actions">
-            <Button
-              className="prompt-preview-edit-btn"
-              onClick={() => setOnEditMode(true)}
-              disabled={onEditMode}
-            >
-              <RiEdit2Line
-                style={{
-                  fontSize: "large",
-                }}
-              />{" "}
-              EDIT
-            </Button>
+            {!disableEdit && (
+              <Button
+                className="prompt-preview-edit-btn"
+                onClick={() => setOnEditMode(true)}
+                disabled={onEditMode}
+              >
+                <RiEdit2Line
+                  style={{
+                    fontSize: "large",
+                  }}
+                />{" "}
+                EDIT
+              </Button>
+            )}
             <Button className="prompt-preview-copy-btn" onClick={handleCopy}>
               <RiClipboardLine
                 style={{
@@ -199,7 +202,7 @@ export default function PromptPreview({
           >
             CLOSE
           </Button>
-          {onEditMode && (
+          {onEditMode && !disableEdit && (
             <Button
               className="prompt-preview-start-chat-btn"
               disabled={!anyUnsavedChanges}
