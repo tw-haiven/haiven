@@ -33,7 +33,7 @@ toml = "^0.10.2"
 pillow = "^11.0.0"
 python-multipart = "^0.0.19"
 gradio = "^5.8.0"
-litellm = "^1.53.7"
+litellm = "^1.57.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
