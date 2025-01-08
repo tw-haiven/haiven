@@ -6,7 +6,12 @@ import { UpOutlined } from "@ant-design/icons";
 import { PinIcon, RotateCw, Trash, Copy } from "lucide-react";
 import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
 import { GiSettingsKnobs } from "react-icons/gi";
-import React, { forwardRef, useImperativeHandle, useState } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useState,
+  useEffect,
+} from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { addToPinboard } from "./_local_store";
@@ -20,15 +25,22 @@ const ChatWidget = forwardRef(
       promptPreviewComponent,
       advancedPromptingMenu,
       conversationStarted,
+      initialPrompt = "",
+      pageTitle,
     },
     ref,
   ) => {
     const proChat = useProChat();
-
+    const [form] = Form.useForm();
     const [isLoading, setIsLoading] = useState(false);
-    const [prompt, setPrompt] = useState("");
+    const [prompt, setPrompt] = useState(initialPrompt);
     const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
       useState(false);
+    const [inputValue, setInputValue] = useState("");
+
+    useEffect(() => {
+      setPrompt(initialPrompt);
+    }, [initialPrompt]);
 
     const pin = {
       icon: PinIcon,
@@ -104,9 +116,15 @@ const ChatWidget = forwardRef(
     useImperativeHandle(ref, () => ({
       async startNewConversation(message) {
         proChat.clearMessage();
+        setPrompt(message);
+        form.setFieldsValue({ question: message });
         return await proChat.sendMessage(message);
       },
       prompt,
+      setInputValue: (value) => {
+        setPrompt(value);
+        form.setFieldsValue({ question: value });
+      },
     }));
 
     const onClickAdvancedPromptOptions = (e) => {
@@ -115,7 +133,6 @@ const ChatWidget = forwardRef(
 
     const inputAreaRender = (_, onMessageSend) => {
       const [form] = Form.useForm();
-
       const handleKeyDown = (event) => {
         if (event.key === "Enter" && !event.shiftKey) {
           event.preventDefault();
@@ -155,12 +172,13 @@ const ChatWidget = forwardRef(
             />
           ) : null}
           <Form
+            form={form}
             onFinish={async (value) => {
               const { question } = value;
               await onMessageSend(question);
+              setPrompt("");
               form.resetFields();
             }}
-            form={form}
             initialValues={{ question: "" }}
           >
             <Form.Item
@@ -203,10 +221,19 @@ const ChatWidget = forwardRef(
     return (
       <ProChat
         style={{
-          height: "100%", // this is important for the chat_exploration styling!
+          height: "100%",
         }}
-        className={ChatStylingClass}
-        showTitle
+        className={cx(
+          ChatStylingClass,
+          pageTitle === "Chat with Haiven" &&
+            css`
+              .ant-pro-chat-avatar-title,
+              .ant-pro-chat-avatar {
+                display: none !important;
+              }
+            `,
+        )}
+        showTitle={false}
         assistantMeta={{
           avatar: "/boba/shining-fill-white.svg",
           title: "Haiven",
@@ -234,6 +261,9 @@ const ChatWidget = forwardRef(
             return (
               <div
                 className={`chat-message ${props.primary ? "user" : "assistant"}`}
+                style={{
+                  marginLeft: pageTitle === "Chat with Haiven" ? 0 : undefined,
+                }}
               >
                 {isError ? (
                   <p style={{ color: "red" }}>{isError}</p>
@@ -245,18 +275,21 @@ const ChatWidget = forwardRef(
               </div>
             );
           },
-          actionsRender: (props, _defaultDom) => {
-            return (
-              <ActionIconGroup
-                items={defaultActions}
-                dropdownMenu={extendedActions}
-                onActionClick={(action) => {
-                  action.item.execute(props);
-                }}
-                type="ghost"
-              />
-            );
-          },
+          actionsRender:
+            pageTitle === "Chat with Haiven"
+              ? null
+              : (props, _defaultDom) => {
+                  return (
+                    <ActionIconGroup
+                      items={defaultActions}
+                      dropdownMenu={extendedActions}
+                      onActionClick={(action) => {
+                        action.item.execute(props);
+                      }}
+                      type="ghost"
+                    />
+                  );
+                },
         }}
         inputAreaRender={inputAreaRender}
       />

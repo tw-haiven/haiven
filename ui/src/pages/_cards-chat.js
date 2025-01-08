@@ -1,5 +1,5 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
 import { Drawer, Button, Input, Collapse, Form, message } from "antd";
 import ChatExploration from "./_chat_exploration";
@@ -44,6 +44,8 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const [disableChatInput, setDisableChatInput] = useState(false);
   const [usePromptId, setUsePromptId] = useState(true);
   const [chatSessionIdCardBuilding, setChatSessionIdCardBuilding] = useState();
+
+  const formRef = useRef();
 
   useEffect(() => {
     if (selectedPromptId !== undefined && selectedPromptId !== null) {
@@ -206,9 +208,19 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
     );
   };
 
-  const sendFirstStepPrompt = (question) => {
+  const sendFirstStepPrompt = async (question) => {
     setPromptInput(question);
-    sendCardBuildingPrompt(buildRequestDataCardBuilding(question));
+    setDisableChatInput(true);
+    try {
+      await sendCardBuildingPrompt(buildRequestDataCardBuilding(question));
+      if (formRef.current) {
+        formRef.current.resetFields();
+      }
+    } catch (error) {
+      console.error("Error sending prompt:", error);
+    } finally {
+      setDisableChatInput(false);
+    }
   };
 
   const sendGetMorePrompt = () => {
@@ -405,6 +417,10 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   const inputAreaRender = () => {
     const [form] = Form.useForm();
 
+    React.useEffect(() => {
+      formRef.current = form;
+    }, [form]);
+
     const handleKeyDown = (event) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
@@ -448,8 +464,9 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
         <Form
           onFinish={async (value) => {
             const { question } = value;
-            sendFirstStepPrompt(question);
-            form.resetFields();
+            if (question.trim()) {
+              await sendFirstStepPrompt(question);
+            }
           }}
           form={form}
           initialValues={{ question: "" }}

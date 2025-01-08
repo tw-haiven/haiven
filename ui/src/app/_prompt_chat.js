@@ -23,6 +23,8 @@ const PromptChat = ({
   showDocuments = true,
   pageTitle,
   pageIntro,
+  initialPrompt = "",
+  quickActions = null,
 }) => {
   const chatRef = useRef();
 
@@ -38,9 +40,21 @@ const PromptChat = ({
   const [usePromptId, setUsePromptId] = useState(true);
   const [placeholder, setPlaceholder] = useState("");
 
+  // Add state for controlling advanced options visibility
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(true);
+
+  // Add new state for quick actions visibility
+  const [showQuickActions, setShowQuickActions] = useState(true);
+
   useEffect(() => {
     setUsePromptId(true);
-  });
+    if (initialPrompt && !conversationStarted) {
+      if (chatRef.current) {
+        chatRef.current.setInputValue(initialPrompt);
+      }
+      setConversationStarted(false);
+    }
+  }, [initialPrompt]);
 
   const appendImageDescription = (userInput) => {
     if (imageDescription && imageDescription !== "") {
@@ -63,7 +77,7 @@ const PromptChat = ({
     if (chatRef.current) {
       setChatSessionId(undefined);
       setConversationStarted(false);
-      chatRef.current.startNewConversation(userInput);
+      chatRef.current.setInputValue(userInput);
     }
   };
 
@@ -74,19 +88,26 @@ const PromptChat = ({
   };
 
   const submitPromptToBackend = async (messages) => {
-    const lastMessage = messages[messages.length - 1];
-    let requestData;
-    if (!conversationStarted) {
-      requestData = buildFirstChatRequestBody(lastMessage?.content);
-    } else {
-      requestData = {
-        userinput: lastMessage?.content,
-        chatSessionId: chatSessionId,
-        ...(selectedDocument !== "base" && { document: selectedDocument }),
-      };
-    }
-
     try {
+      setShowAdvancedOptions(false);
+      setShowQuickActions(false);
+
+      const lastMessage = messages[messages.length - 1];
+      let requestData;
+      if (chatRef.current) {
+        chatRef.current.setInputValue("");
+      }
+
+      if (!conversationStarted) {
+        requestData = buildFirstChatRequestBody(lastMessage?.content);
+      } else {
+        requestData = {
+          userinput: lastMessage?.content,
+          chatSessionId: chatSessionId,
+          ...(selectedDocument !== "base" && { document: selectedDocument }),
+        };
+      }
+
       const response = await fetch("/api/prompt", {
         method: "POST",
         credentials: "include",
@@ -98,11 +119,9 @@ const PromptChat = ({
 
       if (!response.ok) {
         const errorBody = await response.json();
-        const detailedErrorMessage =
-          errorBody.detail || "An unknown error occurred.";
-        const errorMessage = `ERROR: ${detailedErrorMessage}`;
-
-        throw new Error(errorMessage);
+        throw new Error(
+          `ERROR: ${errorBody.detail || "An unknown error occurred."}`,
+        );
       }
 
       const chatId = response.headers.get("X-Chat-ID");
@@ -115,7 +134,12 @@ const PromptChat = ({
 
       return response;
     } catch (error) {
-      message.error(error.message);
+      console.error("Error submitting prompt:", error);
+      message.error(error.message || "Failed to submit prompt");
+
+      if (chatRef.current && messages.length > 0) {
+        chatRef.current.setInputValue(messages[messages.length - 1].content);
+      }
     }
   };
 
@@ -204,13 +228,13 @@ const PromptChat = ({
     />
   ) : null;
 
-  const advancedPromptingMenu = (
+  const advancedPromptingMenu = showAdvancedOptions ? (
     <div className="prompting-dropdown-menu">
       {contextsMenu}
       {documentsMenu}
       {imageDescriptionUserInput}
     </div>
-  );
+  ) : null;
 
   return (
     <>
@@ -221,18 +245,40 @@ const PromptChat = ({
             <h1 className="title-for-collapsed-panel">
               {selectedPrompt?.title || pageTitle}
             </h1>
+            {quickActions != null && showQuickActions && (
+              <div className="quick-actions-wrapper">
+                <div className="quick-actions-container">
+                  <h2
+                    style={{
+                      position: "relative",
+                      top: "-10px",
+                      left: "-25px",
+                    }}
+                  >
+                    How can AI help you?
+                  </h2>
+                  <div className="ai-help-ideas">{quickActions}</div>
+                </div>
+              </div>
+            )}
             <div className="chat-widget-container">
               <ProChatProvider>
                 <ChatWidget
                   onSubmitMessage={submitPromptToBackend}
                   ref={chatRef}
                   helloMessage={
+                    pageTitle ===
                     "Fill in some input on the left and hit 'Generate'"
+                      ? "Fill in some input on the left and hit 'Generate'"
+                      : "How can I help you today?"
                   }
                   placeholder={placeholder}
                   promptPreviewComponent={promptPreview}
                   advancedPromptingMenu={advancedPromptingMenu}
                   conversationStarted={conversationStarted}
+                  initialPrompt={initialPrompt}
+                  hideResponseOptions={pageTitle === "Chat with Haiven"}
+                  pageTitle={pageTitle}
                 />
               </ProChatProvider>
             </div>
