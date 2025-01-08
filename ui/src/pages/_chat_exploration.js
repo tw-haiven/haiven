@@ -5,11 +5,7 @@ import { Button, Flex } from "antd";
 import { RiLightbulbLine } from "react-icons/ri";
 import ChatWidget from "../app/_chat";
 
-export default function ChatExploration({
-  context,
-  scenarioQueries = [],
-  pageTitle,
-}) {
+export default function ChatExploration({ context, scenarioQueries = [] }) {
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
   const [previousContext, setPreviousContext] = useState(context);
@@ -109,11 +105,9 @@ export default function ChatExploration({
           ref={chatRef}
           visible={true}
           helloMessage={
-            pageTitle === "Chat with Haiven"
-              ? ""
-              : scenarioQueries.length > 0
-                ? "Chat with me! Click on one of the suggested questions, or type your own below."
-                : "Chat with me! Type your question below."
+            scenarioQueries.length > 0
+              ? "Chat with me! Click on one of the suggested questions, or type your own below."
+              : "Chat with me! Type your question below."
           }
         />
       </ProChatProvider>
