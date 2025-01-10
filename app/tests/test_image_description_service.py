@@ -17,7 +17,7 @@ class TestImageDescriptionService:
         buffered.seek(0)
         return Image.open(buffered)
 
-    @patch("llms.image_description_service.completion")
+    @patch("llms.litellm_wrapper.completion")
     def test_describe_with_azure(
         self,
         mock_completion,
