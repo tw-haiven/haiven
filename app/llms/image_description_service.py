@@ -2,7 +2,6 @@
 import base64
 from io import BytesIO
 from PIL import Image
-from litellm import completion
 
 from llms.model_config import ModelConfig
 from llms.litellm_wrapper import llmCompletion
