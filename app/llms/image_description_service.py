@@ -5,6 +5,7 @@ from PIL import Image
 from litellm import completion
 
 from llms.model_config import ModelConfig
+from llms.litellm_wrapper import llmCompletion
 
 DEFAULT_PROMPT = "I am a member of a software development team. This image is part of our documentation, please describe the image to me."
 
@@ -52,7 +53,7 @@ class ImageDescriptionService:
             user_input = DEFAULT_PROMPT
 
         try:
-            response = completion(
+            response = llmCompletion(
                 model=self.model_definition.lite_id,
                 messages=self._messages_for_lite_api(image, user_input),
                 max_tokens=2000,

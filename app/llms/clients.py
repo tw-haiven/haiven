@@ -2,13 +2,12 @@
 import json
 import os
 from typing import List
-from litellm import completion
 from config_service import ConfigService
 from llms.model_config import ModelConfig
 from pydantic import BaseModel
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain_core.messages.base import BaseMessage
-
+from llms.litellm_wrapper import llmCompletion
 
 class HaivenMessage(BaseModel):
     content: str
@@ -102,7 +101,8 @@ class ChatClient:
         if os.environ.get("MOCK_AI", False):
             completion_fn = MockModelClient().completion
         else:
-            completion_fn = completion
+            completion_fn = llmCompletion
+
         for result in completion_fn(
             model=self.model_config.lite_id,
             messages=json_messages,
@@ -111,7 +111,6 @@ class ChatClient:
         ):
             if result.choices[0].delta.content is not None:
                 yield {"content": result.choices[0].delta.content}
-
 
 class ChatClientFactory:
     def __init__(self, config_service: ConfigService):
