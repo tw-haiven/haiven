@@ -122,3 +122,14 @@ jobs:
             https://api.github.com/repos/tw-haiven/haiven-tw-demo-deployment/dispatches \
             -d '{"event_type":"haiven-base-new","client_payload":{}}' \
             --fail
+
+      - name: Notify TW Prod deployment
+        run: |
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.DISPATCH_HAIVEN_DEPLOYMENT_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/tw-haiven/haiven-tw-prod-deployment/dispatches \
+            -d '{"event_type":"knowledge-base-updated","client_payload":{}}' \
+            --fail
