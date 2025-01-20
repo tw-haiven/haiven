@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getPrompts, getWelcomeMessage } from "../app/_boba_api";
 import { staticFeaturesForDashboard } from "../app/_navigation_items";
 import WelcomePopup from "../app/_welcome_popup";
+import { RiFocus2Line } from "react-icons/ri";
 
 export default function ChatDashboard() {
   const [prompts, setPrompts] = useState([]);
@@ -144,57 +145,73 @@ export default function ChatDashboard() {
             kick-start your software delivery activities
           </div>
         </div>
-        <h2>Start with a prompt from your knowledge pack</h2>
 
-        <p className="dashboard-filters">
-          <b>Filter by category:</b>
-          {allCategories.map((tag) => {
-            return (
-              <Tag.CheckableTag
-                key={tag}
-                checked={selectedCategories.includes(tag)}
-                onChange={(checked) => filter(tag, checked)}
-                color="gray"
-                className={"dashboard-filter-category " + tag}
-              >
-                {tag}
-              </Tag.CheckableTag>
-            );
-          })}
-        </p>
-
-        <div className="dashboard-scenarios">
-          <Space direction="horizontal" wrap>
-            {filteredPrompts.map((prompt, index) => {
-              return (
-                <Link
-                  href={prompt.link || "#"}
-                  key={prompt.identifier + "-href"}
+        <div className="dashboard-sections">
+          <div className="codified-practices-section">
+            <h2>Start with a prompt from your knowledge pack</h2>
+            <p className="dashboard-filters">
+              <b>Filter by category:</b>
+              {allCategories.map((tag) => (
+                <Tag.CheckableTag
+                  key={tag}
+                  checked={selectedCategories.includes(tag)}
+                  onChange={(checked) => filter(tag, checked)}
+                  color="gray"
+                  className={"dashboard-filter-category " + tag}
                 >
-                  <Card
-                    hoverable
-                    key={prompt.identifier}
-                    title={prompt.title}
-                    className="dashboard-tile scenario-card-content"
-                    actions={prompt.categories.map((category) => {
-                      return (
-                        <Tag
-                          className="capitalize"
-                          color={
-                            categoryColors[category] || categoryColors["other"]
-                          }
-                        >
-                          {category}
-                        </Tag>
-                      );
-                    })}
-                  >
-                    {prompt.help_prompt_description}
-                  </Card>
-                </Link>
-              );
-            })}
-          </Space>
+                  {tag}
+                </Tag.CheckableTag>
+              ))}
+            </p>
+            <div className="dashboard-scenarios">
+              <div className="dashboard-scenarios-title">
+                <h3
+                  style={{ position: "relative", left: "-20px", top: "10px" }}
+                >
+                  <RiFocus2Line
+                    style={{ position: "relative", left: "-1px", top: "3px" }}
+                  />{" "}
+                  Codified Practices
+                </h3>
+                <p style={{ position: "relative", left: "-20px", top: "15px" }}>
+                  Expert-validated prompts that codify Thoughtworks recommended
+                  practices.
+                </p>
+              </div>
+              <div
+                className={`dashboard-cards-grid-container`}
+              >
+                <div className="dashboard-cards-grid">
+                  {filteredPrompts.map((prompt, index) => (
+                    <Link
+                      href={prompt.link || "#"}
+                      key={prompt.identifier + "-href"}
+                    >
+                      <Card
+                        hoverable
+                        key={prompt.identifier}
+                        title={prompt.title}
+                        className="dashboard-tile scenario-card-content"
+                        actions={prompt.categories.map((category) => (
+                          <Tag
+                            className="capitalize"
+                            color={
+                              categoryColors[category] ||
+                              categoryColors["other"]
+                            }
+                          >
+                            {category}
+                          </Tag>
+                        ))}
+                      >
+                        {prompt.help_prompt_description}
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
