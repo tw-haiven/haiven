@@ -4329,7 +4329,7 @@ jws@^3.2.2:
     jwa "^1.4.1"
     safe-buffer "^5.0.1"
 
-katex@^0.16.0:
+katex@^0.16.21:
   version "0.16.21"
   resolved "https://registry.yarnpkg.com/katex/-/katex-0.16.21.tgz#8f63c659e931b210139691f2cc7bb35166b792a3"
   integrity sha512-XvqR7FgOHtWupfMiigNzmh+MgUVmDGU2kXZm899ZkPfcuoPuFxyHmXsgATDpFZDAXCI8tvinaVcDo8PIIJSo4A==
@@ -5121,7 +5121,7 @@ micromark-extension-math@^2.0.0:
   integrity sha512-es0CcOV89VNS9wFmyn+wyFTKweXGW4CEvdaAca6SWRWPyYCbBisnjaHLjWO4Nszuiud84jCpkHsqAJoa768Pvg==
   dependencies:
     "@types/katex" "^0.16.0"
-    katex "^0.16.0"
+    katex "^0.16.21"
     micromark-factory-space "^1.0.0"
     micromark-util-character "^1.0.0"
     micromark-util-symbol "^1.0.0"
@@ -6529,7 +6529,7 @@ rehype-katex@^6.0.3:
     "@types/katex" "^0.14.0"
     hast-util-from-html-isomorphic "^1.0.0"
     hast-util-to-text "^3.1.0"
-    katex "^0.16.0"
+    katex "^0.16.21"
     unist-util-visit "^4.0.0"
 
 rehype-raw@^7.0.0:
