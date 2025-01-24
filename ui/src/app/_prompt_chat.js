@@ -100,9 +100,8 @@ const PromptChat = ({
         const errorBody = await response.json();
         const detailedErrorMessage =
           errorBody.detail || "An unknown error occurred.";
-        const errorMessage = `ERROR: ${detailedErrorMessage}`;
-
-        throw new Error(errorMessage);
+        // Return error in the format that ChatWidget expects
+        return `[ERROR]: ${detailedErrorMessage}`;
       }
 
       const chatId = response.headers.get("X-Chat-ID");
@@ -115,7 +114,8 @@ const PromptChat = ({
 
       return response;
     } catch (error) {
-      message.error(error.message);
+      // Return error in the format that ChatWidget expects
+      return `[ERROR]: ${error.message}`;
     }
   };
 

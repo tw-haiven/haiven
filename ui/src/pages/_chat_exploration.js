@@ -57,6 +57,13 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
           chatSessionId: chatSessionId,
         }),
       });
+      if (!response.ok) {
+        const errorBody = await response.json();
+        const detailedErrorMessage =
+          errorBody.detail || "An unknown error occurred.";
+        const errorMessage = `[ERROR]: ${detailedErrorMessage}`;
+        return errorMessage;
+      }
       return response;
     }
   };
