@@ -138,15 +138,14 @@ export default function ChatDashboard() {
     <>
       <WelcomePopup welcomeConfig={welcomeConfig} />
       <div className="dashboard">
-        <div className="headline">
-          <h1>What would you like to do today?</h1>
-          <div className="subline">
-            Haiven is your intelligent AI assistant, here to assist you to
-            kick-start your software delivery activities
-          </div>
-        </div>
-
         <div className="dashboard-sections">
+          <div className="headline">
+            <h1>What would you like to do today?</h1>
+            <div className="subline">
+              Haiven is your intelligent AI assistant, here to assist you to
+              kick-start your software delivery activities
+            </div>
+          </div>
           <div className="codified-practices-section">
             <h2>Start with a prompt from your knowledge pack</h2>
             <p className="dashboard-filters">
@@ -178,9 +177,7 @@ export default function ChatDashboard() {
                   practices.
                 </p>
               </div>
-              <div
-                className={`dashboard-cards-grid-container`}
-              >
+              <div className={`dashboard-cards-grid-container`}>
                 <div className="dashboard-cards-grid">
                   {filteredPrompts.map((prompt, index) => (
                     <Link
