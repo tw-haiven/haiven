@@ -126,7 +126,7 @@ const PromptChat = ({
     setPromptSelection(selectedPrompt);
     setPlaceholder(
       selectedPrompt && selectedPrompt.help_user_input
-        ? "Your input should " + selectedPrompt.help_user_input
+        ? selectedPrompt.help_user_input
         : pageIntro,
     );
   }
@@ -226,9 +226,6 @@ const PromptChat = ({
                 <ChatWidget
                   onSubmitMessage={submitPromptToBackend}
                   ref={chatRef}
-                  helloMessage={
-                    "Fill in some input on the left and hit 'Generate'"
-                  }
                   placeholder={placeholder}
                   promptPreviewComponent={promptPreview}
                   advancedPromptingMenu={advancedPromptingMenu}
