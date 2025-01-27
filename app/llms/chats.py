@@ -2,6 +2,8 @@
 import json
 import time
 import uuid
+import os
+import pandas as pd
 
 from pydantic import BaseModel
 from config_service import ConfigService
@@ -101,6 +103,42 @@ class HaivenBaseChat:
             )
         else:
             return None, None
+
+        if os.getenv("IS_EVALUATION", "false").lower() == "true":
+            try:
+                scores = [doc.metadata.get("score", 0) for doc in context_documents]
+                page_contents = [doc.page_content for doc in context_documents]
+                csv_path = os.getenv("EVALS_DATA_FILE_PATH")
+                df = pd.read_csv(csv_path)
+
+                if "similarity_query" not in df.columns:
+                    df.insert(
+                        loc=len(df.columns),
+                        column="similarity_query",
+                        value=[None] * len(df),
+                    )
+                if "retrieved_contexts" not in df.columns:
+                    df.insert(
+                        loc=len(df.columns),
+                        column="retrieved_contexts",
+                        value=[None] * len(df),
+                    )
+                if "scores" not in df.columns:
+                    df.insert(
+                        loc=len(df.columns), column="scores", value=[None] * len(df)
+                    )
+
+                for idx in range(len(df)):
+                    if pd.isna(df.at[idx, "similarity_query"]):
+                        df.at[idx, "similarity_query"] = similarity_query
+                        df.at[idx, "retrieved_contexts"] = str(page_contents)
+                        df.at[idx, "scores"] = str(scores)
+                        break
+
+                df.to_csv(csv_path, index=False)
+
+            except Exception as e:
+                print(f"Error writing retrieval evaluation data: {str(e)}")
 
         context_for_prompt = "\n---".join(
             [f"{document.page_content}" for document in context_documents]
