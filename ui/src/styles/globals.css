@@ -174,33 +174,44 @@ a.feedback:hover {
   height: 1.4em;
 }
 
+.chat-text-area-form {
+  margin: 0px 0px 10px 0px;
+  padding: 10px 16px;
+  border: 2px solid var(--color-medium-gray);
+  display: flex;
+  flex-direction: row;
+}
+
+.chat-text-area-form textarea:hover {
+  border: none;
+  background-color: white;
+}
+
+.chat-text-area-form textarea:focus {
+  box-shadow: none;
+  border: none;
+  background-color: white;
+}
+
+.chat-text-area-form:focus-within {
+  border: 2px solid var(--color-dark-gray);
+}
+
 .chat-text-area {
- margin: 0;
- padding: 0 16px 16px 16px;
+  width: 90%;
+  height: 100%;
+  margin: 0px;
 }
 
 .chat-text-area textarea {
-  margin: 0;
-  padding: 16px;
-  padding-right: 84px;
-  background-color: white;
-  border: 2px solid var(--color-medium-gray);
+  background-color: white !important;
+  padding: 0px;
 }
 
-.chat-text-area textarea:hover {
-  border: 2px solid var(--color-medium-gray);
-  background-color: white;
-}
-
-.chat-text-area textarea:focus {
-  box-shadow: none;
-  border: 2px solid var(--color-dark-gray);
-  background-color: white;
-}
 .chat-text-area-submit {
-  position: absolute;
-  right: 26px;
-  bottom: 2px;
+  padding-left: 10px;
+  vertical-align: middle;
+  margin: 0px;
 }
 
 .chat-text-area-submit button {

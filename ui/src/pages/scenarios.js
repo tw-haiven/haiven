@@ -216,6 +216,7 @@ const Home = ({ models }) => {
           }}
           form={form}
           initialValues={{ question: "" }}
+          className="chat-text-area-form"
         >
           <Form.Item
             name="question"

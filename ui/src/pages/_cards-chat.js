@@ -456,6 +456,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
           onFinish={async () => await sendFirstStepPrompt()}
           form={form}
           initialValues={{ question: "" }}
+          className="chat-text-area-form"
         >
           <Form.Item
             name="question"
