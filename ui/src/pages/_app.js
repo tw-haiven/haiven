@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button, Tooltip, Layout, ConfigProvider } from "antd";
 import { BsChatHeartFill } from "react-icons/bs";
+import { ToastContainer, Slide } from "react-toastify";
 import Head from "next/head";
 import Header from "./_header";
 import "../styles/globals.css";
@@ -68,6 +69,11 @@ export default function App({
 
   return (
     <>
+      <ToastContainer
+        position="top-center"
+        hideProgressBar
+        transition={Slide}
+      />
       <ConfigProvider
         // https://ant.design/docs/react/customize-theme#api
         theme={{
