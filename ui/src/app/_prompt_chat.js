@@ -38,10 +38,6 @@ const PromptChat = ({
   const [usePromptId, setUsePromptId] = useState(true);
   const [placeholder, setPlaceholder] = useState("");
 
-  useEffect(() => {
-    setUsePromptId(true);
-  });
-
   const appendImageDescription = (userInput) => {
     if (imageDescription && imageDescription !== "") {
       userInput += "\n\n" + imageDescription;
