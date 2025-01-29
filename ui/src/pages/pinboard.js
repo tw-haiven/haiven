@@ -2,9 +2,10 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Modal, Card, Button, message } from "antd";
+import { Modal, Card, Button } from "antd";
 import { RiDeleteBinLine, RiCheckboxMultipleBlankFill } from "react-icons/ri";
 import { PinIcon, ClockIcon } from "lucide-react";
+import { toast } from "react-toastify";
 
 const Pinboard = ({ isModalVisible, onClose }) => {
   const [isMounted, setIsMounted] = useState(false);
@@ -45,7 +46,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     delete pinboardData[removedScenario.timestamp];
     localStorage.setItem("pinboard", JSON.stringify(pinboardData));
     setPinnedMessages(updatedPinnedMessages);
-    message.success("Content deleted successfully!");
+    toast.success("Content deleted successfully!");
   };
 
   const onCopyOne = async (index) => {
@@ -53,9 +54,9 @@ const Pinboard = ({ isModalVisible, onClose }) => {
       await navigator.clipboard.writeText(
         scenarioToText(pinnedMessages[index]),
       );
-      message.success("Content copied successfully!");
+      toast.success("Content copied successfully!");
     } catch (err) {
-      message.error("Failed to copy the content.");
+      toast.error("Failed to copy the content.");
     }
   };
 

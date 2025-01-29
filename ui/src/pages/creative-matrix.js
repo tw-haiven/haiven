@@ -1,9 +1,10 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
-import { Input, Button, Select, Collapse, message, Form } from "antd";
+import { Input, Button, Select, Collapse, Form } from "antd";
 import { UpOutlined } from "@ant-design/icons";
 import { GiSettingsKnobs } from "react-icons/gi";
 import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
+import { toast } from "react-toastify";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
 import { fetchSSE } from "../app/_fetch_sse";
@@ -155,7 +156,7 @@ const CreativeMatrix = ({ models }) => {
           },
           onFinish: () => {
             if (ms == "") {
-              message.warning(
+              toast.warning(
                 "Model failed to respond rightly, please rewrite your message and try again",
               );
             }
@@ -174,7 +175,7 @@ const CreativeMatrix = ({ models }) => {
                 setMatrix(output);
               } else {
                 abortLoad();
-                message.warning(
+                toast.warning(
                   "Model failed to respond rightly, please rewrite your message and try again",
                 );
                 console.log("response is not parseable into an array");

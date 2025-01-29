@@ -10,7 +10,7 @@ import {
 import CardsChat from "../pages/_cards-chat";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { fetchSSE } from "../app/_fetch_sse";
-import { message } from "antd";
+import { toast } from "react-toastify";
 
 vi.mock("../app/_fetch_sse");
 
@@ -323,7 +323,7 @@ describe("CardsChat Component", () => {
     });
 
     it("should process streaming data if array of scenarios is encapsulated inside a json key value pair", async () => {
-      vi.spyOn(message, "warning");
+      vi.spyOn(toast, "warning");
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
           const streamingData = { response: someScenarios };
@@ -346,7 +346,7 @@ describe("CardsChat Component", () => {
     });
 
     it("should not process data and show error message when the streaming data is a JSON object but not an array object", async () => {
-      const warningMock = vi.spyOn(message, "warning");
+      const warningMock = vi.spyOn(toast, "warning");
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
           onMessageHandle(
@@ -369,7 +369,7 @@ describe("CardsChat Component", () => {
     });
 
     it("should not process data and show error message when the streaming data is not an json object", async () => {
-      const warningMock = vi.spyOn(message, "warning");
+      const warningMock = vi.spyOn(toast, "warning");
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {
           // Simulate receiving non-JSON data

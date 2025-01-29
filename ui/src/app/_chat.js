@@ -1,7 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { ActionIconGroup, ProChat, useProChat } from "@ant-design/pro-chat";
 import { css, cx, useTheme } from "antd-style";
-import { Button, Collapse, Form, Input, message } from "antd";
+import { Button, Collapse, Form, Input } from "antd";
 import { UpOutlined } from "@ant-design/icons";
 import { PinIcon, RotateCw, Trash, Copy } from "lucide-react";
 import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
@@ -10,6 +10,7 @@ import React, { forwardRef, useImperativeHandle, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { addToPinboard } from "./_local_store";
+import { toast } from "react-toastify";
 
 const ChatWidget = forwardRef(
   (
@@ -60,7 +61,7 @@ const ChatWidget = forwardRef(
       icon: Copy,
       execute: (props) => {
         navigator.clipboard.writeText(props.message);
-        message.success("Copy Success");
+        toast.success("Copy Success");
       },
     };
 

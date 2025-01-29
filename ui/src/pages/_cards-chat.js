@@ -1,7 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState, useEffect } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import { Drawer, Button, Input, Collapse, Form, message } from "antd";
+import { Drawer, Button, Input, Collapse, Form } from "antd";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 import { RiFileCopyLine, RiPushpinLine } from "react-icons/ri";
@@ -9,6 +9,7 @@ import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
 import { GiSettingsKnobs } from "react-icons/gi";
 import ReactMarkdown from "react-markdown";
+import { toast } from "react-toastify";
 import ChatHeader from "./_chat_header";
 import ContextChoice from "../app/_context_choice";
 import HelpTooltip from "../app/_help_tooltip";
@@ -93,7 +94,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
   };
 
   const copySuccess = () => {
-    message.success("Content copied successfully!");
+    toast.success("Content copied successfully!");
   };
 
   const onCopyFollowUp = (id) => {
@@ -167,7 +168,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
         },
         onFinish: () => {
           if (ms == "") {
-            message.warning(
+            toast.warning(
               "Model failed to respond rightly, please rewrite your message and try again",
             );
           }
@@ -194,9 +195,9 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
             } else {
               abortLoad();
               if (ms.includes("Error code:")) {
-                message.error(ms);
+                toast.error(ms);
               } else {
-                message.warning(
+                toast.warning(
                   "Model failed to respond rightly, please rewrite your message and try again",
                 );
               }
@@ -278,7 +279,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
         },
         onFinish: () => {
           if (ms == "") {
-            message.warning(
+            toast.warning(
               "Model failed to respond rightly, please rewrite your message and try again",
             );
           }
@@ -298,9 +299,9 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
             } else {
               abortLoad();
               if (ms.includes("Error code:")) {
-                message.error(ms);
+                toast.error(ms);
               } else {
-                message.warning(
+                toast.warning(
                   "Model failed to respond rightly, please rewrite your message and try again",
                 );
               }

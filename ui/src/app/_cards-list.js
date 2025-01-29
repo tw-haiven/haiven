@@ -4,7 +4,8 @@ import CardActions, { scenarioToText } from "./_card_actions";
 import ScenariosPlotProbabilityImpact from "../pages/_plot_prob_impact";
 import { RiStackLine, RiGridLine, RiFileCopyLine } from "react-icons/ri";
 import ReactMarkdown from "react-markdown";
-import { Card, Button, Input, Radio, message } from "antd";
+import { Card, Button, Input, Radio } from "antd";
+import { toast } from "react-toastify";
 const { TextArea } = Input;
 
 const CardsList = ({
@@ -26,7 +27,7 @@ const CardsList = ({
   const onCopyAll = () => {
     const allScenarios = scenarios.map(scenarioToText);
     navigator.clipboard.writeText(allScenarios.join("\n\n\n"));
-    message.success("Content copied successfully!");
+    toast.success("Content copied successfully!");
   };
 
   const onScenarioDescriptionChanged = (e, i) => {

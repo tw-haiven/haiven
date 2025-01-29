@@ -1,5 +1,5 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import { message } from "antd";
+import { toast } from "react-toastify";
 
 export const getMessageError = async (response) => {
   let chatMessageError = {
@@ -15,7 +15,7 @@ const checkError = (response) => {
     ? response.replace("[ERROR]: ", "")
     : null;
   if (isError) {
-    message.error(isError);
+    toast.error(isError);
     throw new Error(isError);
   }
 };
@@ -55,7 +55,7 @@ export const fetchSSE = async (uri, fetchOptions, options) => {
 
     options.onErrorHandle?.(chatMessageError);
     const errorMessage = `Error: ${chatMessageError.type} - ${chatMessageError.message}`;
-    message.error(errorMessage);
+    toast.error(errorMessage);
     return;
   }
 

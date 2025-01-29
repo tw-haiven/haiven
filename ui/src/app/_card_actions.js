@@ -1,8 +1,9 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { addToPinboard } from "../app/_local_store";
 import { RiFileCopyLine, RiChat2Line, RiPushpinLine } from "react-icons/ri";
-import { Button, Tooltip, Checkbox, message } from "antd";
+import { Button, Tooltip, Checkbox } from "antd";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export const scenarioToText = (scenario) => {
   let markdown = `## ${scenario.title}\n\n`;
@@ -32,7 +33,7 @@ export default function CardActions({
   const [selected, setSelected] = useState(true);
 
   const copySuccess = () => {
-    message.success("Content copied successfully!");
+    toast.success("Content copied successfully!");
   };
 
   const onCopyOne = (scenario) => {

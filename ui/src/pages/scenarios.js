@@ -4,16 +4,8 @@ import { fetchSSE } from "../app/_fetch_sse";
 import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
 import { GiSettingsKnobs } from "react-icons/gi";
 import { UpOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Drawer,
-  Checkbox,
-  Input,
-  Select,
-  Form,
-  message,
-  Collapse,
-} from "antd";
+import { Button, Drawer, Checkbox, Input, Select, Form, Collapse } from "antd";
+import { toast } from "react-toastify";
 import { parse } from "best-effort-json-parser";
 
 import {
@@ -119,7 +111,7 @@ const Home = ({ models }) => {
         },
         onFinish: () => {
           if (ms == "") {
-            message.warning(
+            toast.warning(
               "Model failed to respond rightly, please rewrite your message and try again",
             );
           }
@@ -139,7 +131,7 @@ const Home = ({ models }) => {
                 setScenarios(output);
               } else {
                 abortLoad();
-                message.warning(
+                toast.warning(
                   "Model failed to respond rightly, please rewrite your message and try again",
                 );
                 console.log("response is not parseable into an array");

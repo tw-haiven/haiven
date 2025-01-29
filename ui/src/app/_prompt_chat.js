@@ -2,7 +2,7 @@
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
-import { Input, Select, Button, message, Collapse } from "antd";
+import { Input, Select } from "antd";
 
 const { TextArea } = Input;
 import ChatWidget from "./_chat";

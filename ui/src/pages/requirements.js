@@ -6,8 +6,8 @@ import { parse } from "best-effort-json-parser";
 import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
 import { GiSettingsKnobs } from "react-icons/gi";
-import { Button, Drawer, Input, Select, message, Form, Collapse } from "antd";
-
+import { Button, Drawer, Input, Select, Form, Collapse } from "antd";
+import { toast } from "react-toastify";
 import ContextChoice from "../app/_context_choice";
 import HelpTooltip from "../app/_help_tooltip";
 import ChatHeader from "./_chat_header";
@@ -90,7 +90,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
         },
         onFinish: () => {
           if (ms == "") {
-            message.warning(
+            toast.warning(
               "Model failed to respond rightly, please rewrite your message and try again",
             );
           }
@@ -109,7 +109,7 @@ const RequirementsBreakdown = ({ contexts, models }) => {
               setScenarios(output);
             } else {
               abortLoad();
-              message.warning(
+              toast.warning(
                 "Model failed to respond rightly, please rewrite your message and try again",
               );
               console.log("response is not parseable into an array");

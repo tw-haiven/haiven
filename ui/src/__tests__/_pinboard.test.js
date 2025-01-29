@@ -1,7 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { addToPinboard } from "../app/_local_store";
-import { message } from "antd";
+import { toast } from "react-toastify";
 
 const localStorageMock = (() => {
   let store = {};
@@ -20,8 +20,8 @@ Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
 });
 
-vi.mock("antd", () => ({
-  message: {
+vi.mock("react-toastify", () => ({
+  toast: {
     success: vi.fn(),
     error: vi.fn(),
   },
@@ -41,7 +41,7 @@ describe("addToPinboard", () => {
 
     const pinboard = JSON.parse(localStorage.getItem("pinboard"));
     expect(Object.values(pinboard)).toContain(content);
-    expect(message.success).toHaveBeenCalledWith(
+    expect(toast.success).toHaveBeenCalledWith(
       "Text pinned successfully! You can view it on the Pinboard.",
     );
   });
@@ -57,7 +57,7 @@ describe("addToPinboard", () => {
 
     addToPinboard(key, content);
 
-    expect(message.error).toHaveBeenCalledWith(errorMessage);
+    expect(toast.error).toHaveBeenCalledWith(errorMessage);
     newLocal.mockRestore();
   });
 

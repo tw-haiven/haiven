@@ -1,11 +1,12 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState, useEffect } from "react";
-import { message, Upload, Button, Modal, Input } from "antd";
+import { Upload, Button, Modal, Input } from "antd";
 import { fetchSSE } from "./_fetch_sse";
 import { RiImageAddLine, RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
 import useLoader from "../hooks/useLoader";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { toast } from "react-toastify";
 const { TextArea } = Input;
 
 const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
@@ -23,12 +24,12 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
   const beforeUpload = (file) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
     if (!isJpgOrPng) {
-      message.error("You can only upload JPG/PNG file!");
+      toast.error("You can only upload JPG/PNG file!");
       return false;
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error("Image must smaller than 2MB!");
+      toast.error("Image must smaller than 2MB!");
       return false;
     }
     setFileList([file]);
