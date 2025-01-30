@@ -41,9 +41,9 @@ class Server:
         self.templates.env.autoescape = True
 
     def user_endpoints(self, app):
-        def auth_error_response(error):
+        def auth_error_response(request: Request, error):
             return self.templates.TemplateResponse(
-                "auth_error.html", {"request": Request, "error": error}
+                "auth_error.html", {"request": request, "error": error}
             )
 
         @app.get("/")
@@ -150,11 +150,11 @@ class Server:
                 try:
                     user = request.session.get("user")
                     if not user:
-                        return auth_error_response({})
+                        return auth_error_response(request, "You are not logged in.")
                     return await call_next(request)
                 except AssertionError as error:
                     print(f"AssertionError {error}")
-                    return auth_error_response(error)
+                    return auth_error_response(request, error)
             return await call_next(request)
 
         @app.middleware("http")
