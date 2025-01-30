@@ -65,8 +65,7 @@ const ChatWidget = forwardRef(
       },
     };
 
-    const defaultActions = [copy, pin, regenerate];
-    const extendedActions = [del];
+    const defaultActions = [copy, pin, regenerate, del];
 
     const theme = useTheme();
     const ChatStylingClass = cx(
@@ -251,7 +250,6 @@ const ChatWidget = forwardRef(
             return (
               <ActionIconGroup
                 items={defaultActions}
-                dropdownMenu={extendedActions}
                 onActionClick={(action) => {
                   action.item.execute(props);
                 }}
