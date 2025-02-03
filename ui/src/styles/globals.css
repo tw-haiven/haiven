@@ -126,6 +126,7 @@ a.feedback:hover {
 
 .prompt-chat-container .ant-pro-chat-chat-list-container{
   height: 742px !important;
+  overflow: auto; /* To avoid premature scrollbars in some setups, like when mouse is plugged in apparently... */
 }
 
 .ant-pro-chat {
