@@ -39,20 +39,22 @@ const KnowledgePackPage = ({ contexts, documents }) => {
     const renderContexts = [];
 
     documents.forEach((document) => {
-      const doc = (
-        <div key={document.key + "-section"}>
-          <div className="snippet" size="small">
-            <ReactMarkdown>{document.source}</ReactMarkdown>
-            {document.description}
+      if (document.key) {
+        const doc = (
+          <div key={document.key + "-section"}>
+            <div className="snippet" size="small">
+              <ReactMarkdown>{document.source}</ReactMarkdown>
+              {document.description}
+            </div>
           </div>
-        </div>
-      );
+        );
 
-      renderContexts.push({
-        key: document.key + "-description",
-        label: "Document: " + document.title,
-        children: [doc],
-      });
+        renderContexts.push({
+          key: document.key + "-description",
+          label: "Document: " + document.title,
+          children: [doc],
+        });
+      }
     });
 
     setRenderedDocuments(renderContexts);
