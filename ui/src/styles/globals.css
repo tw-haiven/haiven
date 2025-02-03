@@ -1629,16 +1629,22 @@ a.feedback:hover {
    font-weight: var(--font-weight-semi-bold);
    font-size: small;
    color: black;
-   flex: 50%;
+   flex: 30%;
    align-content: center;
   }
 
   .model-disclaimer {
-    text-align: right;
-    flex: 50%;
+    text-align: left;
+    flex: 70%;
     align-content: center;
     font-size: 85%;
     color: #666666ff;
+  }
+}
+
+@media (max-width: 1180px) {
+  .chat-header {
+    font-size: 80%;
   }
 }
 
