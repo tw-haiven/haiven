@@ -31,7 +31,10 @@ const ChatWidget = forwardRef(
     const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
       useState(false);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-    const [editingMessage, setEditingMessage] = useState({ id: null, content: '' });
+    const [editingMessage, setEditingMessage] = useState({
+      id: null,
+      content: "",
+    });
 
     const pin = {
       icon: PinIcon,
@@ -67,16 +70,16 @@ const ChatWidget = forwardRef(
       },
     };
     const edit = {
-      key: "edit", 
+      key: "edit",
       label: "Edit",
       icon: Edit,
       execute: (props) => {
         setEditingMessage({
           id: props["data-id"],
-          content: props.message
+          content: props.message,
         });
         setIsEditModalVisible(true);
-      }
+      },
     };
 
     const defaultActions = [copy, pin, regenerate, del];
@@ -129,18 +132,20 @@ const ChatWidget = forwardRef(
 
     const handleEditSave = () => {
       const messages = proChat.getChatMessages?.() || [];
-      const messageIndex = messages.findIndex(msg => msg.id === editingMessage.id);
+      const messageIndex = messages.findIndex(
+        (msg) => msg.id === editingMessage.id,
+      );
       if (messageIndex === -1) return;
 
-      messages.forEach(msg => {
-        if (msg.parentId === editingMessage.id) {
+      messages.forEach((msg) => {
+        if (msg.primary && msg.parentId === editingMessage.id) {
           proChat.deleteMessage(msg.id);
         }
       });
 
       const updatedMessage = {
         ...messages[messageIndex],
-        content: editingMessage.content
+        content: editingMessage.content,
       };
       proChat.setMessageContent(updatedMessage.id, updatedMessage.content);
 
@@ -283,8 +288,10 @@ const ChatWidget = forwardRef(
               );
             },
             actionsRender: (props, _defaultDom) => {
-              const actions = props.primary ? [...defaultActions, edit] : defaultActions;
-              
+              const actions = props.primary
+                ? [...defaultActions, edit]
+                : defaultActions;
+
               return (
                 <ActionIconGroup
                   items={actions}
@@ -308,7 +315,12 @@ const ChatWidget = forwardRef(
         >
           <Input.TextArea
             value={editingMessage.content}
-            onChange={(e) => setEditingMessage(prev => ({ ...prev, content: e.target.value }))}
+            onChange={(e) =>
+              setEditingMessage((prev) => ({
+                ...prev,
+                content: e.target.value,
+              }))
+            }
             autoSize={{ minRows: 3 }}
           />
         </Modal>
