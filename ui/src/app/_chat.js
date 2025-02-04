@@ -1,9 +1,9 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { ActionIconGroup, ProChat, useProChat } from "@ant-design/pro-chat";
 import { css, cx, useTheme } from "antd-style";
-import { Button, Collapse, Form, Input } from "antd";
+import { Button, Collapse, Form, Input, Modal } from "antd";
 import { UpOutlined } from "@ant-design/icons";
-import { PinIcon, RotateCw, Trash, Copy } from "lucide-react";
+import { PinIcon, RotateCw, Trash, Copy, Edit } from "lucide-react";
 import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
 import { GiSettingsKnobs } from "react-icons/gi";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
@@ -30,6 +30,8 @@ const ChatWidget = forwardRef(
     const [prompt, setPrompt] = useState("");
     const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
       useState(false);
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+    const [editingMessage, setEditingMessage] = useState({ id: null, content: '' });
 
     const pin = {
       icon: PinIcon,
@@ -63,6 +65,18 @@ const ChatWidget = forwardRef(
         navigator.clipboard.writeText(props.message);
         toast.success("Copy Success");
       },
+    };
+    const edit = {
+      key: "edit", 
+      label: "Edit",
+      icon: Edit,
+      execute: (props) => {
+        setEditingMessage({
+          id: props["data-id"],
+          content: props.message
+        });
+        setIsEditModalVisible(true);
+      }
     };
 
     const defaultActions = [copy, pin, regenerate, del];
@@ -111,6 +125,23 @@ const ChatWidget = forwardRef(
 
     const onClickAdvancedPromptOptions = (e) => {
       setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
+    };
+
+    const handleEditSave = () => {
+      const messages = proChat.getChatMessages?.() || [];
+      const messageIndex = messages.findIndex(msg => msg.id === editingMessage.id);
+      if (messageIndex === -1) return;
+
+      // Update the message in the chat
+      const updatedMessage = {
+        ...messages[messageIndex],
+        content: editingMessage.content
+      };
+      proChat.setMessageContent(updatedMessage.id, updatedMessage.content);
+
+      // Trigger regeneration
+      proChat.resendMessage(editingMessage.id);
+      setIsEditModalVisible(false);
     };
 
     const inputAreaRender = (_, onMessageSend) => {
@@ -202,64 +233,82 @@ const ChatWidget = forwardRef(
     };
 
     return (
-      <ProChat
-        style={{
-          height: "100%", // this is important for the chat_exploration styling!
-        }}
-        className={ChatStylingClass}
-        showTitle
-        assistantMeta={{
-          avatar: "/boba/shining-fill-white.svg",
-          title: "Haiven",
-          backgroundColor: "#003d4f",
-        }}
-        userMeta={{
-          avatar: userProfile.avatar ?? userProfile.name,
-          title: userProfile.name,
-          backgroundColor: "#47a1ad",
-        }}
-        locale="en-US"
-        helloMessage={helloMessage}
-        request={onSubmit}
-        chatItemRenderConfig={{
-          contentRender: (props, _defaultDom) => {
-            if (props.loading) {
-              setIsLoading(true);
-            } else {
-              setIsLoading(false);
-            }
+      <>
+        <ProChat
+          style={{
+            height: "100%", // this is important for the chat_exploration styling!
+          }}
+          className={ChatStylingClass}
+          showTitle
+          assistantMeta={{
+            avatar: "/boba/shining-fill-white.svg",
+            title: "Haiven",
+            backgroundColor: "#003d4f",
+          }}
+          userMeta={{
+            avatar: userProfile.avatar ?? userProfile.name,
+            title: userProfile.name,
+            backgroundColor: "#47a1ad",
+          }}
+          locale="en-US"
+          helloMessage={helloMessage}
+          request={onSubmit}
+          chatItemRenderConfig={{
+            contentRender: (props, _defaultDom) => {
+              if (props.loading) {
+                setIsLoading(true);
+              } else {
+                setIsLoading(false);
+              }
 
-            const isError = props.message.startsWith("[ERROR]: ")
-              ? props.message.replace("[ERROR]: ", "")
-              : null;
-            return (
-              <div
-                className={`chat-message ${props.primary ? "user" : "assistant"}`}
-              >
-                {isError ? (
-                  <p style={{ color: "red" }}>{isError}</p>
-                ) : (
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {props.message}
-                  </ReactMarkdown>
-                )}
-              </div>
-            );
-          },
-          actionsRender: (props, _defaultDom) => {
-            return (
-              <ActionIconGroup
-                items={defaultActions}
-                onActionClick={(action) => {
-                  action.item.execute(props);
-                }}
-                type="ghost"
-              />
-            );
-          },
-        }}
-        inputAreaRender={inputAreaRender}
-      />
+              const isError = props.message.startsWith("[ERROR]: ")
+                ? props.message.replace("[ERROR]: ", "")
+                : null;
+              return (
+                <div
+                  className={`chat-message ${props.primary ? "user" : "assistant"}`}
+                >
+                  {isError ? (
+                    <p style={{ color: "red" }}>{isError}</p>
+                  ) : (
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {props.message}
+                    </ReactMarkdown>
+                  )}
+                </div>
+              );
+            },
+            actionsRender: (props, _defaultDom) => {
+              const actions = props.primary ? [...defaultActions, edit] : defaultActions;
+              
+              return (
+                <ActionIconGroup
+                  items={actions}
+                  onActionClick={(action) => {
+                    action.item.execute(props);
+                  }}
+                  type="ghost"
+                />
+              );
+            },
+          }}
+          inputAreaRender={inputAreaRender}
+        />
+        <Modal
+          title="Edit Message"
+          open={isEditModalVisible}
+          onOk={handleEditSave}
+          onCancel={() => setIsEditModalVisible(false)}
+          okText="Save"
+          cancelText="Cancel"
+        >
+          <Input.TextArea
+            value={editingMessage.content}
+            onChange={(e) => setEditingMessage(prev => ({ ...prev, content: e.target.value }))}
+            autoSize={{ minRows: 3 }}
+          />
+        </Modal>
+      </>
     );
   },
 );
