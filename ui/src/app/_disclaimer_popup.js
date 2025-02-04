@@ -61,32 +61,10 @@ const DisclaimerPopup = ({ disclaimerConfig, showBeforeLogin = false }) => {
         </Button>,
       ]}
       centered
-      style={{ height: "90%" }}
-      width={800}
-      bodyStyle={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}
+      className="disclaimer-popup"
     >
       <div style={{ overflowY: "auto", maxHeight: "100%" }}>
-        <ReactMarkdown
-          components={{
-            h5: ({ node, ...props }) => (
-              <h5
-                style={{ marginBottom: "3px", marginTop: "10px" }}
-                {...props}
-              />
-            ),
-            h3: ({ node, ...props }) => (
-              <h5
-                style={{ marginTop: "50px", marginBottom: "5px" }}
-                {...props}
-              />
-            ),
-            p: ({ node, ...props }) => (
-              <p style={{ marginTop: "3px" }} {...props} />
-            ),
-          }}
-        >
-          {disclaimerConfig.message}
-        </ReactMarkdown>
+        <ReactMarkdown>{disclaimerConfig.message}</ReactMarkdown>
       </div>
     </Modal>
   );

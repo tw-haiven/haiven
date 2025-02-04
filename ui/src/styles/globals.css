@@ -511,6 +511,17 @@ a.feedback:hover {
   margin-bottom: 10px;
 }
 
+.disclaimer-popup {
+  height: 90%;
+  width: 800px !important;
+
+  .ant-modal-title {
+    font-size: x-large;
+  }
+  .ant-modal-body {
+    max-height: calc(-200px + 100vh)
+  }
+}
 
 /**** INPUT --> GENERATION RESULTS COLUMN LAYOUT *****/
 .prompt-chat-container {
