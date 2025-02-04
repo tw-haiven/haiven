@@ -1,0 +1,4 @@
+
+- Always separate test and implementation changes - first change or add a test, and let's run it together to prove that it's failing. That will show us that what we want to do is not yet working in the application. Only after the failing test, let's work on the implementation, and make the test succeed.
+- Ask me before making decisions like choosing a technology or framework
+- Help me always get to the next "runnable" step that I can commit, remind me to make commits when we get to a point that is a working state

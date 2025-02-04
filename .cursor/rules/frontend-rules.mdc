@@ -1,0 +1,5 @@
+---
+description: Frontend work
+globs: 
+---
+- Our frontend is in JavaScript, React, Next, in the ui/ subfolder, code in ui/src/, tests in ui/src/__tests__
