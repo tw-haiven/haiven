@@ -4,6 +4,6 @@ CONVERSATION_LENGTH_THRESHOLD = 4  # Adjust this value based on your needs
 
 # Chat configuration
 MAX_TOKENS = 2000
-DISCLAIMER_PATH = "disclaimer/welcome_message.md"
+DISCLAIMER_PATH = "disclaimer/disclaimer_and_guidelines.md"
 SYSTEM_MESSAGE = "You are a helpful assistant powered by AI."
 STANDALONE_QUESTION_SYSTEM_MESSAGE = "You are an expert at creating standalone questions that capture context from conversations."

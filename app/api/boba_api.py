@@ -12,7 +12,7 @@ from knowledge_manager import KnowledgeManager
 from llms.image_description_service import ImageDescriptionService
 from prompts.prompts_factory import PromptsFactory
 from config_service import ConfigService
-from welcome_message import WelcomeMessageService
+from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
 
 
 class BobaApi:
@@ -23,7 +23,7 @@ class BobaApi:
         chat_manager: ChatManager,
         config_service: ConfigService,
         image_service: ImageDescriptionService,
-        welcome_message: WelcomeMessageService,
+        disclaimer_and_guidelines: DisclaimerAndGuidelinesService,
     ):
         self.knowledge_manager = knowledge_manager
         self.chat_manager = chat_manager
@@ -40,7 +40,7 @@ class BobaApi:
         self.model_config = self.config_service.get_chat_model()
 
         self.image_service = image_service
-        self.welcome_message = welcome_message
+        self.disclaimer_and_guidelines = disclaimer_and_guidelines
 
         print(f"Model used for guided mode: {self.model_config.id}")
 
@@ -54,7 +54,7 @@ class BobaApi:
             self.prompts_chat,
             self.image_service,
             self.config_service,
-            self.welcome_message,
+            self.disclaimer_and_guidelines,
         )
         ApiMultiStep(
             app,

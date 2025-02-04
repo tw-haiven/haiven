@@ -3,12 +3,12 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { act } from "react";
 import ChatDashboard from "../pages/index";
 import { describe, it, expect, vi } from "vitest";
-import { getPrompts, getWelcomeMessage } from "../app/_boba_api";
+import { getPrompts, getDisclaimerAndGuidelines } from "../app/_boba_api";
 import { staticFeaturesForDashboard } from "../app/_navigation_items";
 
 vi.mock("../app/_boba_api", () => ({
   getPrompts: vi.fn(),
-  getWelcomeMessage: vi.fn(),
+  getDisclaimerAndGuidelines: vi.fn(),
 }));
 
 vi.mock("../app/_navigation_items", () => ({
@@ -48,10 +48,10 @@ describe("ChatDashboard Component", () => {
     // Setup default mocks before each test
     getPrompts.mockImplementation((onSuccess) => onSuccess(mockPrompts));
     staticFeaturesForDashboard.mockReturnValue(mockStaticFeatures);
-    getWelcomeMessage.mockImplementation((onSuccess) =>
+    getDisclaimerAndGuidelines.mockImplementation((onSuccess) =>
       onSuccess({
         title: "Welcome",
-        content: "Welcome message",
+        content: "Disclaimer message",
       }),
     );
   });

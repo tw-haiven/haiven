@@ -2,14 +2,14 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Tabs } from "antd";
-import { getWelcomeMessage } from "../app/_boba_api";
+import { getDisclaimerAndGuidelines } from "../app/_boba_api";
 
 const AboutPage = ({}) => {
-  const [welcomeConfig, setWelcomeConfig] = useState({});
+  const [disclaimerConfig, setDisclaimerConfig] = useState({});
 
   useEffect(() => {
-    getWelcomeMessage((data) => {
-      setWelcomeConfig({
+    getDisclaimerAndGuidelines((data) => {
+      setDisclaimerConfig({
         title: data.title,
         message: data.content,
       });
@@ -112,16 +112,6 @@ const AboutPage = ({}) => {
 
   const tabs = [
     {
-      key: "background",
-      label: "Background",
-      children: <div>{aboutText}</div>,
-    },
-    {
-      key: "data-processing",
-      label: "Data processing",
-      children: <div>{dataProcessingText}</div>,
-    },
-    {
       key: "guidelines",
       label: "Disclaimer & Guidelines",
       children: (
@@ -145,17 +135,27 @@ const AboutPage = ({}) => {
               ),
             }}
           >
-            {welcomeConfig?.message ?? "No guidelines configured."}
+            {disclaimerConfig?.message ?? "No guidelines configured."}
           </ReactMarkdown>
         </div>
       ),
+    },
+    {
+      key: "background",
+      label: "Background",
+      children: <div>{aboutText}</div>,
+    },
+    {
+      key: "data-processing",
+      label: "Data processing",
+      children: <div>{dataProcessingText}</div>,
     },
   ];
 
   return (
     <div className="dashboard">
       <h1>About Haiven</h1>
-      <Tabs defaultActiveKey="background" items={tabs}></Tabs>
+      <Tabs defaultActiveKey="guidelines" items={tabs}></Tabs>
     </div>
   );
 };

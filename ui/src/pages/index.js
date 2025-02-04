@@ -2,9 +2,9 @@
 import { Card, Space, Tag } from "antd";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getPrompts, getWelcomeMessage } from "../app/_boba_api";
+import { getPrompts, getDisclaimerAndGuidelines } from "../app/_boba_api";
 import { staticFeaturesForDashboard } from "../app/_navigation_items";
-import WelcomePopup from "../app/_welcome_popup";
+import DisclaimerPopup from "../app/_disclaimer_popup";
 import { RiFocus2Line } from "react-icons/ri";
 
 export default function ChatDashboard() {
@@ -12,7 +12,7 @@ export default function ChatDashboard() {
   const [filteredPrompts, setFilteredPrompts] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [welcomeConfig, setWelcomeConfig] = useState({});
+  const [disclaimerConfig, setDisclaimerConfig] = useState({});
 
   // !! If changed, also needs to be changed in CSS, for the filter selection colors
   const categoryColors = {
@@ -64,14 +64,14 @@ export default function ChatDashboard() {
       cards: "/cards",
     };
 
-    getWelcomeMessage((data) => {
+    getDisclaimerAndGuidelines((data) => {
       if (data) {
-        setWelcomeConfig({
+        setDisclaimerConfig({
           title: data.title,
           message: data.content,
         });
       } else {
-        setWelcomeConfig(null);
+        setDisclaimerConfig(null);
       }
     });
 
@@ -136,7 +136,7 @@ export default function ChatDashboard() {
 
   return (
     <>
-      <WelcomePopup welcomeConfig={welcomeConfig} />
+      <DisclaimerPopup disclaimerConfig={disclaimerConfig} />
       <div className="dashboard">
         <div className="dashboard-sections">
           <div className="headline">

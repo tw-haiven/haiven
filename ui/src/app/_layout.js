@@ -1,11 +1,11 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React from "react";
-import WelcomePopup from "./WelcomePopup";
+import DisclaimerPopup from "./DisclaimerPopup";
 
-const Layout = ({ children, welcomeMessage }) => {
+const Layout = ({ children, disclaimerMessage }) => {
   return (
     <>
-      <WelcomePopup welcomeConfig={welcomeMessage} />
+      <DisclaimerPopup disclaimerConfig={disclaimerMessage} />
       {children}
     </>
   );

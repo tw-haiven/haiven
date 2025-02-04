@@ -7,35 +7,35 @@ import ReactMarkdown from "react-markdown";
 const COOKIE_NAME = "haiven_welcome_shown";
 const COOKIE_EXPIRY = 365;
 
-const WelcomePopup = ({ welcomeConfig, showBeforeLogin = false }) => {
+const DisclaimerPopup = ({ disclaimerConfig, showBeforeLogin = false }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
 
-    if (!isMounted || !welcomeConfig) return;
+    if (!isMounted || !disclaimerConfig) return;
 
-    const showWelcomeMessage = () => {
+    const showDisclaimerMessage = () => {
       if (showBeforeLogin) {
         setIsVisible(true);
         return;
       }
 
-      const hasSeenWelcome =
+      const hasSeenDisclaimer =
         Cookies.get(COOKIE_NAME) || localStorage.getItem(COOKIE_NAME);
 
-      if (!hasSeenWelcome) {
+      if (!hasSeenDisclaimer) {
         setIsVisible(true);
       }
     };
 
-    showWelcomeMessage();
+    showDisclaimerMessage();
 
     return () => {
       setIsMounted(false);
     };
-  }, [welcomeConfig, showBeforeLogin, isMounted]);
+  }, [disclaimerConfig, showBeforeLogin, isMounted]);
 
   const handleClose = () => {
     if (!showBeforeLogin) {
@@ -48,11 +48,11 @@ const WelcomePopup = ({ welcomeConfig, showBeforeLogin = false }) => {
     setIsVisible(false);
   };
 
-  if (!isMounted || !welcomeConfig) return null;
+  if (!isMounted || !disclaimerConfig) return null;
 
   return (
     <Modal
-      title={welcomeConfig.title || "Welcome to Haiven"}
+      title={disclaimerConfig.title || "Welcome to Haiven"}
       open={isVisible}
       onCancel={handleClose}
       footer={[
@@ -85,11 +85,11 @@ const WelcomePopup = ({ welcomeConfig, showBeforeLogin = false }) => {
             ),
           }}
         >
-          {welcomeConfig.message}
+          {disclaimerConfig.message}
         </ReactMarkdown>
       </div>
     </Modal>
   );
 };
 
-export default WelcomePopup;
+export default DisclaimerPopup;

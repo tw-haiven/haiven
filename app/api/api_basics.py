@@ -14,7 +14,7 @@ from llms.model_config import ModelConfig
 from llms.image_description_service import ImageDescriptionService
 from prompts.prompts import PromptList
 from config_service import ConfigService
-from welcome_message import WelcomeMessageService
+from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
 from logger import HaivenLogger
 from loguru import logger
 import hashlib
@@ -176,7 +176,7 @@ class ApiBasics(HaivenBaseApi):
         prompts_chat: PromptList,
         image_service: ImageDescriptionService,
         config_service: ConfigService,
-        welcome_message: WelcomeMessageService,
+        disclaimer_and_guidelines: DisclaimerAndGuidelinesService,
     ):
         super().__init__(app, chat_manager, model_config, prompts_guided)
 
@@ -223,14 +223,16 @@ class ApiBasics(HaivenBaseApi):
                     status_code=500, detail=f"Server error: {str(error)}"
                 )
 
-        @app.get("/api/welcome-message")
+        @app.get("/api/disclaimer-guidelines")
         @logger.catch(reraise=True)
-        def get_welcome_message(request: Request):
+        def get_disclaimer_and_guidelines(request: Request):
             try:
-                if not welcome_message.is_enabled:
+                if not disclaimer_and_guidelines.is_enabled:
                     return JSONResponse({"enabled": False, "title": "", "content": ""})
 
-                response_data = json.loads(welcome_message.fetch_welcome_message())
+                response_data = json.loads(
+                    disclaimer_and_guidelines.fetch_disclaimer_and_guidelines()
+                )
                 response_data["enabled"] = True
                 return JSONResponse(response_data)
 

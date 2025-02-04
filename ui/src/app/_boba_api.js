@@ -85,8 +85,8 @@ export const getRenderedPrompt = async (body, onSuccess) => {
   });
 };
 
-export const getWelcomeMessage = async (onSuccess) => {
-  fetch("/api/welcome-message", {
+export const getDisclaimerAndGuidelines = async (onSuccess) => {
+  fetch("/api/disclaimer-guidelines", {
     method: "GET",
     credentials: "include",
     headers: {

@@ -5,19 +5,19 @@ import os
 from config.constants import DISCLAIMER_PATH
 
 
-class WelcomeMessageService:
+class DisclaimerAndGuidelinesService:
     def __init__(self, knowledge_pack_path: str):
         self.knowledge_pack_path = knowledge_pack_path
-        self.is_enabled = self._check_welcome_message_exists()
-        self.welcome_message_json = (
-            self.fetch_welcome_message() if self.is_enabled else None
+        self.is_enabled = self._check_disclaimer_and_guidelines_exists()
+        self.disclaimer_and_guidelines_json = (
+            self.fetch_disclaimer_and_guidelines() if self.is_enabled else None
         )
 
-    def _check_welcome_message_exists(self):
+    def _check_disclaimer_and_guidelines_exists(self):
         md_file_path = f"{self.knowledge_pack_path}/{DISCLAIMER_PATH}"
         return os.path.exists(md_file_path)
 
-    def fetch_welcome_message(self):
+    def fetch_disclaimer_and_guidelines(self):
         if not self.is_enabled:
             return json.dumps({"title": "", "content": ""})
 

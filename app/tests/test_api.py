@@ -37,7 +37,7 @@ class TestApi(unittest.TestCase):
             prompts_guided=MagicMock(),
             knowledge_manager=MagicMock(),
             config_service=MagicMock(),
-            welcome_message=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
         )
 
         response = self.client.get("/api/prompts")
@@ -75,7 +75,7 @@ class TestApi(unittest.TestCase):
             prompts_guided=MagicMock(),
             knowledge_manager=MagicMock(),
             config_service=mock_config_service,
-            welcome_message=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
         )
 
         response = self.client.get("/api/models")
@@ -135,7 +135,7 @@ class TestApi(unittest.TestCase):
             prompts_chat=MagicMock(),
             image_service=MagicMock(),
             config_service=MagicMock(),
-            welcome_message=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
         )
 
         response = self.client.get("/api/knowledge/documents")
@@ -186,7 +186,7 @@ class TestApi(unittest.TestCase):
             prompts_chat=mock_prompt_list,
             image_service=MagicMock(),
             config_service=MagicMock(),
-            welcome_message=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
         )
 
         response = self.client.post(
@@ -231,7 +231,7 @@ class TestApi(unittest.TestCase):
             prompts_chat=MagicMock(),
             image_service=MagicMock(),
             config_service=MagicMock(),
-            welcome_message=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
         )
 
         # Make the request to the endpoint

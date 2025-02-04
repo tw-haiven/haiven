@@ -9,7 +9,7 @@ from prompts.prompts_factory import PromptsFactory
 from prompts.prompts_testing_ui import PromptsTestingUI
 from server import Server
 from config_service import ConfigService
-from welcome_message import WelcomeMessageService
+from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
 
 import gradio as gr
 
@@ -27,7 +27,7 @@ class App:
         knowledge_manager = KnowledgeManager(config_service=config_service)
 
         prompts_factory = PromptsFactory(knowledge_pack_path)
-        welcome_message = WelcomeMessageService(knowledge_pack_path)
+        disclaimer_and_guidelines = DisclaimerAndGuidelinesService(knowledge_pack_path)
         chat_session_memory = ServerChatSessionMemory()
         llm_chat_factory = ChatClientFactory(config_service)
         chat_manager = ChatManager(
@@ -47,7 +47,7 @@ class App:
                 chat_manager,
                 config_service,
                 image_service,
-                welcome_message,
+                disclaimer_and_guidelines,
             ),
         ).create()
 
