@@ -132,14 +132,18 @@ const ChatWidget = forwardRef(
       const messageIndex = messages.findIndex(msg => msg.id === editingMessage.id);
       if (messageIndex === -1) return;
 
-      // Update the message in the chat
+      messages.forEach(msg => {
+        if (msg.parentId === editingMessage.id) {
+          proChat.deleteMessage(msg.id);
+        }
+      });
+
       const updatedMessage = {
         ...messages[messageIndex],
         content: editingMessage.content
       };
       proChat.setMessageContent(updatedMessage.id, updatedMessage.content);
 
-      // Trigger regeneration
       proChat.resendMessage(editingMessage.id);
       setIsEditModalVisible(false);
     };
