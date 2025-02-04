@@ -13,6 +13,7 @@ from llms.image_description_service import ImageDescriptionService
 from prompts.prompts_factory import PromptsFactory
 from config_service import ConfigService
 from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
+from prompts.inspirations import InspirationsManager
 
 
 class BobaApi:
@@ -28,6 +29,7 @@ class BobaApi:
         self.knowledge_manager = knowledge_manager
         self.chat_manager = chat_manager
         self.config_service = config_service
+        self.inspirations_manager = InspirationsManager()
 
         self.prompts_chat = prompts_factory.create_chat_prompt_list(
             self.knowledge_manager.knowledge_base_markdown
@@ -55,6 +57,7 @@ class BobaApi:
             self.image_service,
             self.config_service,
             self.disclaimer_and_guidelines,
+            self.inspirations_manager,
         )
         ApiMultiStep(
             app,

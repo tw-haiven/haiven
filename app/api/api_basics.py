@@ -13,6 +13,8 @@ from llms.chats import ChatManager, ChatOptions, StreamingChat
 from llms.model_config import ModelConfig
 from llms.image_description_service import ImageDescriptionService
 from prompts.prompts import PromptList
+from prompts.inspirations import InspirationsManager
+
 from config_service import ConfigService
 from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
 from logger import HaivenLogger
@@ -177,8 +179,10 @@ class ApiBasics(HaivenBaseApi):
         image_service: ImageDescriptionService,
         config_service: ConfigService,
         disclaimer_and_guidelines: DisclaimerAndGuidelinesService,
+        inspirations_manager: InspirationsManager,
     ):
         super().__init__(app, chat_manager, model_config, prompts_guided)
+        self.inspirations_manager = inspirations_manager
 
         @app.get("/api/models")
         @logger.catch(reraise=True)
@@ -430,6 +434,17 @@ class ApiBasics(HaivenBaseApi):
                     media_type=streaming_media_type(),
                     headers=streaming_headers(None),
                 )
+            except Exception as error:
+                HaivenLogger.get().error(str(error))
+                raise HTTPException(
+                    status_code=500, detail=f"Server error: {str(error)}"
+                )
+
+        @app.get("/api/inspirations")
+        @logger.catch(reraise=True)
+        def get_inspirations(request: Request):
+            try:
+                return JSONResponse(self.inspirations_manager.get_inspirations())
             except Exception as error:
                 HaivenLogger.get().error(str(error))
                 raise HTTPException(

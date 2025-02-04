@@ -38,6 +38,7 @@ class TestApi(unittest.TestCase):
             knowledge_manager=MagicMock(),
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
         )
 
         response = self.client.get("/api/prompts")
@@ -76,6 +77,7 @@ class TestApi(unittest.TestCase):
             knowledge_manager=MagicMock(),
             config_service=mock_config_service,
             disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
         )
 
         response = self.client.get("/api/models")
@@ -136,6 +138,7 @@ class TestApi(unittest.TestCase):
             image_service=MagicMock(),
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
         )
 
         response = self.client.get("/api/knowledge/documents")
@@ -187,6 +190,7 @@ class TestApi(unittest.TestCase):
             image_service=MagicMock(),
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
         )
 
         response = self.client.post(
@@ -232,6 +236,7 @@ class TestApi(unittest.TestCase):
             image_service=MagicMock(),
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
         )
 
         # Make the request to the endpoint
@@ -501,3 +506,36 @@ class TestApi(unittest.TestCase):
             },
             warnings=ANY,
         )
+
+    def test_get_inspirations(self):
+        mock_inspirations = [{"title": "Test Title"}]
+        mock_inspirations_manager = MagicMock()
+        mock_inspirations_manager.get_inspirations.return_value = mock_inspirations
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            prompts_chat=MagicMock(),
+            image_service=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=mock_inspirations_manager,
+        )
+
+        response = self.client.get("/api/inspirations")
+
+        # Assert the response
+        assert response.status_code == 200
+        response_data = json.loads(response.content)
+        assert isinstance(response_data, list)
+        assert len(response_data) > 0
+
+        # Verify the title field of the first inspiration item
+        first_item = response_data[0]
+        assert "title" in first_item
+
+        # Verify the mock was called
+        mock_inspirations_manager.get_inspirations.assert_called_once()
