@@ -153,7 +153,7 @@ const AboutPage = ({}) => {
   ];
 
   return (
-    <div className="dashboard">
+    <div className="about">
       <h1>About Haiven</h1>
       <Tabs defaultActiveKey="guidelines" items={tabs}></Tabs>
     </div>

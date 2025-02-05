@@ -1424,35 +1424,79 @@ a.feedback:hover {
   justify-content: space-between;
 }
 
-.dashboard {
+.dashboard, .about {
   padding: 2em;
   display: flex;
   flex-direction: column;
+  .headline{
+    margin: 20px 0;
+  }
+
+  .headline h1 {
+    font-weight: var(--font-weight-semi-bold);
+  }
+
+  .subline {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  h2 {
+    font-weight: var(--font-weight-semi-bold);
+    font-size: 18px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 44px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
 }
 
-.dashboard .headline {
-  margin: 20px 0;
-}
+/* Make sure the tabs fill 50% of the width */
+.dashboard {
+  .ant-tabs-nav-list {
+    flex: 1;
+  }
 
-.dashboard .headline h1 {
-  font-weight: var(--font-weight-semi-bold);
-}
+  .ant-tabs-tab {
+    flex: 1;
+  }
 
-.dashboard .subline {
-  font-size: 18px;
-  text-align: center;
-}
+  .ant-tabs-nav {
+    margin-bottom: 0;
+  }
 
-.dashboard h2 {
-  font-weight: var(--font-weight-semi-bold);
-  font-size: 18px;
-  text-align: center;
-}
+  .ant-tabs-tab {
+    background-color: var(--color-light-gray);
+    margin-left: 0 !important;
+    padding: 0;
+  }
 
-.dashboard h1 {
-  font-size: 44px;
-  margin-bottom: 10px;
-  text-align: center;
+  .ant-tabs-tab-active {
+    background-color: white;
+    border: 1px solid var(--color-light-gray);
+  }
+
+  /* Make just the title section sticky */
+  .ant-tabs-tab .dashboard-scenarios-title {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 1rem;
+    padding-right: 0;
+    text-align: left;
+    width: 100%;
+    max-width: calc(250px * 4 + 4.8em);
+    margin-left: auto;
+    margin-right: auto;
+    color: var(--color-dark-gray);
+  }
+  
+  .ant-tabs-tab-active .dashboard-scenarios-title {
+    color: black;
+  }
 }
 
 .dashboard-scenarios {
@@ -1461,37 +1505,11 @@ a.feedback:hover {
   margin: 0 auto;
 }
 
-/* Make just the title section sticky */
-.dashboard-scenarios-title {
-  position: sticky;
-  top: 0;
-  background-color: white;
-  z-index: 2;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  text-align: left;
-  width: 100%;
-  max-width: calc(250px * 4 + 4.8em);
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.dashboard-scenarios-title::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 4px;
-}
-
 .dashboard-scenarios-title h3,
 .dashboard-scenarios-title p {
   margin: 0;
-  font-smoothing: antialiased;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
+
 
 .dashboard-cards-grid-container {
   padding: 0 1rem;
@@ -1538,12 +1556,26 @@ a.feedback:hover {
 
 .dashboard-filters {
   text-align: center;
-  border-bottom: 1px solid var(--color-light-gray);
   padding: var(--standard-left-padding);
-  padding-top: 10px;
   margin-top: 0px;
-  margin-left: -50px;
-  margin-right: -50px;
+}
+
+.section-description {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+}
+
+.section-description p {
+  max-width: 800px;
+  margin: 0;
+}
+
+.ant-tag {
+  padding: 0.4em 0.8em;
 }
 
 .dashboard-tile {
@@ -1568,10 +1600,6 @@ a.feedback:hover {
   position: absolute;
   bottom: 0;
   padding-left: 24px;
-}
-
-.ant-tag {
-  padding: 0.4em 0.8em;
 }
 
 .dashboard-filter-category {
@@ -1739,7 +1767,7 @@ a.feedback:hover {
 .codified-practices-section {
   display: flex;
   flex-direction: column;
-  margin-top: 1em;
+  border: 1px solid var(--color-light-gray);
 }
 
 .codified-practices-section > h2 {
