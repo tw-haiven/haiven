@@ -132,24 +132,15 @@ const ChatWidget = forwardRef(
 
     const handleEditSave = () => {
       const messages = proChat.getChatMessages?.() || [];
-      const messageIndex = messages.findIndex(
-        (msg) => msg.id === editingMessage.id,
-      );
-      if (messageIndex === -1) return;
-
       messages.forEach((msg) => {
-        if (msg.primary && msg.parentId === editingMessage.id) {
+        if (msg.parentId === editingMessage.id) {
           proChat.deleteMessage(msg.id);
         }
       });
 
-      const updatedMessage = {
-        ...messages[messageIndex],
-        content: editingMessage.content,
-      };
-      proChat.setMessageContent(updatedMessage.id, updatedMessage.content);
-
+      proChat.setMessageContent(editingMessage.id, editingMessage.content);
       proChat.resendMessage(editingMessage.id);
+
       setIsEditModalVisible(false);
     };
 
