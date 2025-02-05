@@ -860,15 +860,6 @@ a.feedback:hover {
   display: none;
 }
 
-.title-for-collapsed-panel {
-  display: none;
-}
-
-.collapsed .title-for-collapsed-panel {
-  display: block;
-  padding-left: 16px;
-}
-
 .prompt-chat-header {
   display: flex;
   align-items: center;
@@ -879,16 +870,6 @@ a.feedback:hover {
 
 .prompt-chat-header:not(:empty) {
   margin: 1em 0;
-}
-
-.prompt-chat-header .title-for-collapsed-panel {
-  display: none;
-  margin: 0;
-  padding: 0;
-}
-
-.collapsed .prompt-chat-header .title-for-collapsed-panel {
-  display: block;
 }
 
 .prompt-chat-container.collapsed {

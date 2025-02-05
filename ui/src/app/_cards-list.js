@@ -81,7 +81,6 @@ const CardsList = ({
   return (
     <>
       <div className="prompt-chat-header">
-        {title && <h1 className="title-for-collapsed-panel">{title}</h1>}
         {stopLoadComponent}
         {scenarios && scenarios.length > 0 && (
           <Button type="link" className="copy-all" onClick={onCopyAll}>

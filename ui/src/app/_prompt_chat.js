@@ -214,9 +214,6 @@ const PromptChat = ({
         <div className="chat-container-wrapper">
           <ChatHeader models={models} titleComponent={title} />
           <div className="chat-container">
-            <h1 className="title-for-collapsed-panel">
-              {selectedPrompt?.title || pageTitle}
-            </h1>
             <div className="chat-widget-container">
               <ProChatProvider>
                 <ChatWidget

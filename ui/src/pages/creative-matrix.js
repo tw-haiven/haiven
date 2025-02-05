@@ -119,7 +119,6 @@ const CreativeMatrix = ({ models }) => {
   const PromptHeader = () => {
     return (
       <div className="prompt-chat-header">
-        <h1 className="title-for-collapsed-panel">Creative Matrix</h1>
         <StopLoad />
       </div>
     );
