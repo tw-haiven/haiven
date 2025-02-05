@@ -1441,12 +1441,12 @@ a.feedback:hover {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
 }
 
 .dashboard {
   padding: 2em;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .dashboard .headline {
@@ -1758,7 +1758,6 @@ a.feedback:hover {
 .codified-practices-section {
   display: flex;
   flex-direction: column;
-  height: 75%;
   margin-top: 1em;
 }
 

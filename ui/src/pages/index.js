@@ -2,10 +2,16 @@
 import { Card, Space, Tag } from "antd";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getPrompts, getDisclaimerAndGuidelines } from "../app/_boba_api";
+import {
+  getPrompts,
+  getDisclaimerAndGuidelines,
+  getInspirations,
+} from "../app/_boba_api";
 import { staticFeaturesForDashboard } from "../app/_navigation_items";
 import DisclaimerPopup from "../app/_disclaimer_popup";
 import { RiFocus2Line } from "react-icons/ri";
+import { MdLightbulb } from "react-icons/md";
+import { getFeatureToggleConfiguration } from "../app/_local_store";
 
 export default function ChatDashboard() {
   const [prompts, setPrompts] = useState([]);
@@ -13,6 +19,8 @@ export default function ChatDashboard() {
   const [allCategories, setAllCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [disclaimerConfig, setDisclaimerConfig] = useState({});
+  const [inspirations, setInspirations] = useState([]);
+  const [featureToggleConfig, setFeatureToggleConfig] = useState({});
 
   // !! If changed, also needs to be changed in CSS, for the filter selection colors
   const categoryColors = {
@@ -117,6 +125,15 @@ export default function ChatDashboard() {
       setAllCategories(categories);
       setSelectedCategories(categories);
     });
+
+    const toggleConfig = getFeatureToggleConfiguration() || "{}";
+    setFeatureToggleConfig(JSON.parse(toggleConfig));
+
+    if (JSON.parse(toggleConfig)["show_inspirations"]) {
+      getInspirations((data) => {
+        setInspirations(data);
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -209,6 +226,49 @@ export default function ChatDashboard() {
               </div>
             </div>
           </div>
+
+          {featureToggleConfig["show_inspirations"] && (
+            <div className="inspirations-section" style={{ marginTop: "2rem" }}>
+              <div className="dashboard-scenarios">
+                <div className="dashboard-scenarios-title">
+                  <h3
+                    style={{ position: "relative", left: "-20px", top: "10px" }}
+                  >
+                    <MdLightbulb
+                      style={{ position: "relative", left: "-1px", top: "3px" }}
+                    />{" "}
+                    Inspirations
+                  </h3>
+                  <p
+                    style={{ position: "relative", left: "-20px", top: "15px" }}
+                  >
+                    Get inspired with these prompts to help you with common
+                    software delivery activities.
+                  </p>
+                </div>
+                <div className={`dashboard-cards-grid-container`}>
+                  <div className="dashboard-cards-grid">
+                    {inspirations.map((inspiration, index) => (
+                      <Link
+                        href={`/chat?prompt=inspiration&input=${encodeURIComponent(inspiration.prompt_template)}`}
+                        key={`inspiration-${index}`}
+                      >
+                        <Card
+                          hoverable
+                          key={`inspiration-card-${index}`}
+                          title={inspiration.title}
+                          className="dashboard-tile scenario-card-content"
+                          style={{ backgroundColor: "#f5f5f5" }}
+                        >
+                          {inspiration.description}
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

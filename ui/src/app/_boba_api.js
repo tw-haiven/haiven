@@ -102,3 +102,17 @@ export const getDisclaimerAndGuidelines = async (onSuccess) => {
     });
   });
 };
+
+export const getInspirations = async (onSuccess) => {
+  fetch("/api/inspirations", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((response) => {
+    response.json().then((data) => {
+      onSuccess(data);
+    });
+  });
+};
