@@ -54,6 +54,11 @@ const mockModels = [
   },
 ];
 
+const mockFeatureToggleConfig = {
+  show_inspirations: true,
+  cards_iteration: true,
+};
+
 const someScenarios = [
   {
     title: "Scenario 1",
@@ -83,6 +88,7 @@ const setup = async () => {
         prompts={mockPrompts}
         contexts={mockContexts}
         models={mockModels}
+        featureToggleConfig={mockFeatureToggleConfig}
       />,
     );
   });
@@ -238,6 +244,7 @@ describe("CardsChat Component", () => {
           prompts={[editablePrompt]}
           contexts={mockContexts}
           models={mockModels}
+          featureToggleConfig={mockFeatureToggleConfig}
         />,
       );
     });

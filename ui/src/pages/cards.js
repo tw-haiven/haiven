@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import CardsChat from "./_cards-chat";
 
-const CardsPage = ({ prompts, contexts, models }) => {
+const CardsPage = ({ prompts, contexts, models, featureToggleConfig }) => {
   const [promptId, setPromptId] = useState();
 
   const searchParams = useSearchParams();
@@ -20,6 +20,7 @@ const CardsPage = ({ prompts, contexts, models }) => {
       contexts={contexts}
       models={models}
       prompts={prompts}
+      featureToggleConfig={featureToggleConfig}
     />
   );
 };

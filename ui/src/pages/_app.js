@@ -9,13 +9,13 @@ import Header from "./_header";
 import "../styles/globals.css";
 import Sidebar from "./_sidebar";
 import { initializeLocalStorage } from "../app/_local_store";
-
 import {
   getPrompts,
   getContextSnippets,
   getDocuments,
   getModels,
 } from "../app/_boba_api";
+import { getFeatureToggleConfiguration } from "../app/_local_store";
 
 export default function App({
   Component,
@@ -28,6 +28,7 @@ export default function App({
   const [contexts, setContexts] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [models, setModels] = useState([]);
+  const [featureToggleConfig, setFeatureToggleConfig] = useState({});
 
   const colorlightgray = "#edf1f3";
   const colormediumgray = "#d9dfe1ff";
@@ -65,6 +66,9 @@ export default function App({
     });
     getModels(setModels);
     initializeLocalStorage();
+
+    const toggleConfig = getFeatureToggleConfiguration() || "{}";
+    setFeatureToggleConfig(JSON.parse(toggleConfig));
   }, []);
 
   return (
@@ -170,6 +174,7 @@ export default function App({
                 contexts={contexts}
                 documents={documents}
                 models={models}
+                featureToggleConfig={featureToggleConfig}
               />
             </Layout.Content>
           </Layout>

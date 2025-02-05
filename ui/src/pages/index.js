@@ -129,11 +129,9 @@ export default function ChatDashboard() {
     const toggleConfig = getFeatureToggleConfiguration() || "{}";
     setFeatureToggleConfig(JSON.parse(toggleConfig));
 
-    if (JSON.parse(toggleConfig)["show_inspirations"]) {
-      getInspirations((data) => {
-        setInspirations(data);
-      });
-    }
+    getInspirations((data) => {
+      setInspirations(data);
+    });
   }, []);
 
   useEffect(() => {

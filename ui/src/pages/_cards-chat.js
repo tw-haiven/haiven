@@ -15,18 +15,19 @@ import ContextChoice from "../app/_context_choice";
 import HelpTooltip from "../app/_help_tooltip";
 import CardsList from "../app/_cards-list";
 import useLoader from "../hooks/useLoader";
-import {
-  addToPinboard,
-  getFeatureToggleConfiguration,
-} from "../app/_local_store";
+import { addToPinboard } from "../app/_local_store";
 import PromptPreview from "../app/_prompt_preview";
 
-const CardsChat = ({ promptId, contexts, models, prompts }) => {
+const CardsChat = ({
+  promptId,
+  contexts,
+  models,
+  prompts,
+  featureToggleConfig,
+}) => {
   const [selectedPromptId, setSelectedPromptId] = useState(promptId); // via query parameter
   const [selectedPromptConfiguration, setSelectedPromptConfiguration] =
     useState({});
-
-  const [featureToggleConfig, setFeatureToggleConfig] = useState({});
 
   const [scenarios, setScenarios] = useState([]);
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
@@ -62,9 +63,6 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
       }
     }
     setUsePromptId(true);
-
-    const toggleConfig = getFeatureToggleConfiguration() || "{}";
-    setFeatureToggleConfig(JSON.parse(toggleConfig));
   }, [promptId, prompts]);
 
   const onClickAdvancedPromptOptions = (e) => {
@@ -221,7 +219,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
    * (behind feature toggle, experimental implementation)
    *
    * Switch on with:
-   * window.localStorage.setItem("toggles", '{ "cards-iteration": true }')
+   * window.localStorage.setItem("toggles", '{ "cards_iteration": true }')
    * */
   const buildRequestDataIterate = () => {
     // add IDs to the scenarios
@@ -570,7 +568,7 @@ const CardsChat = ({ promptId, contexts, models, prompts }) => {
                 </div>
               )}
               {/* Iteration experiment */}
-              {featureToggleConfig["cards-iteration"] === true &&
+              {featureToggleConfig["cards_iteration"] === true &&
                 scenarios.length > 0 && (
                   <div style={{ width: "50%", paddingLeft: "2em" }}>
                     <p>

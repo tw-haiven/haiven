@@ -3,12 +3,17 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { act } from "react";
 import ChatDashboard from "../pages/index";
 import { describe, it, expect, vi } from "vitest";
-import { getPrompts, getDisclaimerAndGuidelines } from "../app/_boba_api";
+import {
+  getPrompts,
+  getDisclaimerAndGuidelines,
+  getInspirations,
+} from "../app/_boba_api";
 import { staticFeaturesForDashboard } from "../app/_navigation_items";
 
 vi.mock("../app/_boba_api", () => ({
   getPrompts: vi.fn(),
   getDisclaimerAndGuidelines: vi.fn(),
+  getInspirations: vi.fn(),
 }));
 
 vi.mock("../app/_navigation_items", () => ({
@@ -44,6 +49,11 @@ describe("ChatDashboard Component", () => {
     },
   ];
 
+  const mockFeatureToggleConfig = {
+    show_inspirations: true,
+    cards_iteration: true,
+  };
+
   beforeEach(() => {
     // Setup default mocks before each test
     getPrompts.mockImplementation((onSuccess) => onSuccess(mockPrompts));
@@ -54,6 +64,7 @@ describe("ChatDashboard Component", () => {
         content: "Disclaimer message",
       }),
     );
+    getInspirations.mockImplementation((onSuccess) => onSuccess([]));
   });
 
   afterEach(() => {
@@ -62,7 +73,7 @@ describe("ChatDashboard Component", () => {
 
   it("should correctly fetch and display prompts and static features on initial render", async () => {
     await act(async () => {
-      render(<ChatDashboard />);
+      render(<ChatDashboard featureToggleConfig={mockFeatureToggleConfig} />);
     });
 
     expect(screen.getByText("User Persona Creation")).toBeInTheDocument();
@@ -72,7 +83,7 @@ describe("ChatDashboard Component", () => {
 
   it("should filter prompts based on selected categories", async () => {
     await act(async () => {
-      render(<ChatDashboard />);
+      render(<ChatDashboard featureToggleConfig={mockFeatureToggleConfig} />);
     });
 
     const researchTag = screen.getAllByText("research")[0];
@@ -92,7 +103,7 @@ describe("ChatDashboard Component", () => {
     staticFeaturesForDashboard.mockReturnValue([]);
 
     await act(async () => {
-      render(<ChatDashboard />);
+      render(<ChatDashboard featureToggleConfig={mockFeatureToggleConfig} />);
     });
 
     expect(screen.queryByText("User Persona Creation")).not.toBeInTheDocument();
