@@ -142,7 +142,7 @@ const AboutPage = ({}) => {
     },
     {
       key: "background",
-      label: "Background",
+      label: "What is Haiven?",
       children: <div>{aboutText}</div>,
     },
     {
