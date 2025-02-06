@@ -41,7 +41,7 @@ Haiven lets you codify your practices and knowledge and make it available to an 
 
 *Disclaimer: As the majority of developers in Thoughtworks are using MacOS, all shell-related instructions are currently only build for and tested on MacOS.*
 
-You can run the application with the public sample knowledge pack `haiven-sample-knowledge-pack`, which is very rudimentary. Or, if you work at Thoughtworks, you can request access to our private knowledge pack `haiven-tw-knowledge-pack` [via this form](https://docs.google.com/forms/d/e/1FAIpQLSf-9pXjm_bGJNtGaXUnkh1MgLS6uNqQySA4nkk3LmOZY3tjxA/viewform).
+You can run the application with the public sample knowledge pack `haiven-sample-knowledge-pack`, which is very rudimentary. Or, if you work at Thoughtworks, you can request access to our private knowledge pack `haiven-tw-demo-knowledge-pack` [via this form](https://docs.google.com/forms/d/e/1FAIpQLSf-9pXjm_bGJNtGaXUnkh1MgLS6uNqQySA4nkk3LmOZY3tjxA/viewform).
 
 ### With Azure OpenAI
 
@@ -54,12 +54,12 @@ cd haiven
 # Put the .env file into this new folder
 
 # Make sure you have git-lfs installed when cloning knowledge packs, otherwise git might only partially clone
-git clone git@github.com:tw-haiven/haiven-tw-knowledge-pack.git
+git clone git@github.com:tw-haiven/haiven-tw-demo-knowledge-pack.git
 # The TW knowledge pack is private, you can use our sample pack if you don't have access
 # git clone git@github.com:tw-haiven/haiven-sample-knowledge-pack.git
 
 docker run \
-        -v ./haiven-tw-knowledge-pack:/knowledge-pack \
+        -v ./haiven-tw-demo-knowledge-pack:/knowledge-pack \
         --env-file .env \
         -e AUTH_SWITCHED_OFF=true \
         -e KNOWLEDGE_PACK_PATH=/knowledge-pack \
@@ -79,12 +79,12 @@ mkdir haiven
 cd haiven
 
 # Make sure you have git-lfs installed when cloning knowledge packs, otherwise git might only partially clone
-git clone git@github.com:tw-haiven/haiven-tw-knowledge-pack.git
+git clone git@github.com:tw-haiven/haiven-tw-demo-knowledge-pack.git
 # The TW knowledge pack is private, you can use our sample pack if you don't have access
 # git clone git@github.com:tw-haiven/haiven-sample-knowledge-pack.git
 
 docker run \
-        -v ./haiven-tw-knowledge-pack:/knowledge-pack \
+        -v ./haiven-tw-demo-knowledge-pack:/knowledge-pack \
         -e KNOWLEDGE_PACK_PATH=/knowledge-pack \
         -e AUTH_SWITCHED_OFF=true \
         -e ENABLED_PROVIDERS=ollama \
@@ -129,7 +129,7 @@ There are 4 options:
 
 ### 2. Get (and adapt) a "knowledge pack"
 
-You can clone the [Sample Knowledge Pack](https://github.com/tw-haiven/haiven-sample-knowledge-pack) or, for Thoughtworkers, the [Thoughtworks Knowledge Pack](https://github.com/tw-haiven/haiven-tw-knowledge-pack) to get started. <br/>
+You can clone the [Sample Knowledge Pack](https://github.com/tw-haiven/haiven-sample-knowledge-pack) or, for Thoughtworkers, the [Thoughtworks Knowledge Pack](https://github.com/tw-haiven/haiven-tw-demo-knowledge-pack) to get started. <br/>
 Note: Make sure you have *git-lfs* installed before cloning knowledge packs, otherwise git might only partially clone.
 
 
