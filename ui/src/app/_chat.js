@@ -251,7 +251,10 @@ const ChatWidget = forwardRef(
             backgroundColor: "#47a1ad",
           }}
           locale="en-US"
-          helloMessage={helloMessage}
+          helloMessage={
+            helloMessage ||
+            "Let me help you with your task! Start a chat below, use the 'Advanced Prompting' section to pull in a document or upload an image."
+          }
           request={onSubmit}
           chatItemRenderConfig={{
             contentRender: (props, _defaultDom) => {
