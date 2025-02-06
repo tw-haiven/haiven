@@ -1,0 +1,15 @@
+inspirations:
+  - id: retrospective-facilitator
+    title: Retrospective Facilitator
+    description: Get suggestions for retrospective formats and help analyzing team feedback patterns.
+    category: delivery
+    prompt_template: |
+      I need help facilitating a team retrospective. Here's some context about my team and recent sprint:
+
+      [Describe your team size, sprint length, and any specific challenges or wins from the last sprint]
+
+      I would like:
+      1. Suggestions for an engaging retrospective format that fits this context
+      2. Key questions to ask the team
+      3. Tips for facilitating constructive discussions
+      4. Ideas for capturing and organizing the feedback 
