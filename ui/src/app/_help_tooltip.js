@@ -2,18 +2,20 @@
 import { Tooltip } from "antd";
 import { RiInformationFill } from "react-icons/ri";
 
-const HelpTooltip = ({ text }) => {
+const HelpTooltip = ({ text, testid = "" }) => {
   return (
-    <Tooltip
-      className="tooltip-help"
-      color="#003d4f"
-      placement="bottom"
-      title={text}
-    >
-      <>
-        <RiInformationFill />
-      </>
-    </Tooltip>
+    <span data-testid={testid}>
+      <Tooltip
+        className="tooltip-help"
+        color="#003d4f"
+        placement="bottom"
+        title={text}
+      >
+        <>
+          <RiInformationFill />
+        </>
+      </Tooltip>
+    </span>
   );
 };
 

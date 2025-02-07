@@ -182,14 +182,14 @@ const PromptChat = ({
     <div className="title">
       <h3>
         {selectedPrompt?.title || pageTitle}
-        <div data-testid="page-title-tooltip">
-          <HelpTooltip
-            text={
-              selectedPrompt?.help_prompt_description ||
-              "Ask general questions & document based queries"
-            }
-          />
-        </div>
+
+        <HelpTooltip
+          text={
+            selectedPrompt?.help_prompt_description ||
+            "Ask general questions & document based queries"
+          }
+          testid="page-title-tooltip"
+        />
       </h3>
     </div>
   );
