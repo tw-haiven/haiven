@@ -1,6 +1,6 @@
 
 ## Tests
-I would like you to always use TDD when we build new features.
+When I am not just asking a question, but we're building a new feature, then I would like you to always use TDD:
 1. write a test first
 2. run (or let me run) the test first so it can go red (fail)
 and ONLY then
