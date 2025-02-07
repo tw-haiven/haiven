@@ -25,6 +25,7 @@ const ChatWidget = forwardRef(
     ref,
   ) => {
     const proChat = useProChat();
+    const [form] = Form.useForm();
 
     const [isLoading, setIsLoading] = useState(false);
     const [prompt, setPrompt] = useState("");
@@ -124,6 +125,10 @@ const ChatWidget = forwardRef(
         return await proChat.sendMessage(message);
       },
       prompt,
+      setPromptValue: (value) => {
+        setPrompt(value);
+        form.setFieldsValue({ question: value });
+      },
     }));
 
     const onClickAdvancedPromptOptions = (e) => {
@@ -145,8 +150,6 @@ const ChatWidget = forwardRef(
     };
 
     const inputAreaRender = (_, onMessageSend) => {
-      const [form] = Form.useForm();
-
       const handleKeyDown = (event) => {
         if (event.key === "Enter" && !event.shiftKey) {
           event.preventDefault();

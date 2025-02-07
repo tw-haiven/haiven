@@ -23,6 +23,7 @@ const PromptChat = ({
   showDocuments = true,
   pageTitle,
   pageIntro,
+  initialInput = "",
 }) => {
   const chatRef = useRef();
 
@@ -31,12 +32,19 @@ const PromptChat = ({
   const [selectedContext, setSelectedContext] = useState("");
   const [selectedDocument, setSelectedDocument] = useState("");
   const [imageDescription, setImageDescription] = useState("");
+  const [userInput, setUserInput] = useState(initialInput);
 
   // Chat state
   const [conversationStarted, setConversationStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState(undefined);
   const [usePromptId, setUsePromptId] = useState(true);
   const [placeholder, setPlaceholder] = useState("");
+
+  useEffect(() => {
+    if (initialInput && chatRef.current) {
+      chatRef.current.setPromptValue(initialInput);
+    }
+  }, [initialInput]);
 
   const appendImageDescription = (userInput) => {
     if (imageDescription && imageDescription !== "") {

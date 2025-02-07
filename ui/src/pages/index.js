@@ -269,7 +269,7 @@ export default function ChatDashboard() {
                         <div className="dashboard-cards-grid">
                           {inspirations.map((inspiration, index) => (
                             <Link
-                              href={`/chat?prompt=inspiration&input=${encodeURIComponent(inspiration.prompt_template)}`}
+                              href={`/knowledge-chat?inspiration=${inspiration.id}`}
                               key={`inspiration-${index}`}
                             >
                               <Card

@@ -116,3 +116,20 @@ export const getInspirations = async (onSuccess) => {
     });
   });
 };
+
+export const getInspirationById = async (inspirationId, onSuccess) => {
+  fetch(`/api/inspirations/${inspirationId}`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error("Failed to fetch inspiration");
+    }
+    response.json().then((data) => {
+      onSuccess(data);
+    });
+  });
+};
