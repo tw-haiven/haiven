@@ -1,5 +1,5 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import { Card, ConfigProvider, Tag, Tabs } from "antd";
+import { Card, ConfigProvider, Tag, Tabs, Tooltip } from "antd";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -259,11 +259,15 @@ export default function ChatDashboard() {
                   children: (
                     <div className="inspirations-section">
                       <div className="section-description">
-                        More ideas for how you can use AI to help you with your
-                        software delivery activities. Other than the codified
-                        practices prompts, these are very simple prompt
-                        starters, responses will be what AI models know without
-                        any additional guidance about a practice.
+                        <p>
+                          More ideas for how you can use AI to help you with
+                          your software delivery activities. Other than the
+                          codified practices prompts, these are very simple
+                          prompt starters, responses will be what AI models know
+                          without any additional guidance about a practice.
+                          Results with these simple prompts will not be as good
+                          as with the codified practices.
+                        </p>
                       </div>
                       <div className={`dashboard-cards-grid-container`}>
                         <div className="dashboard-cards-grid">
@@ -272,15 +276,21 @@ export default function ChatDashboard() {
                               href={`/knowledge-chat?inspiration=${inspiration.id}`}
                               key={`inspiration-${index}`}
                             >
-                              <Card
-                                hoverable
-                                key={`inspiration-card-${index}`}
-                                title={inspiration.title}
-                                className="dashboard-tile scenario-card-content"
-                                style={{ backgroundColor: "#f5f5f5" }}
-                              >
-                                {inspiration.description}
-                              </Card>
+                              <Tooltip title="Click to use this inspiration">
+                                <Card
+                                  hoverable
+                                  key={`inspiration-card-${index}`}
+                                  title={inspiration.title}
+                                  className="dashboard-tile scenario-card-content"
+                                  style={{ backgroundColor: "#f5f5f5" }}
+                                >
+                                  {inspiration.prompt_template.substring(
+                                    0,
+                                    200,
+                                  )}
+                                  ...
+                                </Card>
+                              </Tooltip>
                             </Link>
                           ))}
                         </div>

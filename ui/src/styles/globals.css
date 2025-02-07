@@ -1120,7 +1120,7 @@ a.feedback:hover {
 }
 .scenario-card-content {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-light-gray) white;
+  scrollbar-color: var(--color-light-gray) transparent;
 }
 
 .scenarios-collection.plot-display .scenario {
@@ -1508,6 +1508,9 @@ a.feedback:hover {
 .dashboard-scenarios-title h3,
 .dashboard-scenarios-title p {
   margin: 0;
+  font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 

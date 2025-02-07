@@ -1,7 +1,6 @@
 inspirations:
   - id: retrospective-facilitator
-    title: Retrospective Facilitator
-    description: Get suggestions for retrospective formats and help analyzing team feedback patterns.
+    title: Get suggestions for retrospective formats and help analyzing team feedback patterns
     category: delivery
     prompt_template: |
       I need help facilitating a team retrospective. Here's some context about my team and recent sprint:
@@ -12,4 +11,131 @@ inspirations:
       1. Suggestions for an engaging retrospective format that fits this context
       2. Key questions to ask the team
       3. Tips for facilitating constructive discussions
-      4. Ideas for capturing and organizing the feedback 
+      4. Ideas for capturing and organizing the feedback     title: Convert commit messages into a structured, user-friendly changelog    title: Convert technical changes into user-friendly language    title: Help structure and organize information effectively    title: Create clear and consistent UI copy
+
+
+  - id: changelog-builder
+    title: Convert commit messages into a structured, user-friendly changelog
+    category: delivery
+    prompt_template: |
+      Help me create a changelog from these commit messages:
+
+      [Paste your commit messages here]
+
+      Please organize them into:
+      1. New Features
+      2. Improvements
+      3. Bug Fixes
+      4. Breaking Changes
+
+  - id: technical-translator
+    title: Convert technical changes into user-friendly language
+    category: communication
+    prompt_template: |
+      Help me explain these technical changes in user-friendly language:
+
+      [Describe the technical changes here]
+
+      Consider:
+      1. The impact on user experience
+      2. Benefits to the user
+      3. Any actions users need to take
+
+  - id: information-architect
+    title: Help structure and organize information effectively
+    category: design
+    prompt_template: |
+      Help me create an information architecture for:
+
+      [Describe your content/features]
+
+      Please consider:
+      1. Main navigation structure
+      2. Content hierarchy
+      3. User flows
+      4. Naming conventions
+
+  - id: ui-copy-creator
+    title: Create clear and consistent UI copy
+    category: content
+    prompt_template: |
+      Help me write UI copy for:
+
+      [Describe the UI elements needing copy]
+
+      Requirements:
+      1. Target audience: [specify]
+      2. Tone of voice: [specify]
+      3. Character limitations: [if any]
+      4. Key message to convey: [specify]
+
+  - id: copy-consistency-reviewer
+    title: Review UI copy for consistency and clarity
+    category: content
+    prompt_template: |
+      Review this UI copy for consistency:
+
+      [Paste your UI copy here]
+
+      Check for:
+      1. Consistent terminology
+      2. Tone of voice
+      3. Grammar and spelling
+      4. Clarity and conciseness
+
+  - id: user-communication-improver
+    title: Enhance communication effectiveness with users
+    category: communication
+    prompt_template: |
+      Help me improve this user communication:
+
+      [Paste your current communication]
+
+      Goals:
+      1. Clarity of message
+      2. Appropriate tone
+      3. Call to action
+      4. User empathy
+
+  - id: incident-responder
+    title: Get guidance for handling incidents effectively
+    category: operations
+    prompt_template: |
+      Help me respond to this incident:
+
+      [Describe the incident]
+
+      Need help with:
+      1. Immediate actions to take
+      2. Communication strategy
+      3. Investigation steps
+      4. Stakeholder management
+
+  - id: incident-report-drafter
+    title: Create comprehensive incident reports
+    category: operations
+    prompt_template: |
+      Help me draft an incident report for:
+
+      [Describe the incident]
+
+      Include:
+      1. Incident timeline
+      2. Root cause analysis
+      3. Impact assessment
+      4. Corrective actions
+      5. Lessons learned
+
+  - id: user-flow-reviewer
+    title: Identify and improve friction points in user flows
+    category: design
+    prompt_template: |
+      Review this user flow for friction points:
+
+      [Describe the user flow, or upload it as an image]
+
+      Analyze:
+      1. User journey steps
+      2. Potential pain points
+      3. Cognitive load      4. Improvement suggestions 
+    

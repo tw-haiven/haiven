@@ -14,12 +14,18 @@ class TestInspirationsManager(unittest.TestCase):
 
         first_item = inspirations[0]
         self.assertEqual(first_item["id"], "retrospective-facilitator")
-        self.assertEqual(first_item["title"], "Retrospective Facilitator")
+        self.assertEqual(
+            first_item["title"],
+            "Get suggestions for retrospective formats and help analyzing team feedback patterns",
+        )
 
     def test_get_inspiration_by_id_returns_correct_inspiration(self):
         inspiration = self.manager.get_inspiration_by_id("retrospective-facilitator")
         self.assertIsNotNone(inspiration)
-        self.assertEqual(inspiration["title"], "Retrospective Facilitator")
+        self.assertEqual(
+            inspiration["title"],
+            "Get suggestions for retrospective formats and help analyzing team feedback patterns",
+        )
         self.assertEqual(inspiration["category"], "delivery")
 
     def test_get_inspiration_by_id_returns_none_for_invalid_id(self):
@@ -32,7 +38,7 @@ class TestInspirationsManager(unittest.TestCase):
         self.assertTrue(len(inspirations) > 0)
 
         first_item = inspirations[0]
-        required_fields = ["id", "title", "description", "category", "prompt_template"]
+        required_fields = ["id", "title", "category", "prompt_template"]
         for field in required_fields:
             self.assertIn(field, first_item, f"Field {field} should be present")
             self.assertIsNotNone(first_item[field], f"Field {field} should not be None")
