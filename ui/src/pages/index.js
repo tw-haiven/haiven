@@ -9,7 +9,7 @@ import {
 } from "../app/_boba_api";
 import { staticFeaturesForDashboard } from "../app/_navigation_items";
 import DisclaimerPopup from "../app/_disclaimer_popup";
-import { RiFocus2Line } from "react-icons/ri";
+import { RiBookShelfLine } from "react-icons/ri";
 import { MdLightbulb } from "react-icons/md";
 import { getFeatureToggleConfiguration } from "../app/_local_store";
 
@@ -179,7 +179,7 @@ export default function ChatDashboard() {
                   label: (
                     <div className="dashboard-scenarios-title">
                       <h3>
-                        <RiFocus2Line
+                        <RiBookShelfLine
                           style={{ position: "relative", top: "3px" }}
                         />{" "}
                         Codified Practices
