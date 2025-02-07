@@ -156,6 +156,15 @@ const ChatWidget = forwardRef(
           form.submit();
         }
       };
+      let minRows = 4;
+      let maxRows = 10;
+
+      // If an initial input is there, enhance height to fit it
+      if (prompt) {
+        const lineBreaks = (prompt.match(/\n/g) || []).length;
+        const estimatedLines = lineBreaks + 1;
+        maxRows = estimatedLines;
+      }
 
       const items = [
         {
@@ -208,7 +217,7 @@ const ChatWidget = forwardRef(
                 onChange={(e) => setPrompt(e.target.value)}
                 disabled={isLoading}
                 placeholder={placeholder || "Type a message..."}
-                autoSize={{ minRows: 1, maxRows: 4 }}
+                autoSize={{ minRows: minRows, maxRows: maxRows }}
                 onKeyDown={handleKeyDown}
               />
             </Form.Item>
