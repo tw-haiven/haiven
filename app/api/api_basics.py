@@ -450,3 +450,21 @@ class ApiBasics(HaivenBaseApi):
                 raise HTTPException(
                     status_code=500, detail=f"Server error: {str(error)}"
                 )
+
+        @app.get("/api/inspirations/{inspiration_id}")
+        @logger.catch(reraise=True)
+        def get_inspiration_by_id(request: Request, inspiration_id: str):
+            try:
+                inspiration = self.inspirations_manager.get_inspiration_by_id(
+                    inspiration_id
+                )
+                if inspiration is None:
+                    raise HTTPException(status_code=404, detail="Inspiration not found")
+                return JSONResponse(inspiration)
+            except HTTPException:
+                raise
+            except Exception as error:
+                HaivenLogger.get().error(str(error))
+                raise HTTPException(
+                    status_code=500, detail=f"Server error: {str(error)}"
+                )

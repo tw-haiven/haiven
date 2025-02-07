@@ -539,3 +539,62 @@ class TestApi(unittest.TestCase):
 
         # Verify the mock was called
         mock_inspirations_manager.get_inspirations.assert_called_once()
+
+    def test_get_inspiration_by_id(self):
+        mock_inspiration = {
+            "id": "test-id",
+            "title": "Test Title",
+            "description": "Test Description",
+            "category": "test",
+            "prompt_template": "Test template",
+        }
+        mock_inspirations_manager = MagicMock()
+        mock_inspirations_manager.get_inspiration_by_id.return_value = mock_inspiration
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            prompts_chat=MagicMock(),
+            image_service=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=mock_inspirations_manager,
+        )
+
+        response = self.client.get("/api/inspirations/test-id")
+
+        # Assert the response
+        assert response.status_code == 200
+        response_data = json.loads(response.content)
+        assert response_data == mock_inspiration
+        mock_inspirations_manager.get_inspiration_by_id.assert_called_once_with(
+            "test-id"
+        )
+
+    def test_get_inspiration_by_id_not_found(self):
+        mock_inspirations_manager = MagicMock()
+        mock_inspirations_manager.get_inspiration_by_id.return_value = None
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            prompts_chat=MagicMock(),
+            image_service=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=mock_inspirations_manager,
+        )
+
+        response = self.client.get("/api/inspirations/non-existent")
+
+        # Assert the response
+        assert response.status_code == 404
+        mock_inspirations_manager.get_inspiration_by_id.assert_called_once_with(
+            "non-existent"
+        )
