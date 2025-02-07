@@ -2,9 +2,14 @@
 import React, { useState } from "react";
 import CardActions, { scenarioToText } from "./_card_actions";
 import ScenariosPlotProbabilityImpact from "../pages/_plot_prob_impact";
-import { RiStackLine, RiGridLine, RiFileCopyLine } from "react-icons/ri";
+import {
+  RiStackLine,
+  RiGridLine,
+  RiFileCopyLine,
+  RiCloseFill,
+} from "react-icons/ri";
 import ReactMarkdown from "react-markdown";
-import { Card, Button, Input, Radio } from "antd";
+import { Card, Button, Input, Radio, Tooltip } from "antd";
 import { toast } from "react-toastify";
 const { TextArea } = Input;
 
@@ -17,6 +22,7 @@ const CardsList = ({
   matrixMode: matrix,
   editable,
   selectable,
+  onDelete,
 }) => {
   const [displayMode, setDisplayMode] = useState("grid");
 
@@ -33,14 +39,6 @@ const CardsList = ({
   const onScenarioDescriptionChanged = (e, i) => {
     const updatedScenarios = [...scenarios];
     updatedScenarios[i].summary = e.target.value;
-    setScenarios(updatedScenarios);
-  };
-
-  const onScenarioSelectionChanged = (e, i) => {
-    const scenarioElement = document.querySelectorAll(".scenario")[i];
-    scenarioElement.classList.toggle("excluded");
-    const updatedScenarios = [...scenarios];
-    updatedScenarios[i].exclude = !e.target.checked;
     setScenarios(updatedScenarios);
   };
 
@@ -109,7 +107,25 @@ const CardsList = ({
         <div className="cards-container with-display-mode">
           {scenarios.map((scenario, i) => {
             return (
-              <Card title={scenario.title} key={i} className="scenario">
+              <Card
+                title={scenario.title}
+                key={i}
+                className="scenario"
+                extra={
+                  onDelete && (
+                    <Tooltip title="Remove" key="chat">
+                      <Button
+                        type="link"
+                        onClick={() => onDelete(i)}
+                        className="delete-button"
+                        name="Remove"
+                      >
+                        <RiCloseFill fontSize="large" />
+                      </Button>
+                    </Tooltip>
+                  )
+                }
+              >
                 <div className="scenario-card-content">
                   {editable === true ? (
                     <TextArea
@@ -130,17 +146,7 @@ const CardsList = ({
                   )}
                   {renderScenarioDetails(scenario)}
                 </div>
-                <CardActions
-                  scenario={scenario}
-                  onExploreHandler={onExplore}
-                  onScenarioSelectionHandler={
-                    selectable === true
-                      ? (e) => {
-                          onScenarioSelectionChanged(e, i);
-                        }
-                      : undefined
-                  }
-                />
+                <CardActions scenario={scenario} onExploreHandler={onExplore} />
               </Card>
             );
           })}

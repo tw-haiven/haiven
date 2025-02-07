@@ -519,6 +519,11 @@ const CardsChat = ({
     </div>
   );
 
+  const onDeleteCard = (index) => {
+    const updatedScenarios = scenarios.filter((_, i) => i !== index);
+    setScenarios(updatedScenarios);
+  };
+
   return (
     <>
       <Drawer
@@ -554,6 +559,7 @@ const CardsChat = ({
                 }
                 onExplore={onExplore}
                 stopLoadComponent={<StopLoad />}
+                onDelete={onDeleteCard}
               />
               {inputAreaRender()}
               {scenarios.length > 0 && (

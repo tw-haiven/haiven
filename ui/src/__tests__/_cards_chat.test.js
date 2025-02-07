@@ -79,6 +79,8 @@ const mockResponseHeadersWithChatId = {
   headers: { get: () => "some-chat-id" },
 };
 
+const mockOnDelete = vi.fn();
+
 const setup = async () => {
   await act(async () => {
     render(
@@ -88,6 +90,7 @@ const setup = async () => {
         contexts={mockContexts}
         models={mockModels}
         featureToggleConfig={mockFeatureToggleConfig}
+        onDelete={mockOnDelete}
       />,
     );
   });
@@ -103,29 +106,21 @@ const whenGenerateIsClicked = () => {
   fireEvent.click(mainGenerateButton);
 };
 
-const whenScenarioIsDeselected = () => {
-  const includeCheckBoxes = screen.getAllByTestId("scenario-include-checkbox");
-  expect(includeCheckBoxes.length).toBe(someScenarios.length);
-  includeCheckBoxes.forEach((checkbox) => {
-    checkbox.checked = true;
-  });
-
-  fireEvent.click(includeCheckBoxes[includeCheckBoxes.length - 1]);
-};
-
 const thenStopButtonIsDisplayed = () => {
   expect(screen.getByTestId("stop-button")).toBeInTheDocument();
   expect(screen.getByTestId("stop-button")).toBeVisible();
 };
 
-const thenScenariosAreRendered = () => {
+const thenAllInitialScenariosAreRendered = () => {
   expect(screen.getByText(someScenarios[0].title)).toBeInTheDocument();
   expect(screen.getByText(someScenarios[0].summary)).toBeInTheDocument();
   expect(screen.getByText("Additional Info:")).toBeInTheDocument();
   expect(screen.getByText(someScenarios[0].additionalInfo)).toBeInTheDocument();
+
   expect(screen.getByText("Tags:")).toBeInTheDocument();
   expect(screen.getByText("tag1")).toBeInTheDocument();
   expect(screen.getByText("tag2")).toBeInTheDocument();
+
   expect(screen.getByText(someScenarios[1].title)).toBeInTheDocument();
   expect(screen.getByText(someScenarios[1].summary)).toBeInTheDocument();
   expect(screen.getByText("More Details:")).toBeInTheDocument();
@@ -156,7 +151,7 @@ describe("CardsChat Component", () => {
       const body = JSON.parse(bodyString);
       expect(body.userinput).toBe(someUserInput);
       expect(body.promptid).toBe(mockPrompts[0].followUps[0].identifier);
-      expect(body.scenarios.length).toBe(someScenarios.length - 1); // one scenario is deselected
+      expect(body.scenarios.length).toBe(someScenarios.length);
       expect(body.scenarios[0].title).toBe(someScenarios[0].title);
       expect(body.previous_promptid).toBe(mockPrompts[0].identifier);
     };
@@ -205,9 +200,8 @@ describe("CardsChat Component", () => {
 
     await waitFor(async () => {
       thenStopButtonIsDisplayed();
-      thenScenariosAreRendered();
+      thenAllInitialScenariosAreRendered();
 
-      whenScenarioIsDeselected();
       whenFollowUpGenerateIsClicked();
       expect(fetchSSE).toHaveBeenCalledTimes(2);
 
@@ -280,7 +274,7 @@ describe("CardsChat Component", () => {
       whenGenerateIsClicked();
 
       await waitFor(async () => {
-        thenScenariosAreRendered();
+        thenAllInitialScenariosAreRendered();
       });
     });
 
@@ -303,7 +297,7 @@ describe("CardsChat Component", () => {
       whenGenerateIsClicked();
 
       await waitFor(async () => {
-        thenScenariosAreRendered();
+        thenAllInitialScenariosAreRendered();
       });
     });
 
@@ -324,7 +318,7 @@ describe("CardsChat Component", () => {
       whenGenerateIsClicked();
 
       await waitFor(async () => {
-        thenScenariosAreRendered();
+        thenAllInitialScenariosAreRendered();
       });
     });
 
@@ -347,7 +341,7 @@ describe("CardsChat Component", () => {
       givenUserInput();
       whenGenerateIsClicked();
       await waitFor(async () => {
-        thenScenariosAreRendered();
+        thenAllInitialScenariosAreRendered();
       });
     });
 

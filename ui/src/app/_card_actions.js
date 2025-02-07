@@ -25,11 +25,7 @@ export const scenarioToText = (scenario) => {
   return markdown;
 };
 
-export default function CardActions({
-  scenario,
-  onExploreHandler,
-  onScenarioSelectionHandler,
-}) {
+export default function CardActions({ scenario, onExploreHandler }) {
   const [selected, setSelected] = useState(true);
 
   const copySuccess = () => {
@@ -46,25 +42,8 @@ export default function CardActions({
     addToPinboard(timestamp, scenarioToText(scenario));
   };
 
-  const onSelectionChanged = (e) => {
-    setSelected(e.target.checked);
-    onScenarioSelectionHandler(e);
-  };
-
   return (
     <div className="card-actions-footer">
-      <div className="selection-container">
-        {onScenarioSelectionHandler !== undefined && (
-          <Checkbox
-            onChange={onSelectionChanged}
-            className="include-action"
-            checked={selected}
-            data-testid="scenario-include-checkbox"
-          >
-            Include
-          </Checkbox>
-        )}
-      </div>
       <div className="actions-container">
         {onExploreHandler && (
           <Tooltip title="Chat with Haiven" key="chat">
