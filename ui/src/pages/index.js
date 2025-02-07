@@ -244,7 +244,7 @@ export default function ChatDashboard() {
                     </div>
                   ),
                 },
-                featureToggleConfig["show_inspirations"] && {
+                {
                   key: "inspirations",
                   label: (
                     <div className="dashboard-scenarios-title">

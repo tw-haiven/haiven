@@ -55,7 +55,6 @@ const mockModels = [
 ];
 
 const mockFeatureToggleConfig = {
-  show_inspirations: true,
   cards_iteration: true,
 };
 
