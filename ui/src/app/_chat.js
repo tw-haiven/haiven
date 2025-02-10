@@ -4,8 +4,11 @@ import { css, cx, useTheme } from "antd-style";
 import { Button, Collapse, Form, Input, Modal } from "antd";
 import { UpOutlined } from "@ant-design/icons";
 import { PinIcon, RotateCw, Trash, Copy, Edit } from "lucide-react";
-import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
-import { GiSettingsKnobs } from "react-icons/gi";
+import {
+  RiSendPlane2Line,
+  RiStopCircleFill,
+  RiAttachment2,
+} from "react-icons/ri";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -171,8 +174,8 @@ const ChatWidget = forwardRef(
           key: "1",
           label: (
             <div className="advanced-prompting">
-              <GiSettingsKnobs className="advanced-prompting-icon" />{" "}
-              <span>Advanced Prompting</span>{" "}
+              <RiAttachment2 className="advanced-prompting-icon" />{" "}
+              <span>Attach more context</span>{" "}
               <UpOutlined
                 className="advanced-prompting-collapse-icon"
                 rotate={isPromptOptionsMenuExpanded ? 180 : 0}
@@ -186,17 +189,6 @@ const ChatWidget = forwardRef(
       ];
       return (
         <div>
-          {advancedPromptingMenu && !conversationStarted ? (
-            <Collapse
-              className="prompt-options-menu"
-              items={items}
-              defaultActiveKey={["1"]}
-              ghost={isPromptOptionsMenuExpanded}
-              activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
-              onChange={onClickAdvancedPromptOptions}
-              collapsible="header"
-            />
-          ) : null}
           <Form
             onFinish={async (value) => {
               const { question } = value;
@@ -240,6 +232,17 @@ const ChatWidget = forwardRef(
               )}
             </Form.Item>
           </Form>
+          {advancedPromptingMenu && !conversationStarted ? (
+            <Collapse
+              className="prompt-options-menu"
+              items={items}
+              defaultActiveKey={["1"]}
+              ghost={isPromptOptionsMenuExpanded}
+              activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
+              onChange={onClickAdvancedPromptOptions}
+              collapsible="header"
+            />
+          ) : null}
         </div>
       );
     };
@@ -263,10 +266,7 @@ const ChatWidget = forwardRef(
             backgroundColor: "#47a1ad",
           }}
           locale="en-US"
-          helloMessage={
-            helloMessage ||
-            "Let me help you with your task! Start a chat below, use the 'Advanced Prompting' section to pull in a document or upload an image."
-          }
+          helloMessage={helloMessage || "Let me help you with your task!"}
           request={onSubmit}
           chatItemRenderConfig={{
             contentRender: (props, _defaultDom) => {
