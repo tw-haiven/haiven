@@ -7054,7 +7054,7 @@ tabbable@^6.0.1:
   resolved "https://registry.yarnpkg.com/tabbable/-/tabbable-6.2.0.tgz#732fb62bc0175cfcec257330be187dcfba1f3b97"
   integrity sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==
 
-tailwindcss@4.0.0, tailwindcss@^4.0.0:
+tailwindcss@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-4.0.0.tgz#1f275ed16eb4127cb70bf5e9f53fb8eb7b72be3c"
   integrity sha512-ULRPI3A+e39T7pSaf1xoi58AqqJxVCLg8F/uM5A3FadUbnyDTgltVnXJvdkTjwCOGA6NazqHVcwPJC5h2vRYVQ==
@@ -7063,6 +7063,11 @@ tailwindcss@4.0.3:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-4.0.3.tgz#8f34c24cd23e021662113bd4e13df1e700cb52f8"
   integrity sha512-ImmZF0Lon5RrQpsEAKGxRvHwCvMgSC4XVlFRqmbzTEDb/3wvin9zfEZrMwgsa3yqBbPqahYcVI6lulM2S7IZAA==
+
+tailwindcss@^4.0.5:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-4.0.5.tgz#725c1b8589707e6d079b9940978d761be4a99b6b"
+  integrity sha512-DZZIKX3tA23LGTjHdnwlJOTxfICD1cPeykLLsYF1RQBI9QsCR3i0szohJfJDVjr6aNRAIio5WVO7FGB77fRHwg==
 
 tapable@^2.2.0:
   version "2.2.1"
