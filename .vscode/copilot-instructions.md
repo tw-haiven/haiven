@@ -1,0 +1,26 @@
+
+## Tests
+When I am not just asking a question, but we're building a new feature, then I would like you to always use TDD:
+1. write a test first
+2. run (or let me run) the test first so it can go red (fail)
+and ONLY then
+3. write the implementation
+4. run the test again to see if it passes
+
+## Ask me before making decisions like choosing a technology or framework
+
+## Help me always get to the next "runnable" step that I can commit, remind me to make commits when we get to a point that is a working state
+
+## Backend
+- Our backend is in Python and in the app/ subfolder. The app needs to be started from that directory.
+- The backend tests are in app/tests/
+- When running tests or the application, the virtual environment in app/.venv first needs to be activated
+- We're using constructor dependency injections to make our code more testable. Pass dependencies in via constructors, do not initialise them inside of a class.
+- When we wrap up a backend change, make sure to remind me to start up the whole application, to make sure that it's all well-integrated.
+
+## Frontend
+- Our frontend is in JavaScript, React, Next, in the ui/ subfolder, code in ui/src/, tests in ui/src/__tests__. Make sure to navigate into the ui/ subfolder before executing yarn tasks.
+- We're using Next in "client only" mode, NO server-side features, because we're distributing the frontend code as static resources that call a Python API for data
+- We're using vitest for testing
+- We're using the "prettier" library for formatting
+- Always use remix icons for icons
