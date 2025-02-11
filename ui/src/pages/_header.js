@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "antd";
-import { PinIcon } from "lucide-react";
+import { RiPushpinLine } from "react-icons/ri";
 import Pinboard from "./pinboard";
 
 export default function Header() {
@@ -51,7 +51,7 @@ export default function Header() {
                 onClick={openPinboard}
                 style={{ color: "white" }}
               >
-                <PinIcon size={14} style={{ transform: "rotate(45deg)" }} />
+                <RiPushpinLine fontSize="large" />
                 Pinboard
               </Button>
             </div>

@@ -10,7 +10,7 @@ export const initializeLocalStorage = () => {
   }
 };
 
-export const addToPinboard = (key, content) => {
+export const addToPinboard = (key, content, isUserDefined = false) => {
   try {
     var pinboard = localStorage.getItem("pinboard");
     var pinboardMap = pinboard ? JSON.parse(pinboard) : {};
@@ -19,14 +19,38 @@ export const addToPinboard = (key, content) => {
       toast.warning("This content is already pinned.");
       return;
     }
-    pinboardEntries.unshift([key, content]);
+
+    const value = isUserDefined ? { content, isUserDefined: true } : content;
+    pinboardEntries.unshift([key.toString(), value]);
     pinboardMap = Object.fromEntries(pinboardEntries);
     localStorage.setItem("pinboard", JSON.stringify(pinboardMap));
+    toast.success("Text pinned successfully! You can view it on the Pinboard.");
   } catch (error) {
     console.log(error.message);
     toast.error("Failed to pin the content");
   }
-  toast.success("Text pinned successfully! You can view it on the Pinboard.");
+};
+
+const transformPinboardEntry = (value, timestamp) => {
+  const isObject = typeof value === "object";
+  return {
+    timestamp,
+    summary: isObject ? value.content : value,
+    isUserDefined: isObject ? value.isUserDefined : false,
+  };
+};
+
+export const getPinboardData = () => {
+  const pinboardData = JSON.parse(localStorage.getItem("pinboard")) || {};
+  if (!pinboardData || Array.isArray(pinboardData)) {
+    return [];
+  }
+
+  const entries = Object.entries(pinboardData).map(([timestamp, value]) =>
+    transformPinboardEntry(value, timestamp),
+  );
+
+  return entries.sort((a, b) => b.isUserDefined - a.isUserDefined);
 };
 
 export const getFeatureToggleConfiguration = () => {

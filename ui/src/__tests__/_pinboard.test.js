@@ -1,6 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { addToPinboard } from "../app/_local_store";
+import { addToPinboard, getPinboardData } from "../app/_local_store";
 import { toast } from "react-toastify";
 
 const localStorageMock = (() => {
@@ -88,5 +88,60 @@ describe("addToPinboard", () => {
     const pinboard = JSON.parse(localStorage.getItem("pinboard"));
     expect(Object.entries(pinboard)[0]).toContain(content2);
     expect(Object.entries(pinboard)[1]).toContain(content1);
+  });
+});
+
+describe("getPinboardData", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.clearAllMocks();
+  });
+
+  it("should return empty array for empty pinboard", () => {
+    const result = getPinboardData();
+    expect(result).toEqual([]);
+  });
+
+  it("should transform regular pinned content correctly", () => {
+    const content = "Regular content";
+    const timestamp = "1234";
+
+    addToPinboard(timestamp, content);
+
+    const result = getPinboardData();
+    expect(result).toEqual([
+      {
+        timestamp: timestamp,
+        summary: content,
+        isUserDefined: false,
+      },
+    ]);
+  });
+
+  it("should transform user-defined content correctly", () => {
+    const content = "User content";
+    const timestamp = "1234";
+
+    addToPinboard(timestamp, content, true);
+
+    const result = getPinboardData();
+    expect(result).toEqual([
+      {
+        timestamp: timestamp,
+        summary: content,
+        isUserDefined: true,
+      },
+    ]);
+  });
+
+  it("should sort user-defined content to the top", () => {
+    addToPinboard("1", "Regular content");
+    addToPinboard("2", "User content", true);
+    addToPinboard("3", "Another regular content");
+
+    const result = getPinboardData();
+    expect(result[0].isUserDefined).toBe(true);
+    expect(result[0].summary).toBe("User content");
+    expect(result.length).toBe(3);
   });
 });

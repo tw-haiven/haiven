@@ -31,6 +31,8 @@ html {
 body {
   margin: 0;
   padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-light-gray) transparent;
 }
 
 
@@ -477,7 +479,7 @@ a.feedback:hover {
 }
 
 .pinboard-card {
-  width: 350px;
+  width: 330px;
   flex-direction: column;
   margin: 0.8em;
 }
@@ -1948,4 +1950,13 @@ a.feedback:hover {
     font-size: 1.3em;
     color: var(--color-dark-gray);
   }
+}
+
+.pinboard-card.user-defined {
+  border-left: 3px solid var(--color-sapphire);
+  background-color: var(--color-light-gray);
+}
+
+.pinboard-card.user-defined .ant-card-body {
+  background-color: white;
 }

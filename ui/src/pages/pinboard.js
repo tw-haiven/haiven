@@ -2,30 +2,27 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Modal, Card, Button } from "antd";
-import { RiDeleteBinLine, RiCheckboxMultipleBlankFill } from "react-icons/ri";
-import { PinIcon, ClockIcon } from "lucide-react";
+import { Modal, Card, Button, Input, Tooltip } from "antd";
+import {
+  RiDeleteBinLine,
+  RiCheckboxMultipleBlankFill,
+  RiAddBoxLine,
+  RiPushpinLine,
+} from "react-icons/ri";
+import { ClockIcon } from "lucide-react";
 import { toast } from "react-toastify";
+import { getPinboardData } from "../app/_local_store";
 
 const Pinboard = ({ isModalVisible, onClose }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [pinnedMessages, setPinnedMessages] = useState([]);
+  const [isAddingSnippet, setIsAddingSnippet] = useState(false);
+  const [newSnippet, setNewSnippet] = useState("");
 
   useEffect(() => {
     setIsMounted(true);
     if (typeof window !== "undefined") {
-      const pinboardData = JSON.parse(window.localStorage.getItem("pinboard"));
-      if (
-        pinboardData &&
-        typeof pinboardData === "object" &&
-        !Array.isArray(pinboardData)
-      ) {
-        const pinboardArray = Object.keys(pinboardData).map((key) => ({
-          timestamp: key,
-          summary: pinboardData[key],
-        }));
-        setPinnedMessages(pinboardArray);
-      }
+      setPinnedMessages(getPinboardData());
     }
   }, [
     typeof window !== "undefined"
@@ -60,17 +57,45 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     }
   };
 
+  const addSnippet = () => {
+    if (!newSnippet.trim()) {
+      toast.error("Please enter some content for your snippet");
+      return;
+    }
+    const timestamp = Date.now().toString();
+    const pinboardData = JSON.parse(localStorage.getItem("pinboard")) || {};
+    pinboardData[timestamp] = { content: newSnippet, isUserDefined: true };
+    localStorage.setItem("pinboard", JSON.stringify(pinboardData));
+
+    setPinnedMessages([
+      { timestamp, summary: newSnippet, isUserDefined: true },
+      ...pinnedMessages,
+    ]);
+
+    setNewSnippet("");
+    setIsAddingSnippet(false);
+    toast.success("Snippet added successfully!");
+  };
+
   const pinboardTitle = () => {
     return (
       <div className="pinboard-title">
         <div style={{ display: "flex", alignItems: "center" }}>
-          <PinIcon className="pin-icon" size={14} />
+          <RiPushpinLine fontSize="large" />
           Pinboard
         </div>
         <p className="saved-response">
-          Access important messages you've pinned to the pinboard for quick
-          reference.
+          Access content you've pinned to reuse in your Haiven inputs.
         </p>
+        <Tooltip title="Add your own reusable text snippets to the pinboard">
+          <Button
+            type="link"
+            className="copy-all"
+            onClick={() => setIsAddingSnippet(true)}
+          >
+            <RiAddBoxLine fontSize="large" /> ADD SNIPPET
+          </Button>
+        </Tooltip>
       </div>
     );
   };
@@ -101,6 +126,24 @@ const Pinboard = ({ isModalVisible, onClose }) => {
       className="pinboard-modal"
       mask={false}
     >
+      <Modal
+        title="Add new snippet"
+        open={isAddingSnippet}
+        onCancel={() => {
+          setIsAddingSnippet(false);
+          setNewSnippet("");
+        }}
+        onOk={addSnippet}
+        okText="Save"
+      >
+        <Input.TextArea
+          value={newSnippet}
+          onChange={(e) => setNewSnippet(e.target.value)}
+          placeholder="Enter your reusable snippet here, e.g. a description of your domain or architecture that you frequently need"
+          rows={15}
+        />
+      </Modal>
+
       {pinnedMessages.length === 0 && (
         <div className="empty-pinboard">
           <p className="empty-state-message">
@@ -113,7 +156,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
         <Card
           hoverable
           key={i}
-          className="pinboard-card"
+          className={`pinboard-card ${pinnedMessage.isUserDefined ? "user-defined" : ""}`}
           actions={[
             <div
               className="pinboard-card-action-items"
