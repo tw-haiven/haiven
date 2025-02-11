@@ -11,6 +11,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import { Card, Button, Input, Radio, Tooltip } from "antd";
 import { toast } from "react-toastify";
+import remarkGfm from "remark-gfm";
 const { TextArea } = Input;
 
 const CardsList = ({
@@ -138,6 +139,7 @@ const CardsList = ({
                     />
                   ) : (
                     <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
                       className="scenario-summary"
                       data-testid={`scenario-summary-${i}`}
                     >

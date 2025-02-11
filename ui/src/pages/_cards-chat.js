@@ -13,6 +13,7 @@ import {
 } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { toast } from "react-toastify";
 import ChatHeader from "./_chat_header";
 import ContextChoice from "../app/_context_choice";
@@ -394,8 +395,7 @@ const CardsChat = ({
                   >
                     <RiFileCopyLine fontSize="large" />
                   </Button>
-
-                  <ReactMarkdown>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {followUpResults[followUp.identifier]}
                   </ReactMarkdown>
                 </div>

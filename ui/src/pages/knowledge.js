@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Collapse } from "antd";
-
+import remarkGfm from "remark-gfm";
 const KnowledgePackPage = ({ contexts, documents }) => {
   const [renderedSnippets, setRenderedSnippets] = useState();
   const [renderedDocuments, setRenderedDocuments] = useState();
@@ -18,7 +18,9 @@ const KnowledgePackPage = ({ contexts, documents }) => {
               <div key={context.context + "-" + snippetIndex}>
                 <h4 className="snippet-title">{key}</h4>
                 <div className="snippet" size="small">
-                  <ReactMarkdown>{context.snippets[key]}</ReactMarkdown>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {context.snippets[key]}
+                  </ReactMarkdown>
                 </div>
               </div>
             );
