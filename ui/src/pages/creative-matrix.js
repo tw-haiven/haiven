@@ -2,8 +2,11 @@
 import React, { useState } from "react";
 import { Input, Button, Select, Collapse, Form } from "antd";
 import { UpOutlined } from "@ant-design/icons";
-import { GiSettingsKnobs } from "react-icons/gi";
-import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
+import {
+  RiSendPlane2Line,
+  RiStopCircleFill,
+  RiAttachment2,
+} from "react-icons/ri";
 import { toast } from "react-toastify";
 const { TextArea } = Input;
 import { parse } from "best-effort-json-parser";
@@ -211,8 +214,7 @@ const CreativeMatrix = ({ models }) => {
         key: "1",
         label: (
           <div className="advanced-prompting">
-            <GiSettingsKnobs className="advanced-prompting-icon" />{" "}
-            <span>Advanced Prompting</span>{" "}
+            Specify matrix parameters:
             <UpOutlined
               className="advanced-prompting-collapse-icon"
               rotate={isPromptOptionsMenuExpanded ? 180 : 0}
@@ -258,7 +260,7 @@ const CreativeMatrix = ({ models }) => {
           >
             <Input.TextArea
               disabled={loading}
-              placeholder="Describe the requirements that you'd like to break down"
+              placeholder="(Optional) Additional prompting about what you want to see in the matrix"
               autoSize={{ minRows: 1, maxRows: 4 }}
               onKeyDown={handleKeyDown}
               onChange={onChangePrompt}

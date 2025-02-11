@@ -1,8 +1,11 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
-import { GiSettingsKnobs } from "react-icons/gi";
+import {
+  RiSendPlane2Line,
+  RiStopCircleFill,
+  RiAttachment2,
+} from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
 import { Button, Drawer, Checkbox, Input, Select, Form, Collapse } from "antd";
 import { toast } from "react-toastify";
@@ -172,8 +175,7 @@ const Home = ({ models }) => {
         key: "1",
         label: (
           <div className="advanced-prompting">
-            <GiSettingsKnobs className="advanced-prompting-icon" />{" "}
-            <span>Advanced Prompting</span>{" "}
+            Specify scenario parameters:
             <UpOutlined
               className="advanced-prompting-collapse-icon"
               rotate={isPromptOptionsMenuExpanded ? 180 : 0}

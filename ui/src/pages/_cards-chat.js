@@ -4,10 +4,14 @@ import { fetchSSE } from "../app/_fetch_sse";
 import { Drawer, Button, Input, Collapse, Form } from "antd";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
-import { RiFileCopyLine, RiPushpinLine } from "react-icons/ri";
-import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
+import {
+  RiFileCopyLine,
+  RiPushpinLine,
+  RiAttachment2,
+  RiSendPlane2Line,
+  RiStopCircleFill,
+} from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
-import { GiSettingsKnobs } from "react-icons/gi";
 import ReactMarkdown from "react-markdown";
 import { toast } from "react-toastify";
 import ChatHeader from "./_chat_header";
@@ -417,8 +421,8 @@ const CardsChat = ({
         key: "1",
         label: (
           <div className="advanced-prompting">
-            <GiSettingsKnobs className="advanced-prompting-icon" />{" "}
-            <span>Advanced Prompting</span>{" "}
+            <RiAttachment2 className="advanced-prompting-icon" />{" "}
+            <span>Attach more context</span>{" "}
             <UpOutlined
               className="advanced-prompting-collapse-icon"
               rotate={isPromptOptionsMenuExpanded ? 180 : 0}
@@ -442,15 +446,6 @@ const CardsChat = ({
 
     return (
       <div className="card-chat-input-container">
-        <Collapse
-          className="prompt-options-menu"
-          items={items}
-          defaultActiveKey={["1"]}
-          ghost={isPromptOptionsMenuExpanded}
-          activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
-          onChange={onClickAdvancedPromptOptions}
-          collapsible="header"
-        />
         <Form
           onFinish={async () => await sendFirstStepPrompt()}
           form={form}
@@ -492,6 +487,15 @@ const CardsChat = ({
             )}
           </Form.Item>
         </Form>
+        <Collapse
+          className="prompt-options-menu"
+          items={items}
+          defaultActiveKey={["1"]}
+          ghost={isPromptOptionsMenuExpanded}
+          activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
+          onChange={onClickAdvancedPromptOptions}
+          collapsible="header"
+        />
       </div>
     );
   };

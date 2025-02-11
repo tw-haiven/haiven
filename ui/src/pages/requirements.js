@@ -3,9 +3,12 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { fetchSSE } from "../app/_fetch_sse";
 import { parse } from "best-effort-json-parser";
-import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
+import {
+  RiSendPlane2Line,
+  RiStopCircleFill,
+  RiAttachment2,
+} from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
-import { GiSettingsKnobs } from "react-icons/gi";
 import { Button, Drawer, Input, Select, Form, Collapse } from "antd";
 import { toast } from "react-toastify";
 import ContextChoice from "../app/_context_choice";
@@ -147,8 +150,8 @@ const RequirementsBreakdown = ({ contexts, models }) => {
         key: "1",
         label: (
           <div className="advanced-prompting">
-            <GiSettingsKnobs className="advanced-prompting-icon" />{" "}
-            <span>Advanced Prompting</span>{" "}
+            <RiAttachment2 className="advanced-prompting-icon" />{" "}
+            <span>Attach more context</span>{" "}
             <UpOutlined
               className="advanced-prompting-collapse-icon"
               rotate={isPromptOptionsMenuExpanded ? 180 : 0}
@@ -166,15 +169,6 @@ const RequirementsBreakdown = ({ contexts, models }) => {
 
     return (
       <div className="card-chat-input-container">
-        <Collapse
-          className="prompt-options-menu"
-          items={items}
-          defaultActiveKey={["1"]}
-          ghost={isPromptOptionsMenuExpanded}
-          activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
-          onChange={onClickAdvancedPromptOptions}
-          collapsible="header"
-        />
         <Form
           onFinish={async (value) => {
             const { question } = value;
@@ -216,6 +210,15 @@ const RequirementsBreakdown = ({ contexts, models }) => {
             )}
           </Form.Item>
         </Form>
+        <Collapse
+          className="prompt-options-menu"
+          items={items}
+          defaultActiveKey={["1"]}
+          ghost={isPromptOptionsMenuExpanded}
+          activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
+          onChange={onClickAdvancedPromptOptions}
+          collapsible="header"
+        />
       </div>
     );
   };
