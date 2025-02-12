@@ -1906,14 +1906,6 @@ a.feedback:hover {
     position: relative;
     left: 42px;
   }
-
-  .prompt-preview-actions {
-    .prompt-preview-edit-btn {
-      position: relative;
-      left: 42px;
-      bottom: 3px;
-    }
-  }
 }
 
 .image-uploader {
