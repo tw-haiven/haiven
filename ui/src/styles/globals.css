@@ -544,7 +544,7 @@ a.feedback:hover {
   }
 }
 
-.about-page {
+.about {
   padding: 2em;
 
   .disclaimer {
@@ -1475,7 +1475,7 @@ a.feedback:hover {
   justify-content: space-between;
 }
 
-.dashboard, .about {
+.dashboard {
   padding: 2em;
   display: flex;
   flex-direction: column;
