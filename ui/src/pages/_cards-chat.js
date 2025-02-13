@@ -12,8 +12,6 @@ import {
   RiStopCircleFill,
 } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { toast } from "react-toastify";
 import ChatHeader from "./_chat_header";
 import ContextChoice from "../app/_context_choice";
@@ -22,6 +20,7 @@ import CardsList from "../app/_cards-list";
 import useLoader from "../hooks/useLoader";
 import { addToPinboard } from "../app/_local_store";
 import PromptPreview from "../app/_prompt_preview";
+import MarkdownRenderer from "../app/_markdown_renderer";
 
 const CardsChat = ({
   promptId,
@@ -395,9 +394,9 @@ const CardsChat = ({
                   >
                     <RiFileCopyLine fontSize="large" />
                   </Button>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {followUpResults[followUp.identifier]}
-                  </ReactMarkdown>
+                  <MarkdownRenderer
+                    content={followUpResults[followUp.identifier]}
+                  />
                 </div>
               </>
             )}

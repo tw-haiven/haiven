@@ -1,7 +1,5 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Modal, Card, Button, Input, Tooltip } from "antd";
 import {
   RiDeleteBinLine,
@@ -12,6 +10,7 @@ import {
 import { ClockIcon } from "lucide-react";
 import { toast } from "react-toastify";
 import { getPinboardData } from "../app/_local_store";
+import MarkdownRenderer from "../app/_markdown_renderer";
 
 const Pinboard = ({ isModalVisible, onClose }) => {
   const [isMounted, setIsMounted] = useState(false);
@@ -178,9 +177,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
           ]}
         >
           <div className="pinboard-card-content">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {pinnedMessage.summary}
-            </ReactMarkdown>
+            <MarkdownRenderer content={pinnedMessage.summary} />
           </div>
         </Card>
       ))}

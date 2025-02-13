@@ -8,10 +8,9 @@ import {
   RiFileCopyLine,
   RiCloseFill,
 } from "react-icons/ri";
-import ReactMarkdown from "react-markdown";
 import { Card, Button, Input, Radio, Tooltip } from "antd";
 import { toast } from "react-toastify";
-import remarkGfm from "remark-gfm";
+import MarkdownRenderer from "./_markdown_renderer";
 const { TextArea } = Input;
 
 const CardsList = ({
@@ -138,13 +137,11 @@ const CardsList = ({
                       data-testid={`scenario-summary-${i}`}
                     />
                   ) : (
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
+                    <MarkdownRenderer
+                      content={scenario.summary}
                       className="scenario-summary"
-                      data-testid={`scenario-summary-${i}`}
-                    >
-                      {scenario.summary}
-                    </ReactMarkdown>
+                      dataTestId={`scenario-summary-${i}`}
+                    />
                   )}
                   {renderScenarioDetails(scenario)}
                 </div>

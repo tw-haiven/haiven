@@ -10,8 +10,7 @@ import {
   RiAttachment2,
 } from "react-icons/ri";
 import React, { forwardRef, useImperativeHandle, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import MarkdownRenderer from "./_markdown_renderer";
 import { addToPinboard } from "./_local_store";
 import { toast } from "react-toastify";
 
@@ -286,9 +285,7 @@ const ChatWidget = forwardRef(
                   {isError ? (
                     <p style={{ color: "red" }}>{isError}</p>
                   ) : (
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {props.message}
-                    </ReactMarkdown>
+                    <MarkdownRenderer content={props.message} />
                   )}
                 </div>
               );

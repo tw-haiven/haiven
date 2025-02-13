@@ -4,9 +4,8 @@ import { Upload, Button, Modal, Input } from "antd";
 import { fetchSSE } from "./_fetch_sse";
 import { RiImageAddLine, RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
 import useLoader from "../hooks/useLoader";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { toast } from "react-toastify";
+import MarkdownRenderer from "./_markdown_renderer";
 const { TextArea } = Input;
 
 const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
@@ -252,12 +251,10 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
           />
         ) : (
           <div className="prompt-preview-container">
-            <ReactMarkdown
+            <MarkdownRenderer
+              content={imageDescription}
               className="prompt-preview"
-              remarkPlugins={[[remarkGfm]]}
-            >
-              {imageDescription}
-            </ReactMarkdown>
+            />
           </div>
         )}
         <div className="button-container">
