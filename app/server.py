@@ -119,7 +119,6 @@ class Server:
                 "cards",
                 "scenarios",
                 "creative-matrix",
-                "requirements",
                 "about",
             ]
             paths = request.url.path.split("/")

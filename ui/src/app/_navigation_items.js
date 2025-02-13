@@ -52,12 +52,7 @@ export const initialiseMenuCategoriesForSidebar = () => {
       key: "analyse",
       label: "Analyse",
       icon: <RiBookReadLine style={{ fontSize: "large" }} />,
-      children: [
-        {
-          key: "requirements",
-          label: <Link href="/requirements">Requirements Breakdown</Link>,
-        },
-      ],
+      children: [],
     },
     coding: {
       key: "coding",
@@ -105,15 +100,6 @@ export const staticFeaturesForDashboard = () => {
       categories: ["ideate"],
       type: "static",
       link: "/scenarios",
-    },
-    {
-      identifier: "boba-requirements-breakdown",
-      title: "Requirements Breakdown",
-      help_prompt_description:
-        "Break down your requirement into multiple scenarios, based on a high level description.",
-      categories: ["analysis"],
-      type: "static",
-      link: "/requirements",
     },
   ];
 };

@@ -44,7 +44,6 @@ describe("Sidebar Component", () => {
       screen.getByRole("link", { name: /Chat with Haiven/i }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Ideate/i)).toBeInTheDocument();
-    expect(screen.getByText(/Analyse/i)).toBeInTheDocument();
     expect(screen.queryByText(/Architecture/i)).not.toBeInTheDocument(); // No hard-coded entry, so it shouldn't show up
   });
 

@@ -9,7 +9,6 @@ const Sidebar = ({ prompts }) => {
   const pathToKey = {
     "/scenarios": "scenarios",
     "/creative-matrix": "creative-matrix",
-    "/requirements": "requirements",
     "/knowledge-chat": "knowledgeChat",
     "/": "dashboard",
   };
