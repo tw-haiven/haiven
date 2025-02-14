@@ -54,9 +54,7 @@ class Server:
             user = request.session.get("user")
             json.dumps(user)
 
-            return self.templates.TemplateResponse(
-                "index.html", {"request": request, "user": user}
-            )
+            return RedirectResponse(url=self.url.login())
 
         @app.get(self.url.login())
         async def login(request: Request):
@@ -138,7 +136,6 @@ class Server:
                 "/auth",
                 "/login",
                 "/logout",
-                "/index.html",
                 "/static/main.css",
                 "/static/social-preview-image.png",
                 "/static/thoughtworks_logo_grey.png",
@@ -149,7 +146,7 @@ class Server:
                 try:
                     user = request.session.get("user")
                     if not user:
-                        return auth_error_response(request, "You are not logged in.")
+                        return RedirectResponse(url=self.url.login())
                     return await call_next(request)
                 except AssertionError as error:
                     print(f"AssertionError {error}")
