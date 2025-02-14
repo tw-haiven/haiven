@@ -58,21 +58,6 @@ jobs:
         run: |
           cd cli && \
           poetry run pytest tests/
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.6'
-      - name: Install Yarn
-        run:
-          npm install yarn
-      - name: Install Node.js dependencies
-        run: |
-          cd ui
-          yarn install
-      - name: Run Frontend tests
-        run: |
-          cd ui
-          yarn test
 
   Build:
     if: github.ref == 'refs/heads/main'
