@@ -54,7 +54,7 @@ class Server:
             user = request.session.get("user")
             json.dumps(user)
 
-            return RedirectResponse(url=self.url.login())
+            return RedirectResponse(url=self.url.boba())
 
         @app.get(self.url.login())
         async def login(request: Request):
