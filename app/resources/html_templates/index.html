@@ -36,27 +36,15 @@
     </div>
     <div class="initial-content">
         <div id="main" role="main">
-            <article>
-    
-                <section class="page__content" itemprop="text">
-                    
-                        <div>
-                            {% if user %}    
-                                <h2>Hello {{ user["name"] }}!</h2>
-                                <p>
-                                    <a href="/boba">Haiven</a>
-                                    <br>
-                                    <a href="/logout">Logout</a>
-                                </p>
-                            {% else %}
-                                <a href="/login">Login</a>
-                            {% endif %}
-                        </div>
-    
-                    
-    
-                </section>
-            </article>
+            <div class="login-container">
+                {% if user %}
+                    <h2>Hello {{ user["name"] }}!</h2>
+                    <a href="/boba">Haiven</a>
+                    <a href="/logout">Logout</a>
+                {% else %}
+                    <a href="/login">Login</a>
+                {% endif %}
+            </div>
         </div>
     
     </div>

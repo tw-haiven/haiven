@@ -943,6 +943,14 @@ body { display: -webkit-box; display: -ms-flexbox; display: flex; min-height: 10
 
 .initial-content, .search-content { flex: 1 0 auto; }
 
+.login-container {
+  margin-top: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  font-size: large !important;
+}
+
 @media (min-width: 64em) { .page { float: right; width: calc(100% - 200px); padding-right: 200px; } }
 @media (min-width: 80em) { .page { width: calc(100% - 300px); padding-right: 300px; } }
 .page .page__inner-wrap { float: left; margin-top: 1em; margin-left: 0; margin-right: 0; width: 100%; clear: both; }
