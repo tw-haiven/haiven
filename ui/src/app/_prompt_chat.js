@@ -3,6 +3,7 @@
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
 import { Input, Select } from "antd";
+import { toast } from "react-toastify";
 
 const { TextArea } = Input;
 import ChatWidget from "./_chat";
@@ -104,8 +105,9 @@ const PromptChat = ({
         const errorBody = await response.json();
         const detailedErrorMessage =
           errorBody.detail || "An unknown error occurred.";
-        // Return error in the format that ChatWidget expects
-        return `[ERROR]: ${detailedErrorMessage}`;
+        const errorMessage = `ERROR: ${detailedErrorMessage}`;
+
+        throw new Error(errorMessage);
       }
 
       const chatId = response.headers.get("X-Chat-ID");
@@ -118,8 +120,7 @@ const PromptChat = ({
 
       return response;
     } catch (error) {
-      // Return error in the format that ChatWidget expects
-      return `[ERROR]: ${error.message}`;
+      toast.error(error.message);
     }
   };
 

@@ -282,7 +282,6 @@ class ServerChatSessionMemory:
         self.USER_CHATS[session_key]["chat"] = chat_session
 
     def get_chat(self, session_key: str):
-        self.clear_old_entries()
         if session_key not in self.USER_CHATS:
             raise ValueError(
                 f"Invalid identifier {session_key}, your chat session might have expired"
