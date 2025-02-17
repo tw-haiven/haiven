@@ -7,12 +7,14 @@ import * as Diff from "diff";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getRenderedPrompt } from "./_boba_api";
+import PromptSampleInput from "./_prompt_sample_input";
 
 export default function PromptPreview({
   renderPromptRequest,
   startNewChat = () => {},
   setUsePromptId = () => {},
   disableEdit = false,
+  sampleInput = "",
 }) {
   const [isPromptPreviewModalVisible, setPromptPreviewModalVisible] =
     useState(false);
@@ -126,7 +128,9 @@ export default function PromptPreview({
   };
 
   return (
-    <>
+    <div className="prompt-preview-container">
+      <PromptSampleInput sampleInput={sampleInput} />
+
       <Button
         className="prompt-preview-btn"
         type="link"
@@ -248,6 +252,6 @@ export default function PromptPreview({
           </Button>
         </div>
       </Modal>
-    </>
+    </div>
   );
 }

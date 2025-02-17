@@ -250,12 +250,10 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
             }}
           />
         ) : (
-          <div className="prompt-preview-container">
-            <MarkdownRenderer
-              content={imageDescription}
-              className="prompt-preview"
-            />
-          </div>
+          <MarkdownRenderer
+            content={imageDescription}
+            className="prompt-preview"
+          />
         )}
         <div className="button-container">
           <Button

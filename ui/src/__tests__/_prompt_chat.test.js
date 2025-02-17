@@ -9,6 +9,7 @@ describe("PromptChat Component", () => {
       identifier: "1",
       title: "User person creation",
       help_user_input: "Help text for user person creation",
+      help_sample_input: "Sample input for the prompt",
       help_prompt_description: "This is prompt decription tooltip",
     },
     { identifier: "2", title: "Contract Test Generation" },

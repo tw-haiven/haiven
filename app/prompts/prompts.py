@@ -296,6 +296,7 @@ class PromptList:
                     "help_prompt_description"
                 ),
                 "help_user_input": prompt.metadata.get("help_user_input"),
+                "help_sample_input": prompt.metadata.get("help_sample_input"),
                 "follow_ups": follow_ups,
                 "type": prompt.metadata.get("type", "chat"),
                 "scenario_queries": prompt.metadata.get("scenario_queries"),

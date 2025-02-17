@@ -433,6 +433,7 @@ const CardsChat = ({
           <PromptPreview
             renderPromptRequest={buildRequestDataCardBuilding}
             disableEdit={true}
+            sampleInput={selectedPromptConfiguration?.help_sample_input}
           />
         ),
         showArrow: false,

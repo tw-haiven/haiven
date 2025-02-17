@@ -586,9 +586,31 @@ a.feedback:hover {
   gap: 0.5em;
 }
 
+.prompt-preview-container {
+  display: flex;
+}
+
+.prompt-example-container {
+  .show-prompt-example-icon {
+    font-size: 23px;
+    margin-left: 20px;
+    margin-top: 2px;
+    color: var(--color-dark-blue);
+    height: auto;
+  }
+}
+
+.prompt-example-modal {
+  width: 700px !important;
+  .ant-modal-body {
+    max-height: 450px;
+  }
+  .ant-modal-title {
+    font-size: 23px;
+  }
+}
+
 .advanced-prompting-collapse-icon {
-  position: relative;
-  top: 1px;
   font-size: small;
 
   svg {
@@ -929,8 +951,9 @@ a.feedback:hover {
 }
 
 .prompt-preview-btn {
-  float: right;
-  padding-right: 0px;
+  height: auto;
+  align-items: flex-start;
+  margin-top: 4px;
 }
 
 .prompt-preview-modal {

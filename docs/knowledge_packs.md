@@ -117,6 +117,7 @@ Every prompt file has a frontmatter block that defines metadata about the prompt
 - `categories`: `["category1", "category2"]` // provide a list of task categories where this prompt should show up. Valid values: "analysis", "coding", "testing", "architecture"
 - `help_prompt_description`: "Describe to the user what the prompt does"
 - `help_user_input`: "Describe for the user what type of input they need to give in order to get the best results from the prompt"
+- `help_sample_input`: "Provide an example of what the user input could look like"
 
 **Prompt content**
 

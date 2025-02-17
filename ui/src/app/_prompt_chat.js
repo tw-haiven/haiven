@@ -2,7 +2,7 @@
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
-import { Input, Select } from "antd";
+import { Input, Select, Button } from "antd";
 import { toast } from "react-toastify";
 
 const { TextArea } = Input;
@@ -208,6 +208,7 @@ const PromptChat = ({
       renderPromptRequest={renderPromptRequest}
       startNewChat={startNewChat}
       setUsePromptId={setUsePromptId}
+      sampleInput={selectedPrompt?.help_sample_input}
     />
   ) : null;
 
