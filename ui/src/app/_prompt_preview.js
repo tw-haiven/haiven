@@ -6,6 +6,7 @@ import { RiClipboardLine, RiEdit2Line } from "react-icons/ri";
 import * as Diff from "diff";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { toast } from "react-toastify";
 import { getRenderedPrompt } from "./_boba_api";
 import PromptSampleInput from "./_prompt_sample_input";
 
@@ -117,6 +118,7 @@ export default function PromptPreview({
 
   const handleCopy = () => {
     navigator.clipboard.writeText(prompt || promptData.renderedPrompt);
+    toast.success("Content copied successfully!");
   };
 
   const onClosePromptPreviewModal = () => {
@@ -140,22 +142,21 @@ export default function PromptPreview({
       </Button>
 
       <Modal
-        className="prompt-preview-modal"
+        className="view-or-edit-details-modal"
         title={disableEdit ? "View Prompt" : "View/Edit Prompt"}
         open={isPromptPreviewModalVisible}
         onCancel={onClosePromptPreviewModal}
-        width={800}
       >
-        <div className="prompt-preview-header">
+        <div className="metadata-header">
           <p>
             This is the text that will be sent to the AI model. It includes your
             input and any contexts you selected.
           </p>
 
-          <div className="prompt-preview-actions">
+          <div className="actions">
             {!disableEdit && (
               <Button
-                className="prompt-preview-edit-btn"
+                className="edit-action-link"
                 onClick={() => setOnEditMode(true)}
                 disabled={onEditMode}
               >
@@ -167,7 +168,7 @@ export default function PromptPreview({
                 EDIT
               </Button>
             )}
-            <Button className="prompt-preview-copy-btn" onClick={handleCopy}>
+            <Button className="copy-action-link" onClick={handleCopy}>
               <RiClipboardLine
                 style={{
                   fontSize: "large",
@@ -179,7 +180,7 @@ export default function PromptPreview({
         </div>
         {onEditMode ? (
           <textarea
-            className="prompt-editor"
+            className="content-editor"
             defaultValue={prompt}
             onChange={(e) => {
               setPrompt(e.target.value);
@@ -188,7 +189,7 @@ export default function PromptPreview({
           ></textarea>
         ) : (
           <ReactMarkdown
-            className="prompt-preview"
+            className="content-viewer"
             remarkPlugins={[[remarkGfm]]}
             components={{
               del(props) {
@@ -199,16 +200,16 @@ export default function PromptPreview({
             {prompt}
           </ReactMarkdown>
         )}
-        <div className="button-container">
+        <div className="modal-footer">
           <Button
-            className="prompt-preview-close-btn"
+            className="close-modal-link"
             onClick={onClosePromptPreviewModal}
           >
             CLOSE
           </Button>
           {onEditMode && !disableEdit && (
             <Button
-              className="prompt-preview-start-chat-btn"
+              className="proceed-to-action-link"
               disabled={!anyUnsavedChanges}
               onClick={() => {
                 setUsePromptId(false);

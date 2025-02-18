@@ -217,22 +217,21 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
       </div>
 
       <Modal
-        className="prompt-preview-modal"
+        className="view-or-edit-details-modal"
         title="View/Edit Image Description"
         open={showImageDescriptionModal}
         closable={true}
         onCancel={onCloseImageDescriptionModal}
-        width={800}
       >
-        <div className="prompt-preview-header">
+        <div className="metadata-header">
           <p style={{ position: "relative", left: "3px" }}>
             This is the AI-generated description of your image. You can edit it
             if needed.
           </p>
-          <div className="prompt-preview-actions">
+          <div className="actions">
             <Button
               style={{ position: "relative", left: "42px", bottom: "3px" }}
-              className="prompt-preview-edit-btn"
+              className="edit-action-link"
               onClick={() => setIsEditMode(true)}
               disabled={isEditMode}
             >
@@ -242,7 +241,7 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
         </div>
         {isEditMode ? (
           <textarea
-            className="prompt-editor"
+            className="content-editor"
             value={editedDescription}
             onChange={(e) => {
               setEditedDescription(e.target.value);
@@ -252,19 +251,19 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
         ) : (
           <MarkdownRenderer
             content={imageDescription}
-            className="prompt-preview"
+            className="content-viewer"
           />
         )}
-        <div className="button-container">
+        <div className="modal-footer">
           <Button
-            className="prompt-preview-close-btn"
+            className="close-modal-link"
             onClick={onCloseImageDescriptionModal}
           >
             CLOSE
           </Button>
           {isEditMode && (
             <Button
-              className="prompt-preview-start-chat-btn"
+              className="proceed-to-action-link"
               disabled={!hasUnsavedChanges}
               onClick={() => {
                 onImageDescriptionChange(editedDescription);

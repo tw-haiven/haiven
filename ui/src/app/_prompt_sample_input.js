@@ -2,6 +2,9 @@
 import { useState } from "react";
 import { Modal, Button } from "antd";
 import { HiBookOpen } from "react-icons/hi";
+import { toast } from "react-toastify";
+import { RiClipboardLine } from "react-icons/ri";
+
 import MarkdownRenderer from "./_markdown_renderer";
 
 export default function PromptSampleInput({ sampleInput }) {
@@ -15,32 +18,57 @@ export default function PromptSampleInput({ sampleInput }) {
     setEnableSampleInputModal(false);
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(sampleInput);
+    toast.success("Content copied successfully!");
+  };
+
   return (
     sampleInput && (
-      <div className="prompt-example-container">
+      <div className="prompt-sample-input-container">
         <Button
-          className="show-prompt-example-link"
+          className="prompt-sample-input-link"
           type="link"
           onClick={showSampleInputModal}
         >
           <span>Sample Input</span>
-          <HiBookOpen className="prompt-example-icon" />
+          <HiBookOpen className="prompt-sample-input-icon" />
         </Button>
 
         <Modal
-          className="prompt-example-modal"
+          className="view-or-edit-details-modal"
           title="Sample Input"
           open={enableSampleInputModal}
           closable={false}
           onOk={hideSampleInputModal}
           onCancel={hideSampleInputModal}
-          footer={[
-            <Button key="Ok" onClick={hideSampleInputModal}>
-              Ok
-            </Button>,
-          ]}
         >
-          <MarkdownRenderer content={sampleInput} />
+          <div className="metadata-header">
+            <p>
+              This is a sample input for reference. It demonstrates the expected
+              format and structure for your input.
+            </p>
+            <div className="actions">
+              <Button className="copy-action-link" onClick={handleCopy}>
+                <RiClipboardLine
+                  style={{
+                    fontSize: "large",
+                  }}
+                />{" "}
+                COPY
+              </Button>
+            </div>
+          </div>
+          <MarkdownRenderer className="content-viewer" content={sampleInput} />
+          <div className="modal-footer">
+            <Button
+              className="close-modal-link"
+              key="Ok"
+              onClick={hideSampleInputModal}
+            >
+              OK
+            </Button>
+          </div>
         </Modal>
       </div>
     )
