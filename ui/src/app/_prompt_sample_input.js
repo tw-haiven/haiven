@@ -19,11 +19,12 @@ export default function PromptSampleInput({ sampleInput }) {
     sampleInput && (
       <div className="prompt-example-container">
         <Button
-          className="show-prompt-example-icon"
+          className="show-prompt-example-link"
           type="link"
           onClick={showSampleInputModal}
         >
-          <HiBookOpen />
+          <span>Sample Input</span>
+          <HiBookOpen className="prompt-example-icon" />
         </Button>
 
         <Modal

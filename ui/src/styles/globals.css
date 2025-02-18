@@ -588,15 +588,24 @@ a.feedback:hover {
 
 .prompt-preview-container {
   display: flex;
+  gap: 150px;
 }
 
 .prompt-example-container {
-  .show-prompt-example-icon {
-    font-size: 23px;
+  .show-prompt-example-link {
     margin-left: 20px;
     margin-top: 2px;
     color: var(--color-dark-blue);
     height: auto;
+    gap: 5px;
+    span {
+      color: var(--color-flamingo);
+      font-size: 14px;
+    }
+    .prompt-example-icon {
+      font-size: 24px;
+      padding-top: 3px;
+    }
   }
 }
 
@@ -952,8 +961,6 @@ a.feedback:hover {
 
 .prompt-preview-btn {
   height: auto;
-  align-items: flex-start;
-  margin-top: 4px;
 }
 
 .prompt-preview-modal {
