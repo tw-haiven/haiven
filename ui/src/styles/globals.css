@@ -662,29 +662,27 @@ a.feedback:hover {
       }
     }
 
-    .ant-upload-list-item {
-      margin-top: 2px !important;
-      font-size: 12px !important;
-      width: 225px;
-
-      .ant-upload-icon {
-        top: 3px;
-        position: relative;
-      }
-      .ant-upload-list-item-name {
-        padding: 0 !important;
-      }
+    .ant-upload-list {
+      padding-left: 14px;
     }
-
-    .ant-upload-list-item {
-      margin-left: 5px;
+    .ant-upload-list-item-container {
+      div {
+        justify-content: normal !important;
+        gap: 0px !important;
+        .ant-btn {
+          margin: 0px !important;
+        }
+        span {
+          width: 180px !important;
+        }
+      }
     }
   }
 
   .upload-image-content {
     margin-top: auto;
     .loading-image {
-      margin-left: 103px;
+      margin-left: 97px;
       margin-bottom: 30px;
 
       .user-input {
