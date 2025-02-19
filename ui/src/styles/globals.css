@@ -674,6 +674,9 @@ a.feedback:hover {
     .ant-upload-list-item-container {
       .ant-upload-list-item {
         width: 220px;
+        .ant-progress {
+          display: none;
+        }
         .ant-upload-list-item-name {
           padding-right: 0px;
         }
