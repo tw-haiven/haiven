@@ -739,13 +739,6 @@ a.feedback:hover {
   }
 }
 
-.image-description-modal {
-  textarea {
-    resize: none;
-    height: 400px;
-  }
-}
-
 .prompt-chat-creative-matrix {
   padding-left: 16px;
   margin-bottom: 1em;
@@ -1107,7 +1100,7 @@ a.feedback:hover {
     }
   }
 }
-.view-or-edit-details-modal .ant-modal-footer, .close-confirmation-modal .ant-modal-footer, .image-description-modal .ant-modal-footer {
+.view-or-edit-details-modal .ant-modal-footer, .close-confirmation-modal .ant-modal-footer {
   display: none;
 }
 
@@ -1835,82 +1828,6 @@ a.feedback:hover {
   flex-direction: column;
 }
 
-.image-description-editor {
-  background-color: var(--color-light-gray);
-  font-family: inherit;
-  line-height: 1.75em;
-  resize: none;
-  height: 67svh;
-  border: none;
-  width: 90%;
-  margin-left: 1em;
-  margin-right: 1em;
-  margin-bottom: 0.6em;
-  padding-left: 2em;
-  padding-right: 2em;
-  padding-top: 2em;
-}
-
-.image-uploader {
-  .ant-upload-list-item {
-    &:hover {
-      .ant-upload-list-item-actions {
-        opacity: 1 !important;
-        visibility: visible !important;
-      }
-    }
-    
-    .ant-upload-list-item-actions {
-      opacity: 1 !important;
-      visibility: visible !important;
-      position: static !important;
-      display: inline-flex !important;
-    }
-
-    .ant-upload-list-item-card-actions {
-      opacity: 1 !important;
-      visibility: visible !important;
-      position: static !important;
-      display: inline-flex !important;
-    }
-  }
-}
-
-.upload-button {
-  background-color: var(--color-light-gray);
-  color: var(--color-dark-gray);
-
-  &:hover {
-    background-color: var(--color-light-gray) !important;
-    color: var(--color-dark-gray) !important;
-    border-color: var(--color-dark-gray) !important;
-  }
-}
-
-.upload-list-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 0;
-  width: 225px;
-}
-
-.upload-file-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 180px;
-  font-size: 12px;
-}
-
-.upload-delete-button {
-  visibility: visible;
-  display: inline-flex;
-  align-items: center;
-  padding: 0 8px;
-  margin-left: 8px;
-}
-
 .delete-icon {
   font-size: 12px;
   color: var(--color-dark-gray);
@@ -1918,25 +1835,6 @@ a.feedback:hover {
 
 .edit-icon {
   font-size: large;
-}
-
-.image-uploader {
-  .ant-upload-list-item {
-    &:hover {
-      .ant-upload-list-item-actions {
-        opacity: 1 !important;
-        visibility: visible !important;
-      }
-    }
-    
-    .ant-upload-list-item-actions,
-    .ant-upload-list-item-card-actions {
-      opacity: 1 !important;
-      visibility: visible !important;
-      position: static !important;
-      display: inline-flex !important;
-    }
-  }
 }
 
 .quick-actions-wrapper {

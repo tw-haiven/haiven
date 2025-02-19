@@ -20,18 +20,14 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
     useState(false);
 
   const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-    if (!isJpgOrPng) {
-      toast.error("You can only upload JPG/PNG file!");
-      return false;
-    }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      toast.error("Image must smaller than 2MB!");
+      toast.error("Image must be smaller than 2MB!");
+      handleRemove(file);
       return false;
     }
     setImage(file);
-    return false;
+    return true;
   };
 
   const handleRemove = (file) => {
@@ -50,6 +46,7 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
     beforeUpload: beforeUpload,
     onRemove: handleRemove,
     maxCount: 1,
+    accept: "image/png, image/jpeg",
   };
 
   const disableImageDescriptionLink = () => {
@@ -120,7 +117,8 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
           }}
         >
           <div className="upload-placeholder">
-            Drop your image here, or <span className="upload-text">upload</span>
+            Drop your image (less than 2MB) here, or
+            <span className="upload-text">upload</span>
           </div>
         </Button>
       </Upload>
