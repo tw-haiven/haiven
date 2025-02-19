@@ -1,6 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { ActionIconGroup, ProChat, useProChat } from "@ant-design/pro-chat";
-import { css, cx, useTheme } from "antd-style";
+import { useTheme } from "antd-style";
 import { Button, Collapse, Form, Input, Modal } from "antd";
 import { UpOutlined } from "@ant-design/icons";
 import { PinIcon, RotateCw, Trash, Copy, Edit } from "lucide-react";
@@ -88,28 +88,6 @@ const ChatWidget = forwardRef(
     const defaultActions = [copy, pin, regenerate, del];
 
     const theme = useTheme();
-    const ChatStylingClass = cx(
-      css(`
-          .ant-pro-chat-list-item-message-content {
-            background-color: #ffffff;
-          }
-          .ant-pro-chat-list-item-message-content h1, h2, h3, h4 {
-            font-weight: 630;
-          }
-          .ant-pro-chat-list-item-message-content h1 {
-            font-size: 1.7em;
-          }
-          .ant-pro-chat-list-item-message-content h2 {
-            font-size: 1.5em;
-          }
-          .ant-pro-chat-list-item-message-content h3 {
-            font-size: 1.3em;
-          }
-          .ant-pro-chat-list-item-message-content h4, h5 {
-            font-size: 1.1em;
-          }
-      `),
-    );
 
     const userProfile = {
       name: "User",
@@ -243,7 +221,6 @@ const ChatWidget = forwardRef(
           style={{
             height: "100%", // this is important for the chat_exploration styling!
           }}
-          className={ChatStylingClass}
           showTitle
           assistantMeta={{
             avatar: "/boba/shining-fill-white.svg",
