@@ -11,7 +11,6 @@ const { TextArea } = Input;
 const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
   const [image, setImage] = useState();
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
-  const [fileList, setFileList] = useState([]);
   const [showImageDescriptionModal, setShowImageDescriptionModal] =
     useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -31,7 +30,6 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
       toast.error("Image must smaller than 2MB!");
       return false;
     }
-    setFileList([file]);
     setImage(file);
     return false;
   };
@@ -41,7 +39,6 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
       abortLoad();
     }
 
-    setFileList([]);
     setImage(null);
     onImageDescriptionChange("");
     return true;
@@ -52,74 +49,7 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
     className: "image-uploader",
     beforeUpload: beforeUpload,
     onRemove: handleRemove,
-    disabled: false,
-    fileList: fileList,
     maxCount: 1,
-    showUploadList: {
-      showRemoveIcon: true,
-      removeIcon: (
-        <RiDeleteBinLine
-          style={{
-            fontSize: "16px",
-            color: "#666666ff",
-            visibility: "visible",
-            display: "inline-flex",
-          }}
-        />
-      ),
-      showPreviewIcon: false,
-    },
-    itemRender: (originNode, file) => {
-      const truncateFilename = (filename, maxLength = 20) => {
-        const extension = filename.split(".").pop();
-        const name = filename.substring(0, filename.lastIndexOf("."));
-        if (name.length <= maxLength) return filename;
-        return `${name.substring(0, maxLength)}...${extension}`;
-      };
-
-      return (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "4px 0",
-            width: "225px",
-          }}
-        >
-          <span
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              maxWidth: "180px",
-              fontSize: "12px",
-            }}
-          >
-            {truncateFilename(file.name)}
-          </span>
-          <Button
-            type="text"
-            icon={
-              <RiDeleteBinLine
-                style={{
-                  fontSize: "12px",
-                  color: "#666666ff",
-                }}
-              />
-            }
-            onClick={() => handleRemove(file)}
-            style={{
-              visibility: "visible",
-              display: "inline-flex",
-              alignItems: "center",
-              padding: "0 8px",
-              marginLeft: "8px",
-            }}
-          />
-        </div>
-      );
-    },
   };
 
   const disableImageDescriptionLink = () => {
@@ -224,18 +154,17 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
         onCancel={onCloseImageDescriptionModal}
       >
         <div className="metadata-header">
-          <p style={{ position: "relative", left: "3px" }}>
+          <p>
             This is the AI-generated description of your image. You can edit it
             if needed.
           </p>
           <div className="actions">
             <Button
-              style={{ position: "relative", left: "42px", bottom: "3px" }}
               className="edit-action-link"
               onClick={() => setIsEditMode(true)}
               disabled={isEditMode}
             >
-              <RiEdit2Line style={{ fontSize: "large" }} /> EDIT
+              <RiEdit2Line /> EDIT
             </Button>
           </div>
         </div>

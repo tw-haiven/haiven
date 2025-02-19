@@ -663,17 +663,13 @@ a.feedback:hover {
     }
 
     .ant-upload-list {
-      padding-left: 14px;
+      padding-left: 5px;
     }
     .ant-upload-list-item-container {
-      div {
-        justify-content: normal !important;
-        gap: 0px !important;
-        .ant-btn {
-          margin: 0px !important;
-        }
-        span {
-          width: 180px !important;
+      .ant-upload-list-item {
+        width: 220px;
+        .ant-upload-list-item-name {
+          padding-right: 0px;
         }
       }
     }
@@ -681,9 +677,9 @@ a.feedback:hover {
 
   .upload-image-content {
     margin-top: auto;
+
     .loading-image {
-      margin-left: 97px;
-      margin-bottom: 30px;
+      margin-bottom: 15px;
 
       .user-input {
         padding-left: 0 !important;
@@ -695,7 +691,7 @@ a.feedback:hover {
         }
     }
     .view-image-description-link {
-      padding-left: 3.5em;
+      padding-left: 0em;
     }
   }
 }
@@ -976,6 +972,7 @@ a.feedback:hover {
       margin-left: 3em;
       margin-right: 2em;
       gap: 100px;
+      justify-content: space-between;
     }
 
     .content-viewer {
