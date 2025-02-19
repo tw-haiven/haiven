@@ -653,6 +653,12 @@ a.feedback:hover {
             display: inline-flex;
             font-weight: 500;
           }
+          .hint {
+            font-weight: 300;
+            font-size: 11px;
+            margin-top: 7px;
+            margin-bottom: 8px;
+          }
         }
 
         .ant-btn-icon {

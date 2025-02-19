@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Upload, Button, Modal, Input } from "antd";
 import { fetchSSE } from "./_fetch_sse";
-import { RiImageAddLine, RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
+import { RiImageAddLine, RiEdit2Line } from "react-icons/ri";
 import useLoader from "../hooks/useLoader";
 import { toast } from "react-toastify";
 import MarkdownRenderer from "./_markdown_renderer";
@@ -23,8 +23,7 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
       toast.error("Image must be smaller than 2MB!");
-      handleRemove(file);
-      return false;
+      return Upload.LIST_IGNORE;
     }
     setImage(file);
     return true;
@@ -117,8 +116,8 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
           }}
         >
           <div className="upload-placeholder">
-            Drop your image (less than 2MB) here, or
-            <span className="upload-text">upload</span>
+            Drop your image here, or <span className="upload-text">upload</span>
+            <div className="hint">Size must be &lt; 2MB</div>
           </div>
         </Button>
       </Upload>
