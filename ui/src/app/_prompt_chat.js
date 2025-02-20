@@ -151,10 +151,14 @@ const PromptChat = ({
         <HelpTooltip
           text={
             <>
-              <p>Get AI to describe an image (e.g. a diagram) to help with your input. You can edit this description before you start the chat.</p>
-              <p>Only JPEG/JPG/PNG types are allowed.</p>
+              <div>
+                Get AI to describe an image (e.g. a diagram) to help with your
+                input. You can edit this description before you start the chat.
+              </div>
+              Only JPEG/JPG/PNG types are allowed.
             </>
-             } />
+          }
+        />
       </label>
       <DescribeImage
         onImageDescriptionChange={setImageDescription}
