@@ -1,8 +1,8 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import { Tabs } from "antd";
 import { getDisclaimerAndGuidelines } from "../app/_boba_api";
+import MarkdownRenderer from "../app/_markdown_renderer";
 
 const AboutPage = ({}) => {
   const [disclaimerConfig, setDisclaimerConfig] = useState({});
@@ -59,11 +59,10 @@ const AboutPage = ({}) => {
       key: "guidelines",
       label: "Disclaimer & Guidelines",
       children: (
-        <div className="disclaimer">
-          <ReactMarkdown>
-            {disclaimerConfig?.message ?? "No guidelines configured."}
-          </ReactMarkdown>
-        </div>
+        <MarkdownRenderer
+          className="disclaimer"
+          content={disclaimerConfig?.message ?? "No guidelines configured."}
+        />
       ),
     },
     {
