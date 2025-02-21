@@ -301,6 +301,13 @@ a.feedback:hover {
 .chat-message tr:hover {
   background-color: #f8f8f8;
 }
+
+.ant-pro-chat-message-content .ant-btn-icon {
+  svg {
+    width: 14px;
+    stroke-width: 1.5;
+  }
+}
 /* ************************* */
 
 #canvas {

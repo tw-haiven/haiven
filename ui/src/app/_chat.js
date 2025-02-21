@@ -40,7 +40,9 @@ const ChatWidget = forwardRef(
     });
 
     const pin = {
-      icon: PinIcon,
+      icon: () => {
+        return <PinIcon data-testid="pin-action" />;
+      },
       key: "pin",
       label: "Pin",
       execute: (props) => {
@@ -48,34 +50,42 @@ const ChatWidget = forwardRef(
       },
     };
     const regenerate = {
+      icon: () => {
+        return <RotateCw data-testid="regenerate-action" />;
+      },
       key: "regenerate",
       label: "Regenerate",
-      icon: RotateCw,
       execute: (props) => {
         proChat.resendMessage(props["data-id"]);
       },
     };
     const del = {
+      icon: () => {
+        return <Trash data-testid="delete-action" />;
+      },
       key: "del",
       label: "Delete",
-      icon: Trash,
       execute: (props) => {
         proChat.deleteMessage(props["data-id"]);
       },
     };
     const copy = {
+      icon: () => {
+        return <Copy data-testid="copy-action" />;
+      },
       key: "copy",
       label: "copy",
-      icon: Copy,
       execute: (props) => {
         navigator.clipboard.writeText(props.message);
         toast.success("Copy Success");
       },
     };
     const edit = {
+      icon: () => {
+        return <Edit data-testid="edit-action" />;
+      },
       key: "edit",
       label: "Edit",
-      icon: Edit,
       execute: (props) => {
         setEditingMessage({
           id: props["data-id"],
