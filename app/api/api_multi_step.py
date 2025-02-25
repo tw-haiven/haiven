@@ -56,7 +56,7 @@ class ApiMultiStep(HaivenBaseApi):
                 if prompt_data.previous_promptid is not None:
                     output_framing = prompts.get(
                         prompt_data.previous_promptid
-                    ).metadata["output_framing"]
+                    ).metadata.get("output_framing", "")
 
                     user_input = f"""
                         {prompt_data.userinput}
@@ -119,7 +119,7 @@ class ApiMultiStep(HaivenBaseApi):
 {prompt_data.first_step_input}
 
 ## What I have so far
-{prompts.get(prompt_data.previous_promptid).metadata["output_framing"]}
+{prompts.get(prompt_data.previous_promptid).metadata.get("output_framing", "")}
 
 I want to focus on this item:
 
