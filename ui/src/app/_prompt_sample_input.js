@@ -30,7 +30,7 @@ export default function PromptSampleInput({ sampleInput }) {
           type="link"
           onClick={showSampleInputModal}
         >
-          <span>Sample Input</span>
+          Sample Input
           <RiBookOpenFill className="prompt-sample-input-icon" />
         </Button>
 

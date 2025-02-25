@@ -602,11 +602,9 @@ a.feedback:hover {
   .prompt-sample-input-link {
     margin-left: 20px;
     margin-top: 2px;
-    color: var(--color-dark-blue);
     height: auto;
     gap: 5px;
     span {
-      color: var(--color-flamingo);
       font-size: 14px;
     }
     .prompt-sample-input-icon {
