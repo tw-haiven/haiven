@@ -1,9 +1,8 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { useState } from "react";
 import { Modal, Button } from "antd";
-import { HiBookOpen } from "react-icons/hi";
 import { toast } from "react-toastify";
-import { RiClipboardLine } from "react-icons/ri";
+import { RiClipboardLine, RiBookOpenFill } from "react-icons/ri";
 
 import MarkdownRenderer from "./_markdown_renderer";
 
@@ -32,7 +31,7 @@ export default function PromptSampleInput({ sampleInput }) {
           onClick={showSampleInputModal}
         >
           <span>Sample Input</span>
-          <HiBookOpen className="prompt-sample-input-icon" />
+          <RiBookOpenFill className="prompt-sample-input-icon" />
         </Button>
 
         <Modal
