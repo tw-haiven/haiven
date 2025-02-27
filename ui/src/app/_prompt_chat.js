@@ -185,6 +185,7 @@ const PromptChat = ({
           options={documents}
           value={selectedDocument?.key}
           defaultValue={"base"}
+          data-testid="document-select"
         ></Select>
       </div>
     ) : (

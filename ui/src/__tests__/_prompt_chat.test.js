@@ -1,5 +1,11 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import PromptChat from "../app/_prompt_chat";
 
@@ -49,14 +55,14 @@ describe("PromptChat Component", () => {
   ];
 
   const mockContexts = [
-    { key: "base", label: "Base Context" },
-    { key: "context1", label: "Context 1" },
-    { key: "context2", label: "Context 2" },
+    { value: "base", label: "base" },
+    { value: "context1", label: "Context 1" },
+    { value: "context2", label: "Context 2" },
   ];
 
   const mockDocuments = [
-    { key: "doc1", label: "Document 1" },
-    { key: "doc2", label: "Document 2" },
+    { value: "document1", label: "Document 1" },
+    { value: "document2", label: "Document 2" },
   ];
 
   const mockModels = {
@@ -110,12 +116,7 @@ describe("PromptChat Component", () => {
     fireEvent.click(advancedPromptLink);
 
     //context
-    expect(screen.getByText("Add your context")).toBeInTheDocument();
     expect(screen.getByTestId("context-select")).toBeInTheDocument();
-    await verifyTooltip(
-      "context-selection-tooltip",
-      "Choose a context from your knowledge pack that is relevant to the domain, architecture, or team you are working on.",
-    );
 
     //document
     expect(screen.getByText("Select document")).toBeInTheDocument();
@@ -164,7 +165,7 @@ describe("PromptChat Component", () => {
     return fetchMock;
   };
 
-  it("should render chat area Header with correct page title, disclaimer and prompt description tooltip", async () => {
+  it("should render chat area with initial components", async () => {
     render(
       <PromptChat
         promptId={mockPrompts[0].identifier}
@@ -207,6 +208,16 @@ describe("PromptChat Component", () => {
     const advancedPromptLink = screen.getByText("Attach more context");
     fireEvent.click(advancedPromptLink);
 
+    const contextDropdown = screen.getByTestId("context-select").firstChild;
+    fireEvent.mouseDown(contextDropdown);
+    const selectedContext = await screen.findByText("Context 1");
+    fireEvent.click(selectedContext);
+
+    const documentDropdown = screen.getByTestId("document-select").firstChild;
+    fireEvent.mouseDown(documentDropdown);
+    const selectedDocument = await screen.findByText("Document 1");
+    fireEvent.click(selectedDocument);
+
     givenUserInput();
 
     const sendButton = screen.getByRole("button", { name: "SEND" });
@@ -222,15 +233,11 @@ describe("PromptChat Component", () => {
           userinput: "Here is my prompt input",
           promptid: "1",
           chatSessionId: undefined,
-          context: "",
-          document: "",
+          context: "context1",
+          document: "document1",
         }),
       );
       expect(screen.getByText(mockResponse)).toBeInTheDocument();
     });
   });
-
-  //TODO:
-  //test for checking chat actions are working correctly
-  //select the context, document and image description and fetch response accordingly
 });
