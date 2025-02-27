@@ -11,7 +11,7 @@ function ContextChoice({ contexts, value, onChange }) {
     <div className="user-input">
       <label>
         Add your context
-        <HelpTooltip text={tooltipMessage} />
+        <HelpTooltip text={tooltipMessage} testid="context-selection-tooltip" />
       </label>
       <Select
         onChange={onChange}

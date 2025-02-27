@@ -189,6 +189,7 @@ const ChatWidget = forwardRef(
                 placeholder={placeholder || "Type a message..."}
                 autoSize={{ minRows: 4, maxRows: 15 }}
                 onKeyDown={handleKeyDown}
+                data-testid="chat-user-input"
               />
             </Form.Item>
             <Form.Item className="chat-text-area-submit">

@@ -158,6 +158,7 @@ const PromptChat = ({
               Only JPEG/JPG/PNG types are allowed.
             </>
           }
+          testid="upload-image-tooltip"
         />
       </label>
       <DescribeImage
@@ -174,7 +175,10 @@ const PromptChat = ({
       <div className="user-input">
         <label>
           Select document
-          <HelpTooltip text="Select a document from your knowledge pack that might have useful information for your context. Haiven will try to find useful information in this document during the first chat interaction." />
+          <HelpTooltip
+            text="Select a document from your knowledge pack that might have useful information for your context. Haiven will try to find useful information in this document during the first chat interaction."
+            testid="document-selection-tooltip"
+          />
         </label>
         <Select
           onChange={setSelectedDocument}
