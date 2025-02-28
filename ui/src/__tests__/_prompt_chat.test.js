@@ -165,6 +165,25 @@ describe("PromptChat Component", () => {
     return fetchMock;
   };
 
+  async function selectDocument() {
+    const documentDropdown = screen.getByTestId("document-select").firstChild;
+    fireEvent.mouseDown(documentDropdown);
+    const selectedDocument = await screen.findByText("Document 1");
+    fireEvent.click(selectedDocument);
+  }
+
+  async function selectContext() {
+    const contextDropdown = screen.getByTestId("context-select").firstChild;
+    fireEvent.mouseDown(contextDropdown);
+    const selectedContext = await screen.findByText("Context 1");
+    fireEvent.click(selectedContext);
+  }
+
+  function clickAdvancedPrompt() {
+    const advancedPromptLink = screen.getByText("Attach more context");
+    fireEvent.click(advancedPromptLink);
+  }
+
   it("should render chat area with initial components", async () => {
     render(
       <PromptChat
@@ -205,19 +224,9 @@ describe("PromptChat Component", () => {
       />,
     );
 
-    const advancedPromptLink = screen.getByText("Attach more context");
-    fireEvent.click(advancedPromptLink);
-
-    const contextDropdown = screen.getByTestId("context-select").firstChild;
-    fireEvent.mouseDown(contextDropdown);
-    const selectedContext = await screen.findByText("Context 1");
-    fireEvent.click(selectedContext);
-
-    const documentDropdown = screen.getByTestId("document-select").firstChild;
-    fireEvent.mouseDown(documentDropdown);
-    const selectedDocument = await screen.findByText("Document 1");
-    fireEvent.click(selectedDocument);
-
+    clickAdvancedPrompt();
+    await selectContext();
+    await selectDocument();
     givenUserInput();
 
     const sendButton = screen.getByRole("button", { name: "SEND" });
@@ -240,4 +249,7 @@ describe("PromptChat Component", () => {
       expect(screen.getByText(mockResponse)).toBeInTheDocument();
     });
   });
+  //TODO:
+  //test for checking chat actions are working correctly
+  //image description
 });
