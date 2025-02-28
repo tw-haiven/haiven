@@ -8,6 +8,9 @@ import {
 } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import PromptChat from "../app/_prompt_chat";
+import { fetchSSE } from "../app/_fetch_sse";
+
+vi.mock("../app/_fetch_sse");
 
 beforeEach(() => {
   vitest.clearAllMocks();
@@ -37,6 +40,7 @@ describe("PromptChat Component", () => {
   };
 
   const someUserInput = "Here is my prompt input";
+  const imageText = "Mocked image description";
 
   const givenUserInput = () => {
     const inputField = screen.getByTestId("chat-user-input");
@@ -184,6 +188,35 @@ describe("PromptChat Component", () => {
     fireEvent.click(advancedPromptLink);
   }
 
+  async function uploadImage() {
+    const file = new File([imageText], "test-image.png", { type: "image/png" });
+
+    const input = screen
+      .getByRole("button", {
+        name: /upload/i,
+      })
+      .parentNode.querySelector("input");
+    fireEvent.change(input, { target: { files: [file] } });
+
+    await waitFor(() =>
+      expect(screen.queryByText("View/Edit Description")).not.toBeNull(),
+    );
+  }
+
+  function verifyPromptPreview() {
+    const promptPreviewLink = screen.getByText("View/Edit Prompt");
+    expect(promptPreviewLink).toBeInTheDocument();
+  }
+
+  function verifySampleInput() {
+    const sampleInputLink = screen.getByText("Sample Input");
+    expect(sampleInputLink).toBeInTheDocument();
+    fireEvent.click(sampleInputLink);
+    expect(
+      screen.getByText(mockPrompts[0].help_sample_input),
+    ).toBeInTheDocument();
+  }
+
   it("should render chat area with initial components", async () => {
     render(
       <PromptChat
@@ -203,11 +236,19 @@ describe("PromptChat Component", () => {
     await verifyChatAreaHeader(verifyTooltip);
     verifyChatAreaDefaultComponents();
     await verifyAdvancedPromptOptions(verifyTooltip);
+    verifySampleInput();
+    verifyPromptPreview();
   });
 
   it("should fetch prompt response for given user input with the selected options", async () => {
     const mockResponse = "Sample response from LLM";
     const fetchMock = setupFetchMock(mockResponse);
+
+    fetchSSE.mockImplementation((url, options, eventHandlers) => {
+      expect(url).toBe("/api/prompt/image");
+      eventHandlers.onMessageHandle(imageText);
+      eventHandlers.onFinish();
+    });
 
     render(
       <PromptChat
@@ -227,6 +268,7 @@ describe("PromptChat Component", () => {
     clickAdvancedPrompt();
     await selectContext();
     await selectDocument();
+    uploadImage();
     givenUserInput();
 
     const sendButton = screen.getByRole("button", { name: "SEND" });
@@ -239,7 +281,7 @@ describe("PromptChat Component", () => {
       expect(fetchOptions.headers["Content-Type"]).toBe("application/json");
       expect(fetchOptions.body).toBe(
         JSON.stringify({
-          userinput: "Here is my prompt input",
+          userinput: "Here is my prompt input\n\nMocked image description",
           promptid: "1",
           chatSessionId: undefined,
           context: "context1",
@@ -251,5 +293,5 @@ describe("PromptChat Component", () => {
   });
   //TODO:
   //test for checking chat actions are working correctly
-  //image description
+  //test edit prompt
 });
