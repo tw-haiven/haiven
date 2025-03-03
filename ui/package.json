@@ -27,7 +27,7 @@
     "google-search-results-nodejs": "^2.1.0",
     "hnswlib-node": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
-    "next": "^15.1.5",
+    "next": "^15.2.0",
     "partial-json-parser": "^1.2.2",
     "postcss": "8.5.1",
     "react": "^19.0.0",
