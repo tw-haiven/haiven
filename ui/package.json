@@ -41,7 +41,7 @@
     "remark-gfm": "^4.0.0",
     "replicate": "^1.0.1",
     "swr": "^2.3.0",
-    "tailwindcss": "^4.0.0"
+    "tailwindcss": "^4.0.9"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
