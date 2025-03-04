@@ -11,12 +11,12 @@ import { ClockIcon } from "lucide-react";
 import { toast } from "react-toastify";
 import { getPinboardData } from "../app/_local_store";
 import MarkdownRenderer from "../app/_markdown_renderer";
-import AddNewSnippetModal from "../app/_add_new_snippet_modal";
+import AddNewNoteModal from "../app/_add_new_note_modal";
 
 const Pinboard = ({ isModalVisible, onClose }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [pinnedMessages, setPinnedMessages] = useState([]);
-  const [isAddingSnippet, setIsAddingSnippet] = useState(false);
+  const [isAddingNote, setIsAddingNote] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -56,16 +56,16 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     }
   };
 
-  const addSnippetButtonWithTooltip = () => {
-    const tooltipText = "Add your own reusable text snippets to the pinboard";
+  const addNoteButtonWithTooltip = () => {
+    const tooltipText = "Add your own reusable text notes to the pinboard";
     return (
       <Tooltip title={tooltipText}>
         <Button
           type="link"
           className="copy-all"
-          onClick={() => setIsAddingSnippet(true)}
+          onClick={() => setIsAddingNote(true)}
         >
-          <RiAddBoxLine fontSize="large" /> ADD SNIPPET
+          <RiAddBoxLine fontSize="large" /> ADD NOTE
         </Button>
       </Tooltip>
     );
@@ -81,7 +81,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
         <p className="saved-response">
           Access content you've pinned to reuse in your Haiven inputs.
         </p>
-        {addSnippetButtonWithTooltip()}
+        {addNoteButtonWithTooltip()}
       </div>
     );
   };
@@ -145,14 +145,14 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     </>
   );
 
-  const addNewSnippetCallback = (newSnippet) => {
+  const addNewNoteCallback = (newNote) => {
     const timestamp = Date.now().toString();
     const pinboardData = JSON.parse(localStorage.getItem("pinboard")) || {};
-    pinboardData[timestamp] = { content: newSnippet, isUserDefined: true };
+    pinboardData[timestamp] = { content: newNote, isUserDefined: true };
     localStorage.setItem("pinboard", JSON.stringify(pinboardData));
 
     setPinnedMessages([
-      { timestamp, summary: newSnippet, isUserDefined: true },
+      { timestamp, summary: newNote, isUserDefined: true },
       ...pinnedMessages,
     ]);
   };
@@ -167,10 +167,10 @@ const Pinboard = ({ isModalVisible, onClose }) => {
       className="pinboard-modal"
       mask={false}
     >
-      <AddNewSnippetModal
-        isAddingSnippet={isAddingSnippet}
-        setIsAddingSnippet={setIsAddingSnippet}
-        callBack={addNewSnippetCallback}
+      <AddNewNoteModal
+        isAddingNote={isAddingNote}
+        setIsAddingNote={setIsAddingNote}
+        callBack={addNewNoteCallback}
       />
       {renderPinnedMessages()}
     </Modal>

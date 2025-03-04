@@ -13,33 +13,36 @@ describe("Pinboard Component", () => {
     expect(
       getByText("Access content you've pinned to reuse in your Haiven inputs."),
     ).toBeInTheDocument();
-    expect(getByText("ADD SNIPPET")).toBeInTheDocument();
+    expect(getByText("ADD NOTE")).toBeInTheDocument();
   });
 
-  it("displays tooltip on hover over ADD SNIPPET button", async () => {
+  it("displays tooltip on hover over ADD NOTE button", async () => {
     const { getByText, findByText } = render(
       <Pinboard isModalVisible={true} onClose={() => {}} />,
     );
 
-    fireEvent.mouseOver(getByText("ADD SNIPPET"));
+    fireEvent.mouseOver(getByText("ADD NOTE"));
 
     const tooltip = await findByText(
-      "Add your own reusable text snippets to the pinboard",
+      "Add your own reusable text notes to the pinboard",
     );
     expect(tooltip).toBeInTheDocument();
   });
 
-  it("opens add snippet modal when ADD SNIPPET button is clicked", () => {
+  it("opens add note modal when ADD NOTE button is clicked", () => {
     const { getByText, getByPlaceholderText } = render(
       <Pinboard isModalVisible={true} onClose={() => {}} />,
     );
 
-    fireEvent.click(getByText("ADD SNIPPET"));
+    fireEvent.click(getByText("ADD NOTE"));
 
-    expect(getByText("Add new snippet")).toBeInTheDocument();
+    expect(getByText("Add new note")).toBeInTheDocument();
+    expect(
+      getByPlaceholderText("Enter the title of your note"),
+    ).toBeInTheDocument();
     expect(
       getByPlaceholderText(
-        "Enter your reusable snippet here, e.g. a description of your domain or architecture that you frequently need",
+        "Enter the description of your note, e.g. a description of your domain or architecture that you frequently need",
       ),
     ).toBeInTheDocument();
   });
