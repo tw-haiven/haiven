@@ -464,7 +464,7 @@ const CardsChat = ({
               value={promptInput}
               onChange={(e) => setPromptInput(e.target.value)}
               placeholder={selectedPromptConfiguration.help_user_input}
-              autoSize={{ minRows: 1, maxRows: 4 }}
+              autoSize={{ minRows: 4, maxRows: 15 }}
               onKeyDown={handleKeyDown}
             />
           </Form.Item>
