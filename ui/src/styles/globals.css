@@ -453,6 +453,11 @@ a.feedback:hover {
   right: 0;
   top: 67px;
   height: 95vh;
+  .pinboard-actions {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.8em;
+  }
 }
 
 .pinboard-modal .empty-pinboard {
@@ -486,20 +491,25 @@ a.feedback:hover {
 }
 
 .pinboard-card {
-  width: 330px;
   flex-direction: column;
-  margin: 0.8em;
 }
 
 .pinboard-card .ant-card-body {
   padding: 16px;
 }
 
-.pinboard-title {
+.pinboard-header {
   display: flex;
   flex-direction: column;
   background-color: var(--color-light-gray);
-  padding-left: 0.7em;
+  .pinboard-title {
+    display: flex;
+    align-items: center;
+    svg {
+      margin-right: 0.5em;
+    }
+    margin-bottom: 0.5em;
+  }
 }
 
 .pin-icon {
@@ -1881,4 +1891,26 @@ a.feedback:hover {
 
 .pinboard-card.user-defined .ant-card-body {
   background-color: white;
+}
+
+.add-note-modal {
+  .ant-modal-title {
+    font-size: 20px;
+  }
+  width: 800px !important;
+  .label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    margin-top: 10px;
+  }
+
+  .title-input:focus-within, .description-input:focus-within {
+    box-shadow: none;
+    border: 2px solid var(--color-dark-gray);
+  }
+
+  .description-input {
+    resize: none;
+  }
 }

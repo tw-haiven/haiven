@@ -39,21 +39,23 @@ const AddNewNoteModal = ({ isAddingNote, setIsAddingNote, callBack }) => {
       }}
       onOk={addNote}
       okText="Save"
+      className="add-note-modal"
     >
+      <span className="label">Title</span>
       <Input
         value={newNoteTitle}
         onChange={(e) => setNewNoteTitle(e.target.value)}
         placeholder="Enter the title of your note"
         rows={1}
+        className="title-input"
       />
+      <span className="label">Description</span>
       <Input.TextArea
-        style={{
-          marginTop: "12px",
-        }}
         value={newNoteDescription}
         onChange={(e) => setNewNoteDescription(e.target.value)}
         placeholder="Enter the description of your note, e.g. a description of your domain or architecture that you frequently need"
-        rows={15}
+        autoSize={{ minRows: 10, maxRows: 15 }}
+        className="description-input"
       />
     </Modal>
   );

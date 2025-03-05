@@ -71,17 +71,33 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     );
   };
 
-  const pinboardTitle = () => {
+  const addContextButtonWithTooltip = () => {
+    const tooltipText =
+      "Add your project context to be reused in your Haiven inputs. This will be included in the context dropdown.";
     return (
-      <div className="pinboard-title">
-        <div style={{ display: "flex", alignItems: "center" }}>
+      <Tooltip title={tooltipText}>
+        <Button
+          type="link"
+          className="copy-all"
+          onClick={() => setIsAddingContext(true)}
+        >
+          <RiAddBoxLine fontSize="large" /> ADD CONTEXT
+        </Button>
+      </Tooltip>
+    );
+  };
+
+  const pinboardHeader = () => {
+    return (
+      <div className="pinboard-header">
+        <div className="pinboard-title">
           <RiPushpinLine fontSize="large" />
           Pinboard
         </div>
         <p className="saved-response">
           Access content you've pinned to reuse in your Haiven inputs.
         </p>
-        {addNoteButtonWithTooltip()}
+        <div className="pinboard-actions">{addNoteButtonWithTooltip()}</div>
       </div>
     );
   };
@@ -159,7 +175,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
 
   return (
     <Modal
-      title={pinboardTitle()}
+      title={pinboardHeader()}
       open={isModalVisible}
       onCancel={onClose}
       width={420}
