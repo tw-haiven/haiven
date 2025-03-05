@@ -492,6 +492,7 @@ a.feedback:hover {
 
 .pinboard-card {
   flex-direction: column;
+  margin-bottom: 0.8em;
 }
 
 .pinboard-card .ant-card-body {
