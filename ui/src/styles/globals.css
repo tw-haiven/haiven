@@ -520,11 +520,7 @@ a.feedback:hover {
 }
 
 .empty-pinboard-tab .empty-state-message {
-  padding-left: 20%;
-}
-
-.empty-pinboard-tab .empty-state-instruction {
-  padding-left: 30%;
+  padding: 2em 5em;
 }
 
 .pinboard-modal .ant-modal-content {

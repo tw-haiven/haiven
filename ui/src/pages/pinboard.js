@@ -116,9 +116,8 @@ const Pinboard = ({ isModalVisible, onClose }) => {
       {pinnedMessages.length === 0 && (
         <div className="empty-pinboard-tab">
           <p className="empty-state-message">
-            Start pinning by clicking on the pin
+            Start pinning by clicking on the pin icon on the messages.
           </p>
-          <p className="empty-state-instruction">icon on the messages</p>
         </div>
       )}
       {pinnedMessages.map((pinnedMessage, i) => (
@@ -178,7 +177,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
       {savedUserContexts.length === 0 && (
         <div className="empty-pinboard-tab">
           <p className="empty-state-message">
-            Create context by clicking on <i>Add context</i> button
+            Create context by clicking on the <i>Add context</i> button
           </p>
         </div>
       )}
