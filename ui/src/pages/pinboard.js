@@ -1,6 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { useEffect, useState } from "react";
-import { Modal, Card, Button, Tooltip } from "antd";
+import { Modal, Card, Button, Tooltip, Tabs } from "antd";
 import {
   RiDeleteBinLine,
   RiCheckboxMultipleBlankFill,
@@ -9,19 +9,27 @@ import {
 } from "react-icons/ri";
 import { ClockIcon } from "lucide-react";
 import { toast } from "react-toastify";
-import { getPinboardData } from "../app/_local_store";
+import {
+  getPinboardData,
+  getSortedContexts,
+  deleteContextByTimestamp,
+} from "../app/_local_store";
 import MarkdownRenderer from "../app/_markdown_renderer";
 import AddNewNoteModal from "../app/_add_new_note_modal";
+import AddContextModal from "../app/_add_context_modal";
 
 const Pinboard = ({ isModalVisible, onClose }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [pinnedMessages, setPinnedMessages] = useState([]);
+  const [savedUserContexts, setSavedUserContexts] = useState([]);
   const [isAddingNote, setIsAddingNote] = useState(false);
+  const [isAddingContext, setIsAddingContext] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
     if (typeof window !== "undefined") {
       setPinnedMessages(getPinboardData());
+      setSavedUserContexts(getSortedContexts());
     }
   }, [
     typeof window !== "undefined"
@@ -41,7 +49,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     const pinboardData = JSON.parse(localStorage.getItem("pinboard"));
     delete pinboardData[removedScenario.timestamp];
     localStorage.setItem("pinboard", JSON.stringify(pinboardData));
-    setPinnedMessages(updatedPinnedMessages);
+    reloadPinnedMessages();
     toast.success("Content deleted successfully!");
   };
 
@@ -87,21 +95,6 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     );
   };
 
-  const pinboardHeader = () => {
-    return (
-      <div className="pinboard-header">
-        <div className="pinboard-title">
-          <RiPushpinLine fontSize="large" />
-          Pinboard
-        </div>
-        <p className="saved-response">
-          Access content you've pinned to reuse in your Haiven inputs.
-        </p>
-        <div className="pinboard-actions">{addNoteButtonWithTooltip()}</div>
-      </div>
-    );
-  };
-
   function formatDate(timestamp) {
     const date = new Date(parseInt(timestamp));
     const day = date.getDate();
@@ -119,9 +112,9 @@ const Pinboard = ({ isModalVisible, onClose }) => {
   }
 
   const renderPinnedMessages = () => (
-    <>
+    <div className="pinboard-tab">
       {pinnedMessages.length === 0 && (
-        <div className="empty-pinboard">
+        <div className="empty-pinboard-tab">
           <p className="empty-state-message">
             Start pinning by clicking on the pin
           </p>
@@ -158,7 +151,71 @@ const Pinboard = ({ isModalVisible, onClose }) => {
           </div>
         </Card>
       ))}
-    </>
+    </div>
+  );
+
+  const deleteContext = (timestamp) => {
+    deleteContextByTimestamp(timestamp);
+    reloadUserSavedContexts();
+    toast.success("Context deleted successfully!");
+  };
+
+  const contextAsText = (context) => {
+    return "# " + context.title + "\n\n" + context.summary;
+  };
+
+  const copyContext = async (context) => {
+    try {
+      await navigator.clipboard.writeText(contextAsText(context));
+      toast.success("Context copied successfully!");
+    } catch (err) {
+      toast.error("Failed to copy the context.");
+    }
+  };
+
+  const renderUserSavedContexts = () => (
+    <div className="pinboard-tab">
+      {savedUserContexts.length === 0 && (
+        <div className="empty-pinboard-tab">
+          <p className="empty-state-message">
+            Create context by clicking on <i>Add context</i> button
+          </p>
+        </div>
+      )}
+      {savedUserContexts.map((context, i) => (
+        <Card
+          hoverable
+          key={i}
+          className={`pinboard-card ${context.isUserDefined ? "user-defined" : ""}`}
+          actions={[
+            <div
+              className="pinboard-card-action-items"
+              style={{ backgroundColor: "#f9f9f9" }}
+            >
+              <div className="card-action">
+                <ClockIcon size={16} className="clock-icon" />
+                {formatDate(context.timestamp)}
+              </div>
+              <div className="card-action" key="actions">
+                <Button
+                  type="link"
+                  onClick={() => deleteContext(context.timestamp)}
+                >
+                  <RiDeleteBinLine style={{ fontSize: "large" }} />
+                </Button>
+                <Button type="link" onClick={() => copyContext(context)}>
+                  <RiCheckboxMultipleBlankFill style={{ fontSize: "large" }} />
+                </Button>
+              </div>
+            </div>,
+          ]}
+        >
+          <div className="pinboard-card-content">
+            <MarkdownRenderer content={contextAsText(context)} />
+          </div>
+        </Card>
+      ))}
+    </div>
   );
 
   const addNewNoteCallback = (newNote) => {
@@ -167,10 +224,54 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     pinboardData[timestamp] = { content: newNote, isUserDefined: true };
     localStorage.setItem("pinboard", JSON.stringify(pinboardData));
 
-    setPinnedMessages([
-      { timestamp, summary: newNote, isUserDefined: true },
-      ...pinnedMessages,
-    ]);
+    setPinnedMessages(getPinboardData());
+  };
+
+  const reloadPinnedMessages = () => {
+    setPinnedMessages(getPinboardData());
+  };
+
+  const reloadUserSavedContexts = () => {
+    setSavedUserContexts(getSortedContexts());
+  };
+
+  const tabs = [
+    {
+      key: "context",
+      label: (
+        <div className="tab-title">
+          <h3>Contexts</h3>
+        </div>
+      ),
+      children: renderUserSavedContexts(),
+    },
+    {
+      key: "notes",
+      label: (
+        <div className="tab-title">
+          <h3>Pins/Notes</h3>
+        </div>
+      ),
+      children: renderPinnedMessages(),
+    },
+  ];
+
+  const pinboardHeader = () => {
+    return (
+      <div className="pinboard-header">
+        <div className="pinboard-title">
+          <RiPushpinLine fontSize="large" />
+          Pinboard
+        </div>
+        <p className="saved-response">
+          Access content you've pinned to reuse in your Haiven inputs.
+        </p>
+        <div className="pinboard-actions">
+          {addContextButtonWithTooltip()}
+          {addNoteButtonWithTooltip()}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -188,7 +289,12 @@ const Pinboard = ({ isModalVisible, onClose }) => {
         setIsAddingNote={setIsAddingNote}
         callBack={addNewNoteCallback}
       />
-      {renderPinnedMessages()}
+      <AddContextModal
+        isAddingContext={isAddingContext}
+        setIsAddingContext={setIsAddingContext}
+        reloadPinboard={reloadUserSavedContexts}
+      />
+      <Tabs defaultActiveKey="context" items={tabs}></Tabs>
     </Modal>
   );
 };

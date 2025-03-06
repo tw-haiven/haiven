@@ -449,33 +449,81 @@ a.feedback:hover {
 }
 
 .pinboard-modal {
+  .ant-tabs-nav-list, .ant-tabs-tab {
+    flex: 1;
+  }
+
+  .ant-tabs-nav {
+    margin-bottom: 5px;
+  }
+
+  .tab-title h3 {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .ant-tabs-tab {
+    background-color: var(--color-light-gray);
+    margin-left: 0 !important;
+    padding: 0;
+    border: 1px solid var(--color-medium-gray);
+  }
+
+  .ant-tabs-tab-active {
+    background-color: white;
+  }
+
+  .ant-tabs-tab .tab-title {
+    padding: 0.75em;
+    align-content: center;
+    color: var(--color-dark-gray);
+  }
+
+  .ant-tabs-tab-active .tab-title {
+    color: black;
+  }
+}
+
+.pinboard-modal {
   position: fixed;
   right: 0;
   top: 67px;
   height: 95vh;
+  .ant-tabs-content-holder {
+    overflow: auto !important;
+  }
   .pinboard-actions {
     display: flex;
     justify-content: space-between;
-    margin: 0.8em;
+    margin: 0 0.8em 0 0.8em;
+  }
+  .ant-modal-header {
+    margin-bottom: 0;
+  }
+  .pinboard-tab {
+    overflow-y: auto;
+    max-height: 65vh;
   }
 }
 
-.pinboard-modal .empty-pinboard {
+.pinboard-modal .empty-pinboard-tab {
   background-color: var(--color-light-gray);
   height: 40%;
   align-content: center;
   color: var(--color-dark-gray);
 }
 
-.pinboard-modal .empty-pinboard p {
+.pinboard-modal .empty-pinboard-tab p {
   margin: 0;
 }
 
-.empty-pinboard .empty-state-message {
+.empty-pinboard-tab .empty-state-message {
   padding-left: 20%;
 }
 
-.empty-pinboard .empty-state-instruction {
+.empty-pinboard-tab .empty-state-instruction {
   padding-left: 30%;
 }
 
@@ -1556,6 +1604,14 @@ a.feedback:hover {
     margin-bottom: 0;
   }
 
+  .tab-title h3,
+  .tab-title p {
+    margin: 0;
+    font-smoothing: antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   .ant-tabs-tab {
     background-color: var(--color-light-gray);
     margin-left: 0 !important;
@@ -1568,7 +1624,7 @@ a.feedback:hover {
   }
 
   /* Make just the title section sticky */
-  .ant-tabs-tab .dashboard-scenarios-title {
+  .ant-tabs-tab .tab-title {
     position: sticky;
     top: 0;
     z-index: 2;
@@ -1582,7 +1638,7 @@ a.feedback:hover {
     color: var(--color-dark-gray);
   }
   
-  .ant-tabs-tab-active .dashboard-scenarios-title {
+  .ant-tabs-tab-active .tab-title {
     color: black;
   }
 }
@@ -1592,15 +1648,6 @@ a.feedback:hover {
   max-width: 1400px;
   margin: 0 auto;
 }
-
-.dashboard-scenarios-title h3,
-.dashboard-scenarios-title p {
-  margin: 0;
-  font-smoothing: antialiased;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 
 .dashboard-cards-grid-container {
   padding: 0 1rem;

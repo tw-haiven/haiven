@@ -177,7 +177,7 @@ export default function ChatDashboard() {
                 {
                   key: "codified",
                   label: (
-                    <div className="dashboard-scenarios-title">
+                    <div className="tab-title">
                       <h3>
                         <RiBookShelfLine
                           style={{ position: "relative", top: "3px" }}
@@ -247,7 +247,7 @@ export default function ChatDashboard() {
                 {
                   key: "inspirations",
                   label: (
-                    <div className="dashboard-scenarios-title">
+                    <div className="tab-title">
                       <h3>
                         <MdLightbulb
                           style={{ position: "relative", top: "3px" }}

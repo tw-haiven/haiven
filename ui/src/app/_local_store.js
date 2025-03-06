@@ -56,3 +56,28 @@ export const getPinboardData = () => {
 export const getFeatureToggleConfiguration = () => {
   return localStorage.getItem("toggles");
 };
+
+const getContexts = () => {
+  return JSON.parse(localStorage.getItem("context")) || [];
+};
+
+export const getSortedContexts = () => {
+  let contexts = getContexts();
+  contexts.sort((a, b) => b.timestamp - a.timestamp);
+  return contexts;
+};
+
+export const saveContext = (title, description) => {
+  const timestamp = Date.now();
+  const contextData = getContexts();
+  contextData.push({ title, summary: description, timestamp });
+  localStorage.setItem("context", JSON.stringify(contextData));
+};
+
+export const deleteContextByTimestamp = (timestamp) => {
+  const contextData = getContexts();
+  const updatedContextData = contextData.filter(
+    (context) => context.timestamp !== timestamp,
+  );
+  localStorage.setItem("context", JSON.stringify(updatedContextData));
+};
