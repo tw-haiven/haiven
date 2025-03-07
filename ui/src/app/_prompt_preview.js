@@ -9,6 +9,7 @@ import remarkGfm from "remark-gfm";
 import { toast } from "react-toastify";
 import { getRenderedPrompt } from "./_boba_api";
 import PromptSampleInput from "./_prompt_sample_input";
+import ConfirmClose from "./_confirm_close";
 
 export default function PromptPreview({
   renderPromptRequest,
@@ -222,37 +223,16 @@ export default function PromptPreview({
           )}
         </div>
       </Modal>
-      <Modal
-        className="close-confirmation-modal"
-        title="Are you sure you want to close?"
-        open={isCloseConfirmationModalVisible}
-        closable={false}
-      >
-        <p>
-          You have unsaved edits in the prompt. By closing any unsaved changes
-          will be lost.
-        </p>
-
-        <div className="confirmation-modal-footer">
-          <Button
-            className="confirmation-modal-close-btn"
-            onClick={() => {
-              setPromptPreviewModalVisible(false);
-              setIsCloseConfirmationModalVisible(false);
-            }}
-          >
-            CLOSE ANYWAY
-          </Button>
-          <Button
-            className="confirmation-modal-cancel-btn"
-            onClick={() => {
-              setIsCloseConfirmationModalVisible(false);
-            }}
-          >
-            GO BACK
-          </Button>
-        </div>
-      </Modal>
+      <ConfirmClose
+        isVisible={isCloseConfirmationModalVisible}
+        onForceClose={() => {
+          setPromptPreviewModalVisible(false);
+          setIsCloseConfirmationModalVisible(false);
+        }}
+        onReturnBack={() => {
+          setIsCloseConfirmationModalVisible(false);
+        }}
+      />
     </div>
   );
 }

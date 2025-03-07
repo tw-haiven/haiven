@@ -6,6 +6,7 @@ import { RiImageAddLine, RiEdit2Line } from "react-icons/ri";
 import useLoader from "../hooks/useLoader";
 import { toast } from "react-toastify";
 import MarkdownRenderer from "./_markdown_renderer";
+import ConfirmClose from "./_confirm_close";
 const { TextArea } = Input;
 
 const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
@@ -204,38 +205,17 @@ const DescribeImage = ({ onImageDescriptionChange, imageDescription }) => {
         </div>
       </Modal>
 
-      <Modal
-        className="close-confirmation-modal"
-        title="Are you sure you want to close?"
-        open={isCloseConfirmationModalVisible}
-        closable={false}
-      >
-        <p>
-          You have unsaved edits in the description. By closing any unsaved
-          changes will be lost.
-        </p>
-
-        <div className="confirmation-modal-footer">
-          <Button
-            className="confirmation-modal-close-btn"
-            onClick={() => {
-              setShowImageDescriptionModal(false);
-              setIsCloseConfirmationModalVisible(false);
-              setIsEditMode(false);
-            }}
-          >
-            CLOSE ANYWAY
-          </Button>
-          <Button
-            className="confirmation-modal-cancel-btn"
-            onClick={() => {
-              setIsCloseConfirmationModalVisible(false);
-            }}
-          >
-            GO BACK
-          </Button>
-        </div>
-      </Modal>
+      <ConfirmClose
+        isVisible={isCloseConfirmationModalVisible}
+        onForceClose={() => {
+          setShowImageDescriptionModal(false);
+          setIsCloseConfirmationModalVisible(false);
+          setIsEditMode(false);
+        }}
+        onReturnBack={() => {
+          setIsCloseConfirmationModalVisible(false);
+        }}
+      />
     </div>
   );
 };

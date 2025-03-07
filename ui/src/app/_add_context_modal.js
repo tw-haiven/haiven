@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Input, Modal } from "antd";
 import { toast } from "react-toastify";
 import { saveContext } from "../app/_local_store";
+import ConfirmClose from "./_confirm_close";
 
 const AddContextModal = ({
   isAddingContext,
@@ -12,8 +13,10 @@ const AddContextModal = ({
 }) => {
   const [contextTitle, setContextTitle] = useState("");
   const [contextDescription, setContextDescription] = useState("");
+  const [isCloseConfirmationModalVisible, setIsCloseConfirmationModalVisible] =
+    useState(false);
 
-  const resetAddContextForm = () => {
+  const closeModal = () => {
     setContextTitle("");
     setContextDescription("");
     setIsAddingContext(false);
@@ -30,39 +33,52 @@ const AddContextModal = ({
     }
 
     saveContext(contextTitle, contextDescription);
-    resetAddContextForm();
+    closeModal();
     reloadPinboard();
     toast.success("Context added successfully!");
   };
 
   return (
-    <Modal
-      title="Add new context"
-      open={isAddingContext}
-      onCancel={() => {
-        setIsAddingContext(false);
-      }}
-      onOk={addContext}
-      okText="Save"
-      className="add-context-modal"
-    >
-      <span className="label">Title</span>
-      <Input
-        value={contextTitle}
-        onChange={(e) => setContextTitle(e.target.value)}
-        placeholder="Enter the title of your context"
-        rows={1}
-        className="title-input"
+    <>
+      <Modal
+        title="Add new context"
+        open={isAddingContext}
+        onCancel={() => {
+          setIsCloseConfirmationModalVisible(true);
+        }}
+        onOk={addContext}
+        okText="Save"
+        className="add-context-modal"
+      >
+        <span className="label">Title</span>
+        <Input
+          value={contextTitle}
+          onChange={(e) => setContextTitle(e.target.value)}
+          placeholder="Enter the title of your context"
+          rows={1}
+          className="title-input"
+        />
+        <span className="label">Description</span>
+        <Input.TextArea
+          value={contextDescription}
+          onChange={(e) => setContextDescription(e.target.value)}
+          placeholder="Enter the description of your context, e.g. a description of your domain or architecture that you frequently need"
+          autoSize={{ minRows: 10, maxRows: 15 }}
+          className="description-input"
+        />
+      </Modal>
+
+      <ConfirmClose
+        isVisible={isCloseConfirmationModalVisible}
+        onForceClose={() => {
+          closeModal();
+          setIsCloseConfirmationModalVisible(false);
+        }}
+        onReturnBack={() => {
+          setIsCloseConfirmationModalVisible(false);
+        }}
       />
-      <span className="label">Description</span>
-      <Input.TextArea
-        value={contextDescription}
-        onChange={(e) => setContextDescription(e.target.value)}
-        placeholder="Enter the description of your context, e.g. a description of your domain or architecture that you frequently need"
-        autoSize={{ minRows: 10, maxRows: 15 }}
-        className="description-input"
-      />
-    </Modal>
+    </>
   );
 };
 
