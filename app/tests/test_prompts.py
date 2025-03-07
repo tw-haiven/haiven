@@ -44,25 +44,10 @@ def test_init_should_set_defaults_for_metadata():
         None,
     )
     assert prompt_to_assert.metadata["title"] == "Test0"
-    assert prompt_to_assert.metadata["system"] == "You are a useful assistant"
     assert prompt_to_assert.metadata["categories"] == []
     assert prompt_to_assert.metadata["type"] == "chat"
     assert prompt_to_assert.metadata["editable"] is False
     assert prompt_to_assert.metadata["show"] is True
-
-
-def test_init_should_load_all_metadata():
-    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
-
-    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    prompt_to_assert = next(
-        filter(
-            lambda prompt: prompt.metadata["identifier"] == "uuid-3",
-            prompt_list.prompts,
-        ),
-        None,
-    )
-    assert prompt_to_assert.metadata["system"] == "Some system message"
 
 
 def test_get_title_id_tuples():

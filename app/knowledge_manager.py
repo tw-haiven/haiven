@@ -1,6 +1,9 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+import os
+
 from config_service import ConfigService
 from logger import HaivenLogger
+from config.constants import SYSTEM_MESSAGE
 
 from embeddings.client import EmbeddingsClient
 from knowledge.markdown import KnowledgeBaseMarkdown
@@ -25,6 +28,8 @@ class KnowledgeManager:
 
         self.knowledge_base_documents = self._load_base_documents_knowledge()
         self._load_context_documents_knowledge()
+
+        self.system_message = self._load_system_message()
 
     def _load_base_markdown_knowledge(self):
         knowledge_base_markdown = KnowledgeBaseMarkdown()
@@ -112,3 +117,29 @@ class KnowledgeManager:
 
     def get_all_context_keys(self):
         return self.knowledge_base_markdown.get_all_contexts_keys()
+
+    def _load_system_message(self):
+        system_message_path = os.path.join(
+            self.knowledge_pack_definition.path, "prompts", "system.md"
+        )
+
+        try:
+            if os.path.exists(system_message_path):
+                with open(system_message_path, "r") as file:
+                    system_message = file.read().strip()
+                    HaivenLogger.get().info(
+                        f"Loaded custom system message from {system_message_path}",
+                        extra={"INFO": "CustomSystemMessageLoaded"},
+                    )
+                    return system_message
+        except Exception as error:
+            HaivenLogger.get().error(
+                str(error), extra={"ERROR": "CustomSystemMessageLoadError"}
+            )
+
+        # Return default system message if no custom one is found or if there was an error
+        HaivenLogger.get().info("Using default system message")
+        return SYSTEM_MESSAGE
+
+    def get_system_message(self):
+        return self.system_message

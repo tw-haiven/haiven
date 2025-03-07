@@ -49,8 +49,6 @@ class PromptList:
         for prompt in self.prompts:
             if "title" not in prompt.metadata:
                 prompt.metadata["title"] = "Unnamed use case"
-            if "system" not in prompt.metadata:
-                prompt.metadata["system"] = "You are a useful assistant"
             if "categories" not in prompt.metadata:
                 prompt.metadata["categories"] = []
             if "type" not in prompt.metadata:
@@ -290,7 +288,6 @@ class PromptList:
             prompt_data = {
                 "identifier": prompt.metadata.get("identifier"),
                 "title": prompt.metadata.get("title"),
-                "system": prompt.metadata.get("system"),
                 "categories": prompt.metadata.get("categories"),
                 "help_prompt_description": prompt.metadata.get(
                     "help_prompt_description"

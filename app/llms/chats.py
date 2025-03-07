@@ -23,12 +23,11 @@ class HaivenBaseChat:
         self,
         chat_client: ChatClient,
         knowledge_manager: KnowledgeManager,
-        system_message: str,
     ):
-        self.system = system_message
-        self.memory = [HaivenSystemMessage(content=system_message)]
-        self.chat_client = chat_client
         self.knowledge_manager = knowledge_manager
+        self.system = knowledge_manager.get_system_message()
+        self.memory = [HaivenSystemMessage(content=self.system)]
+        self.chat_client = chat_client
 
     def log_run(self, extra={}):
         class_name = self.__class__.__name__
@@ -125,10 +124,9 @@ class StreamingChat(HaivenBaseChat):
         self,
         chat_client: ChatClient,
         knowledge_manager: KnowledgeManager,
-        system_message: str = "You are a helpful assistant",
         stream_in_chunks: bool = False,
     ):
-        super().__init__(chat_client, knowledge_manager, system_message)
+        super().__init__(chat_client, knowledge_manager)
         self.stream_in_chunks = stream_in_chunks
 
     def run(self, message: str, user_query: str = None):
@@ -190,10 +188,10 @@ class JSONChat(HaivenBaseChat):
     def __init__(
         self,
         chat_client: ChatClient,
-        system_message: str = "You are a helpful assistant",
+        knowledge_manager: KnowledgeManager,
         event_stream_standard=True,
     ):
-        super().__init__(chat_client, None, system_message)
+        super().__init__(chat_client, knowledge_manager)
         # Transition to new frontend SSE implementation: Add "data: " and "[DONE]" vs not doing that
         self.event_stream_standard = event_stream_standard
 
@@ -375,6 +373,7 @@ class ChatManager:
         return self.chat_session_memory.get_or_create_chat(
             lambda: JSONChat(
                 chat_client,
+                self.knowledge_manager,
                 event_stream_standard=False,
             ),
             chat_session_key_value=session_id,

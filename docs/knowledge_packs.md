@@ -64,6 +64,7 @@ Each team's knowledge pack needs to have the following folder structure:
 ```
 + knowledge-pack
     + prompts
+        - system.md  <-- Global system message configuration
         + chat
             - prompt_1.md
             - prompt_2.md
@@ -91,7 +92,29 @@ Each team's knowledge pack needs to have the following folder structure:
             
 ```
 
-### 1. Add and change contexts
+### 1. Configure the global system message (optional)
+
+You can customize the global system message that's used for all chat interactions by creating a `system.md` file in the `prompts` directory of your knowledge pack. This system message sets the overall behavior and capabilities of the AI assistant.
+
+If no `system.md` file is found, Haiven will use the default system message: "You are a helpful assistant powered by AI."
+
+The system message is a critical component that shapes how the AI responds to all queries, so consider carefully what information and instructions to include. Good system messages typically include:
+
+- The assistant's role and purpose
+- Domain-specific knowledge or context
+- Constraints or guidelines for responses
+- Tone and style preferences
+
+**Example system.md file:**
+```
+You are an AI assistant specialized in software development for e-commerce applications. 
+You have expertise in React, Node.js, and microservices architecture.
+When providing code examples, always include explanatory comments.
+Focus on security best practices when discussing authentication or payment processing.
+Maintain a professional but friendly tone in all responses.
+```
+
+### 2. Add and change contexts
 
 The minimum of knowledge you should set up for prompts to work are the static context snippets for `domain.md` and `architecture.md`. These should describe the team's domain context and the team's architecture at a high level, in 2, maybe max 3 paragraphs.
 
@@ -103,7 +126,7 @@ You can try and sanity check if the AI "understands" your knowledge by going int
 
 - Ask the AI for a simple task in the context of your snippet (e.g. to write a user story or create a domain model with your business context, or to help you with a technical decision with your architecture snippet). See if it makes sense, adjust the snippet accordingly.
 
-### 2. Add your own prompts
+### 3. Add your own prompts
 
 Create a markdown file and put it into the `prompts/chat` folder. Use one of the existing prompt files in that folder as an example to define the metadata. The new prompt will automatically be loaded into the sidebar menu and the dashboard.
 
@@ -123,7 +146,7 @@ Every prompt file has a frontmatter block that defines metadata about the prompt
 
 Inside of the prompt text, you can reference the static knowledge snippets that are defined in a team's `knowledge` folder. Use the `{domain}` and `{architecture}` variables to reference the business context and architecture snippets. Those two are the default knowledge snippets that are used in many of the prepared prompts. But you can add your own if you need to. E.g., you could add an additional snippet for "Frontend coding patterns". You can define the name of the reference variable in the metadata of the knowledge snippet file (see `domain.md` as an example)
 
-### 3. Add documents
+### 4. Add documents
 
 The previous section only touched on one form of knowledge source, the context description text snippets.
 
