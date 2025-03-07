@@ -9,7 +9,7 @@ import ConfirmClose from "./_confirm_close";
 const AddContextModal = ({
   isAddingContext,
   setIsAddingContext,
-  reloadPinboard,
+  reloadContexts = () => {},
 }) => {
   const [contextTitle, setContextTitle] = useState("");
   const [contextDescription, setContextDescription] = useState("");
@@ -24,17 +24,17 @@ const AddContextModal = ({
 
   const addContext = () => {
     if (!contextTitle.trim()) {
-      toast.error("Please enter some title for your context");
+      toast.error("Please enter some title");
       return;
     }
     if (!contextDescription.trim()) {
-      toast.error("Please enter some description for your context");
+      toast.error("Please enter some description");
       return;
     }
 
     saveContext(contextTitle, contextDescription);
     closeModal();
-    reloadPinboard();
+    reloadContexts();
     toast.success("Context added successfully!");
   };
 

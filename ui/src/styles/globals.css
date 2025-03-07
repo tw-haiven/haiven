@@ -449,12 +449,42 @@ a.feedback:hover {
 }
 
 .pinboard-modal {
+  position: fixed;
+  right: 0;
+  top: 67px;
+  height: 95vh;
+
+  .ant-tabs-content-holder {
+    overflow: auto !important;
+  }
+
+  .pinboard-actions {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0.8em 0 0.8em;
+  }
+
+  .ant-modal-header {
+    margin-bottom: 0;
+  }
+
+  .ant-modal-content {
+    background-color: var(--color-light-gray);
+    padding: 12px 24px;
+    height: 95vh;
+  }
+
+  .pinboard-tab {
+    overflow-y: auto;
+    max-height: 65vh;
+  }
+
   .ant-tabs-nav-list, .ant-tabs-tab {
     flex: 1;
   }
 
   .ant-tabs-nav {
-    margin-bottom: 5px;
+    margin-bottom: 0px;
   }
 
   .tab-title h3 {
@@ -484,49 +514,17 @@ a.feedback:hover {
   .ant-tabs-tab-active .tab-title {
     color: black;
   }
-}
 
-.pinboard-modal {
-  position: fixed;
-  right: 0;
-  top: 67px;
-  height: 95vh;
-  .ant-tabs-content-holder {
-    overflow: auto !important;
+  .empty-pinboard-tab {
+    background-color: var(--color-light-gray);
+    height: 40%;
+    align-content: center;
+    color: var(--color-dark-gray);
+    .empty-state-message {
+      padding: 2em 5em;
+      margin: 0;
+    }
   }
-  .pinboard-actions {
-    display: flex;
-    justify-content: space-between;
-    margin: 0 0.8em 0 0.8em;
-  }
-  .ant-modal-header {
-    margin-bottom: 0;
-  }
-  .pinboard-tab {
-    overflow-y: auto;
-    max-height: 65vh;
-  }
-}
-
-.pinboard-modal .empty-pinboard-tab {
-  background-color: var(--color-light-gray);
-  height: 40%;
-  align-content: center;
-  color: var(--color-dark-gray);
-}
-
-.pinboard-modal .empty-pinboard-tab p {
-  margin: 0;
-}
-
-.empty-pinboard-tab .empty-state-message {
-  padding: 2em 5em;
-}
-
-.pinboard-modal .ant-modal-content {
-  background-color: var(--color-light-gray);
-  padding: 12px 24px;
-  height: 95vh;
 }
 
 .ant-modal .ant-modal-content .ant-modal-body {
@@ -683,7 +681,11 @@ a.feedback:hover {
   width: 50%;
   gap: 47px
 }
+.input-context-label {
+  display: flex;
+  justify-content: space-between;
 
+}
 .upload-image-menu {
   display: flex;
   flex-direction: row;
@@ -1233,10 +1235,11 @@ a.feedback:hover {
   display: flex;
 }
 
-.copy-all {
+.copy-all, .add-context-icon-button {
   font-weight: 500;
   padding: 0;
 }
+
 .scenario-card-content {
   scrollbar-width: thin;
   scrollbar-color: var(--color-light-gray) transparent;
@@ -1937,7 +1940,11 @@ a.feedback:hover {
   background-color: white;
 }
 
-.add-note-modal {
+.add-context-icon-button {
+  height: auto;
+}
+
+.add-note-modal, .add-context-modal {
   .ant-modal-title {
     font-size: 20px;
   }

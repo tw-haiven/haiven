@@ -19,11 +19,11 @@ const AddNewNoteModal = ({ isAddingNote, setIsAddingNote, callBack }) => {
 
   const addNote = () => {
     if (!newNoteTitle.trim()) {
-      toast.error("Please enter some title for your note");
+      toast.error("Please enter some title");
       return;
     }
     if (!newNoteDescription.trim()) {
-      toast.error("Please enter some description for your note");
+      toast.error("Please enter some description");
       return;
     }
 

@@ -35,6 +35,9 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     typeof window !== "undefined"
       ? window.localStorage.getItem("pinboard")
       : null,
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("context")
+      : null,
   ]);
 
   if (!isMounted) return null;
@@ -291,7 +294,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
       <AddContextModal
         isAddingContext={isAddingContext}
         setIsAddingContext={setIsAddingContext}
-        reloadPinboard={reloadUserSavedContexts}
+        reloadContexts={reloadUserSavedContexts}
       />
       <Tabs defaultActiveKey="context" items={tabs}></Tabs>
     </Modal>

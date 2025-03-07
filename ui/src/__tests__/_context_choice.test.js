@@ -20,7 +20,7 @@ describe("ContextChoice Component", () => {
 
   it("should render context dropdown", async () => {
     render(<ContextChoice contexts={mockContexts} />);
-    expect(screen.getByText("Add your context")).toBeInTheDocument();
+    expect(screen.getByText("Select your context")).toBeInTheDocument();
     expect(screen.getByTestId("context-select")).toBeInTheDocument();
     await verifyTooltip(
       "context-selection-tooltip",
