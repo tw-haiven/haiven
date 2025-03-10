@@ -91,7 +91,11 @@ class TestChats(unittest.TestCase):
         mock_knowledge_manager.get_system_message.return_value = custom_system_message
 
         mock_chat_client = MagicMock()
-        mock_chat_client.stream.return_value = [{"content": '{"key":"value"}'}]
+        actual_chunks = (
+            {"content": '{"key":"v'},
+            {"content": 'alue"}'},
+        )
+        mock_chat_client.stream.return_value = actual_chunks
 
         json_chat = JSONChat(
             chat_client=mock_chat_client, knowledge_manager=mock_knowledge_manager
@@ -111,15 +115,19 @@ class TestChats(unittest.TestCase):
         response_generator = json_chat.run(question)
 
         # Get the first response chunk
-        response_chunk = next(response_generator)
+        actual_streamed_response = ""
+        for chunk in actual_chunks:
+            actual_streamed_response += next(response_generator)
 
         # Verify the response contains JSON data
-        assert 'data: { "data":' in response_chunk
+        assert 'data: { "data":' in actual_streamed_response
 
         # Verify the memory was updated correctly
         assert len(json_chat.memory) == 3
         assert isinstance(json_chat.memory[1], HaivenHumanMessage)
+        assert json_chat.memory[1].content == question
         assert isinstance(json_chat.memory[2], HaivenAIMessage)
+        assert json_chat.memory[2].content == '{"key":"value"}'
 
     @patch("knowledge_manager.KnowledgeManager")
     def test_haiven_base_chat(self, mock_knowledge_manager):

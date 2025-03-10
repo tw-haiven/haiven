@@ -212,6 +212,14 @@ class JSONChat(HaivenBaseChat):
             yield f"[ERROR]: {str(error)}"
 
     def run(self, message: str):
+        def create_chunk(chunk):
+            if self.event_stream_standard:
+                message = '{ "data": ' + json.dumps(chunk) + " }"
+                return f"data: {message}\n\n"
+            else:
+                message = json.dumps({"data": chunk})
+                return f"{message}\n\n"
+
         try:
             data = enumerate(self.stream_from_model(message))
             for i, chunk in data:
@@ -222,12 +230,7 @@ class JSONChat(HaivenBaseChat):
                     yield f"data: {chunk}\n\n"
                 else:
                     self.memory[-1].content += chunk
-                    if self.event_stream_standard:
-                        message = '{ "data": ' + json.dumps(chunk) + " }"
-                        yield f"data: {message}\n\n"
-                    else:
-                        message = json.dumps({"data": chunk})
-                        yield f"{message}\n\n"
+                    yield create_chunk(chunk)
 
         except Exception as error:
             if not str(error).strip():
