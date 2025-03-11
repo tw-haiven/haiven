@@ -15,8 +15,8 @@ import {
   deleteContextByTimestamp,
 } from "../app/_local_store";
 import MarkdownRenderer from "../app/_markdown_renderer";
-import AddNewNoteModal from "../app/_add_new_note_modal";
-import AddContextModal from "../app/_add_context_modal";
+import AddNewNote from "../app/_add_new_note";
+import AddContext from "../app/_add_context";
 
 const Pinboard = ({ isModalVisible, onClose }) => {
   const [isMounted, setIsMounted] = useState(false);
@@ -286,12 +286,12 @@ const Pinboard = ({ isModalVisible, onClose }) => {
       className="pinboard-modal"
       mask={false}
     >
-      <AddNewNoteModal
+      <AddNewNote
         isAddingNote={isAddingNote}
         setIsAddingNote={setIsAddingNote}
         callBack={addNewNoteCallback}
       />
-      <AddContextModal
+      <AddContext
         isAddingContext={isAddingContext}
         setIsAddingContext={setIsAddingContext}
         reloadContexts={reloadUserSavedContexts}

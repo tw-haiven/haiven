@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Select, Tooltip, Button } from "antd";
 import { RiAddBoxLine } from "react-icons/ri";
 import HelpTooltip from "./_help_tooltip";
-import AddContextModal from "../app/_add_context_modal";
+import AddContext from "../app/_add_context";
 
 function ContextChoice({ contexts, value, onChange }) {
   const [isAddingContext, setIsAddingContext] = useState(false);
@@ -41,7 +41,7 @@ function ContextChoice({ contexts, value, onChange }) {
         defaultValue="base"
         data-testid="context-select"
       />
-      <AddContextModal
+      <AddContext
         isAddingContext={isAddingContext}
         setIsAddingContext={setIsAddingContext}
       />

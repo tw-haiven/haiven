@@ -36,14 +36,8 @@ describe("Pinboard Component", () => {
 
     fireEvent.click(getByText("ADD NOTE"));
 
-    expect(getByText("Add new note")).toBeInTheDocument();
-    expect(
-      getByPlaceholderText("Enter the title of your note"),
-    ).toBeInTheDocument();
-    expect(
-      getByPlaceholderText(
-        "Enter the description of your note, e.g. a description of your domain or architecture that you frequently need",
-      ),
-    ).toBeInTheDocument();
+    expect(getByText("Add new Note")).toBeInTheDocument();
+    expect(getByText("Title")).toBeInTheDocument();
+    expect(getByText("Description")).toBeInTheDocument();
   });
 });
