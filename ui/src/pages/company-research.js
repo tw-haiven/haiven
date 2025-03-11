@@ -10,6 +10,7 @@ import {
   List,
   Typography,
   Form,
+  ConfigProvider,
 } from "antd";
 import { SearchOutlined, StopOutlined } from "@ant-design/icons";
 import { fetchSSE } from "../app/_fetch_sse";
@@ -17,6 +18,7 @@ import { parse } from "best-effort-json-parser";
 import { toast } from "react-toastify";
 import useLoader from "../hooks/useLoader";
 import HelpTooltip from "../app/_help_tooltip";
+import { DynamicDataRenderer } from "../app/_dynamic_data_renderer";
 
 const { Title, Text } = Typography;
 
@@ -105,210 +107,6 @@ export default function CompanyResearchPage() {
     );
   };
 
-  // Helper function to convert camelCase or snake_case to readable text
-  const toReadableText = (key) => {
-    return key
-      .replace(/_/g, " ")
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (str) => str.toUpperCase())
-      .trim();
-  };
-
-  // Dynamic renderer for any object data
-  const DynamicDataRenderer = ({
-    data,
-    excludeKeys = [],
-    skipTitles = false,
-  }) => {
-    if (!data || typeof data !== "object") {
-      return <Text>No data available</Text>;
-    }
-
-    return (
-      <List
-        itemLayout="horizontal"
-        size="small"
-        dataSource={Object.entries(data).filter(
-          ([key]) => !excludeKeys.includes(key),
-        )}
-        renderItem={([key, value]) => {
-          if (value === null || value === undefined) return null;
-
-          return (
-            <List.Item style={{ padding: "4px 0" }}>
-              <div style={{ width: "100%" }}>
-                {!skipTitles && <Text strong>{toReadableText(key)}:</Text>}
-                {renderValue(value, key)}
-              </div>
-            </List.Item>
-          );
-        }}
-      />
-    );
-  };
-
-  // Helper to render different value types
-  const renderValue = (value, parentKey) => {
-    if (value === undefined || value === null) {
-      return <span> -</span>; // Replace "Unknown" with a dash
-    }
-
-    if (Array.isArray(value)) {
-      if (value.length === 0) return <span> None</span>;
-
-      if (typeof value[0] === "object" && value[0] !== null) {
-        // Array of objects
-        return (
-          <List
-            itemLayout="vertical"
-            dataSource={value}
-            renderItem={(item, index) => (
-              <List.Item>
-                <Card
-                  size="small"
-                  title={item.name || item.title || `Item ${index + 1}`}
-                  style={{ marginBottom: "8px" }}
-                >
-                  <DynamicDataRenderer
-                    data={item}
-                    excludeKeys={["name", "title"]}
-                  />
-                </Card>
-              </List.Item>
-            )}
-          />
-        );
-      } else {
-        // Array of primitives
-        return (
-          <ul style={{ margin: "0 0 0 20px", paddingLeft: 0 }}>
-            {value.map((item, index) => (
-              <li key={index}>{item || "-"}</li>
-            ))}
-          </ul>
-        );
-      }
-    } else if (typeof value === "object" && value !== null) {
-      // For nested objects, check if they're special cases like vision, priorities, kpis
-      // These objects have a property with the same name as the parent key
-      const hasMatchingProperty = parentKey && value[parentKey] !== undefined;
-
-      if (hasMatchingProperty) {
-        // If the object has a property matching its parent key, just show that value directly
-        return (
-          <div>
-            <span>{value[parentKey]}</span>
-            {/* Render other properties if any */}
-            {Object.keys(value).length > 1 && (
-              <DynamicDataRenderer data={value} excludeKeys={[parentKey]} />
-            )}
-          </div>
-        );
-      } else {
-        // Standard nested object
-        return <DynamicDataRenderer data={value} />;
-      }
-    } else if (value === "") {
-      // Empty string
-      return <span> -</span>;
-    } else {
-      // Primitive value
-      return <span> {value}</span>;
-    }
-  };
-
-  // Specific component for competitors which may have a special format
-  const CompetitorsList = ({ competitors }) => {
-    if (
-      !competitors ||
-      !Array.isArray(competitors) ||
-      competitors.length === 0
-    ) {
-      return <Text>No competitor information available</Text>;
-    }
-
-    return (
-      <List
-        itemLayout="vertical"
-        size="small"
-        dataSource={competitors}
-        renderItem={(item) => (
-          <List.Item style={{ padding: "4px 0" }}>
-            <Text strong>{item.name}</Text>
-            {item.rationale && (
-              <div style={{ marginTop: "2px" }}>
-                <Text type="secondary" style={{ fontSize: "12px" }}>
-                  Rationale:
-                </Text>{" "}
-                {item.rationale}
-              </div>
-            )}
-            {item.acquisitions && (
-              <div style={{ marginTop: "2px" }}>
-                <Text type="secondary" style={{ fontSize: "12px" }}>
-                  Key Acquisitions:
-                </Text>{" "}
-                {item.acquisitions}
-              </div>
-            )}
-          </List.Item>
-        )}
-      />
-    );
-  };
-
-  const Citations = ({ citations }) => {
-    if (!citations || !Array.isArray(citations) || citations.length === 0) {
-      return null;
-    }
-
-    return (
-      <div className="citations-section">
-        <Title
-          level={5}
-          style={{ marginTop: "0", marginBottom: "8px", fontSize: "14px" }}
-        >
-          Sources
-        </Title>
-        <List
-          size="small"
-          itemLayout="horizontal"
-          dataSource={citations}
-          style={{ fontSize: "12px" }}
-          renderItem={(citation, index) => {
-            // Handle both string URLs and object citations
-            const url = typeof citation === "string" ? citation : citation.url;
-
-            if (!url) return null;
-
-            return (
-              <List.Item style={{ padding: "2px 0" }}>
-                <ul
-                  style={{
-                    listStyleType: "disc",
-                    margin: 0,
-                    paddingLeft: "20px",
-                  }}
-                >
-                  <li>
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ fontSize: "12px", lineHeight: "1.2" }}
-                    >
-                      {url}
-                    </a>
-                  </li>
-                </ul>
-              </List.Item>
-            );
-          }}
-        />
-      </div>
-    );
-  };
-
   const inputAreaRender = () => {
     const [form] = Form.useForm();
 
@@ -371,109 +169,184 @@ export default function CompanyResearchPage() {
     );
   };
 
-  return (
-    <div className="company-research dashboard">
-      <div className="title">
-        <h3>
-          Company Research
-          <HelpTooltip text="Research companies to understand their business model, market position, competitors, and future prospects." />
-        </h3>
-      </div>
+  // Specific component for competitors which may have a special format
+  const CompetitorsList = ({ competitors }) => {
+    if (
+      !competitors ||
+      !Array.isArray(competitors) ||
+      competitors.length === 0
+    ) {
+      return <Text>No competitor information available</Text>;
+    }
 
-      {inputAreaRender()}
+    return (
+      <List
+        itemLayout="vertical"
+        size="small"
+        dataSource={competitors}
+        className="competitor-list"
+        renderItem={(item, index) => (
+          <Card
+            key={index}
+            size="small"
+            title={item.name}
+            className="inner-result"
+          >
+            {item.rationale && (
+              <div>
+                <Text>
+                  <strong>Rationale:</strong> {item.rationale}
+                </Text>
+              </div>
+            )}
+            {item.acquisitions && (
+              <div>
+                <Text>
+                  <strong>Key Acquisitions:</strong> {item.acquisitions}
+                </Text>
+              </div>
+            )}
+          </Card>
+        )}
+      />
+    );
+  };
 
-      {loading && (
-        <div
-          className="loading-container"
-          style={{ textAlign: "center", margin: "40px 0" }}
-        >
-          <Spin size="large" />
-          <div style={{ marginTop: "10px" }}>Researching {companyName}...</div>
-        </div>
-      )}
+  const Citations = ({ citations }) => {
+    if (!citations || !Array.isArray(citations) || citations.length === 0) {
+      return null;
+    }
 
-      {error && (
-        <div
-          className="error-container"
-          style={{ color: "red", margin: "20px 0" }}
-        >
-          {error}
-        </div>
-      )}
+    return (
+      <div className="citations-section">
+        <Typography.Title level={5} style={{ marginTop: "0" }}>
+          Sources
+        </Typography.Title>
+        <List
+          size="small"
+          itemLayout="horizontal"
+          dataSource={citations}
+          style={{ fontSize: "12px" }}
+          renderItem={(citation) => {
+            // Handle both string URLs and object citations
+            const url = typeof citation === "string" ? citation : citation.url;
 
-      {companyData && (
-        <div>
-          <div className="research-results">
-            <Title level={3}>
-              {companyData.business_brief?.comopany_name || companyName}
-            </Title>
+            if (!url) return null;
 
-            <Row
-              gutter={[12, 12]}
-              style={{ height: "calc(100vh - 250px)", minHeight: "600px" }}
-            >
-              {/* Column 1: Business Brief (Business Snapshot) */}
-              <Col xs={24} lg={8} style={{ height: "100%" }}>
-                {companyData.business_brief && (
-                  <Card
-                    title="Business Snapshot"
-                    loading={loading && !companyData.business_brief}
-                    style={{ height: "100%", overflow: "auto" }}
-                    headStyle={{ backgroundColor: "var(--color-light-gray)" }}
-                    bodyStyle={{ padding: "12px" }}
-                  >
-                    <DynamicDataRenderer
-                      data={companyData.business_brief}
-                      excludeKeys={["comopany_name"]}
-                    />
-                  </Card>
-                )}
-              </Col>
-
-              {/* Column 2: Vision & Strategic Priorities, Competitors, Domain Terms */}
-              <Col xs={24} lg={8} style={{ height: "100%" }}>
-                <div
+            return (
+              <List.Item style={{ padding: "2px 0" }}>
+                <ul
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    height: "100%",
-                    gap: "12px",
+                    listStyleType: "disc",
+                    margin: 0,
+                    paddingLeft: "20px",
                   }}
                 >
-                  {/* Vision & Strategic Priorities */}
+                  <li>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ fontSize: "12px", lineHeight: "1.2" }}
+                    >
+                      {url}
+                    </a>
+                  </li>
+                </ul>
+              </List.Item>
+            );
+          }}
+        />
+      </div>
+    );
+  };
+
+  return (
+    <ConfigProvider
+      theme={{
+        components: {
+          Card: {
+            headerBg: "var(--color-sapphire)",
+          },
+        },
+      }}
+    >
+      <div className="company-research dashboard">
+        <div className="title">
+          <h3>
+            Company Research
+            <HelpTooltip text="Research companies to understand their business model, market position, competitors, and future prospects." />
+          </h3>
+        </div>
+
+        {inputAreaRender()}
+
+        {loading && (
+          <div
+            className="loading-container"
+            style={{ textAlign: "center", margin: "40px 0" }}
+          >
+            <Spin size="large" />
+            <div style={{ marginTop: "10px" }}>
+              Researching {companyName}...
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div
+            className="error-container"
+            style={{ color: "red", margin: "20px 0" }}
+          >
+            {error}
+          </div>
+        )}
+
+        {companyData && (
+          <div className="research-results">
+            <div className="research-results-section" style={{ width: "100%" }}>
+              <Title level={3}>
+                {companyData.business_brief?.comopany_name || companyName}
+              </Title>
+
+              <Row gutter={[12, 12]} className="results-row">
+                <Col xs={24} lg={8} className="results-column">
+                  {companyData.business_brief && (
+                    <Card
+                      title="Business Snapshot"
+                      loading={loading && !companyData.business_brief}
+                    >
+                      <DynamicDataRenderer
+                        data={companyData.business_brief}
+                        excludeKeys={["comopany_name"]}
+                      />
+                    </Card>
+                  )}
+                </Col>
+
+                <Col xs={24} lg={8} className="results-column">
                   {companyData.org_priorities && (
                     <Card
                       title="Vision & Strategic Priorities"
                       loading={loading && !companyData.org_priorities}
-                      style={{ flex: "1 0 auto" }}
-                      headStyle={{ backgroundColor: "var(--color-light-gray)" }}
-                      bodyStyle={{ padding: "12px" }}
                     >
                       <DynamicDataRenderer data={companyData.org_priorities} />
                     </Card>
                   )}
 
-                  {/* Competitors */}
                   {companyData.competitors && (
                     <Card
                       title="Competitors"
                       loading={loading && !companyData.competitors}
-                      style={{ flex: "1 0 auto" }}
-                      headStyle={{ backgroundColor: "var(--color-light-gray)" }}
-                      bodyStyle={{ padding: "12px" }}
                     >
                       <CompetitorsList competitors={companyData.competitors} />
                     </Card>
                   )}
 
-                  {/* Domain Terms */}
                   {companyData.domain_terms && (
                     <Card
                       title="Domain Terms"
                       loading={loading && !companyData.domain_terms}
-                      style={{ flex: "1 0 auto" }}
-                      headStyle={{ backgroundColor: "var(--color-light-gray)" }}
-                      bodyStyle={{ padding: "12px" }}
                     >
                       <List
                         itemLayout="horizontal"
@@ -499,63 +372,41 @@ export default function CompanyResearchPage() {
                       />
                     </Card>
                   )}
-                </div>
-              </Col>
+                </Col>
 
-              {/* Column 3: Domain Functions */}
-              <Col xs={24} lg={8} style={{ height: "100%" }}>
-                {companyData.domain_functions && (
-                  <Card
-                    title="Domain Functions"
-                    loading={loading && !companyData.domain_functions}
-                    style={{ height: "100%", overflow: "auto" }}
-                    headStyle={{ backgroundColor: "var(--color-light-gray)" }}
-                    bodyStyle={{ padding: "12px" }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "12px",
-                      }}
+                <Col xs={24} lg={8} className="results-column">
+                  {companyData.domain_functions && (
+                    <Card
+                      title="Domain Functions"
+                      loading={loading && !companyData.domain_functions}
                     >
-                      {companyData.domain_functions.map((item, index) => (
-                        <Card
-                          key={index}
-                          size="small"
-                          title={item.name}
-                          headStyle={{
-                            backgroundColor: "var(--color-light-gray)",
-                            padding: "8px 12px",
-                          }}
-                          bodyStyle={{ padding: "8px 12px" }}
-                        >
-                          <DynamicDataRenderer
-                            data={item}
-                            excludeKeys={["name"]}
-                          />
-                        </Card>
-                      ))}
-                    </div>
-                  </Card>
-                )}
-              </Col>
+                      <div className="results-column">
+                        {companyData.domain_functions.map((item, index) => (
+                          <Card
+                            key={index}
+                            size="small"
+                            title={item.name}
+                            className="inner-result"
+                          >
+                            <DynamicDataRenderer
+                              data={item}
+                              excludeKeys={["name"]}
+                            />
+                          </Card>
+                        ))}
+                      </div>
+                    </Card>
+                  )}
+                </Col>
+              </Row>
+            </div>
+
+            <Row gutter={[12, 12]} className="results-row citations-container">
+              <Citations citations={citations} />
             </Row>
           </div>
-
-          <div
-            className="citations-container"
-            style={{
-              marginTop: "16px",
-              padding: "12px",
-              backgroundColor: "var(--color-light-gray)",
-              borderRadius: "4px",
-            }}
-          >
-            <Citations citations={citations} />
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </ConfigProvider>
   );
 }
