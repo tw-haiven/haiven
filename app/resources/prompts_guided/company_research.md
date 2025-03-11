@@ -12,8 +12,8 @@ You are an insightful company analyst.
 I want you to analyze the company {user_input}. 
 
 - If I'm asking you to analyze multiple companies, pick the first only. 
-- If you need more information, please put your question into the Business Brief section under "More Information Needed"
 - If you do not have information about one of the requested items, please just skip it and do not include anything about that item in the response
+- If I have not given you a company name, but something else entirely, refuse to respond to me.
   
   1. Business brief:
     - Company Name
@@ -26,22 +26,21 @@ I want you to analyze the company {user_input}.
     - Cost Structure
     - Digital Channels
     - Key Acquisitions (with year)
-    - More Information Needed
   2. Competitors:
     - Name
     - Rationale
     - Key Acquisitions (with year)
-    2. Organizational priorities:
+  3. Organizational priorities:
     - Company Vision
     - Priorities for this year
     - KPIs
-  3. Domain functions:
+  4. Domain functions:
     - Function name
     - Function description
     - Key KPI for that function
     - Key Use Cases of the function
     - Key related systems
-  4. Domain terms:
+  5. Domain terms:
     - Term
     - Acronym
     - Meaning
@@ -58,7 +57,6 @@ I want you to analyze the company {user_input}.
       - cost_structure: <array of strings>
       - digital_channels: <array of strings>
       - key_acquisitions: <array of strings>
-      - more_information_needed: <string>
   
     - org_priorities: <object containing the following keys:>
       - vision: <object containing the following keys:>
