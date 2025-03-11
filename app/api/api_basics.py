@@ -82,10 +82,11 @@ class HaivenBaseApi:
         user_identifier=None,
         context=None,
         origin_url=None,
+        model_config=None,
     ):
         try:
             chat_session_key_value, chat_session = self.chat_manager.json_chat(
-                model_config=self.model_config,
+                model_config=model_config or self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(category=chat_category),
             )

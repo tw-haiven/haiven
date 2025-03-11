@@ -4,6 +4,7 @@ from api.api_basics import ApiBasics
 from api.api_multi_step import ApiMultiStep
 from api.api_scenarios import ApiScenarios
 from api.api_creative_matrix import ApiCreativeMatrix
+from api.api_company_research import ApiCompanyResearch
 from llms.chats import (
     ChatManager,
 )
@@ -72,6 +73,13 @@ class BobaApi:
             self.prompts_guided,
         )
         ApiCreativeMatrix(
+            app,
+            self.chat_manager,
+            self.model_config,
+            self.prompts_guided,
+        )
+
+        ApiCompanyResearch(
             app,
             self.chat_manager,
             self.model_config,
