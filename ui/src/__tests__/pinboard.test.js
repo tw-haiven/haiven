@@ -2,6 +2,23 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import Pinboard from "../pages/pinboard";
 import { describe, it, expect } from "vitest";
+import { FEATURES } from "../app/feature_toggle";
+
+beforeEach(() => {
+  vi.mock(import("../app/_local_store"), async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+      ...actual,
+      getFeatureToggleConfiguration: () => ({
+        [FEATURES.ADD_CONTEXT_FROM_UI]: "true",
+      }),
+    };
+  });
+});
+
+afterEach(() => {
+  vi.resetAllMocks();
+});
 
 describe("Pinboard Component", () => {
   it("renders pinboardTitle content correctly", () => {
@@ -30,7 +47,7 @@ describe("Pinboard Component", () => {
   });
 
   it("opens add note modal when ADD NOTE button is clicked", () => {
-    const { getByText, getByPlaceholderText } = render(
+    const { getByText } = render(
       <Pinboard isModalVisible={true} onClose={() => {}} />,
     );
 

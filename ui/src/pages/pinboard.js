@@ -17,6 +17,7 @@ import {
 import MarkdownRenderer from "../app/_markdown_renderer";
 import AddNewNote from "../app/_add_new_note";
 import AddContext from "../app/_add_context";
+import { isFeatureEnabled, FEATURES } from "../app/feature_toggle";
 
 const Pinboard = ({ isModalVisible, onClose }) => {
   const [isMounted, setIsMounted] = useState(false);
@@ -237,26 +238,29 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     setSavedUserContexts(getSortedContexts());
   };
 
-  const tabs = [
-    {
-      key: "context",
-      label: (
-        <div className="tab-title">
-          <h3>Contexts</h3>
-        </div>
-      ),
-      children: renderUserSavedContexts(),
-    },
-    {
-      key: "notes",
-      label: (
-        <div className="tab-title">
-          <h3>Pins/Notes</h3>
-        </div>
-      ),
-      children: renderPinnedMessages(),
-    },
-  ];
+  const pinAndNotesTab = {
+    key: "notes",
+    label: (
+      <div className="tab-title">
+        <h3>Pins/Notes</h3>
+      </div>
+    ),
+    children: renderPinnedMessages(),
+  };
+
+  const contextTab = {
+    key: "context",
+    label: (
+      <div className="tab-title">
+        <h3>Contexts</h3>
+      </div>
+    ),
+    children: renderUserSavedContexts(),
+  };
+
+  const tabs = isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI)
+    ? [pinAndNotesTab, contextTab]
+    : [pinAndNotesTab];
 
   const pinboardHeader = () => {
     return (
@@ -269,7 +273,8 @@ const Pinboard = ({ isModalVisible, onClose }) => {
           Access content you've pinned to reuse in your Haiven inputs.
         </p>
         <div className="pinboard-actions">
-          {addContextButtonWithTooltip()}
+          {isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI) &&
+            addContextButtonWithTooltip()}
           {addNoteButtonWithTooltip()}
         </div>
       </div>
@@ -291,11 +296,13 @@ const Pinboard = ({ isModalVisible, onClose }) => {
         setIsAddingNote={setIsAddingNote}
         callBack={addNewNoteCallback}
       />
-      <AddContext
-        isAddingContext={isAddingContext}
-        setIsAddingContext={setIsAddingContext}
-        reloadContexts={reloadUserSavedContexts}
-      />
+      {isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI) && (
+        <AddContext
+          isAddingContext={isAddingContext}
+          setIsAddingContext={setIsAddingContext}
+          reloadContexts={reloadUserSavedContexts}
+        />
+      )}
       <Tabs defaultActiveKey="context" items={tabs}></Tabs>
     </Modal>
   );

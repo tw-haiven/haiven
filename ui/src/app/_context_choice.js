@@ -4,6 +4,7 @@ import { Select, Tooltip, Button } from "antd";
 import { RiAddBoxLine } from "react-icons/ri";
 import HelpTooltip from "./_help_tooltip";
 import AddContext from "../app/_add_context";
+import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 
 function ContextChoice({ contexts, value, onChange }) {
   const [isAddingContext, setIsAddingContext] = useState(false);
@@ -22,16 +23,18 @@ function ContextChoice({ contexts, value, onChange }) {
             testid="context-selection-tooltip"
           />
         </div>
-        <Tooltip title="Add your project context to be reused in your Haiven inputs. This will be included in the context dropdown.">
-          <Button
-            type="link"
-            className="add-context-icon-button"
-            onClick={() => setIsAddingContext(true)}
-          >
-            <RiAddBoxLine fontSize="large" />
-            Add Context
-          </Button>
-        </Tooltip>
+        {isFeatureEnabled(FEATURES.CONTEXTS) && (
+          <Tooltip title="Add your project context to be reused in your Haiven inputs. This will be included in the context dropdown.">
+            <Button
+              type="link"
+              className="add-context-icon-button"
+              onClick={() => setIsAddingContext(true)}
+            >
+              <RiAddBoxLine fontSize="large" />
+              Add Context
+            </Button>
+          </Tooltip>
+        )}
       </div>
 
       <Select
@@ -41,10 +44,12 @@ function ContextChoice({ contexts, value, onChange }) {
         defaultValue="base"
         data-testid="context-select"
       />
-      <AddContext
-        isAddingContext={isAddingContext}
-        setIsAddingContext={setIsAddingContext}
-      />
+      {isFeatureEnabled(FEATURES.CONTEXTS) && (
+        <AddContext
+          isAddingContext={isAddingContext}
+          setIsAddingContext={setIsAddingContext}
+        />
+      )}
     </div>
   );
 }

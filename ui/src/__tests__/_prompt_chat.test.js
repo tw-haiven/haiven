@@ -9,6 +9,7 @@ import {
 import { describe, it, expect, vi } from "vitest";
 import PromptChat from "../app/_prompt_chat";
 import { fetchSSE } from "../app/_fetch_sse";
+import { FEATURES } from "../app/feature_toggle";
 
 vi.mock("../app/_fetch_sse");
 
@@ -29,6 +30,15 @@ beforeEach(() => {
     })),
   });
   Element.prototype.scrollTo = () => {};
+  vi.mock(import("../app/_local_store"), async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+      ...actual,
+      getFeatureToggleConfiguration: () => ({
+        [FEATURES.ADD_CONTEXT_FROM_UI]: "true",
+      }),
+    };
+  });
 });
 
 describe("PromptChat Component", () => {

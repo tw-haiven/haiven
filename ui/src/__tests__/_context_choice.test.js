@@ -1,8 +1,25 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import ContextChoice from "../app/_context_choice";
 import { vi } from "vitest";
+import ContextChoice from "../app/_context_choice";
+import { FEATURES } from "../app/feature_toggle";
+
+beforeEach(() => {
+  vi.mock(import("../app/_local_store"), async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+      ...actual,
+      getFeatureToggleConfiguration: () => ({
+        [FEATURES.ADD_CONTEXT_FROM_UI]: "true",
+      }),
+    };
+  });
+});
+
+afterEach(() => {
+  vi.resetAllMocks();
+});
 
 describe("ContextChoice Component", () => {
   const mockContexts = [
