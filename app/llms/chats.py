@@ -72,7 +72,7 @@ class HaivenBaseChat:
         stream = self.chat_client.stream(prompt)
         query = ""
         for chunk in stream:
-            query += chunk["content"]
+            query += chunk.get("content", "")
 
         if "none" in query.lower():
             return None
@@ -137,8 +137,8 @@ class StreamingChat(HaivenBaseChat):
                     if user_query:
                         self.memory[-1].content = user_query
                     self.memory.append(HaivenAIMessage(content=""))
-                self.memory[-1].content += chunk["content"]
-                yield chunk["content"]
+                self.memory[-1].content += chunk.get("content", "")
+                yield chunk.get("content", "")
 
         except Exception as error:
             if not str(error).strip():
@@ -197,7 +197,7 @@ class JSONChat(HaivenBaseChat):
             self.memory.append(HaivenHumanMessage(content=new_message))
             stream = self.chat_client.stream(self.memory)
             for chunk in stream:
-                yield chunk["content"]
+                yield chunk.get("content", "")
 
         except Exception as error:
             if not str(error).strip():
