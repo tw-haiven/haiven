@@ -189,11 +189,8 @@ class JSONChat(HaivenBaseChat):
         self,
         chat_client: ChatClient,
         knowledge_manager: KnowledgeManager,
-        event_stream_standard=True,
     ):
         super().__init__(chat_client, knowledge_manager)
-        # Transition to new frontend SSE implementation: Add "data: " and "[DONE]" vs not doing that
-        self.event_stream_standard = event_stream_standard
 
     def stream_from_model(self, new_message):
         try:
@@ -201,9 +198,6 @@ class JSONChat(HaivenBaseChat):
             stream = self.chat_client.stream(self.memory)
             for chunk in stream:
                 yield chunk["content"]
-
-            if self.event_stream_standard:
-                yield "[DONE]"
 
         except Exception as error:
             if not str(error).strip():
@@ -213,12 +207,8 @@ class JSONChat(HaivenBaseChat):
 
     def run(self, message: str):
         def create_chunk(chunk):
-            if self.event_stream_standard:
-                message = '{ "data": ' + json.dumps(chunk) + " }"
-                return f"data: {message}\n\n"
-            else:
-                message = json.dumps({"data": chunk})
-                return f"{message}\n\n"
+            message = json.dumps({"data": chunk})
+            return f"{message}\n\n"
 
         try:
             data = enumerate(self.stream_from_model(message))
@@ -226,11 +216,8 @@ class JSONChat(HaivenBaseChat):
                 if i == 0:
                     self.memory.append(HaivenAIMessage(content=""))
 
-                if chunk == "[DONE]":
-                    yield f"data: {chunk}\n\n"
-                else:
-                    self.memory[-1].content += chunk
-                    yield create_chunk(chunk)
+                self.memory[-1].content += chunk
+                yield create_chunk(chunk)
 
         except Exception as error:
             if not str(error).strip():
@@ -377,7 +364,6 @@ class ChatManager:
             lambda: JSONChat(
                 chat_client,
                 self.knowledge_manager,
-                event_stream_standard=False,
             ),
             chat_session_key_value=session_id,
             chat_category=options.category if options else None,

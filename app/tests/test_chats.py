@@ -119,8 +119,11 @@ class TestChats(unittest.TestCase):
         for chunk in actual_chunks:
             actual_streamed_response += next(response_generator)
 
-        # Verify the response contains JSON data
-        assert 'data: { "data":' in actual_streamed_response
+        # Verify the response is encoding the JSON data as it is expected by the frontend
+        assert (
+            '{"data": "{\\"key\\":\\"v"}\n\n{"data": "alue\\"}"}\n\n'
+            == actual_streamed_response
+        )
 
         # Verify the memory was updated correctly
         assert len(json_chat.memory) == 3
