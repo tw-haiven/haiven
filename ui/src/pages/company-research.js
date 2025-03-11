@@ -6,13 +6,12 @@ import {
   Button,
   Input,
   Card,
-  Spin,
   List,
   Typography,
   Form,
   ConfigProvider,
 } from "antd";
-import { SearchOutlined, StopOutlined } from "@ant-design/icons";
+import { RiSendPlane2Line } from "react-icons/ri";
 import { fetchSSE } from "../app/_fetch_sse";
 import { parse } from "best-effort-json-parser";
 import { toast } from "react-toastify";
@@ -28,7 +27,7 @@ export default function CompanyResearchPage() {
   const [companyData, setCompanyData] = useState(null);
   const [citations, setCitations] = useState([]);
   const [error, setError] = useState(null);
-  const { loading, abortLoad, startLoad } = useLoader();
+  const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [disableInput, setDisableInput] = useState(false);
 
   const handleSearch = async (input) => {
@@ -141,7 +140,7 @@ export default function CompanyResearchPage() {
           form={form}
           initialValues={{ companyName: "" }}
           className="company-search-form"
-          style={{ display: "flex", alignItems: "center" }}
+          style={{ display: "flex", maxWidth: "450px" }}
         >
           <Form.Item
             name="companyName"
@@ -156,20 +155,8 @@ export default function CompanyResearchPage() {
             />
           </Form.Item>
           <Form.Item style={{ marginBottom: 0 }}>
-            {loading ? (
-              <Button
-                type="default"
-                icon={<StopOutlined />}
-                onClick={() => abortLoad()}
-              >
-                Stop
-              </Button>
-            ) : (
-              <Button
-                type="primary"
-                htmlType="submit"
-                icon={<SearchOutlined />}
-              >
+            {!loading && (
+              <Button htmlType="submit" icon={<RiSendPlane2Line />}>
                 Research
               </Button>
             )}
@@ -288,18 +275,6 @@ export default function CompanyResearchPage() {
       <div className="company-research dashboard">
         {inputAreaRender()}
 
-        {loading && (
-          <div
-            className="loading-container"
-            style={{ textAlign: "center", margin: "40px 0" }}
-          >
-            <Spin size="large" />
-            <div style={{ marginTop: "10px" }}>
-              Researching {companyName}...
-            </div>
-          </div>
-        )}
-
         {error && (
           <div
             className="error-container"
@@ -311,10 +286,14 @@ export default function CompanyResearchPage() {
 
         {companyData && (
           <div className="research-results">
-            <div className="research-results-section" style={{ width: "100%" }}>
-              <Title level={3}>
-                {companyData.business_brief?.comopany_name || companyName}
-              </Title>
+            <div className="research-results-section">
+              <div className="title-container">
+                <Title level={3}>
+                  {companyData.business_brief?.company_name || companyName}
+                </Title>
+
+                <StopLoad />
+              </div>
 
               <Row gutter={[12, 12]} className="results-row">
                 <Col xs={24} lg={8} className="results-column">
@@ -325,7 +304,7 @@ export default function CompanyResearchPage() {
                     >
                       <DynamicDataRenderer
                         data={companyData.business_brief}
-                        excludeKeys={["comopany_name"]}
+                        excludeKeys={["company_name"]}
                       />
                     </Card>
                   )}

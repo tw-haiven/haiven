@@ -1816,6 +1816,14 @@ a.feedback:hover {
     display: flex;
     flex-direction: column;
     width: 100%;
+
+    .title-container {
+      display: flex;
+      padding: 12px 0;
+      h3 {
+        margin: 0 12px;
+      }
+    }
     
     .citations-container {
       margin-top: 16px;
@@ -1834,6 +1842,8 @@ a.feedback:hover {
       .ant-card-head {
         color: white;
       }
+
+      
     }
 
     .competitor-list li {
