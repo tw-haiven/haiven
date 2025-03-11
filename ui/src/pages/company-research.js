@@ -18,6 +18,7 @@ import { parse } from "best-effort-json-parser";
 import { toast } from "react-toastify";
 import useLoader from "../hooks/useLoader";
 import HelpTooltip from "../app/_help_tooltip";
+import ChatHeader from "../pages/_chat_header";
 import { DynamicDataRenderer } from "../app/_dynamic_data_renderer";
 
 const { Title, Text } = Typography;
@@ -106,6 +107,15 @@ export default function CompanyResearchPage() {
       },
     );
   };
+
+  const title = (
+    <div className="title">
+      <h3>
+        Company Research
+        <HelpTooltip text="Get a company brief" />
+      </h3>
+    </div>
+  );
 
   const inputAreaRender = () => {
     const [form] = Form.useForm();
@@ -271,14 +281,11 @@ export default function CompanyResearchPage() {
         },
       }}
     >
+      <ChatHeader
+        models={{ chat: { name: "Perplexity AI" } }}
+        titleComponent={title}
+      />
       <div className="company-research dashboard">
-        <div className="title">
-          <h3>
-            Company Research
-            <HelpTooltip text="Research companies to understand their business model, market position, competitors, and future prospects." />
-          </h3>
-        </div>
-
         {inputAreaRender()}
 
         {loading && (
