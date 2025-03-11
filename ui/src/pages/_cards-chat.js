@@ -184,26 +184,28 @@ const CardsChat = ({
             ...scenario,
           }));
 
-          ms += data.data;
-          ms = ms.trim().replace(/^[^[]+/, "");
-          if (ms.startsWith("[")) {
-            try {
-              output = parse(ms || "[]");
-            } catch (error) {
-              console.log("error", error);
-            }
-            if (Array.isArray(output)) {
-              setScenarios([...existingScenarios, ...output]);
-            } else {
-              abortLoad();
-              if (ms.includes("Error code:")) {
-                toast.error(ms);
-              } else {
-                toast.warning(
-                  "Model failed to respond rightly, please rewrite your message and try again",
-                );
+          if (data.data) {
+            ms += data.data;
+            ms = ms.trim().replace(/^[^[]+/, "");
+            if (ms.startsWith("[")) {
+              try {
+                output = parse(ms || "[]");
+              } catch (error) {
+                console.log("error", error);
               }
-              console.log("response is not parseable into an array");
+              if (Array.isArray(output)) {
+                setScenarios([...existingScenarios, ...output]);
+              } else {
+                abortLoad();
+                if (ms.includes("Error code:")) {
+                  toast.error(ms);
+                } else {
+                  toast.warning(
+                    "Model failed to respond rightly, please rewrite your message and try again",
+                  );
+                }
+                console.log("response is not parseable into an array");
+              }
             }
           }
         },
@@ -288,26 +290,28 @@ const CardsChat = ({
           abortLoad();
         },
         onMessageHandle: (data) => {
-          ms += data.data;
-          ms = ms.trim().replace(/^[^[]+/, "");
-          if (ms.startsWith("[")) {
-            try {
-              output = parse(ms || "[]");
-            } catch (error) {
-              console.log("error", error);
-            }
-            if (Array.isArray(output)) {
-              iterateScenarios(output);
-            } else {
-              abortLoad();
-              if (ms.includes("Error code:")) {
-                toast.error(ms);
-              } else {
-                toast.warning(
-                  "Model failed to respond rightly, please rewrite your message and try again",
-                );
+          if (data.data) {
+            ms += data.data;
+            ms = ms.trim().replace(/^[^[]+/, "");
+            if (ms.startsWith("[")) {
+              try {
+                output = parse(ms || "[]");
+              } catch (error) {
+                console.log("error", error);
               }
-              console.log("response is not parseable into an array");
+              if (Array.isArray(output)) {
+                iterateScenarios(output);
+              } else {
+                abortLoad();
+                if (ms.includes("Error code:")) {
+                  toast.error(ms);
+                } else {
+                  toast.warning(
+                    "Model failed to respond rightly, please rewrite your message and try again",
+                  );
+                }
+                console.log("response is not parseable into an array");
+              }
             }
           }
         },

@@ -104,14 +104,19 @@ class ChatClient:
         else:
             completion_fn = llmCompletion
 
+        citations = None
         for result in completion_fn(
             model=self.model_config.lite_id,
             messages=json_messages,
             stream=True,
             **self._get_kwargs(),
         ):
+            citations = citations or result.get("citations", None)
             if result.choices[0].delta.content is not None:
                 yield {"content": result.choices[0].delta.content}
+
+        if citations is not None:
+            yield {"metadata": {"citations": citations}}
 
 
 class ChatClientFactory:

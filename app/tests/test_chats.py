@@ -94,6 +94,7 @@ class TestChats(unittest.TestCase):
         actual_chunks = (
             {"content": '{"key":"v'},
             {"content": 'alue"}'},
+            {"metadata": {"citations": ["test.url"]}},
         )
         mock_chat_client.stream.return_value = actual_chunks
 
@@ -121,7 +122,11 @@ class TestChats(unittest.TestCase):
 
         # Verify the response is encoding the JSON data as it is expected by the frontend
         assert (
-            '{"data": "{\\"key\\":\\"v"}\n\n{"data": "alue\\"}"}\n\n'
+            '{"data": "{\\"key\\":\\"v"}'
+            + "\n\n"
+            + '{"data": "alue\\"}"}'
+            + "\n\n"
+            + '{"metadata": {"citations": ["test.url"]}}'
             == actual_streamed_response
         )
 

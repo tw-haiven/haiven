@@ -197,7 +197,10 @@ class JSONChat(HaivenBaseChat):
             self.memory.append(HaivenHumanMessage(content=new_message))
             stream = self.chat_client.stream(self.memory)
             for chunk in stream:
-                yield chunk.get("content", "")
+                if "content" in chunk:
+                    yield chunk.get("content", "")
+                elif "metadata" in chunk:
+                    yield chunk
 
         except Exception as error:
             if not str(error).strip():
@@ -206,18 +209,21 @@ class JSONChat(HaivenBaseChat):
             yield f"[ERROR]: {str(error)}"
 
     def run(self, message: str):
-        def create_chunk(chunk):
+        def create_data_chunk(chunk):
             message = json.dumps({"data": chunk})
             return f"{message}\n\n"
 
         try:
             data = enumerate(self.stream_from_model(message))
             for i, chunk in data:
-                if i == 0:
-                    self.memory.append(HaivenAIMessage(content=""))
+                if "metadata" in chunk:
+                    yield json.dumps(chunk)
+                else:
+                    if i == 0:
+                        self.memory.append(HaivenAIMessage(content=""))
 
-                self.memory[-1].content += chunk
-                yield create_chunk(chunk)
+                    self.memory[-1].content += chunk
+                    yield create_data_chunk(chunk)
 
         except Exception as error:
             if not str(error).strip():

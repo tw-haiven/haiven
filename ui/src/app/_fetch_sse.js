@@ -10,7 +10,7 @@ export const getMessageError = async (response) => {
   return chatMessageError;
 };
 
-const checkError = (response) => {
+const checkIsErrorMessage = (response) => {
   const isError = response.startsWith("[ERROR]: ")
     ? response.replace("[ERROR]: ", "")
     : null;
@@ -94,12 +94,12 @@ export const fetchSSE = async (uri, fetchOptions, options) => {
           const chunks = chunkable.split(SPLIT_DELIMITER);
           chunks.forEach((value) => {
             const data = JSON.parse(value);
-            checkError(data.data);
+            checkIsErrorMessage(data.data || "");
             options.onMessageHandle?.(data, response);
           });
         }
       } else {
-        checkError(chunkValue);
+        checkIsErrorMessage(chunkValue);
         options.onMessageHandle?.(chunkValue, response);
       }
     }
