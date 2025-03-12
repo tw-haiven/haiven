@@ -18,7 +18,6 @@ import MarkdownRenderer from "../app/_markdown_renderer";
 import AddNewNote from "../app/_add_new_note";
 import AddContext from "../app/_add_context";
 import { isFeatureEnabled, FEATURES } from "../app/feature_toggle";
-import { render } from "@testing-library/react";
 
 const Pinboard = ({ isModalVisible, onClose }) => {
   const [isMounted, setIsMounted] = useState(false);
