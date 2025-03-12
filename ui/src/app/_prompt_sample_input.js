@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Modal, Button } from "antd";
 import { toast } from "react-toastify";
-import { RiClipboardLine, RiBookOpenFill } from "react-icons/ri";
+import { RiClipboardLine, RiBookOpenLine } from "react-icons/ri";
 
 import MarkdownRenderer from "./_markdown_renderer";
 
@@ -30,8 +30,8 @@ export default function PromptSampleInput({ sampleInput }) {
           type="link"
           onClick={showSampleInputModal}
         >
+          <RiBookOpenLine className="prompt-sample-input-icon" />
           Sample Input
-          <RiBookOpenFill className="prompt-sample-input-icon" />
         </Button>
 
         <Modal
