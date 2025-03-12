@@ -9,6 +9,7 @@ from knowledge.pack import KnowledgePackError
 from llms.model_config import ModelConfig
 from llms.default_models import DefaultModels
 from embeddings.model import EmbeddingModel
+import re
 
 
 class ConfigService:
@@ -288,8 +289,13 @@ def _resolve_config_list_values(config, key, value):
 
 
 def _replace_by_env_var(value):
-    if value is not None and value.startswith("${") and value.endswith("}"):
-        env_variable = value[2:-1]
-        return os.environ.get(env_variable, "")
-    else:
+    if value is None:
         return value
+
+    # Use regex to find all ${ENV_VAR} patterns and replace them with their values
+    def replace_env_var(match):
+        env_variable = match.group(1)
+        return os.environ.get(env_variable, "")
+
+    # Replace all occurrences of ${ENV_VAR} with their values
+    return re.sub(r"\${([^}]+)}", replace_env_var, value)

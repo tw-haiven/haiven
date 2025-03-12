@@ -149,8 +149,6 @@ class TestConfigService:
         )
 
     def test_config_loads_team_from_env_var_values(self):
-        knowledge_pack_path = "folder/path"
-
         config_content = """
         knowledge_pack_path: ${KNOWLEDGE_PACK_PATH}
         """
@@ -163,7 +161,25 @@ class TestConfigService:
         config_service = ConfigService(config_path)
 
         knowledge_pack_path: str = config_service.load_knowledge_pack_path()
-        assert knowledge_pack_path == knowledge_pack_path
+        assert knowledge_pack_path == self.temp_dir.name
+
+        os.remove(config_path)
+
+    def test_config_loads_env_vars_as_partials(self):
+        config_content = """
+        default_models: 
+          chat: hello-${MY_MODEL}-world
+        """
+        config_path = "test-env-config.yaml"
+        with open(config_path, "w") as f:
+            f.write(config_content)
+
+        os.environ["MY_MODEL"] = "my-model"
+
+        config_service = ConfigService(config_path)
+
+        chat_model: str = config_service.get_default_chat_model()
+        assert chat_model == "hello-my-model-world"
 
         os.remove(config_path)
 
@@ -177,13 +193,15 @@ class TestConfigService:
         config_content = """
 enabled_providers: azure
 default_models: 
-  chat: ${ENABLED_CHAT_MODEL}
+  chat: ${MY_MODEL}
   vision: some-vision-model
 models:
   - id: azure-gpt-4o
     name: GPT-4o
     provider: azure
           """
+        os.environ["MY_MODEL"] = "my-model"
+
         config_path = "test-env-config.yaml"
         with open(get_test_data_path() + "/" + config_path, "w") as f:
             f.write(config_content)
@@ -193,7 +211,7 @@ models:
             config_service.get_default_chat_model()
 
         chat_model: str = config_service.get_default_chat_model()
-        assert chat_model == "azure-gpt-4o"
+        assert chat_model == "my-model"
 
     def test_should_raise_error_when_knowledge_pack_not_found(self):
         exception_raised = False
