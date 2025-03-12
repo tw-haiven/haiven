@@ -7,8 +7,6 @@ import {
 } from "../app/_local_store";
 import { toast } from "react-toastify";
 
-// © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-
 vi.mock("react-toastify", () => ({
   toast: {
     success: vi.fn(),

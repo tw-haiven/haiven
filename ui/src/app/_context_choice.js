@@ -16,14 +16,14 @@ function ContextChoice({ contexts, value, onChange }) {
   return (
     <div className="user-input">
       <div className="input-context-label">
-        <div>
+        <label>
           Select your context
           <HelpTooltip
             text={tooltipMessage}
             testid="context-selection-tooltip"
           />
-        </div>
-        {isFeatureEnabled(FEATURES.CONTEXTS) && (
+        </label>
+        {isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI) && (
           <Tooltip title="Add your project context to be reused in your Haiven inputs. This will be included in the context dropdown.">
             <Button
               type="link"
@@ -44,7 +44,7 @@ function ContextChoice({ contexts, value, onChange }) {
         defaultValue="base"
         data-testid="context-select"
       />
-      {isFeatureEnabled(FEATURES.CONTEXTS) && (
+      {isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI) && (
         <AddContext
           isAddingContext={isAddingContext}
           setIsAddingContext={setIsAddingContext}

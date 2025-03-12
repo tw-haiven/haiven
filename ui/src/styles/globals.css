@@ -2006,7 +2006,7 @@ a.feedback:hover {
   height: auto;
 }
 
-.add-note-modal, .add-context-modal {
+.add-content-modal {
   .ant-modal-title {
     font-size: 20px;
   }

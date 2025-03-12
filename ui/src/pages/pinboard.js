@@ -18,6 +18,7 @@ import MarkdownRenderer from "../app/_markdown_renderer";
 import AddNewNote from "../app/_add_new_note";
 import AddContext from "../app/_add_context";
 import { isFeatureEnabled, FEATURES } from "../app/feature_toggle";
+import { render } from "@testing-library/react";
 
 const Pinboard = ({ isModalVisible, onClose }) => {
   const [isMounted, setIsMounted] = useState(false);
@@ -114,9 +115,8 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     const year = date.getFullYear();
     return `${day}${suffix}, ${month} ${year}`;
   }
-
   const renderPinnedMessages = () => (
-    <div className="pinboard-tab">
+    <div className="pinboard-tab" data-testid="pin-and-notes-tab">
       {pinnedMessages.length === 0 && (
         <div className="empty-pinboard-tab">
           <p className="empty-state-message">
@@ -139,10 +139,18 @@ const Pinboard = ({ isModalVisible, onClose }) => {
                 {formatDate(pinnedMessage.timestamp)}
               </div>
               <div className="card-action" key="actions">
-                <Button type="link" onClick={() => onDelete(i)}>
+                <Button
+                  type="link"
+                  onClick={() => onDelete(i)}
+                  data-testid="delete"
+                >
                   <RiDeleteBinLine style={{ fontSize: "large" }} />
                 </Button>
-                <Button type="link" onClick={() => onCopyOne(i)}>
+                <Button
+                  type="link"
+                  onClick={() => onCopyOne(i)}
+                  data-testid="copy"
+                >
                   <RiCheckboxMultipleBlankFill style={{ fontSize: "large" }} />
                 </Button>
               </div>
@@ -177,7 +185,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
   };
 
   const renderUserSavedContexts = () => (
-    <div className="pinboard-tab">
+    <div className="pinboard-tab" data-testid="contexts-tab">
       {savedUserContexts.length === 0 && (
         <div className="empty-pinboard-tab">
           <p className="empty-state-message">
@@ -203,10 +211,15 @@ const Pinboard = ({ isModalVisible, onClose }) => {
                 <Button
                   type="link"
                   onClick={() => deleteContext(context.timestamp)}
+                  data-testid="delete"
                 >
                   <RiDeleteBinLine style={{ fontSize: "large" }} />
                 </Button>
-                <Button type="link" onClick={() => copyContext(context)}>
+                <Button
+                  type="link"
+                  onClick={() => copyContext(context)}
+                  data-testid="copy"
+                >
                   <RiCheckboxMultipleBlankFill style={{ fontSize: "large" }} />
                 </Button>
               </div>
@@ -259,7 +272,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
   };
 
   const tabs = isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI)
-    ? [pinAndNotesTab, contextTab]
+    ? [contextTab, pinAndNotesTab]
     : [pinAndNotesTab];
 
   const pinboardHeader = () => {
@@ -294,7 +307,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
       <AddNewNote
         isAddingNote={isAddingNote}
         setIsAddingNote={setIsAddingNote}
-        callBack={addNewNoteCallback}
+        saveNewNote={addNewNoteCallback}
       />
       {isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI) && (
         <AddContext

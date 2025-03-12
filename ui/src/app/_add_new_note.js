@@ -3,10 +3,10 @@
 import React from "react";
 import AddUserContent from "./_add_user_content";
 
-const AddNote = ({ isAddingNote, setIsAddingNote, callBack }) => {
+const AddNote = ({ isAddingNote, setIsAddingNote, saveNewNote }) => {
   const submitNewNote = (title, description) => {
     const noteContent = "# " + title + "\n\n" + description;
-    callBack(noteContent);
+    saveNewNote(noteContent);
   };
 
   return (

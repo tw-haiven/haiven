@@ -17,6 +17,15 @@ beforeEach(() => {
   });
 });
 
+vi.mock(import("../app/feature_toggle"), async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    isFeatureEnabled: (featureName) =>
+      featureName === FEATURES.ADD_CONTEXT_FROM_UI ? true : false,
+  };
+});
+
 afterEach(() => {
   vi.resetAllMocks();
 });
@@ -35,6 +44,16 @@ describe("ContextChoice Component", () => {
     expect(await screen.findByText(tooltipText)).toBeInTheDocument();
   };
 
+  function verifyAddContextLink() {
+    const addContextLink = screen.getByText("Add Context");
+    expect(addContextLink).toBeInTheDocument();
+    fireEvent.click(addContextLink);
+
+    expect(screen.getByText("Add new Context")).toBeInTheDocument();
+    expect(screen.getByText("Title")).toBeInTheDocument();
+    expect(screen.getByText("Description")).toBeInTheDocument();
+  }
+
   it("should render context dropdown", async () => {
     render(<ContextChoice contexts={mockContexts} />);
     expect(screen.getByText("Select your context")).toBeInTheDocument();
@@ -49,6 +68,7 @@ describe("ContextChoice Component", () => {
 
     expect(screen.getByText("Context 1")).toBeInTheDocument();
     expect(screen.getByText("Context 2")).toBeInTheDocument();
+    verifyAddContextLink();
 
     const option = await screen.findByText("Context 1");
     fireEvent.click(option);

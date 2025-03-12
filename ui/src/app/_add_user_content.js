@@ -47,14 +47,15 @@ const AddUserContent = ({
         }}
         onOk={submitContent}
         okText="Save"
-        className="add-note-modal"
+        className="add-content-modal"
       >
-        <span className="label">Title</span>
+        <label className="label">Title</label>
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           rows={1}
           className="title-input"
+          data-testid="add-content-title"
         />
         <span className="label">Description</span>
         <Input.TextArea
@@ -62,6 +63,7 @@ const AddUserContent = ({
           onChange={(e) => setDescription(e.target.value)}
           autoSize={{ minRows: 10, maxRows: 15 }}
           className="description-input"
+          data-testid="add-content-description"
         />
       </Modal>
       <ConfirmClose
