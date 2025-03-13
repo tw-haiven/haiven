@@ -12,6 +12,7 @@ import DisclaimerPopup from "../app/_disclaimer_popup";
 import { RiBookShelfLine } from "react-icons/ri";
 import { MdLightbulb } from "react-icons/md";
 import { getFeatureToggleConfiguration } from "../app/_local_store";
+import ReactMarkdown from "react-markdown";
 
 export default function ChatDashboard() {
   const [prompts, setPrompts] = useState([]);
@@ -235,7 +236,9 @@ export default function ChatDashboard() {
                                   </Tag>
                                 ))}
                               >
-                                {prompt.help_prompt_description}
+                                <ReactMarkdown>
+                                  {prompt.help_prompt_description}
+                                </ReactMarkdown>
                               </Card>
                             </Link>
                           ))}
