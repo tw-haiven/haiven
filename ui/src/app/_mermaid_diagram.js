@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import mermaid from "mermaid";
 import { Modal } from "antd";
+import ZoomableDiagram from "./_zoomable_diagram";
 
 const MermaidDiagram = ({ chart, config = {} }) => {
   const [svgContent, setSvgContent] = useState("");
@@ -39,7 +40,7 @@ const MermaidDiagram = ({ chart, config = {} }) => {
           }
         })
         .catch((error) => {
-          setErrorMessage("Error in diagram syntax");
+          setErrorMessage("Diagram is loading...");
         });
     } catch (error) {
       console.error("Error initialising Mermaid", error);
@@ -87,10 +88,7 @@ const MermaidDiagram = ({ chart, config = {} }) => {
         <div
           className="mermaid-diagram error"
           style={{
-            color: "red",
             padding: "1rem",
-            border: "1px solid red",
-            borderRadius: "4px",
           }}
         >
           {errorMessage}
@@ -124,20 +122,11 @@ const MermaidDiagram = ({ chart, config = {} }) => {
             onCancel={closeModal}
             footer={null}
             width="90%"
+            style={{ top: 20, maxWidth: "90vw" }}
             centered
             className="mermaid-diagram-modal"
           >
-            <div
-              className="mermaid-diagram-modal-content"
-              dangerouslySetInnerHTML={{ __html: svgContent }}
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                overflow: "auto",
-                maxHeight: "80vh",
-              }}
-            />
+            <ZoomableDiagram svgContent={svgContent} />
           </Modal>
         </>
       ) : (
