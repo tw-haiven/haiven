@@ -52,7 +52,7 @@ export default function App({
 
           return contextCopy;
         } else {
-          contextCopy.label = context.title;
+          contextCopy.label = context.context;
           contextCopy.value = context.context;
 
           return contextCopy;
