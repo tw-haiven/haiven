@@ -11,3 +11,4 @@
 - We're using vitest for testing
 - We're using the "prettier" library for formatting
 - Always use remix icons for icons
+- Do not create JSDocs
