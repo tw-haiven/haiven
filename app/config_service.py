@@ -211,7 +211,7 @@ class ConfigService:
                 case "aws":
                     default_chat_model = "aws-claude-v3"
                 case "anthropic":
-                    default_chat_model = "anthropic-claude-3.5"
+                    default_chat_model = "anthropic-claude-3.7"
                 case "ollama":
                     default_chat_model = "ollama-local-llama3"
         return default_chat_model
