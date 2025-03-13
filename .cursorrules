@@ -26,3 +26,4 @@ and ONLY then
 - Always use remix icons for icons
 - We are using yarn
 - Do not create JSDocs
+- Our components currently go in the ui/app folder, and the file naming convention is _name_of_component.js

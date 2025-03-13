@@ -12,3 +12,5 @@
 - We're using the "prettier" library for formatting
 - Always use remix icons for icons
 - Do not create JSDocs
+- Our components currently go in the ui/app folder, and the file naming convention is _name_of_component.js
+- Never use innerHTML in combination with useRef, consider React state instead, it is more secure
