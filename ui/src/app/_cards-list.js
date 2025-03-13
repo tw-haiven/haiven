@@ -8,10 +8,11 @@ import {
   RiFileCopyLine,
   RiCloseFill,
 } from "react-icons/ri";
-import { Card, Button, Input, Radio, Tooltip } from "antd";
+import { Card, Button, Input, Radio, Tooltip, Typography } from "antd";
 import { toast } from "react-toastify";
-import MarkdownRenderer from "./_markdown_renderer";
+import { DynamicDataRenderer } from "./_dynamic_data_renderer";
 const { TextArea } = Input;
+const { Text } = Typography;
 
 const CardsList = ({
   scenarios,
@@ -42,38 +43,8 @@ const CardsList = ({
     setScenarios(updatedScenarios);
   };
 
-  const camelCaseToHumanReadable = (str) => {
-    return str
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (str) => str.toUpperCase());
-  };
-
   const renderScenarioDetails = (scenario) => {
-    return Object.keys(scenario).map((key) => {
-      if (
-        key === "title" ||
-        key === "summary" ||
-        key === "hidden" ||
-        key === "exclude" ||
-        key === "id"
-      )
-        return null;
-      const value = scenario[key];
-      return (
-        <div key={key}>
-          <strong>{camelCaseToHumanReadable(key)}:</strong>
-          {Array.isArray(value) ? (
-            <ul>
-              {value.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          ) : (
-            <span> {value}</span>
-          )}
-        </div>
-      );
-    });
+    return <DynamicDataRenderer data={scenario} exclude={["summary"]} />;
   };
 
   return (
@@ -137,11 +108,12 @@ const CardsList = ({
                       data-testid={`scenario-summary-${i}`}
                     />
                   ) : (
-                    <MarkdownRenderer
-                      content={scenario.summary}
+                    <Text
                       className="scenario-summary"
                       dataTestId={`scenario-summary-${i}`}
-                    />
+                    >
+                      {scenario.summary}
+                    </Text>
                   )}
                   {renderScenarioDetails(scenario)}
                 </div>

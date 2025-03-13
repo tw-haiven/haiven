@@ -304,7 +304,7 @@ export default function CompanyResearchPage() {
                     >
                       <DynamicDataRenderer
                         data={companyData.business_brief}
-                        excludeKeys={["company_name"]}
+                        exclude={["company_name"]}
                       />
                     </Card>
                   )}
@@ -376,7 +376,7 @@ export default function CompanyResearchPage() {
                           >
                             <DynamicDataRenderer
                               data={item}
-                              excludeKeys={["name"]}
+                              exclude={["name"]}
                             />
                           </Card>
                         ))}

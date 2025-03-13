@@ -16,19 +16,27 @@ export const toReadableText = (key) => {
 // Dynamic renderer for any object data
 export const DynamicDataRenderer = ({
   data,
-  excludeKeys = [],
+  exclude = [],
   skipTitles = false,
 }) => {
   if (!data || typeof data !== "object") {
     return <Text>No data available</Text>;
   }
 
+  const alwaysExclude = [
+    "title",
+    "hidden",
+    "exclude",
+    "id",
+    "scenarios",
+  ].concat(exclude);
+
   return (
     <List
       itemLayout="horizontal"
       size="small"
       dataSource={Object.entries(data).filter(
-        ([key]) => !excludeKeys.includes(key),
+        ([key]) => !alwaysExclude.includes(key),
       )}
       renderItem={([key, value]) => {
         if (value === null || value === undefined) return null;
