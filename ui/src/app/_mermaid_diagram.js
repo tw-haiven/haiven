@@ -1,11 +1,13 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useEffect, useState, useCallback } from "react";
 import mermaid from "mermaid";
+import { Modal } from "antd";
 
 const MermaidDiagram = ({ chart, config = {} }) => {
   const [svgContent, setSvgContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   // Generate a unique ID for this diagram instance
   const uniqueId = React.useMemo(
@@ -97,14 +99,47 @@ const MermaidDiagram = ({ chart, config = {} }) => {
     );
   }
 
+  const openModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+
   return (
     <div className="mermaid-diagram-container">
       {svgContent ? (
-        <div
-          id={uniqueId}
-          className="mermaid-diagram"
-          dangerouslySetInnerHTML={{ __html: svgContent }}
-        />
+        <>
+          <div
+            id={uniqueId}
+            className="mermaid-diagram"
+            dangerouslySetInnerHTML={{ __html: svgContent }}
+            onClick={openModal}
+            style={{ cursor: "pointer" }}
+            title="Click to enlarge diagram"
+          />
+          <Modal
+            open={isModalVisible}
+            onCancel={closeModal}
+            footer={null}
+            width="90%"
+            centered
+            className="mermaid-diagram-modal"
+          >
+            <div
+              className="mermaid-diagram-modal-content"
+              dangerouslySetInnerHTML={{ __html: svgContent }}
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                overflow: "auto",
+                maxHeight: "80vh",
+              }}
+            />
+          </Modal>
+        </>
       ) : (
         <div className="mermaid-diagram empty">No diagram content</div>
       )}
