@@ -4,6 +4,8 @@ import { List, Card, Typography } from "antd";
 
 const { Text } = Typography;
 
+const EXCLUDE = ["title", "hidden", "exclude", "id", "scenarios"];
+
 // Helper function to convert camelCase or snake_case to readable text
 export const toReadableText = (key) => {
   return key
@@ -11,6 +13,36 @@ export const toReadableText = (key) => {
     .replace(/([A-Z])/g, " $1")
     .replace(/^./, (str) => str.toUpperCase())
     .trim();
+};
+
+export const scenarioToText = (data, exclude = [], headerLevel = 2) => {
+  // When called through Array.map, the second parameter is the index, not the exclude array
+  // Check if exclude is a number (index from map) and reset it
+  if (typeof exclude === "number") {
+    headerLevel = 2; // Reset to default
+    exclude = [];
+  }
+
+  // Create header with the appropriate number of # symbols
+  const headerPrefix = "#".repeat(headerLevel);
+  let markdown = `${headerPrefix} ${data.title}\n\n`;
+  const excludeKeys = EXCLUDE.concat(exclude);
+  Object.keys(data).forEach((key) => {
+    if (key === "scenarios" && Array.isArray(data[key])) {
+      // Process child scenarios with one level deeper header and append to parent's markdown
+      data[key].forEach((s) => {
+        markdown += scenarioToText(s, exclude, headerLevel + 1);
+      });
+    } else if (!excludeKeys.includes(key)) {
+      const value = data[key];
+      if (Array.isArray(value)) {
+        markdown += `**${key.charAt(0).toUpperCase() + key.slice(1)}:**\n${value.map((item) => `- ${item}`).join("\n")}\n\n`;
+      } else {
+        markdown += `**${key.charAt(0).toUpperCase() + key.slice(1)}:**\n${value}\n\n`;
+      }
+    }
+  });
+  return markdown;
 };
 
 // Dynamic renderer for any object data
@@ -23,20 +55,14 @@ export const DynamicDataRenderer = ({
     return <Text>No data available</Text>;
   }
 
-  const alwaysExclude = [
-    "title",
-    "hidden",
-    "exclude",
-    "id",
-    "scenarios",
-  ].concat(exclude);
+  const excludeKeys = EXCLUDE.concat(exclude);
 
   return (
     <List
       itemLayout="horizontal"
       size="small"
       dataSource={Object.entries(data).filter(
-        ([key]) => !alwaysExclude.includes(key),
+        ([key]) => !excludeKeys.includes(key),
       )}
       renderItem={([key, value]) => {
         if (value === null || value === undefined) return null;

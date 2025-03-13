@@ -1,33 +1,11 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { addToPinboard } from "../app/_local_store";
 import { RiFileCopyLine, RiChat2Line, RiPushpinLine } from "react-icons/ri";
-import { Button, Tooltip, Checkbox } from "antd";
-import { useState } from "react";
+import { Button, Tooltip } from "antd";
 import { toast } from "react-toastify";
-
-export const scenarioToText = (scenario) => {
-  let markdown = `## ${scenario.title}\n\n`;
-  Object.keys(scenario).map((key) => {
-    if (
-      key !== "title" &&
-      key !== "hidden" &&
-      key !== "exclude" &&
-      key !== "id"
-    ) {
-      const value = scenario[key];
-      if (Array.isArray(value)) {
-        markdown += `**${key.charAt(0).toUpperCase() + key.slice(1)}:**\n${value.map((item) => `- ${item}`).join("\n")}\n\n`;
-      } else {
-        markdown += `**${key.charAt(0).toUpperCase() + key.slice(1)}:**\n${value}\n\n`;
-      }
-    }
-  });
-  return markdown;
-};
+import { scenarioToText } from "./_dynamic_data_renderer";
 
 export default function CardActions({ scenario, onExploreHandler }) {
-  const [selected, setSelected] = useState(true);
-
   const copySuccess = () => {
     toast.success("Content copied successfully!");
   };
