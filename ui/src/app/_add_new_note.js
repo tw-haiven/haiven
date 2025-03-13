@@ -2,11 +2,13 @@
 
 import React from "react";
 import AddUserContent from "./_add_user_content";
+import { saveNote } from "../app/_local_store";
 
-const AddNote = ({ isAddingNote, setIsAddingNote, saveNewNote }) => {
+const AddNote = ({ isAddingNote, setIsAddingNote, reloadData }) => {
   const submitNewNote = (title, description) => {
     const noteContent = "# " + title + "\n\n" + description;
-    saveNewNote(noteContent);
+    saveNote(noteContent);
+    reloadData();
   };
 
   return (

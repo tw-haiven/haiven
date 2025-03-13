@@ -7,11 +7,11 @@ import AddUserContent from "./_add_user_content";
 const AddContext = ({
   isAddingContext,
   setIsAddingContext,
-  reloadContexts = () => {},
+  reloadData = () => {},
 }) => {
   const saveNewContext = (title, description) => {
     saveContext(title, description);
-    reloadContexts();
+    reloadData();
   };
 
   return (

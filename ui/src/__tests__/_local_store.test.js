@@ -4,6 +4,8 @@ import {
   getFeatureTogglesAsJson,
   addToPinboard,
   getPinboardData,
+  getSortedContexts,
+  deletePinOrNoteByTimestamp,
 } from "../app/_local_store";
 import { toast } from "react-toastify";
 
@@ -163,6 +165,79 @@ describe("Pinboard Component", () => {
 
       const result = getFeatureTogglesAsJson();
       expect(result).toEqual(toggles);
+    });
+
+    describe("getSortedContexts", () => {
+      beforeEach(() => {
+        localStorage.clear();
+        vi.clearAllMocks();
+      });
+
+      it("should return an empty array if no contexts are set", () => {
+        const result = getSortedContexts();
+        expect(result).toEqual([]);
+      });
+
+      it("should return contexts sorted by timestamp in descending order", () => {
+        const context1 = {
+          title: "Context 1",
+          summary: "Summary 1",
+          timestamp: 1,
+        };
+        const context2 = {
+          title: "Context 2",
+          summary: "Summary 2",
+          timestamp: 2,
+        };
+        const context3 = {
+          title: "Context 3",
+          summary: "Summary 3",
+          timestamp: 3,
+        };
+
+        localStorage.setItem(
+          "context",
+          JSON.stringify([context1, context2, context3]),
+        );
+
+        const result = getSortedContexts();
+        expect(result).toEqual([context3, context2, context1]);
+      });
+
+      describe("deletePinOrNoteByTimestamp", () => {
+        beforeEach(() => {
+          localStorage.clear();
+          vi.clearAllMocks();
+        });
+
+        it("should delete the pin or note by timestamp", () => {
+          const timestamp1 = "1234";
+          const timestamp2 = "5678";
+          const content1 = "Content 1";
+          const content2 = "Content 2";
+
+          addToPinboard(timestamp1, content1);
+          addToPinboard(timestamp2, content2);
+
+          deletePinOrNoteByTimestamp(timestamp1);
+
+          const pinboard = JSON.parse(localStorage.getItem("pinboard"));
+          expect(pinboard[timestamp1]).toBeUndefined();
+          expect(pinboard[timestamp2]).toBeDefined();
+        });
+
+        it("should do nothing if the timestamp does not exist", () => {
+          const timestamp1 = "1234";
+          const content1 = "Content 1";
+
+          addToPinboard(timestamp1, content1);
+
+          deletePinOrNoteByTimestamp("5678");
+
+          const pinboard = JSON.parse(localStorage.getItem("pinboard"));
+          expect(pinboard[timestamp1]).toBeDefined();
+        });
+      });
     });
   });
 });

@@ -40,6 +40,13 @@ const transformPinboardEntry = (value, timestamp) => {
   };
 };
 
+export const saveNote = (newNote) => {
+  const timestamp = Date.now().toString();
+  const pinboardData = JSON.parse(localStorage.getItem("pinboard")) || {};
+  pinboardData[timestamp] = { content: newNote, isUserDefined: true };
+  localStorage.setItem("pinboard", JSON.stringify(pinboardData));
+};
+
 export const getPinboardData = () => {
   const pinboardData = JSON.parse(localStorage.getItem("pinboard")) || {};
   if (!pinboardData || Array.isArray(pinboardData)) {
@@ -83,5 +90,12 @@ export const deleteContextByTimestamp = (timestamp) => {
   const updatedContextData = contextData.filter(
     (context) => context.timestamp !== timestamp,
   );
+
   localStorage.setItem("context", JSON.stringify(updatedContextData));
+};
+
+export const deletePinOrNoteByTimestamp = (timestamp) => {
+  const pinboardData = JSON.parse(localStorage.getItem("pinboard")) || {};
+  delete pinboardData[timestamp];
+  localStorage.setItem("pinboard", JSON.stringify(pinboardData));
 };

@@ -13,6 +13,7 @@ import {
   getPinboardData,
   getSortedContexts,
   deleteContextByTimestamp,
+  deletePinOrNoteByTimestamp,
 } from "../app/_local_store";
 import MarkdownRenderer from "../app/_markdown_renderer";
 import AddNewNote from "../app/_add_new_note";
@@ -43,25 +44,30 @@ const Pinboard = ({ isModalVisible, onClose }) => {
 
   if (!isMounted) return null;
 
-  const scenarioToText = (scenario) => {
-    return scenario.summary;
-  };
-
-  const onDelete = (index) => {
-    const updatedPinnedMessages = [...pinnedMessages];
-    const removedScenario = updatedPinnedMessages.splice(index, 1)[0];
-    const pinboardData = JSON.parse(localStorage.getItem("pinboard"));
-    delete pinboardData[removedScenario.timestamp];
-    localStorage.setItem("pinboard", JSON.stringify(pinboardData));
-    reloadPinnedMessages();
+  const deleteContext = (context) => {
+    deleteContextByTimestamp(context.timestamp);
+    reloadPinboard();
     toast.success("Content deleted successfully!");
   };
 
-  const onCopyOne = async (index) => {
+  const deletePinOrNote = (content) => {
+    deletePinOrNoteByTimestamp(content.timestamp);
+    reloadPinboard();
+    toast.success("Content deleted successfully!");
+  };
+
+  const copyContext = async (context) => {
     try {
-      await navigator.clipboard.writeText(
-        scenarioToText(pinnedMessages[index]),
-      );
+      await navigator.clipboard.writeText(contextAsText(context));
+      toast.success("Context copied successfully!");
+    } catch (err) {
+      toast.error("Failed to copy the context.");
+    }
+  };
+
+  const copyPinOrNote = async (content) => {
+    try {
+      await navigator.clipboard.writeText(content.summary);
       toast.success("Content copied successfully!");
     } catch (err) {
       toast.error("Failed to copy the content.");
@@ -114,132 +120,9 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     const year = date.getFullYear();
     return `${day}${suffix}, ${month} ${year}`;
   }
-  const renderPinnedMessages = () => (
-    <div className="pinboard-tab" data-testid="pin-and-notes-tab">
-      {pinnedMessages.length === 0 && (
-        <div className="empty-pinboard-tab">
-          <p className="empty-state-message">
-            Start pinning by clicking on the pin icon on the messages.
-          </p>
-        </div>
-      )}
-      {pinnedMessages.map((pinnedMessage, i) => (
-        <Card
-          hoverable
-          key={i}
-          className={`pinboard-card ${pinnedMessage.isUserDefined ? "user-defined" : ""}`}
-          actions={[
-            <div
-              className="pinboard-card-action-items"
-              style={{ backgroundColor: "#f9f9f9" }}
-            >
-              <div className="card-action">
-                <ClockIcon size={16} className="clock-icon" />
-                {formatDate(pinnedMessage.timestamp)}
-              </div>
-              <div className="card-action" key="actions">
-                <Button
-                  type="link"
-                  onClick={() => onDelete(i)}
-                  data-testid="delete"
-                >
-                  <RiDeleteBinLine style={{ fontSize: "large" }} />
-                </Button>
-                <Button
-                  type="link"
-                  onClick={() => onCopyOne(i)}
-                  data-testid="copy"
-                >
-                  <RiCheckboxMultipleBlankFill style={{ fontSize: "large" }} />
-                </Button>
-              </div>
-            </div>,
-          ]}
-        >
-          <div className="pinboard-card-content">
-            <MarkdownRenderer content={pinnedMessage.summary} />
-          </div>
-        </Card>
-      ))}
-    </div>
-  );
-
-  const deleteContext = (timestamp) => {
-    deleteContextByTimestamp(timestamp);
-    reloadUserSavedContexts();
-    toast.success("Context deleted successfully!");
-  };
 
   const contextAsText = (context) => {
     return "# " + context.title + "\n\n" + context.summary;
-  };
-
-  const copyContext = async (context) => {
-    try {
-      await navigator.clipboard.writeText(contextAsText(context));
-      toast.success("Context copied successfully!");
-    } catch (err) {
-      toast.error("Failed to copy the context.");
-    }
-  };
-
-  const renderUserSavedContexts = () => (
-    <div className="pinboard-tab" data-testid="contexts-tab">
-      {savedUserContexts.length === 0 && (
-        <div className="empty-pinboard-tab">
-          <p className="empty-state-message">
-            Create context by clicking on the <i>Add context</i> button
-          </p>
-        </div>
-      )}
-      {savedUserContexts.map((context, i) => (
-        <Card
-          hoverable
-          key={i}
-          className={`pinboard-card ${context.isUserDefined ? "user-defined" : ""}`}
-          actions={[
-            <div
-              className="pinboard-card-action-items"
-              style={{ backgroundColor: "#f9f9f9" }}
-            >
-              <div className="card-action">
-                <ClockIcon size={16} className="clock-icon" />
-                {formatDate(context.timestamp)}
-              </div>
-              <div className="card-action" key="actions">
-                <Button
-                  type="link"
-                  onClick={() => deleteContext(context.timestamp)}
-                  data-testid="delete"
-                >
-                  <RiDeleteBinLine style={{ fontSize: "large" }} />
-                </Button>
-                <Button
-                  type="link"
-                  onClick={() => copyContext(context)}
-                  data-testid="copy"
-                >
-                  <RiCheckboxMultipleBlankFill style={{ fontSize: "large" }} />
-                </Button>
-              </div>
-            </div>,
-          ]}
-        >
-          <div className="pinboard-card-content">
-            <MarkdownRenderer content={contextAsText(context)} />
-          </div>
-        </Card>
-      ))}
-    </div>
-  );
-
-  const addNewNoteCallback = (newNote) => {
-    const timestamp = Date.now().toString();
-    const pinboardData = JSON.parse(localStorage.getItem("pinboard")) || {};
-    pinboardData[timestamp] = { content: newNote, isUserDefined: true };
-    localStorage.setItem("pinboard", JSON.stringify(pinboardData));
-
-    setPinnedMessages(getPinboardData());
   };
 
   const reloadPinnedMessages = () => {
@@ -250,6 +133,79 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     setSavedUserContexts(getSortedContexts());
   };
 
+  const reloadPinboard = () => {
+    reloadPinnedMessages();
+    reloadUserSavedContexts();
+  };
+
+  const renderContents = (contents, type) => {
+    let testid, emptyMessage, copyFunction, deleteFunction, contentToDisplay;
+    if (type === "pin-notes") {
+      testid = "pin-and-notes-tab";
+      emptyMessage =
+        "Start pinning by clicking on the pin icon on the messages OR Add your own reusable text notes by clicking on the ADD NOTE button.";
+      copyFunction = copyPinOrNote;
+      deleteFunction = deletePinOrNote;
+      contentToDisplay = (content) => content.summary;
+    } else if (type === "contexts") {
+      testid = "contexts-tab";
+      emptyMessage = "Create context by clicking on the ADD CONTEXT button";
+      copyFunction = copyContext;
+      deleteFunction = deleteContext;
+      contentToDisplay = contextAsText;
+    }
+
+    return (
+      <div className="pinboard-tab" data-testid={testid}>
+        {contents.length === 0 && (
+          <div className="empty-pinboard-tab">
+            <p className="empty-state-message">{emptyMessage}</p>
+          </div>
+        )}
+        {contents.map((content, i) => (
+          <Card
+            hoverable
+            key={i}
+            className={`pinboard-card ${content.isUserDefined ? "user-defined" : ""}`}
+            actions={[
+              <div
+                className="pinboard-card-action-items"
+                style={{ backgroundColor: "#f9f9f9" }}
+              >
+                <div className="card-action">
+                  <ClockIcon size={16} className="clock-icon" />
+                  {formatDate(content.timestamp)}
+                </div>
+                <div className="card-action" key="actions">
+                  <Button
+                    type="link"
+                    onClick={() => deleteFunction(content)}
+                    data-testid="delete"
+                  >
+                    <RiDeleteBinLine style={{ fontSize: "large" }} />
+                  </Button>
+                  <Button
+                    type="link"
+                    onClick={() => copyFunction(content)}
+                    data-testid="copy"
+                  >
+                    <RiCheckboxMultipleBlankFill
+                      style={{ fontSize: "large" }}
+                    />
+                  </Button>
+                </div>
+              </div>,
+            ]}
+          >
+            <div className="pinboard-card-content">
+              <MarkdownRenderer content={contentToDisplay(content)} />
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  };
+
   const pinAndNotesTab = {
     key: "notes",
     label: (
@@ -257,7 +213,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
         <h3>Pins/Notes</h3>
       </div>
     ),
-    children: renderPinnedMessages(),
+    children: renderContents(pinnedMessages, "pin-notes"),
   };
 
   const contextTab = {
@@ -267,7 +223,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
         <h3>Contexts</h3>
       </div>
     ),
-    children: renderUserSavedContexts(),
+    children: renderContents(savedUserContexts, "contexts"),
   };
 
   const tabs = isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI)
@@ -306,13 +262,13 @@ const Pinboard = ({ isModalVisible, onClose }) => {
       <AddNewNote
         isAddingNote={isAddingNote}
         setIsAddingNote={setIsAddingNote}
-        saveNewNote={addNewNoteCallback}
+        reloadData={reloadPinnedMessages}
       />
       {isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI) && (
         <AddContext
           isAddingContext={isAddingContext}
           setIsAddingContext={setIsAddingContext}
-          reloadContexts={reloadUserSavedContexts}
+          reloadData={reloadUserSavedContexts}
         />
       )}
       <Tabs defaultActiveKey="context" items={tabs}></Tabs>
