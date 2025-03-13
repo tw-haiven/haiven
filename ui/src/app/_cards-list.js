@@ -1,6 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
-import CardActions, { scenarioToText } from "./_card_actions";
+import CardActions from "./_card_actions";
 import ScenariosPlotProbabilityImpact from "../pages/_plot_prob_impact";
 import {
   RiStackLine,
@@ -10,20 +10,19 @@ import {
 } from "react-icons/ri";
 import { Card, Button, Input, Radio, Tooltip, Typography } from "antd";
 import { toast } from "react-toastify";
-import { DynamicDataRenderer } from "./_dynamic_data_renderer";
+import { DynamicDataRenderer, scenarioToText } from "./_dynamic_data_renderer";
 const { TextArea } = Input;
 const { Text } = Typography;
 
 const CardsList = ({
   scenarios,
   setScenarios,
-  title,
   onExplore,
   stopLoadComponent,
   matrixMode: matrix,
   editable,
-  selectable,
   onDelete,
+  listIndex,
 }) => {
   const [displayMode, setDisplayMode] = useState("grid");
 
@@ -50,7 +49,7 @@ const CardsList = ({
   return (
     <>
       <div className="prompt-chat-header">
-        {stopLoadComponent}
+        {stopLoadComponent && stopLoadComponent}
         {scenarios && scenarios.length > 0 && (
           <Button type="link" className="copy-all" onClick={onCopyAll}>
             <RiFileCopyLine fontSize="large" /> COPY ALL
@@ -76,50 +75,92 @@ const CardsList = ({
       </div>
       <div className={"scenarios-collection " + displayMode + "-display"}>
         <div className="cards-container with-display-mode">
-          {scenarios.map((scenario, i) => {
-            return (
-              <Card
-                title={scenario.title}
-                key={i}
-                className="scenario"
-                extra={
-                  onDelete && (
-                    <Tooltip title="Remove" key="chat">
+          {scenarios.map((scenario, scenarioIndex) => {
+            if (scenario.scenarios) {
+              return (
+                <div className="scenario-section" key={scenarioIndex}>
+                  <div className="scenario-section-header">
+                    <h3>{scenario.title}</h3>
+                    <Tooltip
+                      title="Remove"
+                      key="chat"
+                      style={{ float: "right", display: "inline" }}
+                    >
                       <Button
                         type="link"
-                        onClick={() => onDelete(i)}
+                        onClick={() => onDelete({ section: scenarioIndex })}
                         className="delete-button"
-                        name="Remove"
+                        name="Remove section"
                       >
                         <RiCloseFill fontSize="large" />
                       </Button>
                     </Tooltip>
-                  )
-                }
-              >
-                <div className="scenario-card-content">
-                  {editable === true ? (
-                    <TextArea
-                      value={scenario.summary}
-                      onChange={(e) => {
-                        onScenarioDescriptionChanged(e, i);
-                      }}
-                      rows={10}
-                      data-testid={`scenario-summary-${i}`}
-                    />
-                  ) : (
-                    <Text
-                      className="scenario-summary"
-                      dataTestId={`scenario-summary-${i}`}
-                    >
-                      {scenario.summary}
-                    </Text>
-                  )}
-                  {renderScenarioDetails(scenario)}
+                  </div>
+                  <CardsList
+                    scenarios={scenario.scenarios}
+                    onExplore={onExplore}
+                    onDelete={onDelete}
+                    listIndex={scenarioIndex}
+                  />
                 </div>
-                <CardActions scenario={scenario} onExploreHandler={onExplore} />
-              </Card>
-            );
+              );
+            } else {
+              return (
+                <Card
+                  title={scenario.title}
+                  key={
+                    listIndex >= 0
+                      ? listIndex + "-" + scenarioIndex
+                      : scenarioIndex
+                  }
+                  className="scenario"
+                  extra={
+                    onDelete && (
+                      <Tooltip title="Remove" key="chat">
+                        <Button
+                          type="link"
+                          onClick={() =>
+                            onDelete({
+                              card: scenarioIndex,
+                              section: listIndex,
+                            })
+                          }
+                          className="delete-button"
+                          name="Remove"
+                        >
+                          <RiCloseFill fontSize="large" />
+                        </Button>
+                      </Tooltip>
+                    )
+                  }
+                >
+                  <div className="scenario-card-content">
+                    {editable === true ? (
+                      <TextArea
+                        value={scenario.summary}
+                        onChange={(e) => {
+                          onScenarioDescriptionChanged(e, scenarioIndex);
+                        }}
+                        rows={10}
+                        data-testid={`scenario-summary-${scenarioIndex}`}
+                      />
+                    ) : (
+                      <Text
+                        className="scenario-summary"
+                        datatestid={`scenario-summary-${scenarioIndex}`}
+                      >
+                        {scenario.summary}
+                      </Text>
+                    )}
+                    {renderScenarioDetails(scenario)}
+                  </div>
+                  <CardActions
+                    scenario={scenario}
+                    onExploreHandler={onExplore}
+                  />
+                </Card>
+              );
+            }
           })}
           {matrix === true && (
             <div

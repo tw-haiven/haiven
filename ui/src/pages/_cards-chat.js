@@ -21,6 +21,7 @@ import useLoader from "../hooks/useLoader";
 import { addToPinboard } from "../app/_local_store";
 import PromptPreview from "../app/_prompt_preview";
 import MarkdownRenderer from "../app/_markdown_renderer";
+import { scenarioToText } from "../app/_dynamic_data_renderer";
 
 const CardsChat = ({
   promptId,
@@ -87,12 +88,12 @@ const CardsChat = ({
     setCardExplorationDrawerOpen(true);
   };
 
-  const scenarioToText = (scenario) => {
-    return "# Title: " + scenario.title + "\nDescription: " + scenario.summary;
-  };
-
   const scenarioToJson = (scenario) => {
-    return { title: scenario.title, content: scenario.summary };
+    const result = { title: scenario.title, content: scenario.summary };
+    if (scenario.scenarios) {
+      result.scenarios = scenario.scenarios.map(scenarioToJson);
+    }
+    return result;
   };
 
   const copySuccess = () => {
@@ -528,8 +529,22 @@ const CardsChat = ({
   );
 
   const onDeleteCard = (index) => {
-    const updatedScenarios = scenarios.filter((_, i) => i !== index);
-    setScenarios(updatedScenarios);
+    if (index.section !== undefined) {
+      if (index.card !== undefined) {
+        scenarios[index.section].scenarios = scenarios[
+          index.section
+        ].scenarios.filter((_, i) => i !== index.card);
+        setScenarios([...scenarios]);
+      } else {
+        const updatedScenarios = scenarios.filter(
+          (_, i) => i !== index.section,
+        );
+        setScenarios(updatedScenarios);
+      }
+    } else {
+      const updatedScenarios = scenarios.filter((_, i) => i !== index.card);
+      setScenarios(updatedScenarios);
+    }
   };
 
   return (
@@ -557,14 +572,9 @@ const CardsChat = ({
             <ChatHeader models={models} titleComponent={title} />
             <div className="card-chat-container card-chat-overflow">
               <CardsList
-                title={selectedPromptConfiguration.title}
                 scenarios={scenarios}
                 setScenarios={setScenarios}
                 editable={selectedPromptConfiguration.editable}
-                selectable={
-                  selectedPromptConfiguration.followUps !== undefined &&
-                  selectedPromptConfiguration.followUps.length > 0
-                }
                 onExplore={onExplore}
                 stopLoadComponent={<StopLoad />}
                 onDelete={onDeleteCard}

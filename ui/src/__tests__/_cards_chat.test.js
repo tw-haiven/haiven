@@ -252,6 +252,64 @@ describe("CardsChat Component", () => {
     });
   });
 
+  it("should render sections with titles when backend returns nested arrays", async () => {
+    const sectionsData = [
+      {
+        title: "Section of cards",
+        scenarios: [
+          {
+            title: "Scenario 1",
+            summary: "A summary",
+          },
+        ],
+      },
+      {
+        title: "Section of cards 2",
+        scenarios: [
+          {
+            title: "Scenario in section 2",
+            summary: "Another summary",
+          },
+        ],
+      },
+      {
+        title: "Regular card",
+        summary: "This is just a regular card without nested scenarios",
+      },
+    ];
+
+    fetchSSE.mockImplementationOnce((url, options, { onMessageHandle }) => {
+      const sectionsString = JSON.stringify(sectionsData);
+      onMessageHandle({ data: sectionsString }, mockResponseHeadersWithChatId);
+    });
+
+    await setup();
+    givenUserInput();
+    whenGenerateIsClicked();
+
+    await waitFor(async () => {
+      // Check section titles are rendered
+      expect(screen.getByText("Section of cards")).toBeInTheDocument();
+      expect(screen.getByText("Section of cards 2")).toBeInTheDocument();
+
+      // Check cards in first section
+      expect(screen.getByText("Scenario 1")).toBeInTheDocument();
+      expect(screen.getByText("A summary")).toBeInTheDocument();
+
+      // Check cards in second section
+      expect(screen.getByText("Scenario in section 2")).toBeInTheDocument();
+      expect(screen.getByText("Another summary")).toBeInTheDocument();
+
+      // Check regular card without nested scenarios
+      expect(screen.getByText("Regular card")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "This is just a regular card without nested scenarios",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
   describe("Process Streaming data", () => {
     afterEach(() => {
       vi.clearAllMocks();
@@ -368,7 +426,7 @@ describe("CardsChat Component", () => {
       });
     });
 
-    it("should not process data and show error message when the streaming data is not an json object", async () => {
+    it("should not process data and show error message when the streaming data is not json", async () => {
       const warningMock = vi.spyOn(toast, "warning");
       fetchSSE.mockImplementationOnce(
         (url, options, { onMessageHandle, onFinish }) => {

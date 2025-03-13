@@ -1254,8 +1254,8 @@ a.feedback:hover {
 }
 
 .scenario {
-  width: 350px;
-  height: 400px;
+  width: 300px;
+  height: 350px;
   display: flex;
   flex-direction: column;
   margin-right: 1.6em;
@@ -1322,6 +1322,20 @@ a.feedback:hover {
   font-weight: var(--font-weight-semi-bold);
   margin-bottom: 0.2em;
 } 
+
+.scenario-section {
+  border: 1px solid var(--color-light-gray);
+
+  .scenario-section-header {
+    background-color: var(--color-light-gray);
+    display: flex;
+    justify-content: space-between;
+    padding: var(--standard-left-padding);
+    h3 {
+      margin: 0;
+    }
+  }
+}
 
 .display-mode-choice {
   position:relative;
