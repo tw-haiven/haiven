@@ -39,7 +39,7 @@ def _get_aws_config():
 def _get_google_config():
     return ModelConfig(
         "gemini",
-        "google",
+        "gcp",
         "Gemini",
         config={"model": "gemini-1.5-flash"},
     )
