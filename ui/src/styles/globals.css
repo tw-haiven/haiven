@@ -14,6 +14,9 @@
   
   --standard-left-padding: 1.5em;
   --font-weight-semi-bold: 630;
+
+  --sidebar-width: 250px;
+  --sidebar-collapsed-width: 80px;
 }
 
 /**** GENERAL ****/
@@ -159,6 +162,11 @@ a.feedback:hover {
   height: 94%;
   width: 100%;
   overflow: auto;
+  padding-bottom: 60px; /* Add space at the bottom for the fixed collapse component */
+}
+
+.card-chat-overflow {
+  padding-bottom: 60px; /* Add space at the bottom for the fixed collapse component */
 }
 
 .card-chat-input-container {
@@ -231,11 +239,14 @@ a.feedback:hover {
 }
 
 .chat-text-area-form {
-  margin: 0px 0px 10px 0px;
+  margin: 0px auto 10px auto;
   padding: 10px 16px;
   border: 2px solid var(--color-medium-gray);
   display: flex;
   flex-direction: row;
+  width: 100%;
+  max-width: 850px;
+  box-sizing: border-box;
 }
 
 .chat-text-area-form textarea:hover {
@@ -254,7 +265,7 @@ a.feedback:hover {
 }
 
 .chat-text-area {
-  width: 90%;
+  width: 100%;
   height: 100%;
   margin: 0px;
 }
@@ -275,6 +286,42 @@ a.feedback:hover {
   padding-top: 8px;
   padding-bottom: 8px;
   height: fit-content;
+}
+
+.input-area-collapse {
+  position: fixed;
+  bottom: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  z-index: 100;
+  background-color: var(--color-light-gray);
+
+  .ant-collapse-content {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    max-height: 50vh;
+    background-color: white;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Make sure the prompt preview bottom bar stays on top */
+  .ant-collapse-content.ant-collapse-content-active {
+    display: block;
+    overflow-x: hidden;
+  }
+
+  .input-area-collapse-label .prompt-preview {
+    color: var(--color-dark-gray);
+    font-style: italic;
+    overflow: hidden;
+  }
+  
+}
+
+.ant-layout-sider-collapsed ~ .ant-layout-content .input-area-collapse {
+  left: var(--sidebar-collapsed-width);
 }
 
 .chat-message {
@@ -834,27 +881,42 @@ a.feedback:hover {
     }
   }
 
-  .prompting-dropdown-menu {
-    flex-wrap: wrap;
+  &.prompt-options-cards {
     display: flex;
-    flex-direction: column;
-    height: 157px;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 8px 0;
+    border-top: 1px solid var(--color-light-gray);
 
-    .user-input {
-      width: 50%;
-      padding-left: 16px;
-      label {
-        display: block;
-        font-weight: 500;
-      }
+    .attach-context-collapse {
+      cursor: pointer;
+    }
+  }
+}
 
-      .ant-select {
-        width: 100%;
-        display: block;
-        margin-top: 0.5em;
-        margin-bottom: 1em;
-        height: 35px;
-      }
+.prompting-dropdown-menu {
+  flex-wrap: wrap;
+  display: flex;
+  flex-direction: column;
+  height: 157px;
+
+  .user-input {
+    width: 50%;
+    padding-left: 16px;
+    label {
+      display: block;
+      font-weight: 500;
+    }
+
+    .ant-select {
+      width: 100%;
+      display: block;
+      margin-top: 0.5em;
+      margin-bottom: 1em;
+      height: 35px;
     }
   }
 }
@@ -929,15 +991,6 @@ a.feedback:hover {
   flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 0.5em;
-}
-
-.prompt-chat-options-section .requirement-user-input {
-  display: flex;
-  gap: 16px;
-}
-
-.prompt-chat-options-section .requirement-user-input .user-input {
-  width: 50%;
 }
 
 .prompt-chat-options-section .scenario-user-input .ant-select {

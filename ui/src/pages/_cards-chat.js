@@ -54,7 +54,7 @@ const CardsChat = ({
   const [chatContext, setChatContext] = useState({});
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(false);
-  const [disableChatInput, setDisableChatInput] = useState(false);
+  const [isInputCollapsed, setIsInputCollapsed] = useState(false);
   const [usePromptId, setUsePromptId] = useState(true);
   const [chatSessionIdCardBuilding, setChatSessionIdCardBuilding] = useState();
   const [allContexts, setAllContexts] = useState([]);
@@ -190,8 +190,19 @@ const CardsChat = ({
     };
   };
 
-  const sendCardBuildingPrompt = (requestData) => {
-    setDisableChatInput(true);
+  // Reset the chat session to start fresh
+  const resetChatSession = () => {
+    setChatSessionIdCardBuilding(undefined);
+    setFollowUpResults({});
+  };
+
+  const sendCardBuildingPrompt = (requestData, shouldReset = false) => {
+    setIsInputCollapsed(true);
+
+    if (shouldReset) {
+      resetChatSession();
+    }
+
     const uri = "/api/prompt";
 
     let ms = "";
@@ -221,9 +232,11 @@ const CardsChat = ({
           const chatId = response.headers.get("X-Chat-ID");
           setChatSessionIdCardBuilding(chatId);
 
-          const existingScenarios = scenarios.map((scenario) => ({
-            ...scenario,
-          }));
+          const existingScenarios = shouldReset
+            ? []
+            : scenarios.map((scenario) => ({
+                ...scenario,
+              }));
 
           if (data.data) {
             ms += data.data;
@@ -254,8 +267,9 @@ const CardsChat = ({
     );
   };
 
-  const sendFirstStepPrompt = () => {
-    sendCardBuildingPrompt(buildRequestDataCardBuilding());
+  const sendFirstStepPrompt = (shouldReset = true) => {
+    setIsInputCollapsed(true);
+    sendCardBuildingPrompt(buildRequestDataCardBuilding(), shouldReset);
   };
 
   const sendGetMorePrompt = () => {
@@ -467,105 +481,125 @@ const CardsChat = ({
       }
     };
 
-    const items = [
-      {
-        key: "1",
-        label: (
-          <div className="advanced-prompting">
-            <RiAttachment2 className="advanced-prompting-icon" />{" "}
-            <span>Attach more context</span>{" "}
-            <UpOutlined
-              className="advanced-prompting-collapse-icon"
-              rotate={isPromptOptionsMenuExpanded ? 180 : 0}
-            />
-          </div>
-        ),
-        children: advancedPromptingMenu,
-        extra: (
-          <PromptPreview
-            renderPromptRequest={buildRequestDataCardBuilding}
-            disableEdit={true}
-            sampleInput={selectedPromptConfiguration?.help_sample_input}
+    const handleContextSelection = (value) => {
+      setSelectedContext(
+        allContexts.find((context) => context.value === value),
+      );
+    };
+
+    const advancedPromptingMenu = (
+      <div className="prompt-chat-options-section">
+        <div className="requirement-user-input">
+          <ContextChoice
+            onChange={handleContextSelection}
+            contexts={allContexts}
           />
-        ),
-        showArrow: false,
-      },
-    ];
+        </div>
+      </div>
+    );
 
-    if (disableChatInput) {
-      return null;
-    }
-
-    return (
+    const inputAreaContent = (
       <div className="card-chat-input-container">
-        <Form
-          onFinish={async () => await sendFirstStepPrompt()}
-          form={form}
-          initialValues={{ question: "" }}
-          className="chat-text-area-form"
-        >
-          <Form.Item
-            name="question"
-            rules={[{ required: true, message: "" }]}
-            className="chat-text-area"
+        <div>
+          <Form
+            onFinish={async () => {
+              setIsInputCollapsed(true);
+              sendFirstStepPrompt(true);
+            }}
+            form={form}
+            initialValues={{ question: "" }}
+            className="chat-text-area-form"
           >
-            <Input.TextArea
-              disabled={loading}
-              required
-              data-testid="user-input"
-              value={promptInput}
-              onChange={(e) => setPromptInput(e.target.value)}
-              placeholder={selectedPromptConfiguration.help_user_input}
-              autoSize={{ minRows: 4, maxRows: 15 }}
-              onKeyDown={handleKeyDown}
-            />
-          </Form.Item>
-          <Form.Item className="chat-text-area-submit">
-            {loading ? (
-              <Button
-                type="secondary"
-                icon={<RiStopCircleFill fontSize="large" />}
-                onClick={() => abortLoad()}
-              >
-                STOP
-              </Button>
-            ) : (
+            <Form.Item
+              name="question"
+              rules={[{ required: true, message: "" }]}
+              className="chat-text-area"
+            >
+              <Input.TextArea
+                disabled={loading}
+                required
+                data-testid="user-input-text-area"
+                value={promptInput}
+                onChange={(e) => setPromptInput(e.target.value)}
+                placeholder={selectedPromptConfiguration.help_user_input}
+                autoSize={{ minRows: 4, maxRows: 15 }}
+                onKeyDown={handleKeyDown}
+              />
+            </Form.Item>
+            <Form.Item className="chat-text-area-submit">
               <Button
                 htmlType="submit"
                 icon={<RiSendPlane2Line fontSize="large" />}
+                disabled={loading}
               >
                 SEND
               </Button>
-            )}
-          </Form.Item>
-        </Form>
-        <Collapse
-          className="prompt-options-menu"
-          items={items}
-          defaultActiveKey={["1"]}
-          ghost={isPromptOptionsMenuExpanded}
-          activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
-          onChange={onClickAdvancedPromptOptions}
-          collapsible="header"
-        />
+            </Form.Item>
+          </Form>
+          <div className="prompt-options-menu prompt-options-cards">
+            <div
+              className="attach-context-collapse"
+              onClick={onClickAdvancedPromptOptions}
+            >
+              <div
+                className="advanced-prompting"
+                data-testid="advanced-prompting"
+              >
+                <RiAttachment2 className="advanced-prompting-icon" />{" "}
+                <span>Attach more context</span>{" "}
+                <UpOutlined
+                  className="advanced-prompting-collapse-icon"
+                  rotate={isPromptOptionsMenuExpanded ? 180 : 0}
+                />
+              </div>
+            </div>
+            <div className="prompt-controls">
+              <PromptPreview
+                renderPromptRequest={buildRequestDataCardBuilding}
+                disableEdit={true}
+                sampleInput={selectedPromptConfiguration?.help_sample_input}
+              />
+            </div>
+          </div>
+        </div>
+
+        {isPromptOptionsMenuExpanded && (
+          <div className="prompt-options-expanded">{advancedPromptingMenu}</div>
+        )}
       </div>
     );
-  };
 
-  const handleContextSelection = (value) => {
-    setSelectedContext(allContexts.find((context) => context.value === value));
+    return (
+      <Collapse
+        className="input-area-collapse"
+        data-testid="input-area-collapse"
+        activeKey={isInputCollapsed ? [] : ["input-area"]}
+        defaultActiveKey={["input-area"]} // Ensure it's expanded on initial load
+        expandIconPosition="end"
+        onChange={(key) => setIsInputCollapsed(key.length === 0)}
+        items={[
+          {
+            key: "input-area",
+            label: (
+              <div className="input-area-collapse-label">
+                {promptInput && (
+                  <div>
+                    <span>Your input: </span>
+                    <span className="prompt-preview">
+                      {promptInput.length > 60
+                        ? `${promptInput.substring(0, 60)}...`
+                        : promptInput}
+                    </span>
+                  </div>
+                )}
+              </div>
+            ),
+            children: inputAreaContent,
+          },
+        ]}
+      />
+    );
   };
-
-  const advancedPromptingMenu = (
-    <div className="prompt-chat-options-section">
-      <div className="requirement-user-input">
-        <ContextChoice
-          onChange={handleContextSelection}
-          contexts={allContexts}
-        />
-      </div>
-    </div>
-  );
 
   const title = (
     <div className="title">

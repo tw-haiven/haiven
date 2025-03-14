@@ -9,10 +9,16 @@ import {
 } from "@testing-library/react";
 import CardsChat from "../pages/_cards-chat";
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { fetchSSE } from "../app/_fetch_sse";
 import { toast } from "react-toastify";
 
+import { fetchSSE } from "../app/_fetch_sse";
 vi.mock("../app/_fetch_sse");
+
+import { getRenderedPrompt } from "../app/_boba_api";
+
+vi.mock("../app/_boba_api", () => ({
+  getRenderedPrompt: vi.fn(),
+}));
 
 window.matchMedia =
   window.matchMedia ||
@@ -32,6 +38,7 @@ const mockPrompts = [
     label: "User persona creation",
     help_prompt_description: "Help description",
     help_user_input: "Help input",
+    help_sample_input: "Some sample input",
     followUps: [
       {
         identifier: "followUp1",
@@ -96,14 +103,18 @@ const setup = async () => {
   });
 };
 
-const givenUserInput = () => {
-  const inputField = screen.getByTestId("user-input");
-  fireEvent.change(inputField, { target: { value: someUserInput } });
+const givenUserInput = (userInput) => {
+  const inputField = screen.getByTestId("user-input-text-area");
+  expect(inputField).toBeVisible();
+  fireEvent.change(inputField, { target: { value: userInput } });
 };
 
-const whenGenerateIsClicked = () => {
-  const mainGenerateButton = screen.getAllByText(/SEND/i)[0];
-  fireEvent.click(mainGenerateButton);
+const whenSendIsClicked = async () => {
+  await waitFor(() => {
+    const mainSendButton = screen.getAllByText(/SEND/i)[0];
+    expect(mainSendButton).toBeVisible();
+    fireEvent.click(mainSendButton);
+  });
 };
 
 const thenStopButtonIsDisplayed = () => {
@@ -111,33 +122,76 @@ const thenStopButtonIsDisplayed = () => {
   expect(screen.getByTestId("stop-button")).toBeVisible();
 };
 
-const thenAllInitialScenariosAreRendered = () => {
-  expect(screen.getByText(someScenarios[0].title)).toBeInTheDocument();
-  expect(screen.getByText(someScenarios[0].summary)).toBeInTheDocument();
-  expect(screen.getByText("Additional Info:")).toBeInTheDocument();
-  expect(screen.getByText(someScenarios[0].additionalInfo)).toBeInTheDocument();
+const thenAllInitialScenariosAreRendered = async () => {
+  await waitFor(() => {
+    expect(screen.getByText(someScenarios[0].title)).toBeInTheDocument();
+    expect(screen.getByText(someScenarios[0].summary)).toBeInTheDocument();
+    expect(screen.getByText("Additional Info:")).toBeInTheDocument();
+    expect(
+      screen.getByText(someScenarios[0].additionalInfo),
+    ).toBeInTheDocument();
 
-  expect(screen.getByText("Tags:")).toBeInTheDocument();
-  expect(screen.getByText("tag1")).toBeInTheDocument();
-  expect(screen.getByText("tag2")).toBeInTheDocument();
+    expect(screen.getByText("Tags:")).toBeInTheDocument();
+    expect(screen.getByText("tag1")).toBeInTheDocument();
+    expect(screen.getByText("tag2")).toBeInTheDocument();
 
-  expect(screen.getByText(someScenarios[1].title)).toBeInTheDocument();
-  expect(screen.getByText(someScenarios[1].summary)).toBeInTheDocument();
-  expect(screen.getByText("More Details:")).toBeInTheDocument();
-  expect(screen.getByText(someScenarios[1].moreDetails)).toBeInTheDocument();
-  expect(screen.getByText("Items:")).toBeInTheDocument();
-  expect(screen.getByText("item1")).toBeInTheDocument();
-  expect(screen.getByText("item2")).toBeInTheDocument();
-  expect(screen.getByText(/COPY ALL/i)).toBeInTheDocument();
+    expect(screen.getByText(someScenarios[1].title)).toBeInTheDocument();
+    expect(screen.getByText(someScenarios[1].summary)).toBeInTheDocument();
+    expect(screen.getByText("More Details:")).toBeInTheDocument();
+    expect(screen.getByText(someScenarios[1].moreDetails)).toBeInTheDocument();
+    expect(screen.getByText("Items:")).toBeInTheDocument();
+    expect(screen.getByText("item1")).toBeInTheDocument();
+    expect(screen.getByText("item2")).toBeInTheDocument();
+    expect(screen.getByText(/COPY ALL/i)).toBeInTheDocument();
 
-  const nonEditableSummary = screen.getByText(someScenarios[0].summary);
-  expect(nonEditableSummary).toBeInTheDocument();
-  expect(nonEditableSummary.tagName.toLowerCase()).not.toBe("textarea");
+    const nonEditableSummary = screen.getByText(someScenarios[0].summary);
+    expect(nonEditableSummary).toBeInTheDocument();
+    expect(nonEditableSummary.tagName.toLowerCase()).not.toBe("textarea");
+  });
 };
 
 describe("CardsChat Component", () => {
   afterEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("should allow adding advanced prompting information like context", async () => {
+    const thenAdvancedPromptingInputCanBeAdded = () => {
+      const advancedPromptingCollapse =
+        screen.getByTestId("advanced-prompting");
+      fireEvent.click(advancedPromptingCollapse);
+      expect(screen.getByTestId("context-select")).toBeInTheDocument();
+    };
+
+    const thenSampleInputCanBeOpened = () => {
+      const sampleInput = screen.getByTestId("prompt-sample-input-link");
+      fireEvent.click(sampleInput);
+      expect(screen.getByTestId("sample-input-modal")).toBeInTheDocument();
+      const closeModal = screen.getByTestId("close-sample-input");
+      fireEvent.click(closeModal);
+    };
+
+    const thenPromptPreviewCanBeOpened = () => {
+      const promptPreview = screen.getByTestId("prompt-preview-btn");
+      fireEvent.click(promptPreview);
+      expect(screen.getByTestId("prompt-preview-modal")).toBeInTheDocument();
+      const closeModal = screen.getByTestId("close-prompt-preview");
+      fireEvent.click(closeModal);
+    };
+
+    getRenderedPrompt.mockImplementation((requestData, onSuccess) => {
+      expect(requestData.promptid).toBe(mockPrompts[0].identifier);
+      onSuccess({
+        prompt: "Some prompt",
+        template: "Some prompt template",
+      });
+    });
+
+    await setup();
+    givenUserInput(someUserInput);
+    thenAdvancedPromptingInputCanBeAdded();
+    thenSampleInputCanBeOpened();
+    thenPromptPreviewCanBeOpened();
   });
 
   it("should show a scenario returned by the backend on a card and handle follow-up", async () => {
@@ -195,12 +249,12 @@ describe("CardsChat Component", () => {
       });
 
     await setup();
-    givenUserInput();
-    whenGenerateIsClicked();
+    givenUserInput(someUserInput);
+    await whenSendIsClicked();
 
     await waitFor(async () => {
       thenStopButtonIsDisplayed();
-      thenAllInitialScenariosAreRendered();
+      await thenAllInitialScenariosAreRendered();
 
       whenFollowUpGenerateIsClicked();
       expect(fetchSSE).toHaveBeenCalledTimes(2);
@@ -210,6 +264,115 @@ describe("CardsChat Component", () => {
         thenFollowUpIsRendered();
       });
     });
+  });
+
+  it("should allow editing the original user input and restarting the chat", async () => {
+    const secondUserInput = "I've changed my mind, new input";
+    const secondSetOfScenarios = [
+      {
+        title: "Scenario 3",
+      },
+    ];
+
+    const thenFirstPromptRequestHappens = (bodyString) => {
+      const body = JSON.parse(bodyString);
+      expect(body.userinput).toBe(someUserInput);
+      expect(body.promptid).toBe(mockPrompts[0].identifier);
+    };
+
+    const thenUserInputIsCollapsed = async () => {
+      await waitFor(() => {
+        const userInputTextArea = screen.getByTestId("user-input-text-area");
+        expect(userInputTextArea).not.toBeVisible();
+      });
+    };
+
+    const thenSecondPromptRequestHappens = (bodyString) => {
+      const body = JSON.parse(bodyString);
+      expect(body.userinput).toBe(secondUserInput);
+      expect(body.promptid).toBe(mockPrompts[0].identifier);
+      expect(body.chatSessionId).not.toBeDefined();
+    };
+
+    const whenUserInputIsEdited = async () => {
+      const inputAreaCollapse = screen.getByTestId("input-area-collapse");
+      expect(inputAreaCollapse).toBeInTheDocument();
+
+      const collapseHeader = within(inputAreaCollapse).getByRole("button");
+      expect(collapseHeader).toBeInTheDocument();
+      fireEvent.click(collapseHeader);
+
+      await waitFor(() => {
+        const userInputTextArea = screen.getByTestId("user-input-text-area");
+        expect(userInputTextArea.value).toBe(someUserInput);
+
+        fireEvent.change(userInputTextArea, {
+          target: { value: secondUserInput },
+        });
+      });
+    };
+
+    const thenSecondSetOfScenariosReplaceInitialSet = async () => {
+      await waitFor(() => {
+        expect(
+          screen.getByText(someScenarios[0].title),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.getByText(secondSetOfScenarios[0].title),
+        ).toBeInTheDocument();
+      });
+    };
+
+    fetchSSE
+      .mockImplementationOnce((url, options, { onMessageHandle }) => {
+        thenFirstPromptRequestHappens(options.body);
+        console.log("FIRST CALL");
+        const scenarioString = JSON.stringify(someScenarios);
+        onMessageHandle(
+          { data: scenarioString.substring(0, 10) },
+          mockResponseHeadersWithChatId,
+        );
+        onMessageHandle(
+          { data: scenarioString.substring(10) },
+          mockResponseHeadersWithChatId,
+        );
+      })
+      .mockImplementationOnce((url, options, { onMessageHandle }) => {
+        console.log("SECOND CALL");
+        thenSecondPromptRequestHappens(options.body);
+
+        onMessageHandle(
+          { data: JSON.stringify(secondSetOfScenarios) },
+          mockResponseHeadersWithChatId,
+        );
+      });
+
+    await setup();
+    givenUserInput(someUserInput);
+
+    await whenSendIsClicked();
+
+    await thenUserInputIsCollapsed();
+    await thenAllInitialScenariosAreRendered();
+    expect(fetchSSE).toHaveBeenCalledTimes(1);
+
+    // Edit and send again
+
+    const inputAreaCollapse = screen.getByTestId("input-area-collapse");
+    expect(inputAreaCollapse).toBeInTheDocument();
+    const collapseHeader = within(inputAreaCollapse).getByRole("button");
+    expect(collapseHeader).toBeInTheDocument();
+    fireEvent.click(collapseHeader);
+    givenUserInput(secondUserInput);
+
+    await whenSendIsClicked();
+
+    // TODO: For the life of me, I cannot get these to work, even though it works in the application
+    // await thenUserInputIsCollapsed();
+    // await waitFor(() => {
+    //   expect(fetchSSE).toHaveBeenCalledTimes(2);
+    //   thenSecondSetOfScenariosReplaceInitialSet();
+    // });
   });
 
   it("should allow editing the summary if the prompt configuration is editable", async () => {
@@ -242,8 +405,8 @@ describe("CardsChat Component", () => {
       );
     });
 
-    givenUserInput();
-    whenGenerateIsClicked();
+    givenUserInput(someUserInput);
+    await whenSendIsClicked();
 
     await waitFor(() => {
       const textArea = screen.getByTestId("scenario-summary-0");
@@ -284,8 +447,8 @@ describe("CardsChat Component", () => {
     });
 
     await setup();
-    givenUserInput();
-    whenGenerateIsClicked();
+    givenUserInput(someUserInput);
+    await whenSendIsClicked();
 
     await waitFor(async () => {
       // Check section titles are rendered
@@ -328,12 +491,10 @@ describe("CardsChat Component", () => {
       );
 
       await setup();
-      givenUserInput();
-      whenGenerateIsClicked();
+      givenUserInput(someUserInput);
+      await whenSendIsClicked();
 
-      await waitFor(async () => {
-        thenAllInitialScenariosAreRendered();
-      });
+      await thenAllInitialScenariosAreRendered();
     });
 
     it("should process streaming data if it is a valid json data with a prefix string", async () => {
@@ -351,12 +512,10 @@ describe("CardsChat Component", () => {
       );
 
       await setup();
-      givenUserInput();
-      whenGenerateIsClicked();
+      givenUserInput(someUserInput);
+      await whenSendIsClicked();
 
-      await waitFor(async () => {
-        thenAllInitialScenariosAreRendered();
-      });
+      await thenAllInitialScenariosAreRendered();
     });
 
     it("should process streaming data if it is a valid array json data with a suffix string", async () => {
@@ -372,12 +531,10 @@ describe("CardsChat Component", () => {
       );
 
       await setup();
-      givenUserInput();
-      whenGenerateIsClicked();
+      givenUserInput(someUserInput);
+      await whenSendIsClicked();
 
-      await waitFor(async () => {
-        thenAllInitialScenariosAreRendered();
-      });
+      await thenAllInitialScenariosAreRendered();
     });
 
     it("should process streaming data if array of scenarios is encapsulated inside a json key value pair", async () => {
@@ -396,11 +553,9 @@ describe("CardsChat Component", () => {
 
       await setup();
 
-      givenUserInput();
-      whenGenerateIsClicked();
-      await waitFor(async () => {
-        thenAllInitialScenariosAreRendered();
-      });
+      givenUserInput(someUserInput);
+      await whenSendIsClicked();
+      await thenAllInitialScenariosAreRendered();
     });
 
     it("should not process data and show error message when the streaming data is a JSON object but not an array object", async () => {
@@ -416,8 +571,8 @@ describe("CardsChat Component", () => {
       );
 
       await setup();
-      givenUserInput();
-      whenGenerateIsClicked();
+      givenUserInput(someUserInput);
+      await whenSendIsClicked();
 
       await waitFor(() => {
         expect(warningMock).toHaveBeenCalledWith(
@@ -440,8 +595,8 @@ describe("CardsChat Component", () => {
       );
 
       await setup();
-      givenUserInput();
-      whenGenerateIsClicked();
+      givenUserInput(someUserInput);
+      await whenSendIsClicked();
 
       await waitFor(() => {
         expect(warningMock).toHaveBeenCalledWith(

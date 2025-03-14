@@ -139,6 +139,7 @@ export default function PromptPreview({
         className="prompt-preview-btn"
         type="link"
         onClick={onRenderPrompt}
+        data-testid="prompt-preview-btn"
       >
         {disableEdit ? "View Prompt" : "View/Edit Prompt"}
       </Button>
@@ -148,6 +149,7 @@ export default function PromptPreview({
         title={disableEdit ? "View Prompt" : "View/Edit Prompt"}
         open={isPromptPreviewModalVisible}
         onCancel={onClosePromptPreviewModal}
+        data-testid="prompt-preview-modal"
       >
         <div className="metadata-header">
           <p>
@@ -206,6 +208,7 @@ export default function PromptPreview({
           <Button
             className="close-modal-link"
             onClick={onClosePromptPreviewModal}
+            data-testid="close-prompt-preview"
           >
             CLOSE
           </Button>

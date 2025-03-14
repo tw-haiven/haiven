@@ -29,6 +29,7 @@ export default function PromptSampleInput({ sampleInput }) {
           className="prompt-sample-input-link"
           type="link"
           onClick={showSampleInputModal}
+          data-testid="prompt-sample-input-link"
         >
           <RiBookOpenLine className="prompt-sample-input-icon" />
           Sample Input
@@ -41,6 +42,7 @@ export default function PromptSampleInput({ sampleInput }) {
           closable={false}
           onOk={hideSampleInputModal}
           onCancel={hideSampleInputModal}
+          data-testid="sample-input-modal"
         >
           <div className="metadata-header">
             <p>
@@ -64,6 +66,7 @@ export default function PromptSampleInput({ sampleInput }) {
               className="close-modal-link"
               key="Ok"
               onClick={hideSampleInputModal}
+              data-testid="close-sample-input"
             >
               OK
             </Button>
