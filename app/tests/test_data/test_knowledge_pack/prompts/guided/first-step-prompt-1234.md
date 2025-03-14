@@ -5,4 +5,4 @@ title: First step of multiple
 categories: ['architecture']
 output_framing: "this is what I got from the first step"
 ---
-Content {user_input} {architecture}
+Content {user_input} {context}

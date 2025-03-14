@@ -1,6 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
 from typing import List
+import frontmatter
 
 
 class KnowledgePackError(Exception):
@@ -12,22 +13,24 @@ class KnowledgePackError(Exception):
 
 
 class KnowledgeContext:
-    def __init__(self, name: str, path: str):
+    def __init__(self, name: str, path: str, title: str = None):
         self.name = name
         self.path = path
+        self.title = title or name
 
     @classmethod
     def from_dict(cls, data):
         return cls(
             name=data.get("name"),
             path=data.get("path"),
+            title=data.get("title"),
         )
 
 
 class KnowledgePack:
-    def __init__(self, path: str, contexts: List[KnowledgeContext] = []):
+    def __init__(self, path: str, contexts: List[KnowledgeContext] = None):
         self.path = path
-        self.contexts: List[KnowledgeContext] = contexts
+        self.contexts: List[KnowledgeContext] = contexts if contexts is not None else []
 
         if len(self.contexts) == 0:
             self._auto_discovery_contexts()
@@ -36,15 +39,21 @@ class KnowledgePack:
         context_path = os.path.join(self.path, "contexts")
 
         if os.path.exists(context_path):
-            context_folders = [
-                folder
-                for folder in os.listdir(context_path)
-                if os.path.isdir(os.path.join(context_path, folder))
+            markdown_files = [
+                file
+                for file in os.listdir(context_path)
+                if os.path.isfile(os.path.join(context_path, file))
+                and file.endswith(".md")
+                and not file.startswith("README")
             ]
-            self.contexts = [
-                KnowledgeContext(
-                    name=folder,
-                    path=folder,
+            for md_file in markdown_files:
+                file_path = os.path.join(context_path, md_file)
+                name = os.path.splitext(md_file)[0]
+                try:
+                    content = frontmatter.load(file_path)
+                    title = content.metadata.get("title", name)
+                except Exception:
+                    title = name
+                self.contexts.append(
+                    KnowledgeContext(name=name, path=file_path, title=title)
                 )
-                for folder in context_folders
-            ]
