@@ -107,6 +107,7 @@ export default function PromptPreview({
         renderedPrompt: response.prompt,
         template: response.template,
       });
+
       setPromptPreviewModalVisible(true);
       setOnEditMode(false);
     });

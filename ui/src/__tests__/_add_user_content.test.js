@@ -76,6 +76,6 @@ describe("AddUserContent", () => {
     fireEvent.click(screen.getByText("Save"));
 
     expect(handleSubmit).toHaveBeenCalledWith("Test Title", "Test Description");
-    expect(toast.success).toHaveBeenCalledWith("Note added successfully!");
+    expect(toast.success).toHaveBeenCalledWith("Content added successfully!");
   });
 });

@@ -127,8 +127,26 @@ class PromptList:
                 result += knowledge[key]
         return result
 
+    def appendUserContext(self, knowledge_and_input, user_context):
+        if user_context:
+            if (
+                knowledge_and_input is None
+                or knowledge_and_input.get("context") is None
+            ):
+                knowledge_and_input = {"context": user_context}
+            else:
+                knowledge_and_input["context"] = (
+                    knowledge_and_input["context"] + " " + user_context
+                )
+        return knowledge_and_input
+
     def create_and_render_template(
-        self, active_knowledge_context, identifier, variables, warnings=None
+        self,
+        active_knowledge_context,
+        identifier,
+        variables,
+        warnings=None,
+        user_context="",
     ):
         if active_knowledge_context:
             knowledge_and_input = {
@@ -139,6 +157,8 @@ class PromptList:
             }
         else:
             knowledge_and_input = {**variables}
+
+        knowledge_and_input = self.appendUserContext(knowledge_and_input, user_context)
 
         template = self.create_template(active_knowledge_context, identifier)
         # template.get_input_schema()
@@ -180,12 +200,17 @@ class PromptList:
         user_input: str,
         additional_vars: dict = {},
         warnings=None,
+        user_context: str = "",
     ) -> str:
         if prompt_choice is not None:
             vars = additional_vars
             vars["user_input"] = user_input
             rendered, template = self.create_and_render_template(
-                active_knowledge_context, prompt_choice, vars, warnings=warnings
+                active_knowledge_context,
+                prompt_choice,
+                vars,
+                warnings=warnings,
+                user_context=user_context,
             )
             return rendered, template
         return "", None

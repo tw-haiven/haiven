@@ -195,7 +195,11 @@ class TestApi(unittest.TestCase):
 
         response = self.client.post(
             "/api/prompt",
-            json={"promptid": "some-prompt-id", "userinput": "some user input"},
+            json={
+                "promptid": "some-prompt-id",
+                "userinput": "some user input",
+                "userContext": "some user defined context",
+            },
         )
 
         # Assert the response
@@ -208,6 +212,7 @@ class TestApi(unittest.TestCase):
             user_input="some user input",
             additional_vars={},
             warnings=ANY,
+            user_context="some user defined context",
         )
 
     @patch("llms.chats.JSONChat")
@@ -247,6 +252,7 @@ class TestApi(unittest.TestCase):
                 "userinput": user_input,
                 "context": "some context",
                 "promptid": "guided-requirements",
+                "userContext": "some user defined context",
             },
         )
 
@@ -260,6 +266,7 @@ class TestApi(unittest.TestCase):
             user_input=user_input,
             additional_vars={},
             warnings=ANY,
+            user_context="some user defined context",
         )
 
     @patch("llms.chats.JSONChat")

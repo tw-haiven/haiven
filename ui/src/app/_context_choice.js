@@ -6,7 +6,7 @@ import HelpTooltip from "./_help_tooltip";
 import AddContext from "../app/_add_context";
 import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 
-function ContextChoice({ contexts, value, onChange }) {
+function ContextChoice({ contexts, onChange }) {
   const [isAddingContext, setIsAddingContext] = useState(false);
 
   const tooltipMessage =
@@ -40,7 +40,6 @@ function ContextChoice({ contexts, value, onChange }) {
       <Select
         onChange={onChange}
         options={contexts}
-        value={value}
         defaultValue="base"
         data-testid="context-select"
       />

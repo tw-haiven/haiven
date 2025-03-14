@@ -124,8 +124,29 @@ def test_render_prompt_with_additional_vars():
         "uuid-4",
         "Some User Input",
         {"additional": "Additional Var"},
+        user_context="some user context",
     )
     assert rendered == "Content Some User Input Additional Var"
+
+
+def test_render_prompt_for_given_prompt_id():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+
+    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
+    rendered, _ = prompt_list.render_prompt(
+        ACTIVE_KNOWLEDGE_CONTEXT,
+        "uuid-1",
+        "Some User Input",
+        user_context="Some user defined context",
+    )
+    assert (
+        rendered
+        == """Content Some User Input Architecture knowledge
+
+Business knowledge from context_a
+
+Frontend coding patterns Some user defined context"""
+    )
 
 
 def test_filter_should_filter_by_one_category_and_include_wihtout_category():
@@ -239,3 +260,39 @@ def test_get_prompts_with_follow_ups_invalid_prompt_id():
     assert uuid_2_entry is not None
     assert len(uuid_2_entry["follow_ups"]) == 1
     assert uuid_2_entry["follow_ups"][0]["identifier"] == "uuid-3"
+
+
+def test_append_user_context_with_user_context():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
+
+    knowledge_and_input = {"context": "Initial context"}
+    user_context = "additional context"
+
+    result = prompt_list.appendUserContext(knowledge_and_input, user_context)
+
+    assert result["context"] == "Initial context additional context"
+
+
+def test_append_user_context_without_user_context():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
+
+    knowledge_and_input = {"context": "Initial context"}
+    user_context = ""
+
+    result = prompt_list.appendUserContext(knowledge_and_input, user_context)
+
+    assert result["context"] == "Initial context"
+
+
+def test_append_user_context_if_context_key_doesnt_exist():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
+
+    knowledge_and_input = {}
+    user_context = "Additional context"
+
+    result = prompt_list.appendUserContext(knowledge_and_input, user_context)
+
+    assert result["context"] == "Additional context"

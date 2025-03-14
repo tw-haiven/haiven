@@ -12,6 +12,10 @@ import HelpTooltip from "./_help_tooltip";
 import ContextChoice from "./_context_choice";
 import ChatHeader from "../pages/_chat_header";
 import PromptPreview from "./_prompt_preview";
+import {
+  getSortedUserContexts,
+  getSummaryForTheUserContext,
+} from "./_local_store";
 
 const PromptChat = ({
   promptId,
@@ -40,12 +44,31 @@ const PromptChat = ({
   const [chatSessionId, setChatSessionId] = useState(undefined);
   const [usePromptId, setUsePromptId] = useState(true);
   const [placeholder, setPlaceholder] = useState("");
+  const [allContexts, setAllContexts] = useState([]);
 
+  function combineAllContexts(contexts) {
+    if (contexts !== undefined) {
+      const userContexts = getSortedUserContexts();
+      const userContextsForDropdown = userContexts.map((context) => ({
+        value: context.title,
+        label: context.title,
+        isUserDefined: true,
+      }));
+      setAllContexts(contexts.concat(userContextsForDropdown));
+    }
+  }
+  
   useEffect(() => {
     if (initialInput && chatRef.current) {
       chatRef.current.setPromptValue(initialInput);
     }
-  }, [initialInput]);
+    combineAllContexts(contexts);
+  }, [
+    initialInput,
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("context")
+      : null,
+  ]);
 
   const appendImageDescription = (userInput) => {
     if (imageDescription && imageDescription !== "") {
@@ -59,7 +82,10 @@ const PromptChat = ({
       userinput: usePromptId ? appendImageDescription(userInput) : userInput,
       promptid: usePromptId ? selectedPrompt?.identifier : undefined,
       chatSessionId: chatSessionId,
-      ...(selectedContext !== "base" && { context: selectedContext }),
+      ...(selectedContext.value !== "base" &&
+        selectedContext.isUserDefined && { userContext: getSummaryForTheUserContext(selectedContext.value) }),
+      ...(selectedContext.value !== "base" &&
+        !selectedContext.isUserDefined && { context: selectedContext.value }),
       ...(selectedDocument !== "base" && { document: selectedDocument }),
     };
   };
@@ -137,7 +163,7 @@ const PromptChat = ({
   }
 
   const handleContextSelection = (value) => {
-    setSelectedContext(value);
+    setSelectedContext(allContexts.find((context) => context.value === value));
   };
 
   useEffect(() => {
@@ -193,11 +219,7 @@ const PromptChat = ({
     );
 
   const contextsMenu = showTextSnippets ? (
-    <ContextChoice
-      onChange={handleContextSelection}
-      contexts={contexts}
-      value={selectedContext?.key}
-    />
+    <ContextChoice onChange={handleContextSelection} contexts={allContexts} />
   ) : (
     <></>
   );

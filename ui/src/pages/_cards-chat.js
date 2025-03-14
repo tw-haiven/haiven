@@ -552,11 +552,7 @@ const CardsChat = ({
   const advancedPromptingMenu = (
     <div className="prompt-chat-options-section">
       <div className="requirement-user-input">
-        <ContextChoice
-          onChange={setSelectedContext}
-          contexts={contexts}
-          value={selectedContext?.key}
-        />
+        <ContextChoice onChange={setSelectedContext} contexts={contexts} />
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ import { ClockIcon } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   getPinboardData,
-  getSortedContexts,
+  getSortedUserContexts,
   deleteContextByTimestamp,
   deletePinOrNoteByTimestamp,
 } from "../app/_local_store";
@@ -31,7 +31,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     setIsMounted(true);
     if (typeof window !== "undefined") {
       setPinnedMessages(getPinboardData());
-      setSavedUserContexts(getSortedContexts());
+      setSavedUserContexts(getSortedUserContexts());
     }
   }, [
     typeof window !== "undefined"
@@ -56,22 +56,20 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     toast.success("Content deleted successfully!");
   };
 
-  const copyContext = async (context) => {
+  const copyContent = async (content) => {
     try {
-      await navigator.clipboard.writeText(contextAsText(context));
-      toast.success("Context copied successfully!");
+      await navigator.clipboard.writeText(content);
+      toast.success("Content copied successfully!");
     } catch (err) {
       toast.error("Failed to copy the context.");
     }
   };
+  const copyContext = async (context) => {
+    copyContent(contextAsText(context));
+  };
 
   const copyPinOrNote = async (content) => {
-    try {
-      await navigator.clipboard.writeText(content.summary);
-      toast.success("Content copied successfully!");
-    } catch (err) {
-      toast.error("Failed to copy the content.");
-    }
+    copyContent(content.summary);
   };
 
   const addNoteButtonWithTooltip = () => {
@@ -130,7 +128,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
   };
 
   const reloadUserSavedContexts = () => {
-    setSavedUserContexts(getSortedContexts());
+    setSavedUserContexts(getSortedUserContexts());
   };
 
   const reloadPinboard = () => {

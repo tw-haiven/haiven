@@ -34,7 +34,7 @@ const AddUserContent = ({
 
     handleSubmit(title, description);
     closeModal();
-    toast.success("Note added successfully!");
+    toast.success("Content added successfully!");
   };
 
   return (

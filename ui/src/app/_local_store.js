@@ -72,7 +72,7 @@ const getContexts = () => {
   return JSON.parse(localStorage.getItem("context")) || [];
 };
 
-export const getSortedContexts = () => {
+export const getSortedUserContexts = () => {
   let contexts = getContexts();
   contexts.sort((a, b) => b.timestamp - a.timestamp);
   return contexts;
@@ -81,7 +81,12 @@ export const getSortedContexts = () => {
 export const saveContext = (title, description) => {
   const timestamp = Date.now();
   const contextData = getContexts();
-  contextData.push({ title, summary: description, timestamp });
+  contextData.push({
+    title,
+    summary: description,
+    timestamp,
+    isUserDefined: true,
+  });
   localStorage.setItem("context", JSON.stringify(contextData));
 };
 
@@ -98,4 +103,12 @@ export const deletePinOrNoteByTimestamp = (timestamp) => {
   const pinboardData = JSON.parse(localStorage.getItem("pinboard")) || {};
   delete pinboardData[timestamp];
   localStorage.setItem("pinboard", JSON.stringify(pinboardData));
+};
+
+export const getSummaryForTheUserContext = (contextTitle) => {
+  const userContexts = getSortedUserContexts();
+  const context = userContexts.find(
+    (context) => context.title === contextTitle,
+  );
+  return context ? context.summary : "";
 };

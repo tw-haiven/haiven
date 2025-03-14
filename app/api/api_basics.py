@@ -30,6 +30,7 @@ class PromptRequestBody(BaseModel):
     context: str = None
     document: str = None
     json: bool = False
+    userContext: str = None
 
 
 class IterateRequest(PromptRequestBody):
@@ -167,6 +168,12 @@ class HaivenBaseApi:
         except Exception as error:
             raise Exception(error)
 
+
+def contextNameForLogging(prompt_data):
+    if prompt_data.userContext:
+        return "User context: " + prompt_data.userContext
+    else:
+        return prompt_data.context
 
 class ApiBasics(HaivenBaseApi):
     def __init__(
@@ -334,6 +341,7 @@ class ApiBasics(HaivenBaseApi):
                         user_input=prompt_data.userinput,
                         additional_vars={},
                         warnings=[],
+                        user_context=prompt_data.userContext,
                     )
                     if prompts.produces_json_output(prompt_data.promptid):
                         stream_fn = self.stream_json_chat
@@ -350,7 +358,7 @@ class ApiBasics(HaivenBaseApi):
                     document_key=prompt_data.document,
                     prompt_id=prompt_data.promptid,
                     user_identifier=self.get_hashed_user_id(request),
-                    context=prompt_data.context,
+                    context= contextNameForLogging(prompt_data),
                     origin_url=origin_url,
                 )
 
@@ -418,6 +426,7 @@ class ApiBasics(HaivenBaseApi):
                     user_input=prompt_data.userinput,
                     additional_vars={},
                     warnings=[],
+                    user_context=prompt_data.userContext,
                 )
                 return JSONResponse(
                     {"prompt": rendered_prompt, "template": template.template}

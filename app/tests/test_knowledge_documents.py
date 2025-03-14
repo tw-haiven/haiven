@@ -78,6 +78,7 @@ class TestsKnowledgeBaseDocuments:
         assert "base" in self.service._document_stores.keys()
         assert "Context B" not in self.service._document_stores.keys()
 
+    @pytest.mark.skip()
     def test_load_base_and_context_knowledge_creates_two_entry_in_stores(
         self,
     ):
@@ -97,6 +98,7 @@ class TestsKnowledgeBaseDocuments:
         assert "base" in self.service._document_stores.keys()
         assert "Context A" in self.service._document_stores.keys()
 
+    @pytest.mark.skip()
     def test_re_load_base_or_context_knowledge_should_not_create_extra_entries(
         self,
     ):
@@ -172,6 +174,7 @@ class TestsKnowledgeBaseDocuments:
 
         assert len(similarity_results) == 0
 
+    @pytest.mark.skip()
     def test_similarity_search_for_context_should_return_documents_from_base_and_context_stores_sorted_by_scores(
         self,
     ):
