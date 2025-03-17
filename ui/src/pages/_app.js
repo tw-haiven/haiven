@@ -80,6 +80,9 @@ export default function App({
       />
       <ConfigProvider
         // https://ant.design/docs/react/customize-theme#api
+        renderEmpty={() => {
+          return <div></div>;
+        }} // So antd doesn't show "No data" <Empty/> icon
         theme={{
           token: {
             // Seed Token
