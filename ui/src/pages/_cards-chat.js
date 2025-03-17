@@ -368,10 +368,17 @@ const CardsChat = ({
     selectedPromptConfiguration.followUps?.map((followUp, i) => {
       return {
         key: followUp.identifier,
-        label: followUp.title,
+        label: (
+          <div>
+            {followUp.title}
+            <br />
+            <span style={{ fontWeight: "normal" }}>
+              {followUp.help_prompt_description}
+            </span>
+          </div>
+        ),
         children: (
           <div className="second-step-section">
-            <p>{followUp.help_prompt_description}</p>
             <Button
               onClick={() => onFollowUp(followUp.identifier)}
               className="go-button"
@@ -619,8 +626,8 @@ const CardsChat = ({
                   <div style={{ marginTop: "1em" }}>
                     <h3>What you can do next</h3>
                     <p>
-                      Generate content based on the cards selected above.
-                      Deselect cards to exclude them from the next step.
+                      Generate content based on the cards above. Remove cards to
+                      exclude them from the next step.
                     </p>
                   </div>
                   <Collapse
