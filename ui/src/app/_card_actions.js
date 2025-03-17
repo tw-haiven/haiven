@@ -26,7 +26,6 @@ export default function CardActions({
       status: firstChar,
       explanation: restOfText,
     };
-    console.log(review);
   }
 
   const unsureIcon = (
