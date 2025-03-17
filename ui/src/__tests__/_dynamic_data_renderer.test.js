@@ -142,14 +142,13 @@ describe("scenarioToText", () => {
 });
 
 describe("DynamicDataRenderer", () => {
-  it("renders 'No data available' when no data is provided", () => {
+  it("renders fine when no data is provided", () => {
     render(<DynamicDataRenderer data={null} />);
-    expect(screen.getByText("No data available")).toBeInTheDocument();
   });
 
-  it("renders 'No data available' when data is not an object", () => {
+  it("renders nothing when data is not an object", () => {
     render(<DynamicDataRenderer data="string data" />);
-    expect(screen.getByText("No data available")).toBeInTheDocument();
+    expect(screen.queryByText("string data")).not.toBeInTheDocument();
   });
 
   it("renders object data with proper formatting", () => {

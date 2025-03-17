@@ -1,11 +1,46 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { addToPinboard } from "../app/_local_store";
-import { RiFileCopyLine, RiChat2Line, RiPushpinLine } from "react-icons/ri";
+import {
+  RiFileCopyLine,
+  RiChat2Line,
+  RiPushpinLine,
+  RiAlertLine,
+  RiCheckboxCircleLine,
+} from "react-icons/ri";
 import { Button, Tooltip } from "antd";
 import { toast } from "react-toastify";
 import { scenarioToText } from "./_dynamic_data_renderer";
 
-export default function CardActions({ scenario, onExploreHandler }) {
+export default function CardActions({
+  scenario,
+  onExploreHandler,
+  selfReview,
+}) {
+  let review = null;
+
+  if (selfReview) {
+    const firstChar = selfReview.charAt(0);
+    const restOfText = selfReview.substring(1).trim();
+
+    review = {
+      status: firstChar,
+      explanation: restOfText,
+    };
+    console.log(review);
+  }
+
+  const unsureIcon = (
+    <div className="review-icon unsure">
+      <RiAlertLine fontSize="large" />
+    </div>
+  );
+
+  const prettySureIcon = (
+    <div className="review-icon pretty-sure">
+      <RiCheckboxCircleLine fontSize="large" />
+    </div>
+  );
+
   const copySuccess = () => {
     toast.success("Content copied successfully!");
   };
@@ -45,6 +80,17 @@ export default function CardActions({ scenario, onExploreHandler }) {
           </Button>
         </Tooltip>
       </div>
+      {review && (
+        <div className="review-container">
+          <Tooltip title={review.explanation} key="review">
+            {review.status === "🤔" || review.status === "\uD83E"
+              ? unsureIcon
+              : review.status === "✅" || review.status === "\u2705"
+                ? prettySureIcon
+                : null}
+          </Tooltip>
+        </div>
+      )}
     </div>
   );
 }

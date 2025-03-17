@@ -1248,10 +1248,6 @@ a.feedback:hover {
   flex-wrap: wrap;
 }
 
-.scenario-card-content ul {
-  margin: 0;
-  padding-left: 1em;
-}
 
 .scenarios-collection.equal-display .scenario-card-content {
   height: 300px;
@@ -1270,7 +1266,45 @@ a.feedback:hover {
   justify-content: space-between;
   align-items: center;
   margin-top: 1em;
+
+  .actions-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .review-container {
+    margin-left: auto;
+  }
+  
+  .review-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.6em;
+    height: 1.6em;
+    border-radius: 50%;
+    
+    &.pretty-sure {
+      background-color: var(--color-jade-green);
+    }
+    
+    &.unsure {
+      background-color: var(--color-turmeric-yellow);
+    }
+
+    svg {
+      width: 0.8em;
+      height: 0.8em;
+    }
+  }
+  
+  .review-icon svg {
+    fill: white;
+  }
+  
 }
+
+
 
 .scenarios-collection .card-actions-footer li {
   width: fit-content !important;
@@ -1290,8 +1324,21 @@ a.feedback:hover {
 }
 
 .scenario-card-content {
+  height: 100%;
+  overflow-y: auto;
+  font-size: small;
   scrollbar-width: thin;
   scrollbar-color: var(--color-light-gray) transparent;
+  
+  ul {
+    margin: 0;
+    padding-left: 1em;
+  }
+
+  .scenario-summary {
+    font-size: small;
+  }
+  
 }
 
 .scenarios-collection.plot-display .scenario {
@@ -1330,11 +1377,6 @@ a.feedback:hover {
   color: var(--color-medium-gray);
 }
 
-.scenario .scenario-card-content {
-  height: 100%;
-  overflow-y: auto;
-  font-size: small;
-}
 
 .scenario .q-a-card-content {
   height: 235px;
@@ -1927,8 +1969,6 @@ a.feedback:hover {
     }
 
   }
-
-  
 }
 
 /****** KNOWLEDGE OVERVIEW ******/

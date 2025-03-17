@@ -11,8 +11,8 @@ import {
 import { Card, Button, Input, Radio, Tooltip, Typography } from "antd";
 import { toast } from "react-toastify";
 import { DynamicDataRenderer, scenarioToText } from "./_dynamic_data_renderer";
+import MarkdownRenderer from "./_markdown_renderer";
 const { TextArea } = Input;
-const { Text } = Typography;
 
 const CardsList = ({
   scenarios,
@@ -43,7 +43,13 @@ const CardsList = ({
   };
 
   const renderScenarioDetails = (scenario) => {
-    return <DynamicDataRenderer data={scenario} exclude={["summary"]} />;
+    return (
+      <DynamicDataRenderer
+        data={scenario}
+        exclude={["summary"]}
+        className="scenario-summary"
+      />
+    );
   };
 
   return (
@@ -141,22 +147,24 @@ const CardsList = ({
                         onChange={(e) => {
                           onScenarioDescriptionChanged(e, scenarioIndex);
                         }}
-                        rows={10}
+                        autoSize={{ minRows: 3, maxRows: 8 }}
                         data-testid={`scenario-summary-${scenarioIndex}`}
                       />
                     ) : (
-                      <Text
+                      <MarkdownRenderer
+                        content={scenario.summary}
                         className="scenario-summary"
                         datatestid={`scenario-summary-${scenarioIndex}`}
-                      >
-                        {scenario.summary}
-                      </Text>
+                      />
                     )}
                     {renderScenarioDetails(scenario)}
                   </div>
                   <CardActions
                     scenario={scenario}
                     onExploreHandler={onExplore}
+                    selfReview={
+                      scenario["self-review"] ? scenario["self-review"] : null
+                    }
                   />
                 </Card>
               );

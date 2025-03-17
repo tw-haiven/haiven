@@ -4,7 +4,14 @@ import { List, Card, Typography } from "antd";
 
 const { Text } = Typography;
 
-const EXCLUDE = ["title", "hidden", "exclude", "id", "scenarios"];
+const EXCLUDE = [
+  "title",
+  "hidden",
+  "exclude",
+  "id",
+  "scenarios",
+  "self-review",
+];
 
 // Helper function to convert camelCase or snake_case to readable text
 export const toReadableText = (key) => {
@@ -50,9 +57,10 @@ export const DynamicDataRenderer = ({
   data,
   exclude = [],
   skipTitles = false,
+  className = "",
 }) => {
   if (!data || typeof data !== "object") {
-    return <Text>No data available</Text>;
+    return <div></div>;
   }
 
   const excludeKeys = EXCLUDE.concat(exclude);
@@ -64,6 +72,7 @@ export const DynamicDataRenderer = ({
       dataSource={Object.entries(data).filter(
         ([key]) => !excludeKeys.includes(key),
       )}
+      className={className}
       renderItem={([key, value]) => {
         if (value === null || value === undefined) return null;
 

@@ -146,6 +146,42 @@ Every prompt file has a frontmatter block that defines metadata about the prompt
 
 Inside of the prompt text, you can reference the static knowledge snippets that are defined in a team's `knowledge` folder. Use the `{domain}` and `{architecture}` variables to reference the business context and architecture snippets. Those two are the default knowledge snippets that are used in many of the prepared prompts. But you can add your own if you need to. E.g., you could add an additional snippet for "Frontend coding patterns". You can define the name of the reference variable in the metadata of the knowledge snippet file (see `domain.md` as an example)
 
+**Writing "cards" prompts**
+
+When you set the prompt metadata to `type: "cards"`, it will result in a "cards" interaction in the UI, so the results will be shown as separate cards. This requires that the prompt returns JSON, so you need to put those explicit instructions at the end of the prompt.
+
+!! Note that the templating mechanism for the prompts treats `{` and `}` as special characters, so when you provide JSON examples, be sure to use `{{` and `}}`.
+
+Here are a few conventions the UI can react to:
+- `title` - will be displayed as the card title
+- `summary` - will be displayed as the first text on the card
+- other properties - will be dynamically rendered in "label: value" format after the `summary`
+- `self-review` - if you instruct in the prompt to do a review of each of the returned results, the UI can show it as a review status on the cards. The code expects ✅ or 🤔 at the beginning of each `self-review` text value, to decide how to display it
+- `hidden` - sometimes you want AI to "think through" something without showing those steps to the user. E.g., when you write a prompt that should ask the user questions, a common Chain-of-Thought pattern is to prompt the model to think about what they don't know, and THEN create the question. You can have it generate those into a property called `hidden`, which will not be displayed, but still contributes to the quality of the model's answer, just by generating it.
+
+Example structure of a cards prompt:
+
+```
+## TASK
+...
+
+## CONTEXT
+...
+{user_input}
+...
+
+## INSTRUCTIONS
+...
+
+You will respond with only a valid JSON array of [...]. Each [...] will have the following schema:
+
+{{
+    "title": "...",
+    "summary": "...",
+    "self-review": "...",
+}}
+```
+
 ### 4. Add documents
 
 The previous section only touched on one form of knowledge source, the context description text snippets.
