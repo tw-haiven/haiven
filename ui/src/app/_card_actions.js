@@ -79,17 +79,20 @@ export default function CardActions({
           </Button>
         </Tooltip>
       </div>
-      {review && (
-        <div className="review-container">
-          <Tooltip title={review.explanation} key="review">
-            {review.status === "🤔" || review.status === "\uD83E"
-              ? unsureIcon
-              : review.status === "✅" || review.status === "\u2705"
-                ? prettySureIcon
-                : null}
-          </Tooltip>
-        </div>
-      )}
+      {review &&
+        review.status &&
+        review.explanation &&
+        review.explanation !== "" && (
+          <div className="review-container">
+            <Tooltip title={review.explanation} key="review">
+              {review.status === "🤔" || review.status === "\uD83E"
+                ? unsureIcon
+                : review.status === "✅" || review.status === "\u2705"
+                  ? prettySureIcon
+                  : null}
+            </Tooltip>
+          </div>
+        )}
     </div>
   );
 }
