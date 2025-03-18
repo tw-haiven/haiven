@@ -57,7 +57,7 @@ const PromptChat = ({
       setAllContexts(contexts.concat(userContextsForDropdown));
     }
   }
-  
+
   useEffect(() => {
     if (initialInput && chatRef.current) {
       chatRef.current.setPromptValue(initialInput);
@@ -83,7 +83,9 @@ const PromptChat = ({
       promptid: usePromptId ? selectedPrompt?.identifier : undefined,
       chatSessionId: chatSessionId,
       ...(selectedContext.value !== "base" &&
-        selectedContext.isUserDefined && { userContext: getSummaryForTheUserContext(selectedContext.value) }),
+        selectedContext.isUserDefined && {
+          userContext: getSummaryForTheUserContext(selectedContext.value),
+        }),
       ...(selectedContext.value !== "base" &&
         !selectedContext.isUserDefined && { context: selectedContext.value }),
       ...(selectedDocument !== "base" && { document: selectedDocument }),
