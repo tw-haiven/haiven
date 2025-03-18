@@ -175,6 +175,7 @@ def contextNameForLogging(prompt_data):
     else:
         return prompt_data.context
 
+
 class ApiBasics(HaivenBaseApi):
     def __init__(
         self,
@@ -358,7 +359,7 @@ class ApiBasics(HaivenBaseApi):
                     document_key=prompt_data.document,
                     prompt_id=prompt_data.promptid,
                     user_identifier=self.get_hashed_user_id(request),
-                    context= contextNameForLogging(prompt_data),
+                    context=contextNameForLogging(prompt_data),
                     origin_url=origin_url,
                 )
 
