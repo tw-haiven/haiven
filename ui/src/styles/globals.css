@@ -14,9 +14,6 @@
   
   --standard-left-padding: 1.5em;
   --font-weight-semi-bold: 630;
-
-  --sidebar-width: 250px;
-  --sidebar-collapsed-width: 80px;
 }
 
 /**** GENERAL ****/
@@ -162,11 +159,6 @@ a.feedback:hover {
   height: 94%;
   width: 100%;
   overflow: auto;
-  padding-bottom: 60px; /* Add space at the bottom for the fixed collapse component */
-}
-
-.card-chat-overflow {
-  padding-bottom: 60px; /* Add space at the bottom for the fixed collapse component */
 }
 
 .card-chat-input-container {
@@ -239,14 +231,11 @@ a.feedback:hover {
 }
 
 .chat-text-area-form {
-  margin: 0px auto 10px auto;
+  margin: 0px 0px 10px 0px;
   padding: 10px 16px;
   border: 2px solid var(--color-medium-gray);
   display: flex;
   flex-direction: row;
-  width: 100%;
-  max-width: 850px;
-  box-sizing: border-box;
 }
 
 .chat-text-area-form textarea:hover {
@@ -265,7 +254,7 @@ a.feedback:hover {
 }
 
 .chat-text-area {
-  width: 100%;
+  width: 90%;
   height: 100%;
   margin: 0px;
 }
@@ -286,42 +275,6 @@ a.feedback:hover {
   padding-top: 8px;
   padding-bottom: 8px;
   height: fit-content;
-}
-
-.input-area-collapse {
-  position: fixed;
-  bottom: 0;
-  left: var(--sidebar-width);
-  right: 0;
-  z-index: 100;
-  background-color: var(--color-light-gray);
-
-  .ant-collapse-content {
-    position: absolute;
-    bottom: 100%;
-    left: 0;
-    right: 0;
-    max-height: 50vh;
-    background-color: white;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  /* Make sure the prompt preview bottom bar stays on top */
-  .ant-collapse-content.ant-collapse-content-active {
-    display: block;
-    overflow-x: hidden;
-  }
-
-  .input-area-collapse-label .prompt-preview {
-    color: var(--color-dark-gray);
-    font-style: italic;
-    overflow: hidden;
-  }
-  
-}
-
-.ant-layout-sider-collapsed ~ .ant-layout-content .input-area-collapse {
-  left: var(--sidebar-collapsed-width);
 }
 
 .chat-message {
@@ -870,10 +823,6 @@ a.feedback:hover {
 }
 
 .prompt-options-menu {
-  width: 100%;
-  max-width: 850px;
-  margin: 0 auto;
-  
   .ant-collapse-header {
     padding-bottom: 0px;
   }
