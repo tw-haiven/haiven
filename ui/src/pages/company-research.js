@@ -30,6 +30,16 @@ export default function CompanyResearchPage() {
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [disableInput, setDisableInput] = useState(false);
 
+  const researchConfig = {
+    column1: [{ title: "Business Snapshot", property: "business_brief" }],
+    column2: [
+      { title: "Vision & Strategic Priorities", property: "org_priorities" },
+      { title: "Competitors", property: "competitors" },
+      { title: "Domain Terms", property: "domain_terms" },
+    ],
+    column3: [{ title: "Domain Functions", property: "domain_functions" }],
+  };
+
   const handleSearch = async (input) => {
     if (!input.trim()) {
       toast.warning("Please enter a company name");
@@ -166,46 +176,31 @@ export default function CompanyResearchPage() {
     );
   };
 
-  // Specific component for competitors which may have a special format
-  const CompetitorsList = ({ competitors }) => {
-    if (
-      !competitors ||
-      !Array.isArray(competitors) ||
-      competitors.length === 0
-    ) {
-      return <Text>No competitor information available</Text>;
-    }
-
+  const createColumn = (columnConfig) => {
     return (
-      <List
-        itemLayout="vertical"
-        size="small"
-        dataSource={competitors}
-        className="competitor-list"
-        renderItem={(item, index) => (
+      <Col xs={24} lg={8} className="results-column">
+        {columnConfig.map((item, index) => (
           <Card
             key={index}
-            size="small"
-            title={item.name}
-            className="inner-result"
+            title={item.title}
+            loading={loading && !companyData[item.property]}
           >
-            {item.rationale && (
-              <div>
-                <Text>
-                  <strong>Rationale:</strong> {item.rationale}
-                </Text>
-              </div>
-            )}
-            {item.acquisitions && (
-              <div>
-                <Text>
-                  <strong>Key Acquisitions:</strong> {item.acquisitions}
-                </Text>
-              </div>
+            {Array.isArray(companyData[item.property]) ? (
+              companyData[item.property].map((listItem, listIndex) => (
+                <Card
+                  key={index + "-" + listIndex}
+                  size="small"
+                  className="inner-result"
+                >
+                  <DynamicDataRenderer data={listItem} />
+                </Card>
+              ))
+            ) : (
+              <DynamicDataRenderer data={companyData[item.property]} />
             )}
           </Card>
-        )}
-      />
+        ))}
+      </Col>
     );
   };
 
@@ -296,94 +291,9 @@ export default function CompanyResearchPage() {
               </div>
 
               <Row gutter={[12, 12]} className="results-row">
-                <Col xs={24} lg={8} className="results-column">
-                  {companyData.business_brief && (
-                    <Card
-                      title="Business Snapshot"
-                      loading={loading && !companyData.business_brief}
-                    >
-                      <DynamicDataRenderer
-                        data={companyData.business_brief}
-                        exclude={["company_name"]}
-                      />
-                    </Card>
-                  )}
-                </Col>
-
-                <Col xs={24} lg={8} className="results-column">
-                  {companyData.org_priorities && (
-                    <Card
-                      title="Vision & Strategic Priorities"
-                      loading={loading && !companyData.org_priorities}
-                    >
-                      <DynamicDataRenderer data={companyData.org_priorities} />
-                    </Card>
-                  )}
-
-                  {companyData.competitors && (
-                    <Card
-                      title="Competitors"
-                      loading={loading && !companyData.competitors}
-                    >
-                      <CompetitorsList competitors={companyData.competitors} />
-                    </Card>
-                  )}
-
-                  {companyData.domain_terms && (
-                    <Card
-                      title="Domain Terms"
-                      loading={loading && !companyData.domain_terms}
-                    >
-                      <List
-                        itemLayout="horizontal"
-                        size="small"
-                        dataSource={companyData.domain_terms}
-                        renderItem={(item) => (
-                          <List.Item style={{ padding: "4px 0" }}>
-                            <div style={{ width: "100%" }}>
-                              <Text strong>{item.term}</Text>
-                              {item.acronym && (
-                                <Text type="secondary"> ({item.acronym})</Text>
-                              )}
-                              {item.meaning && (
-                                <div
-                                  style={{ marginTop: "2px", fontSize: "13px" }}
-                                >
-                                  {item.meaning}
-                                </div>
-                              )}
-                            </div>
-                          </List.Item>
-                        )}
-                      />
-                    </Card>
-                  )}
-                </Col>
-
-                <Col xs={24} lg={8} className="results-column">
-                  {companyData.domain_functions && (
-                    <Card
-                      title="Domain Functions"
-                      loading={loading && !companyData.domain_functions}
-                    >
-                      <div className="results-column">
-                        {companyData.domain_functions.map((item, index) => (
-                          <Card
-                            key={index}
-                            size="small"
-                            title={item.name}
-                            className="inner-result"
-                          >
-                            <DynamicDataRenderer
-                              data={item}
-                              exclude={["name"]}
-                            />
-                          </Card>
-                        ))}
-                      </div>
-                    </Card>
-                  )}
-                </Col>
+                {createColumn(researchConfig.column1)}
+                {createColumn(researchConfig.column2)}
+                {createColumn(researchConfig.column3)}
               </Row>
             </div>
 
