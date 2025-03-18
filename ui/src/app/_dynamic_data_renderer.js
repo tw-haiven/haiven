@@ -59,8 +59,28 @@ export const DynamicDataRenderer = ({
   skipTitles = false,
   className = "",
 }) => {
-  if (!data || typeof data !== "object") {
-    return <div></div>;
+  if (!data) {
+    return <Text></Text>;
+  }
+
+  if (typeof data === "string") {
+    return <Text>{data}</Text>;
+  }
+
+  if (typeof data !== "object") {
+    return <Text></Text>;
+  }
+
+  // Render URLs
+  if (
+    Object.keys(data).length === 2 &&
+    Object.keys(data).every((key) => ["title", "url"].includes(key))
+  ) {
+    return (
+      <a href={data.url} target="_blank" rel="noopener noreferrer">
+        {data.title}
+      </a>
+    );
   }
 
   const excludeKeys = EXCLUDE.concat(exclude);
@@ -131,7 +151,7 @@ export const renderValue = (value, parentKey) => {
       );
     }
   } else if (typeof value === "object" && value !== null) {
-    // For nested objects, check if they're special cases like vision, priorities, kpis
+    // For nested objects, check if they're special cases
     // These objects have a property with the same name as the parent key
     const hasMatchingProperty = parentKey && value[parentKey] !== undefined;
 

@@ -146,9 +146,24 @@ describe("DynamicDataRenderer", () => {
     render(<DynamicDataRenderer data={null} />);
   });
 
-  it("renders nothing when data is not an object", () => {
+  it("renders the text when data is a string", () => {
     render(<DynamicDataRenderer data="string data" />);
-    expect(screen.queryByText("string data")).not.toBeInTheDocument();
+    expect(screen.queryByText("string data")).toBeInTheDocument();
+  });
+
+  it("renders a URL when data is object with title and url", () => {
+    const testData = {
+      title: "Test URL",
+      url: "https://www.example.com",
+    };
+
+    render(<DynamicDataRenderer data={testData} />);
+
+    expect(screen.getByRole("link")).toHaveAttribute(
+      "href",
+      "https://www.example.com",
+    );
+    expect(screen.getByRole("link")).toHaveTextContent("Test URL");
   });
 
   it("renders object data with proper formatting", () => {

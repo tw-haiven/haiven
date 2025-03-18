@@ -3,6 +3,11 @@ from fastapi import Request
 from api.api_basics import HaivenBaseApi
 from llms.model_config import ModelConfig
 
+CONFIG_TO_PROMPT_MAPPING = {
+    "company": "guided-company-research",
+    "ai-tool": "guided-ai-tool-research",
+}
+
 
 class ApiCompanyResearch(HaivenBaseApi):
     def __init__(self, app, chat_session_memory, model_key, prompt_list):
@@ -13,13 +18,15 @@ class ApiCompanyResearch(HaivenBaseApi):
             origin_url = request.headers.get("referer")
             chat_category = "company-research"
 
-            # Get request body
             body = await request.json()
             user_input = body.get("userinput", "")
+            config = body.get("config", "company")
 
             prompt, _ = prompt_list.render_prompt(
                 active_knowledge_context=None,
-                prompt_choice="guided-company-research",
+                prompt_choice=CONFIG_TO_PROMPT_MAPPING.get(
+                    config, "guided-company-research"
+                ),
                 user_input=user_input,
                 additional_vars={},
                 warnings=[],

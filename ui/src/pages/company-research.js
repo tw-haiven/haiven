@@ -1,5 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Col,
   Row,
@@ -20,9 +21,10 @@ import HelpTooltip from "../app/_help_tooltip";
 import ChatHeader from "../pages/_chat_header";
 import { DynamicDataRenderer } from "../app/_dynamic_data_renderer";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export default function CompanyResearchPage() {
+  const [researchConfig, setResearchConfig] = useState(null);
   const [companyName, setCompanyName] = useState("");
   const [companyData, setCompanyData] = useState(null);
   const [citations, setCitations] = useState([]);
@@ -30,15 +32,50 @@ export default function CompanyResearchPage() {
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [disableInput, setDisableInput] = useState(false);
 
-  const researchConfig = {
-    column1: [{ title: "Business Snapshot", property: "business_brief" }],
-    column2: [
-      { title: "Vision & Strategic Priorities", property: "org_priorities" },
-      { title: "Competitors", property: "competitors" },
-      { title: "Domain Terms", property: "domain_terms" },
-    ],
-    column3: [{ title: "Domain Functions", property: "domain_functions" }],
+  const availableResearchConfig = {
+    company: {
+      title: "Company Research",
+      key: "company",
+      column1: [{ title: "Business Snapshot", property: "business_brief" }],
+      column2: [
+        { title: "Vision & Strategic Priorities", property: "org_priorities" },
+        { title: "Competitors", property: "competitors" },
+        { title: "Domain Terms", property: "domain_terms" },
+      ],
+      column3: [{ title: "Domain Functions", property: "domain_functions" }],
+    },
+    "ai-tool": {
+      title: "AI Tool Research",
+      key: "ai-tool",
+      column1: [
+        { title: "Business Snapshot", property: "business_brief" },
+        { title: "Reception", property: "reception" },
+      ],
+      column2: [
+        { title: "Vision & Strategic Priorities", property: "org_priorities" },
+        { title: "Competitors", property: "competitors" },
+        { title: "Did you know?", property: "other_tidbits" },
+      ],
+      column3: [
+        {
+          title: "Software Delivery Lifecycle Support",
+          property: "software_lifecycle",
+        },
+        { title: "Key resources", property: "key_resources" },
+      ],
+    },
   };
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const configParam = searchParams.get("config");
+    if (configParam && availableResearchConfig[configParam]) {
+      setResearchConfig(availableResearchConfig[configParam]);
+    } else {
+      setResearchConfig(availableResearchConfig.company);
+    }
+  }, [searchParams]);
 
   const handleSearch = async (input) => {
     if (!input.trim()) {
@@ -63,7 +100,7 @@ export default function CompanyResearchPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userinput: input }),
+        body: JSON.stringify({ userinput: input, config: researchConfig.key }),
         signal: startLoad(),
       },
       {
@@ -117,10 +154,10 @@ export default function CompanyResearchPage() {
     );
   };
 
-  const title = (
+  const title = researchConfig && (
     <div className="title">
       <h3>
-        Company Research
+        {researchConfig.title}
         <HelpTooltip text="Get a company brief" />
       </h3>
     </div>
