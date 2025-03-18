@@ -121,16 +121,10 @@ const CardsChat = ({
   };
 
   const buildRequestDataGetMore = () => {
-    const exampleScenario = scenarios.length > 0 ? scenarios[0] : undefined;
     return {
       userinput:
-        "Give me some additional ones, in the same JSON format.\n\n" +
-        exampleScenario
-          ? "To recap, this is what the JSON structure of each one looks like right now, give me additional ones with all of these properties:\n" +
-            JSON.stringify(exampleScenario)
-          : "" +
-            "To recap, this is what the structure of each one looks like right now, give me additional ones with all of these attributes:\n" +
-            "\n\nOnly return JSON, nothing else.\n",
+        "Give me some additional ones, in the same JSON format. Do not repeat any of the ones you already told me about, come up with new ideas.\n\n" +
+        "\n\nOnly return JSON, nothing else.\n",
       context: selectedContext,
       promptid: undefined,
       chatSessionId: chatSessionIdCardBuilding,
