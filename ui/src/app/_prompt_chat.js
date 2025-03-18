@@ -47,14 +47,16 @@ const PromptChat = ({
   const [allContexts, setAllContexts] = useState([]);
 
   function combineAllContexts(contexts) {
-    if (contexts !== undefined) {
-      const userContexts = getSortedUserContexts();
-      const userContextsForDropdown = userContexts.map((context) => ({
-        value: context.title,
-        label: context.title,
-        isUserDefined: true,
-      }));
+    const userContexts = getSortedUserContexts();
+    const userContextsForDropdown = userContexts.map((context) => ({
+      value: context.title,
+      label: context.title,
+      isUserDefined: true,
+    }));
+    if (contexts !== undefined && contexts.length > 0) {
       setAllContexts(contexts.concat(userContextsForDropdown));
+    } else {
+      setAllContexts(userContextsForDropdown);
     }
   }
 
@@ -65,6 +67,7 @@ const PromptChat = ({
     combineAllContexts(contexts);
   }, [
     initialInput,
+    contexts,
     typeof window !== "undefined"
       ? window.localStorage.getItem("context")
       : null,
