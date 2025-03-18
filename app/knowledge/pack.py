@@ -1,11 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
 from typing import List
-<<<<<<< HEAD
-import frontmatter
 from logger import HaivenLogger
-=======
->>>>>>> 2fb1ff4 (Revert "#361 | Change folder format of context to file format")
 
 
 class KnowledgePackError(Exception):

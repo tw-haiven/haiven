@@ -129,15 +129,13 @@ class PromptList:
 
     def appendUserContext(self, knowledge_and_input, user_context):
         if user_context:
-            if (
-                knowledge_and_input is None
-                or knowledge_and_input.get("context") is None
-            ):
-                knowledge_and_input = {"context": user_context}
-            else:
-                knowledge_and_input["context"] = (
-                    knowledge_and_input["context"] + " " + user_context
-                )
+            knowledge_and_input = knowledge_and_input or {}
+            context = user_context
+
+            if knowledge_and_input.get("context") is not None:
+                context = knowledge_and_input["context"] + " " + user_context
+
+            knowledge_and_input["context"] = context
         return knowledge_and_input
 
     def create_and_render_template(

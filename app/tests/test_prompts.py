@@ -22,14 +22,14 @@ def test_init_should_load_files():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    assert len(prompt_list.prompts) == 6
+    assert len(prompt_list.prompts) == 7
 
 
 def test_init_should_exclude_readmes():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    assert len(prompt_list.prompts) == 6
+    assert len(prompt_list.prompts) == 7
 
 
 def test_init_should_set_defaults_for_metadata():
@@ -63,6 +63,7 @@ def test_get_title_id_tuples():
         ("Test3", "uuid-3"),
         ("Test4", "uuid-4"),
         ("Test5", "uuid-5"),
+        ("Test6", "uuid-6"),
     ]
 
 
@@ -143,10 +144,11 @@ def test_render_prompt_for_given_prompt_id():
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     rendered, _ = prompt_list.render_prompt(
         ACTIVE_KNOWLEDGE_CONTEXT,
-        "uuid-1",
+        "uuid-6",
         "Some User Input",
         user_context="Some user defined context",
     )
+
     assert (
         rendered
         == """Content Some User Input Architecture knowledge
@@ -162,7 +164,7 @@ def test_filter_should_filter_by_one_category_and_include_wihtout_category():
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     prompt_list.filter(["architecture"])
-    assert len(prompt_list.prompts) == 3
+    assert len(prompt_list.prompts) == 4
 
 
 def test_filter_should_filter_by_multiple_categories():
@@ -170,7 +172,7 @@ def test_filter_should_filter_by_multiple_categories():
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     prompt_list.filter(["architecture", "coding"])
-    assert len(prompt_list.prompts) == 4
+    assert len(prompt_list.prompts) == 5
 
 
 def test_render_prompt_without_prompt_choice():
