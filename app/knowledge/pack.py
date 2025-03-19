@@ -45,6 +45,16 @@ class KnowledgePack:
         )
 
         if os.path.exists(context_path):
+            # Delete below code, adding it only for debugging purpose
+            try:
+                all_files = os.listdir(context_path)
+                HaivenLogger.get().info(
+                    f"All files in directory: {len(all_files)} {all_files}",
+                    extra={"INFO": "CustomSystemMessageLoaded"},
+                )
+            except Exception as e:
+                HaivenLogger.error(f"Error listing directory contents: {str(e)}")
+            # Delete till here
             context_folders = [
                 folder
                 for folder in os.listdir(context_path)
