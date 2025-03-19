@@ -50,7 +50,7 @@ const CardsChat = ({
   const [chatContext, setChatContext] = useState({});
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(false);
-  const [isInputCollapsed, setIsInputCollapsed] = useState(false);
+  const [disableChatInput, setDisableChatInput] = useState(false);
   const [usePromptId, setUsePromptId] = useState(true);
   const [chatSessionIdCardBuilding, setChatSessionIdCardBuilding] = useState();
 
@@ -144,19 +144,8 @@ const CardsChat = ({
     };
   };
 
-  // Reset the chat session to start fresh
-  const resetChatSession = () => {
-    setChatSessionIdCardBuilding(undefined);
-    setFollowUpResults({});
-  };
-
-  const sendCardBuildingPrompt = (requestData, shouldReset = false) => {
-    setIsInputCollapsed(true);
-
-    if (shouldReset) {
-      resetChatSession();
-    }
-
+  const sendCardBuildingPrompt = (requestData) => {
+    setDisableChatInput(true);
     const uri = "/api/prompt";
 
     let ms = "";
@@ -186,11 +175,9 @@ const CardsChat = ({
           const chatId = response.headers.get("X-Chat-ID");
           setChatSessionIdCardBuilding(chatId);
 
-          const existingScenarios = shouldReset
-            ? []
-            : scenarios.map((scenario) => ({
-                ...scenario,
-              }));
+          const existingScenarios = scenarios.map((scenario) => ({
+            ...scenario,
+          }));
 
           if (data.data) {
             ms += data.data;
@@ -221,9 +208,8 @@ const CardsChat = ({
     );
   };
 
-  const sendFirstStepPrompt = (shouldReset = true) => {
-    setIsInputCollapsed(true);
-    sendCardBuildingPrompt(buildRequestDataCardBuilding(), shouldReset);
+  const sendFirstStepPrompt = () => {
+    sendCardBuildingPrompt(buildRequestDataCardBuilding());
   };
 
   const sendGetMorePrompt = () => {
@@ -435,7 +421,7 @@ const CardsChat = ({
       }
     };
 
-    const attachMoreContextItems = [
+    const items = [
       {
         key: "1",
         label: (
@@ -460,16 +446,14 @@ const CardsChat = ({
       },
     ];
 
-    // The actual input area content
-    const inputAreaContent = (
+    if (disableChatInput) {
+      return null;
+    }
+
+    return (
       <div className="card-chat-input-container">
         <Form
-          onFinish={async () => {
-            // Set collapsed state first
-            setIsInputCollapsed(true);
-            // Then send the prompt
-            sendFirstStepPrompt(true);
-          }}
+          onFinish={async () => await sendFirstStepPrompt()}
           form={form}
           initialValues={{ question: "" }}
           className="chat-text-area-form"
@@ -491,18 +475,27 @@ const CardsChat = ({
             />
           </Form.Item>
           <Form.Item className="chat-text-area-submit">
-            <Button
-              htmlType="submit"
-              icon={<RiSendPlane2Line fontSize="large" />}
-              disabled={loading}
-            >
-              SEND
-            </Button>
+            {loading ? (
+              <Button
+                type="secondary"
+                icon={<RiStopCircleFill fontSize="large" />}
+                onClick={() => abortLoad()}
+              >
+                STOP
+              </Button>
+            ) : (
+              <Button
+                htmlType="submit"
+                icon={<RiSendPlane2Line fontSize="large" />}
+              >
+                SEND
+              </Button>
+            )}
           </Form.Item>
         </Form>
         <Collapse
           className="prompt-options-menu"
-          items={attachMoreContextItems}
+          items={items}
           defaultActiveKey={["1"]}
           ghost={isPromptOptionsMenuExpanded}
           activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
@@ -510,36 +503,6 @@ const CardsChat = ({
           collapsible="header"
         />
       </div>
-    );
-
-    return (
-      <Collapse
-        className="input-area-collapse"
-        activeKey={isInputCollapsed ? [] : ["input-area"]}
-        defaultActiveKey={["input-area"]} // Ensure it's expanded on initial load
-        expandIconPosition="end"
-        onChange={(key) => setIsInputCollapsed(key.length === 0)}
-        items={[
-          {
-            key: "input-area",
-            label: (
-              <div className="input-area-collapse-label">
-                {promptInput && (
-                  <div>
-                    <span>Your input: </span>
-                    <span className="prompt-preview">
-                      {promptInput.length > 60
-                        ? `${promptInput.substring(0, 60)}...`
-                        : promptInput}
-                    </span>
-                  </div>
-                )}
-              </div>
-            ),
-            children: inputAreaContent,
-          },
-        ]}
-      />
     );
   };
 

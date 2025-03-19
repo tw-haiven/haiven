@@ -147,7 +147,7 @@ const ChatWidget = forwardRef(
         }
       };
 
-      const attachMoreContextItems = [
+      const items = [
         {
           key: "1",
           label: (
@@ -214,7 +214,7 @@ const ChatWidget = forwardRef(
           {advancedPromptingMenu && !conversationStarted ? (
             <Collapse
               className="prompt-options-menu"
-              items={attachMoreContextItems}
+              items={items}
               defaultActiveKey={["1"]}
               ghost={isPromptOptionsMenuExpanded}
               activeKey={isPromptOptionsMenuExpanded ? "1" : ""}
