@@ -116,7 +116,10 @@ class KnowledgeManager:
         return self.active_knowledge_context
 
     def get_all_context_keys(self):
-        return self.knowledge_base_markdown.get_all_contexts_keys()
+        return [
+            {"context": context.key, "title": context.title}
+            for context in self.knowledge_base_markdown.get_all_contexts_metadata()
+        ]
 
     def _load_system_message(self):
         system_message_path = os.path.join(
