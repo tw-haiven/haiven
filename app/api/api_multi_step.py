@@ -19,6 +19,7 @@ class FollowUpPromptInput(BaseModel):
 class FollowUpRequest(PromptRequestBody):
     previous_promptid: str = None
     scenarios: List[TitleContent] = []
+    userContext: str = None
 
 
 class ExploreRequest(PromptRequestBody):
@@ -71,6 +72,7 @@ class ApiMultiStep(HaivenBaseApi):
                     user_input=user_input,
                     additional_vars={},
                     warnings=[],
+                    user_context=prompt_data.userContext,
                 )
 
                 return stream_fn(

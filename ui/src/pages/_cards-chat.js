@@ -18,7 +18,11 @@ import ContextChoice from "../app/_context_choice";
 import HelpTooltip from "../app/_help_tooltip";
 import CardsList from "../app/_cards-list";
 import useLoader from "../hooks/useLoader";
-import { addToPinboard } from "../app/_local_store";
+import {
+  addToPinboard,
+  getSortedUserContexts,
+  getSummaryForTheUserContext,
+} from "../app/_local_store";
 import PromptPreview from "../app/_prompt_preview";
 import MarkdownRenderer from "../app/_markdown_renderer";
 import { scenarioToText } from "../app/_dynamic_data_renderer";
@@ -53,6 +57,21 @@ const CardsChat = ({
   const [disableChatInput, setDisableChatInput] = useState(false);
   const [usePromptId, setUsePromptId] = useState(true);
   const [chatSessionIdCardBuilding, setChatSessionIdCardBuilding] = useState();
+  const [allContexts, setAllContexts] = useState([]);
+
+  function combineAllContexts(contexts) {
+    const userContexts = getSortedUserContexts();
+    const userContextsForDropdown = userContexts.map((context) => ({
+      value: context.title,
+      label: context.title,
+      isUserDefined: true,
+    }));
+    if (contexts !== undefined && contexts.length > 0) {
+      setAllContexts(contexts.concat(userContextsForDropdown));
+    } else {
+      setAllContexts(userContextsForDropdown);
+    }
+  }
 
   useEffect(() => {
     if (selectedPromptId !== undefined && selectedPromptId !== null) {
@@ -66,9 +85,16 @@ const CardsChat = ({
         setFollowUpResults(followUpResults);
         setSelectedPromptConfiguration(firstStepEntry);
       }
+      combineAllContexts(contexts);
     }
     setUsePromptId(true);
-  }, [promptId, prompts]);
+  }, [
+    promptId,
+    prompts,
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("context")
+      : null,
+  ]);
 
   const onClickAdvancedPromptOptions = (e) => {
     setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
@@ -113,7 +139,12 @@ const CardsChat = ({
   const buildRequestDataCardBuilding = () => {
     return {
       userinput: promptInput,
-      context: selectedContext,
+      ...(selectedContext.value !== "base" &&
+        selectedContext.isUserDefined && {
+          userContext: getSummaryForTheUserContext(selectedContext.value),
+        }),
+      ...(selectedContext.value !== "base" &&
+        !selectedContext.isUserDefined && { context: selectedContext.value }),
       promptid: usePromptId
         ? selectedPromptConfiguration?.identifier
         : undefined,
@@ -125,7 +156,12 @@ const CardsChat = ({
       userinput:
         "Give me some additional ones, in the same JSON format. Do not repeat any of the ones you already told me about, come up with new ideas.\n\n" +
         "\n\nOnly return JSON, nothing else.\n",
-      context: selectedContext,
+      ...(selectedContext.value !== "base" &&
+        selectedContext.isUserDefined && {
+          userContext: getSummaryForTheUserContext(selectedContext.value),
+        }),
+      ...(selectedContext.value !== "base" &&
+        !selectedContext.isUserDefined && { context: selectedContext.value }),
       promptid: undefined,
       chatSessionId: chatSessionIdCardBuilding,
       json: true,
@@ -135,7 +171,12 @@ const CardsChat = ({
   const buildRequestDataFollowUp = (followUpId) => {
     return {
       userinput: promptInput,
-      context: selectedContext,
+      ...(selectedContext.value !== "base" &&
+        selectedContext.isUserDefined && {
+          userContext: getSummaryForTheUserContext(selectedContext.value),
+        }),
+      ...(selectedContext.value !== "base" &&
+        !selectedContext.isUserDefined && { context: selectedContext.value }),
       promptid: followUpId,
       scenarios: scenarios
         .filter((scenario) => scenario.exclude !== true)
@@ -506,10 +547,17 @@ const CardsChat = ({
     );
   };
 
+  const handleContextSelection = (value) => {
+    setSelectedContext(allContexts.find((context) => context.value === value));
+  };
+
   const advancedPromptingMenu = (
     <div className="prompt-chat-options-section">
       <div className="requirement-user-input">
-        <ContextChoice onChange={setSelectedContext} contexts={contexts} />
+        <ContextChoice
+          onChange={handleContextSelection}
+          contexts={allContexts}
+        />
       </div>
     </div>
   );
