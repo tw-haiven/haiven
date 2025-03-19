@@ -262,17 +262,11 @@ class ApiBasics(HaivenBaseApi):
                 all_contexts = knowledge_manager.get_all_context_keys()
 
                 response_data = []
-                for context_info in all_contexts:
+                for context in all_contexts:
                     snippets = knowledge_manager.knowledge_base_markdown.get_knowledge_content_dict(
-                        context_info["context"]
+                        context
                     )
-                    response_data.append(
-                        {
-                            "context": context_info["context"],
-                            "title": context_info["title"],
-                            "snippets": snippets,
-                        }
-                    )
+                    response_data.append({"context": context, "snippets": snippets})
 
                 response_data.sort(key=lambda x: x["context"])
 
@@ -294,12 +288,9 @@ class ApiBasics(HaivenBaseApi):
                 # older knowledge packs
                 all_contexts = knowledge_manager.get_all_context_keys()
 
-                # Extract just the context keys and append base_context
-                context_keys = [context["context"] for context in all_contexts]
-                context_keys.append(base_context)
-
+                all_contexts.append(base_context)
                 response_data = []
-                for context in context_keys:
+                for context in all_contexts:
                     documents: List[KnowledgeDocument] = (
                         knowledge_manager.knowledge_base_documents.get_documents(
                             context=context, include_base_context=False
