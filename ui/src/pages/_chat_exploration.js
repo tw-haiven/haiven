@@ -35,6 +35,7 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
           userinput: lastMessage?.content,
           item: previousContext?.itemSummary,
           context: previousContext?.context || "",
+          userContext: previousContext?.userContext || "",
           first_step_input: previousContext?.firstStepInput || "",
           previous_promptid: previousContext?.previousPromptId || "",
           previous_framing: previousContext?.previousFraming || "",

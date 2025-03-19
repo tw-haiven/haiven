@@ -100,9 +100,11 @@ class ApiMultiStep(HaivenBaseApi):
 
                 user_input = prompt_data.userinput
                 if prompt_data.previous_promptid:
-                    if prompt_data.context:
+                    if prompt_data.context or prompt_data.userContext:
                         context = prompts.get_rendered_context(
-                            prompt_data.context, prompt_data.previous_promptid
+                            prompt_data.context,
+                            prompt_data.previous_promptid,
+                            prompt_data.userContext,
                         )
                         context = f"""
                         ## General context

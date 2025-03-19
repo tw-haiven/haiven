@@ -107,7 +107,12 @@ const CardsChat = ({
       firstStepInput: promptInput,
       type: "prompt",
       previousPromptId: selectedPromptId,
-      context: selectedContext,
+      ...(selectedContext.value !== "base" &&
+        selectedContext.isUserDefined && {
+          userContext: getSummaryForTheUserContext(selectedContext.value),
+        }),
+      ...(selectedContext.value !== "base" &&
+        !selectedContext.isUserDefined && { context: selectedContext.value }),
       itemSummary: scenarioToText(scenario),
       ...scenario,
     });
