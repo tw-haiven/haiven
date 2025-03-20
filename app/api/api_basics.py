@@ -266,15 +266,21 @@ class ApiBasics(HaivenBaseApi):
                 )
                 response_data = []
                 for context_info in all_contexts:
+                    context = context_info["context"]
+                    title = context_info["title"]
                     HaivenLogger.get().info(
-                        f"context info: {context_info["context"]} {context_info["title"]}",
+                        f"Context info: {context} {title}",
                         extra={"INFO": "CustomSystemMessageLoaded"},
                     )
+                    # HaivenLogger.get().info(
+                    #     f"context info: {context_info["context"]} {context_info["title"]}",
+                    #     extra={"INFO": "CustomSystemMessageLoaded"},
+                    # )
                     snippets = knowledge_manager.knowledge_base_markdown.get_knowledge_content_dict(
                         context_info["context"]
                     )
                     HaivenLogger.get().info(
-                        f"snippet found: {snippets}",
+                        f"Snippet found: {snippets}",
                         extra={"INFO": "CustomSystemMessageLoaded"},
                     )
                     response_data.append(
