@@ -260,11 +260,22 @@ class ApiBasics(HaivenBaseApi):
         def get_knowledge_snippets(request: Request):
             try:
                 all_contexts = knowledge_manager.get_all_context_keys()
-
+                HaivenLogger.get().info(
+                    f"All contexts count: {len(all_contexts)}",
+                    extra={"INFO": "CustomSystemMessageLoaded"},
+                )
                 response_data = []
                 for context_info in all_contexts:
+                    HaivenLogger.get().info(
+                        f"context info: {context_info["context"]} {context_info["title"]}",
+                        extra={"INFO": "CustomSystemMessageLoaded"},
+                    )
                     snippets = knowledge_manager.knowledge_base_markdown.get_knowledge_content_dict(
                         context_info["context"]
+                    )
+                    HaivenLogger.get().info(
+                        f"snippet found: {snippets}",
+                        extra={"INFO": "CustomSystemMessageLoaded"},
                     )
                     response_data.append(
                         {
