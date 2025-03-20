@@ -77,16 +77,21 @@ class KnowledgePack:
                 try:
                     content = frontmatter.load(file_path)
                     title = content.metadata.get("title", name)
-                    HaivenLogger.get().info(
-                        f"Processing markdown file: {md_file}, name: {name}",
-                        extra={"INFO": "CustomSystemMessageLoaded"},
-                    )
                 except Exception as e:
                     title = name
                     HaivenLogger.get().error(
                         f"Error processing markdown file {md_file}: {str(e)}",
                         extra={"INFO": "CustomSystemMessageLoaded"},
                     )
+                HaivenLogger.get().info(
+                    f"Adding context: name: {name}, file_path: {file_path} title:"
+                    f" {title}",
+                    extra={"INFO": "CustomSystemMessageLoaded"},
+                )
+                HaivenLogger.get().info(
+                    f"Contexts added: {len(self.contexts)}",
+                    extra={"INFO": "CustomSystemMessageLoaded"},
+                )
                 self.contexts.append(
                     KnowledgeContext(name=name, path=file_path, title=title)
                 )
