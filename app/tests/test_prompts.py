@@ -12,7 +12,7 @@ def create_knowledge_base(knowledge_pack_path):
     knowledge_base = KnowledgeBaseMarkdown()
     knowledge_base.load_for_context(
         ACTIVE_KNOWLEDGE_CONTEXT,
-        knowledge_pack_path + "/contexts",
+        knowledge_pack_path + "/contexts/" + ACTIVE_KNOWLEDGE_CONTEXT,
     )
 
     return knowledge_base
@@ -80,7 +80,7 @@ def test_create_template():
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     template = prompt_list.create_template(ACTIVE_KNOWLEDGE_CONTEXT, "uuid-3")
-    assert template.template == "Content: {user_input} | Business: {context}"
+    assert template.template == "Content: {user_input} | Business: {business}"
 
 
 def test_create_and_render_template():
@@ -90,15 +90,11 @@ def test_create_and_render_template():
     rendered, template = prompt_list.create_and_render_template(
         ACTIVE_KNOWLEDGE_CONTEXT, "uuid-3", {"user_input": "Some User Input"}
     )
-    assert template.template == "Content: {user_input} | Business: {context}"
-    expected_rendered_output = (
-        "Content: Some User Input | Business: Architecture knowledge\n"
-        "\n"
-        "Business knowledge from context_a\n"
-        "\n"
-        "Frontend coding patterns"
+    assert template.template == "Content: {user_input} | Business: {business}"
+    assert (
+        rendered
+        == "Content: Some User Input | Business: Business knowledge from context_a"
     )
-    assert rendered == expected_rendered_output
 
 
 def test_create_and_render_template_with_missing_variables():
@@ -114,6 +110,18 @@ def test_create_and_render_template_with_missing_variables():
         rendered
         == "Content: Some User Input | Business: None provided, please try to help without this information."
     )
+
+
+def test_create_and_render_template_overwrite_knowledge_base():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+
+    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
+    rendered, _ = prompt_list.create_and_render_template(
+        ACTIVE_KNOWLEDGE_CONTEXT,
+        "uuid-3",
+        {"user_input": "Some User Input", "business": "Overwritten Business"},
+    )
+    assert rendered == "Content: Some User Input | Business: Overwritten Business"
 
 
 def test_render_prompt_with_additional_vars():
@@ -185,7 +193,8 @@ def test_render_help_markdown():
     )
     assert "Prompt description" in help
     assert "User input description" in help
-    assert "**Knowledge used:** _Context A_ from _context_a_" in knowledge
+    assert "Architecture Knowledge" in knowledge
+    assert "Business Knowledge" in knowledge
 
 
 def test_render_help_markdown_when_values_are_empty():
@@ -196,7 +205,7 @@ def test_render_help_markdown_when_values_are_empty():
         "uuid-1", ACTIVE_KNOWLEDGE_CONTEXT
     )
     assert "## Test1" in help
-    assert "**Knowledge used:** _Context A_ from _context_a_" in knowledge
+    assert "Architecture Knowledge" in knowledge
 
 
 def test_create_markdown_summary():
@@ -217,8 +226,9 @@ def test_get_knowledge_used():
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     vars = prompt_list.get_knowledge_used("uuid-5", ACTIVE_KNOWLEDGE_CONTEXT)
-    assert len(vars) == 1
-    assert {"key": "context", "title": "Context A"} in vars
+    assert len(vars) == 2
+    assert {"key": "business", "title": "Business Knowledge"} in vars
+    assert {"key": "architecture", "title": "Architecture Knowledge"} in vars
 
 
 def test_get_prompts_with_follow_ups():
