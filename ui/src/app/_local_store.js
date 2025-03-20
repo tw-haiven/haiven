@@ -88,7 +88,7 @@ export const saveContext = (title, description) => {
     isUserDefined: true,
   });
   localStorage.setItem("context", JSON.stringify(contextData));
-  window.dispatchEvent(new Event("new-context"));
+  window.dispatchEvent(new Event("update-context"));
 };
 
 export const deleteContextByTimestamp = (timestamp) => {
@@ -98,6 +98,7 @@ export const deleteContextByTimestamp = (timestamp) => {
   );
 
   localStorage.setItem("context", JSON.stringify(updatedContextData));
+  window.dispatchEvent(new Event("update-context"));
 };
 
 export const deletePinOrNoteByTimestamp = (timestamp) => {

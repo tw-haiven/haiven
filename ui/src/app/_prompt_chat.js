@@ -66,22 +66,16 @@ const PromptChat = ({
     }
     combineAllContexts(contexts);
 
-    const handleStorageChange = (event) => {
+    const handleStorageChange = () => {
       combineAllContexts(contexts);
     };
 
-    window.addEventListener("new-context", handleStorageChange);
+    window.addEventListener("update-context", handleStorageChange);
 
     return () => {
-      window.removeEventListener("new-context", handleStorageChange);
+      window.removeEventListener("update-context", handleStorageChange);
     };
-  }, [
-    initialInput,
-    contexts,
-    typeof window !== "undefined"
-      ? window.localStorage.getItem("context")
-      : null,
-  ]);
+  }, [initialInput, contexts]);
 
   const appendImageDescription = (userInput) => {
     if (imageDescription && imageDescription !== "") {

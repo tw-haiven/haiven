@@ -88,13 +88,17 @@ const CardsChat = ({
       combineAllContexts(contexts);
     }
     setUsePromptId(true);
-  }, [
-    promptId,
-    prompts,
-    typeof window !== "undefined"
-      ? window.localStorage.getItem("context")
-      : null,
-  ]);
+
+    const handleStorageChange = () => {
+      combineAllContexts(contexts);
+    };
+
+    window.addEventListener("update-context", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("update-context", handleStorageChange);
+    };
+  }, [promptId, prompts]);
 
   const onClickAdvancedPromptOptions = (e) => {
     setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
