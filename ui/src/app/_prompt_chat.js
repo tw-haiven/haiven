@@ -65,6 +65,16 @@ const PromptChat = ({
       chatRef.current.setPromptValue(initialInput);
     }
     combineAllContexts(contexts);
+
+    const handleStorageChange = (event) => {
+      combineAllContexts(contexts);
+    };
+
+    window.addEventListener("new-context", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("new-context", handleStorageChange);
+    };
   }, [
     initialInput,
     contexts,

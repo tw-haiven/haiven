@@ -88,6 +88,7 @@ export const saveContext = (title, description) => {
     isUserDefined: true,
   });
   localStorage.setItem("context", JSON.stringify(contextData));
+  window.dispatchEvent(new Event("new-context"));
 };
 
 export const deleteContextByTimestamp = (timestamp) => {

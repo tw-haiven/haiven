@@ -4,7 +4,6 @@ import { Select, Tooltip, Button } from "antd";
 import { RiAddBoxLine } from "react-icons/ri";
 import HelpTooltip from "./_help_tooltip";
 import AddContext from "../app/_add_context";
-import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 
 function ContextChoice({ contexts, onChange }) {
   const [isAddingContext, setIsAddingContext] = useState(false);
