@@ -4,4 +4,4 @@ title: Test1
 
 categories: ['architecture']
 ---
-Content {user_input} {architecture}
+Content {user_input} {context}
