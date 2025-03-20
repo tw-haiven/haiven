@@ -2,18 +2,8 @@
 import { render, fireEvent, waitFor, within } from "@testing-library/react";
 import Pinboard from "../pages/pinboard";
 import { describe, it, expect } from "vitest";
-import { FEATURES } from "../app/feature_toggle";
 
 beforeAll(() => {
-  vi.mock(import("../app/feature_toggle"), async (importOriginal) => {
-    const actual = await importOriginal();
-    return {
-      ...actual,
-      isFeatureEnabled: (featureName) =>
-        featureName === FEATURES.ADD_CONTEXT_FROM_UI ? true : false,
-    };
-  });
-
   const localStorageMock = (() => {
     let store = {};
     return {

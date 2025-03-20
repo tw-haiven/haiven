@@ -224,9 +224,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
     children: renderContents(savedUserContexts, "contexts"),
   };
 
-  const tabs = isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI)
-    ? [contextTab, pinAndNotesTab]
-    : [pinAndNotesTab];
+  const tabs = [contextTab, pinAndNotesTab];
 
   const pinboardHeader = () => {
     return (
@@ -239,8 +237,7 @@ const Pinboard = ({ isModalVisible, onClose }) => {
           Access content you've pinned to reuse in your Haiven inputs.
         </p>
         <div className="pinboard-actions">
-          {isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI) &&
-            addContextButtonWithTooltip()}
+          {addContextButtonWithTooltip()}
           {addNoteButtonWithTooltip()}
         </div>
       </div>
@@ -262,13 +259,11 @@ const Pinboard = ({ isModalVisible, onClose }) => {
         setIsAddingNote={setIsAddingNote}
         reloadData={reloadPinnedMessages}
       />
-      {isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI) && (
-        <AddContext
-          isAddingContext={isAddingContext}
-          setIsAddingContext={setIsAddingContext}
-          reloadData={reloadUserSavedContexts}
-        />
-      )}
+      <AddContext
+        isAddingContext={isAddingContext}
+        setIsAddingContext={setIsAddingContext}
+        reloadData={reloadUserSavedContexts}
+      />
       <Tabs defaultActiveKey="context" items={tabs}></Tabs>
     </Modal>
   );

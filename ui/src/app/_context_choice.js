@@ -23,18 +23,16 @@ function ContextChoice({ contexts, onChange }) {
             testid="context-selection-tooltip"
           />
         </label>
-        {isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI) && (
-          <Tooltip title="Add your project context to be reused in your Haiven inputs. This will be included in the context dropdown.">
-            <Button
-              type="link"
-              className="add-context-icon-button"
-              onClick={() => setIsAddingContext(true)}
-            >
-              <RiAddBoxLine fontSize="large" />
-              Add Context
-            </Button>
-          </Tooltip>
-        )}
+        <Tooltip title="Add your project context to be reused in your Haiven inputs. This will be included in the context dropdown.">
+          <Button
+            type="link"
+            className="add-context-icon-button"
+            onClick={() => setIsAddingContext(true)}
+          >
+            <RiAddBoxLine fontSize="large" />
+            Add Context
+          </Button>
+        </Tooltip>
       </div>
 
       <Select
@@ -43,12 +41,10 @@ function ContextChoice({ contexts, onChange }) {
         defaultValue="base"
         data-testid="context-select"
       />
-      {isFeatureEnabled(FEATURES.ADD_CONTEXT_FROM_UI) && (
-        <AddContext
-          isAddingContext={isAddingContext}
-          setIsAddingContext={setIsAddingContext}
-        />
-      )}
+      <AddContext
+        isAddingContext={isAddingContext}
+        setIsAddingContext={setIsAddingContext}
+      />
     </div>
   );
 }
