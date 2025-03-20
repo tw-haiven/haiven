@@ -7,7 +7,6 @@ import os
 # This utility function helps us to get the correct path to load test data
 def get_test_data_path():
     cwd = os.getcwd()
-    print(cwd)
     if cwd.endswith("/app"):
         return "tests/test_data"
     return "app/tests/test_data"

@@ -102,8 +102,8 @@ class TestApi(unittest.TestCase):
     def test_get_documents(self):
         mock_knowledge_manager = MagicMock()
         mock_knowledge_manager.get_all_context_keys.return_value = [
-            {"context": "context1", "title": "Context One"},
-            {"context": "context2", "title": "Context One"},
+            "context1",
+            "context2",
         ]
 
         mock_kb_documents = MagicMock()

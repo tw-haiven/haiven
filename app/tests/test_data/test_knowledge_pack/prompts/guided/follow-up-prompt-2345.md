@@ -4,4 +4,4 @@ title: Follow up
 
 categories: ['architecture']
 ---
-Follow up {user_input} {context}
+Follow up {user_input} {architecture}
