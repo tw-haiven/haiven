@@ -15,6 +15,24 @@ import { fetchSSE } from "../app/_fetch_sse";
 vi.mock("../app/_fetch_sse");
 
 import { getRenderedPrompt } from "../app/_boba_api";
+import { saveContext } from "../app/_local_store";
+
+const localStorageMock = (() => {
+  let store = {};
+  return {
+    getItem: (key) => store[key] || null,
+    setItem: (key, value) => {
+      store[key] = value.toString();
+    },
+    clear: () => {
+      store = {};
+    },
+  };
+})();
+
+Object.defineProperty(window, "localStorage", {
+  value: localStorageMock,
+});
 
 vi.mock("../app/_boba_api", () => ({
   getRenderedPrompt: vi.fn(),
@@ -150,6 +168,18 @@ const thenAllInitialScenariosAreRendered = async () => {
   });
 };
 
+function clickAdvancedPrompt() {
+  const advancedPromptLink = screen.getByText("Attach more context");
+  fireEvent.click(advancedPromptLink);
+}
+
+async function selectContext(contextTitle) {
+  const contextDropdown = screen.getByTestId("context-select").firstChild;
+  fireEvent.mouseDown(contextDropdown);
+  const selectedContext = await screen.findByText(contextTitle);
+  fireEvent.click(selectedContext);
+}
+
 describe("CardsChat Component", () => {
   afterEach(() => {
     vi.clearAllMocks();
@@ -261,6 +291,103 @@ describe("CardsChat Component", () => {
 
       await waitFor(() => {
         thenStopButtonIsDisplayed();
+        thenFollowUpIsRendered();
+      });
+    });
+  });
+
+  it("should render data for the given user defined context", async () => {
+    const setUpUserContexts = () => {
+      saveContext("User Context 1", "User Context 1 description");
+      saveContext("User Context 2", "User Context 2 description");
+    };
+
+    const thenFirstPromptRequestHappens = (bodyString) => {
+      const body = JSON.parse(bodyString);
+      expect(body.userinput).toBe(someUserInput);
+      expect(body.promptid).toBe(mockPrompts[0].identifier);
+    };
+
+    const thenFollowUpPromptRequestHappens = (bodyString) => {
+      const body = JSON.parse(bodyString);
+      expect(body.userinput).toBe(someUserInput);
+      expect(body.promptid).toBe(mockPrompts[0].followUps[0].identifier);
+      expect(body.scenarios.length).toBe(someScenarios.length);
+      expect(body.scenarios[0].title).toBe(someScenarios[0].title);
+      expect(body.previous_promptid).toBe(mockPrompts[0].identifier);
+    };
+
+    const whenFollowUpGenerateIsClicked = () => {
+      const followUpCollapse = screen.getByTestId("follow-up-collapse");
+      const firstFollowUpArea = within(followUpCollapse).getByText(
+        mockPrompts[0].followUps[0].title,
+      );
+      expect(firstFollowUpArea).toBeInTheDocument();
+      fireEvent.click(firstFollowUpArea);
+
+      const followUpGenerateButtons =
+        within(followUpCollapse).getAllByText(/GENERATE/i);
+      expect(followUpGenerateButtons.length).toBe(1);
+      fireEvent.click(followUpGenerateButtons[0]);
+    };
+
+    const thenFollowUpIsRendered = () => {
+      expect(screen.getByText(followUpResponse)).toBeInTheDocument();
+    };
+
+    const verifyUserContextsAreAddedInDropdown = () => {
+      const contextDropdown = screen.getByTestId("context-select").firstChild;
+      fireEvent.mouseDown(contextDropdown);
+      expect(screen.getByText("User Context 1")).toBeInTheDocument();
+      expect(screen.getByText("User Context 2")).toBeInTheDocument();
+    };
+
+    fetchSSE
+      .mockImplementationOnce((url, options, { onMessageHandle }) => {
+        const optionsBody = JSON.parse(options.body);
+        expect(optionsBody.userContext).toBe("User Context 1 description");
+        expect(options.context).not.toBeDefined();
+
+        thenFirstPromptRequestHappens(options.body);
+
+        const scenarioString = JSON.stringify(someScenarios);
+        onMessageHandle(
+          { data: scenarioString.substring(0, 10) },
+          mockResponseHeadersWithChatId,
+        );
+        onMessageHandle(
+          { data: scenarioString.substring(10) },
+          mockResponseHeadersWithChatId,
+        );
+      })
+      .mockImplementationOnce((url, options, { onMessageHandle }) => {
+        const optionsBody = JSON.parse(options.body);
+        expect(optionsBody.userContext).toBe("User Context 1 description");
+        expect(options.context).not.toBeDefined();
+
+        thenFollowUpPromptRequestHappens(options.body);
+
+        onMessageHandle(followUpResponse, mockResponseHeadersWithChatId);
+      });
+
+    setUpUserContexts();
+    await setup();
+    clickAdvancedPrompt();
+
+    verifyUserContextsAreAddedInDropdown();
+
+    await selectContext("User Context 1");
+
+    givenUserInput(someUserInput);
+    await whenSendIsClicked();
+
+    await waitFor(async () => {
+      await thenAllInitialScenariosAreRendered();
+
+      whenFollowUpGenerateIsClicked();
+      expect(fetchSSE).toHaveBeenCalledTimes(2);
+
+      await waitFor(() => {
         thenFollowUpIsRendered();
       });
     });

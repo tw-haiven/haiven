@@ -9,6 +9,23 @@ import {
 import { describe, it, expect, vi } from "vitest";
 import PromptChat from "../app/_prompt_chat";
 import { fetchSSE } from "../app/_fetch_sse";
+import { saveContext } from "../app/_local_store";
+const localStorageMock = (() => {
+  let store = {};
+  return {
+    getItem: (key) => store[key] || null,
+    setItem: (key, value) => {
+      store[key] = value.toString();
+    },
+    clear: () => {
+      store = {};
+    },
+  };
+})();
+
+Object.defineProperty(window, "localStorage", {
+  value: localStorageMock,
+});
 
 vi.mock("../app/_fetch_sse");
 
@@ -176,10 +193,10 @@ describe("PromptChat Component", () => {
     fireEvent.click(selectedDocument);
   }
 
-  async function selectContext() {
+  async function selectContext(contextTitle) {
     const contextDropdown = screen.getByTestId("context-select").firstChild;
     fireEvent.mouseDown(contextDropdown);
-    const selectedContext = await screen.findByText("Context 1");
+    const selectedContext = await screen.findByText(contextTitle);
     fireEvent.click(selectedContext);
   }
 
@@ -215,6 +232,11 @@ describe("PromptChat Component", () => {
     expect(
       screen.getByText(mockPrompts[0].help_sample_input),
     ).toBeInTheDocument();
+  }
+
+  function setUpUserContexts() {
+    saveContext("User Context 1", "User Context 1 description");
+    saveContext("User Context 2", "User Context 2 description");
   }
 
   it("should render chat area with initial components", async () => {
@@ -266,7 +288,7 @@ describe("PromptChat Component", () => {
     );
 
     clickAdvancedPrompt();
-    await selectContext();
+    await selectContext("Context 1");
     await selectDocument();
     uploadImage();
     givenUserInput();
@@ -291,6 +313,57 @@ describe("PromptChat Component", () => {
       expect(screen.getByText(mockResponse)).toBeInTheDocument();
     });
   });
+
+  it("should fetch chat response for the selected user context", async () => {
+    setUpUserContexts();
+    const mockResponse = "Sample response from LLM";
+    const fetchMock = setupFetchMock(mockResponse);
+
+    render(
+      <PromptChat
+        promptId={mockPrompts[0].identifier}
+        prompts={mockPrompts}
+        contexts={mockContexts}
+        documents={mockDocuments}
+        showImageDescription={true}
+        showTextSnippets={true}
+        showDocuments={true}
+        models={mockModels}
+        pageTitle="Test Page Title"
+        pageIntro="Test Page Intro"
+      />,
+    );
+
+    clickAdvancedPrompt();
+    const contextDropdown = screen.getByTestId("context-select").firstChild;
+    fireEvent.mouseDown(contextDropdown);
+    expect(screen.getByText("User Context 1")).toBeInTheDocument();
+    expect(screen.getByText("User Context 2")).toBeInTheDocument();
+
+    await selectContext("User Context 1");
+    givenUserInput();
+
+    const sendButton = screen.getByRole("button", { name: "SEND" });
+    fireEvent.click(sendButton);
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith("/api/prompt", expect.any(Object));
+      const fetchOptions = fetchMock.mock.calls[0][1];
+      expect(fetchOptions.method).toBe("POST");
+      expect(fetchOptions.headers["Content-Type"]).toBe("application/json");
+      expect(fetchOptions.body).toBe(
+        JSON.stringify({
+          userinput: "Here is my prompt input",
+          promptid: "1",
+          chatSessionId: undefined,
+          userContext: "User Context 1 description",
+          document: "",
+        }),
+      );
+      expect(screen.getByText(mockResponse)).toBeInTheDocument();
+    });
+  });
+
   //TODO:
   //test for checking chat actions are working correctly
   //test edit prompt

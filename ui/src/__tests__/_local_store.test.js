@@ -9,6 +9,7 @@ import {
   saveContext,
   saveNote,
   deleteContextByTimestamp,
+  getSummaryForTheUserContext,
 } from "../app/_local_store";
 import { toast } from "react-toastify";
 
@@ -36,7 +37,7 @@ Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
 });
 
-describe("Pinboard Component", () => {
+describe("Local Store", () => {
   describe("addToPinboard", () => {
     beforeEach(() => {
       localStorage.clear();
@@ -169,194 +170,225 @@ describe("Pinboard Component", () => {
       const result = getFeatureTogglesAsJson();
       expect(result).toEqual(toggles);
     });
+  });
 
-    describe("getSortedUserContexts", () => {
-      beforeEach(() => {
-        localStorage.clear();
-        vi.clearAllMocks();
-      });
+  describe("getSortedUserContexts", () => {
+    beforeEach(() => {
+      localStorage.clear();
+      vi.clearAllMocks();
+    });
 
-      it("should return an empty array if no contexts are set", () => {
-        const result = getSortedUserContexts();
-        expect(result).toEqual([]);
-      });
+    it("should return an empty array if no contexts are set", () => {
+      const result = getSortedUserContexts();
+      expect(result).toEqual([]);
+    });
 
-      it("should return contexts sorted by timestamp in descending order", () => {
-        const context1 = {
-          title: "Context 1",
-          summary: "Summary 1",
-          timestamp: 1,
-        };
-        const context2 = {
-          title: "Context 2",
-          summary: "Summary 2",
-          timestamp: 2,
-        };
-        const context3 = {
-          title: "Context 3",
-          summary: "Summary 3",
-          timestamp: 3,
-        };
+    it("should return contexts sorted by timestamp in descending order", () => {
+      const context1 = {
+        title: "Context 1",
+        summary: "Summary 1",
+        timestamp: 1,
+      };
+      const context2 = {
+        title: "Context 2",
+        summary: "Summary 2",
+        timestamp: 2,
+      };
+      const context3 = {
+        title: "Context 3",
+        summary: "Summary 3",
+        timestamp: 3,
+      };
 
-        localStorage.setItem(
-          "context",
-          JSON.stringify([context1, context2, context3]),
-        );
+      localStorage.setItem(
+        "context",
+        JSON.stringify([context1, context2, context3]),
+      );
 
-        const result = getSortedUserContexts();
-        expect(result).toEqual([context3, context2, context1]);
-      });
+      const result = getSortedUserContexts();
+      expect(result).toEqual([context3, context2, context1]);
+    });
+  });
 
-      describe("deletePinOrNoteByTimestamp", () => {
-        beforeEach(() => {
-          localStorage.clear();
-          vi.clearAllMocks();
-        });
+  describe("deletePinOrNoteByTimestamp", () => {
+    beforeEach(() => {
+      localStorage.clear();
+      vi.clearAllMocks();
+    });
 
-        it("should delete the pin or note by timestamp", () => {
-          const timestamp1 = "1234";
-          const timestamp2 = "5678";
-          const content1 = "Content 1";
-          const content2 = "Content 2";
+    it("should delete the pin or note by timestamp", () => {
+      const timestamp1 = "1234";
+      const timestamp2 = "5678";
+      const content1 = "Content 1";
+      const content2 = "Content 2";
 
-          addToPinboard(timestamp1, content1);
-          addToPinboard(timestamp2, content2);
+      addToPinboard(timestamp1, content1);
+      addToPinboard(timestamp2, content2);
 
-          deletePinOrNoteByTimestamp(timestamp1);
+      deletePinOrNoteByTimestamp(timestamp1);
 
-          const pinboard = JSON.parse(localStorage.getItem("pinboard"));
-          expect(pinboard[timestamp1]).toBeUndefined();
-          expect(pinboard[timestamp2]).toBeDefined();
-        });
+      const pinboard = JSON.parse(localStorage.getItem("pinboard"));
+      expect(pinboard[timestamp1]).toBeUndefined();
+      expect(pinboard[timestamp2]).toBeDefined();
+    });
 
-        it("should do nothing if the timestamp does not exist", () => {
-          const timestamp1 = "1234";
-          const content1 = "Content 1";
+    it("should do nothing if the timestamp does not exist", () => {
+      const timestamp1 = "1234";
+      const content1 = "Content 1";
 
-          addToPinboard(timestamp1, content1);
+      addToPinboard(timestamp1, content1);
 
-          deletePinOrNoteByTimestamp("5678");
+      deletePinOrNoteByTimestamp("5678");
 
-          const pinboard = JSON.parse(localStorage.getItem("pinboard"));
-          expect(pinboard[timestamp1]).toBeDefined();
-        });
+      const pinboard = JSON.parse(localStorage.getItem("pinboard"));
+      expect(pinboard[timestamp1]).toBeDefined();
+    });
+  });
 
-        describe("saveNote", () => {
-          beforeEach(() => {
-            localStorage.clear();
-            vi.clearAllMocks();
-          });
+  describe("saveNote", () => {
+    beforeEach(() => {
+      localStorage.clear();
+      vi.clearAllMocks();
+    });
 
-          it("should save a new note with a timestamp", () => {
-            const newNote = "This is a new note";
+    it("should save a new note with a timestamp", () => {
+      const newNote = "This is a new note";
 
-            saveNote(newNote);
+      saveNote(newNote);
 
-            const pinboard = JSON.parse(localStorage.getItem("pinboard"));
-            const timestamps = Object.keys(pinboard);
-            expect(timestamps.length).toBe(1);
-            expect(pinboard[timestamps[0]].content).toBe(newNote);
-            expect(pinboard[timestamps[0]].isUserDefined).toBe(true);
-          });
+      const pinboard = JSON.parse(localStorage.getItem("pinboard"));
+      const timestamps = Object.keys(pinboard);
+      expect(timestamps.length).toBe(1);
+      expect(pinboard[timestamps[0]].content).toBe(newNote);
+      expect(pinboard[timestamps[0]].isUserDefined).toBe(true);
+    });
 
-          it("should add a new note to an existing pinboard", () => {
-            const existingNote = "Existing note";
-            const newNote = "This is a new note";
+    it("should add a new note to an existing pinboard", () => {
+      const existingNote = "Existing note";
+      const newNote = "This is a new note";
 
-            vi.setSystemTime(1629881106012);
-            saveNote(existingNote);
+      vi.setSystemTime(1629881106012);
+      saveNote(existingNote);
 
-            vi.setSystemTime(1629881106014);
-            saveNote(newNote);
+      vi.setSystemTime(1629881106014);
+      saveNote(newNote);
 
-            const pinboard = JSON.parse(localStorage.getItem("pinboard"));
-            const timestamps = Object.keys(pinboard);
-            expect(timestamps.length).toBe(2);
-            expect(pinboard["1629881106014"].content).toBe(newNote);
-            expect(pinboard["1629881106014"].isUserDefined).toBe(true);
-          });
-        });
+      const pinboard = JSON.parse(localStorage.getItem("pinboard"));
+      const timestamps = Object.keys(pinboard);
+      expect(timestamps.length).toBe(2);
+      expect(pinboard["1629881106014"].content).toBe(newNote);
+      expect(pinboard["1629881106014"].isUserDefined).toBe(true);
+    });
+  });
 
-        describe("saveContext", () => {
-          beforeEach(() => {
-            localStorage.clear();
-            vi.clearAllMocks();
-          });
+  describe("saveContext", () => {
+    beforeEach(() => {
+      localStorage.clear();
+      vi.clearAllMocks();
+    });
 
-          it("should save a new context with a timestamp", () => {
-            const title = "Context Title";
-            const description = "Context Description";
-            vi.setSystemTime(1629881106012);
-            saveContext(title, description);
+    it("should save a new context with a timestamp", () => {
+      const title = "Context Title";
+      const description = "Context Description";
+      vi.setSystemTime(1629881106012);
+      saveContext(title, description);
 
-            const contexts = JSON.parse(localStorage.getItem("context"));
-            expect(contexts.length).toBe(1);
-            expect(contexts[0].title).toBe(title);
-            expect(contexts[0].summary).toBe(description);
-            expect(contexts[0].isUserDefined).toBe(true);
-            expect(contexts[0].timestamp).toBeDefined();
+      const contexts = JSON.parse(localStorage.getItem("context"));
+      expect(contexts.length).toBe(1);
+      expect(contexts[0].title).toBe(title);
+      expect(contexts[0].summary).toBe(description);
+      expect(contexts[0].isUserDefined).toBe(true);
+      expect(contexts[0].timestamp).toBeDefined();
 
-            expect(contexts[0].timestamp).toBe(1629881106012);
-            vi.useRealTimers();
-          });
+      expect(contexts[0].timestamp).toBe(1629881106012);
+      vi.useRealTimers();
+    });
 
-          it("should add a new context to an existing list", () => {
-            const title1 = "Context Title 1";
-            const description1 = "Context Description 1";
-            const title2 = "Context Title 2";
-            const description2 = "Context Description 2";
+    it("should add a new context to an existing list", () => {
+      const title1 = "Context Title 1";
+      const description1 = "Context Description 1";
+      const title2 = "Context Title 2";
+      const description2 = "Context Description 2";
 
-            saveContext(title1, description1);
-            saveContext(title2, description2);
+      saveContext(title1, description1);
+      saveContext(title2, description2);
 
-            const contexts = JSON.parse(localStorage.getItem("context"));
-            expect(contexts.length).toBe(2);
-            expect(contexts[1].title).toBe(title2);
-            expect(contexts[1].summary).toBe(description2);
-            expect(contexts[1].isUserDefined).toBe(true);
-          });
-        });
+      const contexts = JSON.parse(localStorage.getItem("context"));
+      expect(contexts.length).toBe(2);
+      expect(contexts[1].title).toBe(title2);
+      expect(contexts[1].summary).toBe(description2);
+      expect(contexts[1].isUserDefined).toBe(true);
+    });
+  });
 
-        describe("deleteContextByTimestamp", () => {
-          beforeEach(() => {
-            localStorage.clear();
-            vi.clearAllMocks();
-          });
+  describe("deleteContextByTimestamp", () => {
+    beforeEach(() => {
+      localStorage.clear();
+      vi.clearAllMocks();
+    });
 
-          it("should delete the context by timestamp", () => {
-            const title1 = "Context Title 1";
-            const description1 = "Context Description 1";
-            const title2 = "Context Title 2";
-            const description2 = "Context Description 2";
+    it("should delete the context by timestamp", () => {
+      const title1 = "Context Title 1";
+      const description1 = "Context Description 1";
+      const title2 = "Context Title 2";
+      const description2 = "Context Description 2";
 
-            vi.setSystemTime(1629881106012);
-            saveContext(title1, description1);
+      vi.setSystemTime(1629881106012);
+      saveContext(title1, description1);
 
-            vi.setSystemTime(1629881106014);
-            saveContext(title2, description2);
+      vi.setSystemTime(1629881106014);
+      saveContext(title2, description2);
 
-            deleteContextByTimestamp(1629881106014);
+      deleteContextByTimestamp(1629881106014);
 
-            const contexts = JSON.parse(localStorage.getItem("context"));
-            expect(contexts.length).toBe(1);
-            expect(contexts[0].title).toBe(title1);
-          });
+      const contexts = JSON.parse(localStorage.getItem("context"));
+      expect(contexts.length).toBe(1);
+      expect(contexts[0].title).toBe(title1);
+    });
 
-          it("should do nothing if the timestamp does not exist", () => {
-            const timestamp1 = Date.now();
-            const title1 = "Context Title 1";
-            const description1 = "Context Description 1";
+    it("should do nothing if the timestamp does not exist", () => {
+      const timestamp1 = Date.now();
+      const title1 = "Context Title 1";
+      const description1 = "Context Description 1";
 
-            saveContext(title1, description1);
+      saveContext(title1, description1);
 
-            deleteContextByTimestamp(timestamp1 + 1);
+      deleteContextByTimestamp(timestamp1 + 1);
 
-            const contexts = JSON.parse(localStorage.getItem("context"));
-            expect(contexts.length).toBe(1);
-            expect(contexts[0].title).toBe(title1);
-          });
-        });
-      });
+      const contexts = JSON.parse(localStorage.getItem("context"));
+      expect(contexts.length).toBe(1);
+      expect(contexts[0].title).toBe(title1);
+    });
+  });
+
+  describe("getSummaryForTheUserContext", () => {
+    beforeEach(() => {
+      localStorage.clear();
+      vi.clearAllMocks();
+    });
+
+    it("should return an empty string if no context matches the title", () => {
+      const title = "Non-existent Context";
+      const result = getSummaryForTheUserContext(title);
+      expect(result).toBe("");
+    });
+
+    it("should return the summary for the matching context title", () => {
+      const context1 = {
+        title: "Context 1",
+        summary: "Summary 1",
+        timestamp: 1,
+      };
+      const context2 = {
+        title: "Context 2",
+        summary: "Summary 2",
+        timestamp: 2,
+      };
+
+      localStorage.setItem("context", JSON.stringify([context1, context2]));
+
+      const result = getSummaryForTheUserContext("Context 2");
+      expect(result).toBe("Summary 2");
     });
   });
 });
