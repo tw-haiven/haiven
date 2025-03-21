@@ -448,6 +448,7 @@ class TestApi(unittest.TestCase):
                 # additional data for the follow-up
                 "scenarios": [{"title": "some title", "content": "some content"}],
                 "previous_promptid": "first-step-prompt-1234",
+                "userContext": "some user context",
             },
         )
 
@@ -463,6 +464,7 @@ class TestApi(unittest.TestCase):
         assert "some title" in prompt_argument
         assert "some content" in prompt_argument
         assert "Follow up" in prompt_argument
+        assert "some user context" in prompt_argument
 
         args, kwargs = mock_chat_manager.streaming_chat.call_args
         assert kwargs["session_id"] is None
