@@ -49,16 +49,6 @@ class KnowledgeBaseDocuments:
         """
         self._load_documents(path=knowledge_pack_path, name="base")
 
-    def load_documents_for_context(self, context_name: str, context_path: str) -> None:
-        """
-        Loads multiple documents from a specified directory, often referred to as a knowledge pack. Each document in the directory is loaded, processed, and its embedding is stored.
-
-        Parameters:
-            context_name (str): The name of the context.
-            context_path (str): The file system path to the directory containing the context documents.
-        """
-        self._load_documents(path=context_path, name=context_name)
-
     def get_document(self, document_key: str) -> KnowledgeDocument:
         """
         Retrieves a specific document embedding by its key. This method is useful for accessing the embedding of a previously loaded or generated document.
@@ -159,14 +149,13 @@ class KnowledgeBaseDocuments:
             store_for_context.add_embedding(knowledge_document.key, knowledge_document)
 
     def similarity_search_with_scores(
-        self, query: str, context: str, k: int = 5, score_threshold: float = None
+        self, query: str, k: int = 5, score_threshold: float = None
     ) -> List[Tuple[Document, float]]:
         """
         Performs a similarity search across all stored document embeddings, returning a list of documents and their similarity scores relative to the query. This method supports specifying the number of results (k) and an optional score threshold.
 
         Parameters:
             query (str): The search query.
-            context (str): The context to search within.
             k (int, optional): The number of results to return. Defaults to 5.
             score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
 
@@ -178,14 +167,11 @@ class KnowledgeBaseDocuments:
         stores_to_search_in = {}
         stores_to_search_in["base"] = self._document_stores["base"]
 
-        if context is not None and context != "":
-            stores_to_search_in[context] = self._document_stores[context]
-
-        for context, store in stores_to_search_in.items():
+        for key, store in stores_to_search_in.items():
             for embedding_key in store.get_keys():
                 partial_results = (
                     self._similarity_search_on_single_document_with_scores(
-                        query, embedding_key, context, k, score_threshold
+                        query, embedding_key, key, k, score_threshold
                     )
                 )
                 similar_documents.extend(partial_results)
@@ -200,11 +186,11 @@ class KnowledgeBaseDocuments:
         self,
         query: str,
         document_key: str,
-        context: str,
+        document_base_key: str,
         k: int = 5,
         score_threshold: float = None,
     ) -> List[Tuple[Document, float]]:
-        store = self._document_stores.get(context, None)
+        store = self._document_stores.get(document_base_key, None)
         if store is None:
             return []
 
@@ -222,7 +208,7 @@ class KnowledgeBaseDocuments:
         self,
         query: str,
         document_key: str,
-        context: str,
+        document_base_key: str,
         k: int = 5,
         score_threshold: float = None,
     ) -> List[Document]:
@@ -240,20 +226,19 @@ class KnowledgeBaseDocuments:
             List[Document]: A list of documents that are similar to the query.
         """
         documents_with_scores = self._similarity_search_on_single_document_with_scores(
-            query, document_key, context, k, score_threshold
+            query, document_key, document_base_key, k, score_threshold
         )
         documents = [doc for doc, _ in documents_with_scores]
         return documents
 
     def similarity_search(
-        self, query: str, context: str, k: int = 5, score_threshold: float = None
+        self, query: str, k: int = 5, score_threshold: float = None
     ) -> List[Document]:
         """
         Performs a similarity search across all documents, returning only the documents that match the query criteria. This method abstracts away the scores for use cases where only the matching documents are required.
 
         Parameters:
             query (str): The search query.
-            context (str): The context to search within.
             k (int, optional): The number of results to return. Defaults to 5.
             score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
 
@@ -261,7 +246,7 @@ class KnowledgeBaseDocuments:
             List[Document]: A list of documents that are similar to the query.
         """
         documents_with_scores = self.similarity_search_with_scores(
-            query, context, k, score_threshold
+            query, k, score_threshold
         )
         documents = [doc for doc, _ in documents_with_scores]
         return documents

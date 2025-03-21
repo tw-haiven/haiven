@@ -60,26 +60,7 @@ class TestsKnowledgeBaseDocuments:
             in self.service._document_stores["base"]._embeddings.keys()
         )
 
-    def test_load_context_knowledge_with_empty_embeddings_raise_error(
-        self,
-    ):
-        try:
-            self.service.load_documents_for_context(
-                context_name="Context B",
-                context_path=self.knowledge_pack_path
-                + "/contexts/context_b/embeddings",
-            )
-            exception_raised = False
-        except FileNotFoundError:
-            exception_raised = True
-
-        assert exception_raised
-        assert len(self.service._document_stores) == 1  # only base embeddings
-        assert "base" in self.service._document_stores.keys()
-        assert "Context B" not in self.service._document_stores.keys()
-
-    @pytest.mark.skip()
-    def test_load_base_and_context_knowledge_creates_two_entry_in_stores(
+    def test_load_base_knowledge_creates_entry_in_stores(
         self,
     ):
         assert len(self.service._document_stores) == 1
@@ -88,18 +69,18 @@ class TestsKnowledgeBaseDocuments:
 
         assert len(self.service._document_stores) == 1
         assert "base" in self.service._document_stores.keys()
-
-        self.service.load_documents_for_context(
-            context_name="Context A",
-            context_path=self.knowledge_pack_path + "/contexts/context_a/embeddings",
+        base_document_store = self.service._document_stores["base"]
+        assert len(base_document_store.get_documents()) == 2
+        assert (
+            base_document_store.get_document("ingenuity-wikipedia").title
+            == "Wikipedia entry about Ingenuity"
+        )
+        assert (
+            base_document_store.get_document("tw-guide-agile-sd").title
+            == "The Thoughtworks guide to agile software delivery"
         )
 
-        assert len(self.service._document_stores) == 2
-        assert "base" in self.service._document_stores.keys()
-        assert "Context A" in self.service._document_stores.keys()
-
-    @pytest.mark.skip()
-    def test_re_load_base_or_context_knowledge_should_not_create_extra_entries(
+    def test_re_load_base_knowledge_should_not_create_extra_entries(
         self,
     ):
         assert len(self.service._document_stores) == 1
@@ -113,24 +94,6 @@ class TestsKnowledgeBaseDocuments:
 
         assert len(self.service._document_stores) == 1
         assert "base" in self.service._document_stores.keys()
-
-        self.service.load_documents_for_context(
-            context_name="Context A",
-            context_path=self.knowledge_pack_path + "/contexts/context_a/embeddings",
-        )
-
-        assert len(self.service._document_stores) == 2
-        assert "base" in self.service._document_stores.keys()
-        assert "Context A" in self.service._document_stores.keys()
-
-        self.service.load_documents_for_context(
-            context_name="Context A",
-            context_path=self.knowledge_pack_path + "/contexts/context_a/embeddings",
-        )
-
-        assert len(self.service._document_stores) == 2
-        assert "base" in self.service._document_stores.keys()
-        assert "Context A" in self.service._document_stores.keys()
 
     def test_generate_load_knowledge_base_should_load_two_embedding(self):
         self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
@@ -151,7 +114,7 @@ class TestsKnowledgeBaseDocuments:
             self.service._similarity_search_on_single_document_with_scores(
                 query="When Ingenuity was launched?",
                 document_key="ingenuity-wikipedia",
-                context="base",
+                document_base_key="base",
             )
         )
 
@@ -159,54 +122,28 @@ class TestsKnowledgeBaseDocuments:
         assert len(similarity_results[0][0].page_content) > 1
         assert similarity_results[0][1] < 1
 
-    def test_similarity_search_on_single_document_with_scores_for_context_does_not_return_documents_and_scores_if_context_is_not_loaded(
-        self,
-    ):
-        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
-
-        similarity_results = (
-            self.service._similarity_search_on_single_document_with_scores(
-                query="When Ingenuity was launched?",
-                document_key="ingenuity-wikipedia",
-                context="Context A",
-            )
-        )
-
-        assert len(similarity_results) == 0
-
-    @pytest.mark.skip()
-    def test_similarity_search_for_context_should_return_documents_from_base_and_context_stores_sorted_by_scores(
+    def test_similarity_search_with_scores_should_return_documents_from_base_stores_sorted_by_scores(
         self,
     ):
         assert len(self.service._document_stores) == 1
 
         self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
-        self.service.load_documents_for_context(
-            context_name="Context A",
-            context_path=self.knowledge_pack_path + "/contexts/context_a/embeddings",
-        )
-
         similarity_results = self.service.similarity_search_with_scores(
-            query="When Ingenuity was launched?", context="Context A"
+            query="When Ingenuity was launched?"
         )
 
         assert len(similarity_results) == 5
-        # Since both stores retrievers will return the same results, the first 4 results will be the same as there are 4 documents in total
-        assert (
-            similarity_results[0][0].page_content
-            == similarity_results[1][0].page_content
-        )
-        assert (
-            similarity_results[0][0].page_content
-            == similarity_results[2][0].page_content
-        )
-        assert (
-            similarity_results[0][0].page_content
-            == similarity_results[3][0].page_content
-        )
+
+        # Since both stores retrievers will return the same results, results will be duplicated as there are 2 documents in total
+        assert similarity_results[0][0].page_content == "document content A"
+        assert similarity_results[1][0].page_content == "document content A"
+        assert similarity_results[2][0].page_content == "document content B"
+        assert similarity_results[3][0].page_content == "document content B"
+        assert similarity_results[4][0].page_content == "document content C"
 
         assert similarity_results[0][1] == 0.2
         assert similarity_results[1][1] == 0.2
-        assert similarity_results[2][1] == 0.2
-        assert similarity_results[3][1] == 0.2
+        assert similarity_results[2][1] == 0.23
+        assert similarity_results[3][1] == 0.23
+        assert similarity_results[4][1] == 0.27

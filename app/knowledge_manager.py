@@ -27,7 +27,6 @@ class KnowledgeManager:
         self._load_context_markdown_knowledge()
 
         self.knowledge_base_documents = self._load_base_documents_knowledge()
-        self._load_context_documents_knowledge()
 
         self.system_message = self._load_system_message()
 
@@ -78,36 +77,6 @@ class KnowledgeManager:
         except FileNotFoundError as error:
             HaivenLogger.get().error(
                 str(error), extra={"ERROR": "KnowledgePackContextNotFound"}
-            )
-
-    def _load_context_documents_knowledge(self):
-        for context in self.knowledge_pack_definition.contexts:
-            self._load_context_embeddings(context)
-
-    def _load_context_embeddings(self, knowledge_context: KnowledgeContext):
-        # There used to be a feature where you would only see context embeddings if you had the context selected
-        # But we are not really distinguishing between "base" embeddings and context embeddings anymore
-        # This code is still here for backwards compatibility though, for knowledge packs that still have embeddings in a context subfolder
-        if knowledge_context is None:
-            return
-
-        context_embeddings_path = (
-            self.knowledge_pack_definition.path
-            + "/contexts/"
-            + knowledge_context.path
-            + "/embeddings"
-        )
-
-        try:
-            self.knowledge_base_documents.load_documents_for_context(
-                knowledge_context.name, context_embeddings_path
-            )
-        except FileNotFoundError as error:
-            HaivenLogger.get().error(
-                str(error),
-                extra={
-                    "INFO": f"No extra embeddings found for context {context_embeddings_path}. This is not a problem."
-                },
             )
 
     def on_context_selected(self, context_name: str) -> str:

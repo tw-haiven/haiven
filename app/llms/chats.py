@@ -96,7 +96,7 @@ class HaivenBaseChat:
             context_documents = self.knowledge_manager.knowledge_base_documents.similarity_search_on_single_document(
                 query=similarity_query,
                 document_key=knowledge_document.key,
-                context=knowledge_document.context,
+                document_base_key=knowledge_document.context,
             )
         else:
             return None, None
