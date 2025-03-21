@@ -38,27 +38,8 @@ class KnowledgePack:
 
     def _auto_discovery_contexts(self):
         context_path = os.path.join(self.path, "contexts")
-        HaivenLogger.get().info(
-            f"Looking for contexts in path: {context_path}",
-            extra={"INFO": "CustomSystemMessageLoaded"},
-        )
-        HaivenLogger.get().info(
-            f"Path exists: {os.path.exists(context_path)}",
-            extra={"INFO": "CustomSystemMessageLoaded"},
-        )
 
         if os.path.exists(context_path):
-            # Delete below code, adding it only for debugging purpose
-            try:
-                all_files = os.listdir(context_path)
-                HaivenLogger.get().info(
-                    f"All files in directory: {all_files}",
-                    extra={"INFO": "CustomSystemMessageLoaded"},
-                )
-            except Exception as e:
-                HaivenLogger.error(f"Error listing directory contents: {str(e)}")
-            # Delete till here
-
             markdown_files = [
                 file
                 for file in os.listdir(context_path)
@@ -66,10 +47,6 @@ class KnowledgePack:
                 and file.endswith(".md")
                 and not file.startswith("README")
             ]
-            HaivenLogger.get().info(
-                f"Number of markdown files: {len(markdown_files)}",
-                extra={"INFO": "CustomSystemMessageLoaded"},
-            )
 
             for md_file in markdown_files:
                 file_path = os.path.join(context_path, md_file)
@@ -83,15 +60,6 @@ class KnowledgePack:
                         f"Error processing markdown file {md_file}: {str(e)}",
                         extra={"INFO": "CustomSystemMessageLoaded"},
                     )
-                HaivenLogger.get().info(
-                    f"Adding context: name: {name}, file_path: {file_path} title:"
-                    f" {title}",
-                    extra={"INFO": "CustomSystemMessageLoaded"},
-                )
-                HaivenLogger.get().info(
-                    f"Contexts added: {len(self.contexts)}",
-                    extra={"INFO": "CustomSystemMessageLoaded"},
-                )
                 self.contexts.append(
                     KnowledgeContext(name=name, path=name + ".md", title=title)
                 )

@@ -1,7 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
 from dataclasses import dataclass
-from logger import HaivenLogger
 
 import frontmatter
 
@@ -34,18 +33,10 @@ class KnowledgeBaseMarkdown:
         context_content = []
 
         def process_markdown_file(file_path: str) -> None:
-            HaivenLogger.get().info(
-                f"_load_context process_markdown_file file-path: {file_path}",
-                extra={"INFO": "CustomSystemMessageLoaded"},
-            )
             if not file_path.endswith(".md") or file_path.endswith("README.md"):
                 return
             try:
                 content = frontmatter.load(file_path)
-                HaivenLogger.get().info(
-                    f"_load_context process_markdown_file content: {content}",
-                    extra={"INFO": "CustomSystemMessageLoaded"},
-                )
                 if content.metadata.get("key"):
                     context_content.append(
                         KnowledgeMarkdown(content.content, content.metadata)
@@ -54,35 +45,15 @@ class KnowledgeBaseMarkdown:
                 print(f"Error processing markdown file {file_path}: {str(e)}")
 
         if os.path.isfile(path):
-            HaivenLogger.get().info(
-                f"_load_context isfile: {path}",
-                extra={"INFO": "CustomSystemMessageLoaded"},
-            )
             process_markdown_file(path)
         elif os.path.isdir(path):
-            HaivenLogger.get().info(
-                f"_load_context isdir file-path: {path}",
-                extra={"INFO": "CustomSystemMessageLoaded"},
-            )
             for root, _, files in os.walk(path):
                 for file in sorted(files):
                     file_path = os.path.join(path, file)
-                    HaivenLogger.get().info(
-                        f"_load_context isdir nested file-path: {file_path}",
-                        extra={"INFO": "CustomSystemMessageLoaded"},
-                    )
                     process_markdown_file(file_path)
         else:
             raise ValueError(f"Path must be a file or directory: {path}")
 
-        HaivenLogger.get().info(
-            f"_load_context context_content len: {len(context_content)}",
-            extra={"INFO": "CustomSystemMessageLoaded"},
-        )
-        HaivenLogger.get().info(
-            f"_load_context context_content: {context_content}",
-            extra={"INFO": "CustomSystemMessageLoaded"},
-        )
         return context_content
 
     def load_for_base(self, path: str):
@@ -140,23 +111,10 @@ class KnowledgeBaseMarkdown:
         """
         context_metadata = []
 
-        HaivenLogger.get().info(
-            f"All keys count: {len(self._knowledge.keys())}",
-            extra={"INFO": "CustomSystemMessageLoaded"},
-        )
         for context_key in self._knowledge.keys():
             # Get the first document in the context to extract title, if available
             context_docs = self._knowledge[context_key]
             title = context_key  # Default to key if no title found
-
-            HaivenLogger.get().info(
-                f"Context docs: {context_docs}",
-                extra={"INFO": "CustomSystemMessageLoaded"},
-            )
-            HaivenLogger.get().info(
-                f"Context key: {context_key}",
-                extra={"INFO": "CustomSystemMessageLoaded"},
-            )
 
             if context_docs:
                 # Try to get title from the first document's metadata
@@ -164,14 +122,6 @@ class KnowledgeBaseMarkdown:
                 title = first_doc.metadata.get("title", context_key)
 
             context_metadata.append(ContextMetadata(key=context_key, title=title))
-        HaivenLogger.get().info(
-            f"Context metadata: {context_metadata}",
-            extra={"INFO": "CustomSystemMessageLoaded"},
-        )
-        HaivenLogger.get().info(
-            f"Context metadata count: {len(context_metadata)}",
-            extra={"INFO": "CustomSystemMessageLoaded"},
-        )
         return context_metadata
 
     def get_context_keys(self, context: str) -> list[str]:

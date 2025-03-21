@@ -103,7 +103,7 @@ class KnowledgeManager:
                 knowledge_context.name, context_embeddings_path
             )
         except FileNotFoundError as error:
-            HaivenLogger.get().info(
+            HaivenLogger.get().error(
                 str(error),
                 extra={
                     "INFO": f"No extra embeddings found for context {context_embeddings_path}. This is not a problem."
