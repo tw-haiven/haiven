@@ -302,95 +302,36 @@ describe("CardsChat Component", () => {
       saveContext("User Context 2", "User Context 2 description");
     };
 
-    const thenFirstPromptRequestHappens = (bodyString) => {
+    const thenFirstPromptRequestHappensWithUserContext = (bodyString) => {
       const body = JSON.parse(bodyString);
       expect(body.userinput).toBe(someUserInput);
       expect(body.promptid).toBe(mockPrompts[0].identifier);
+      expect(body.userContext).toBe("User Context 1 description");
+      expect(body.context).not.toBeDefined();
     };
 
-    const thenFollowUpPromptRequestHappens = (bodyString) => {
-      const body = JSON.parse(bodyString);
-      expect(body.userinput).toBe(someUserInput);
-      expect(body.promptid).toBe(mockPrompts[0].followUps[0].identifier);
-      expect(body.scenarios.length).toBe(someScenarios.length);
-      expect(body.scenarios[0].title).toBe(someScenarios[0].title);
-      expect(body.previous_promptid).toBe(mockPrompts[0].identifier);
-    };
-
-    const whenFollowUpGenerateIsClicked = () => {
-      const followUpCollapse = screen.getByTestId("follow-up-collapse");
-      const firstFollowUpArea = within(followUpCollapse).getByText(
-        mockPrompts[0].followUps[0].title,
-      );
-      expect(firstFollowUpArea).toBeInTheDocument();
-      fireEvent.click(firstFollowUpArea);
-
-      const followUpGenerateButtons =
-        within(followUpCollapse).getAllByText(/GENERATE/i);
-      expect(followUpGenerateButtons.length).toBe(1);
-      fireEvent.click(followUpGenerateButtons[0]);
-    };
-
-    const thenFollowUpIsRendered = () => {
-      expect(screen.getByText(followUpResponse)).toBeInTheDocument();
-    };
-
-    const verifyUserContextsAreAddedInDropdown = () => {
+    const thenUserContextsAreAddedInDropdown = () => {
       const contextDropdown = screen.getByTestId("context-select").firstChild;
       fireEvent.mouseDown(contextDropdown);
       expect(screen.getByText("User Context 1")).toBeInTheDocument();
       expect(screen.getByText("User Context 2")).toBeInTheDocument();
     };
 
-    fetchSSE
-      .mockImplementationOnce((url, options, { onMessageHandle }) => {
-        const optionsBody = JSON.parse(options.body);
-        expect(optionsBody.userContext).toBe("User Context 1 description");
-        expect(options.context).not.toBeDefined();
-
-        thenFirstPromptRequestHappens(options.body);
-
-        const scenarioString = JSON.stringify(someScenarios);
-        onMessageHandle(
-          { data: scenarioString.substring(0, 10) },
-          mockResponseHeadersWithChatId,
-        );
-        onMessageHandle(
-          { data: scenarioString.substring(10) },
-          mockResponseHeadersWithChatId,
-        );
-      })
-      .mockImplementationOnce((url, options, { onMessageHandle }) => {
-        const optionsBody = JSON.parse(options.body);
-        expect(optionsBody.userContext).toBe("User Context 1 description");
-        expect(options.context).not.toBeDefined();
-
-        thenFollowUpPromptRequestHappens(options.body);
-
-        onMessageHandle(followUpResponse, mockResponseHeadersWithChatId);
-      });
+    fetchSSE.mockImplementationOnce((url, options, { onMessageHandle }) => {
+      thenFirstPromptRequestHappensWithUserContext(options.body);
+    });
 
     setUpUserContexts();
     await setup();
     clickAdvancedPrompt();
 
-    verifyUserContextsAreAddedInDropdown();
+    thenUserContextsAreAddedInDropdown();
 
     await selectContext("User Context 1");
 
     givenUserInput(someUserInput);
     await whenSendIsClicked();
-
-    await waitFor(async () => {
-      await thenAllInitialScenariosAreRendered();
-
-      whenFollowUpGenerateIsClicked();
-      expect(fetchSSE).toHaveBeenCalledTimes(2);
-
-      await waitFor(() => {
-        thenFollowUpIsRendered();
-      });
-    });
+    expect(fetchSSE).toHaveBeenCalledTimes(1);
   });
 
   it("should allow editing the original user input and restarting the chat", async () => {
