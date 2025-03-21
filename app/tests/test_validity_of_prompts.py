@@ -23,7 +23,6 @@ def test_rendering_of_chat_prompts():
         prompt_list.create_and_render_template(
             prompt["identifier"], {"user_input": "SOME USER INPUT"}
         )
-        prompt_list.render_help_markdown(prompt["identifier"])
 
 
 @pytest.mark.skip(
@@ -43,7 +42,6 @@ def test_rendering_of_brainstorming_prompts():
         prompt_list.create_and_render_template(
             prompt["identifier"], {"user_input": "SOME USER INPUT"}
         )
-        prompt_list.render_help_markdown(prompt["identifier"])
 
 
 @pytest.mark.skip(
@@ -65,4 +63,3 @@ def test_rendering_of_diagram_prompts():
             prompt["identifier"],
             {"user_input": "SOME USER INPUT", "image_description": "IMAGE DESCRIPTION"},
         )
-        prompt_list.render_help_markdown(prompt["identifier"])

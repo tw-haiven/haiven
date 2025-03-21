@@ -4,8 +4,8 @@ from knowledge.markdown import KnowledgeBaseMarkdown
 from prompts.prompts import PromptList
 
 
-ACTIVE_KNOWLEDGE_CONTEXT = "context_a"
 TEST_KNOWLEDGE_PACK_PATH = get_test_data_path() + "/test_knowledge_pack"
+ACTIVE_KNOWLEDGE_CONTEXT = "context_a"
 
 
 def create_knowledge_base(knowledge_pack_path):
@@ -14,7 +14,6 @@ def create_knowledge_base(knowledge_pack_path):
         ACTIVE_KNOWLEDGE_CONTEXT,
         knowledge_pack_path + "/contexts",
     )
-
     return knowledge_base
 
 
@@ -116,6 +115,18 @@ def test_create_and_render_template_with_missing_variables():
     )
 
 
+def test_create_and_render_template_overwrite_knowledge_base():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+
+    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
+    rendered, _ = prompt_list.create_and_render_template(
+        ACTIVE_KNOWLEDGE_CONTEXT,
+        "uuid-3",
+        {"user_input": "Some User Input", "context": "Overwritten Business"},
+    )
+    assert rendered == "Content: Some User Input | Business: Overwritten Business"
+
+
 def test_render_prompt_with_additional_vars():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
 
@@ -174,29 +185,6 @@ def test_render_prompt_without_prompt_choice():
         ACTIVE_KNOWLEDGE_CONTEXT, None, "Some User Input"
     )
     assert rendered == ""
-
-
-def test_render_help_markdown():
-    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
-
-    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    help, knowledge = prompt_list.render_help_markdown(
-        "uuid-5", ACTIVE_KNOWLEDGE_CONTEXT
-    )
-    assert "Prompt description" in help
-    assert "User input description" in help
-    assert "**Knowledge used:** _Context A_ from _context_a_" in knowledge
-
-
-def test_render_help_markdown_when_values_are_empty():
-    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
-
-    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    help, knowledge = prompt_list.render_help_markdown(
-        "uuid-1", ACTIVE_KNOWLEDGE_CONTEXT
-    )
-    assert "## Test1" in help
-    assert "**Knowledge used:** _Context A_ from _context_a_" in knowledge
 
 
 def test_create_markdown_summary():
@@ -264,7 +252,18 @@ def test_get_prompts_with_follow_ups_invalid_prompt_id():
     assert uuid_2_entry["follow_ups"][0]["identifier"] == "uuid-3"
 
 
-def test_append_user_context_with_user_context():
+def test_append_user_context_if_knowledge_pack_key_value_is_None():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
+
+    user_context = "additional context"
+
+    result = prompt_list.appendUserContext(None, user_context)
+
+    assert result["context"] == "additional context"
+
+
+def test_append_user_context_if_knowledge_pack_context_exists():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
 
@@ -276,19 +275,19 @@ def test_append_user_context_with_user_context():
     assert result["context"] == "Initial context additional context"
 
 
-def test_append_user_context_without_user_context():
+def test_should_not_append_user_context_if_user_context_doesnt_exists():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
 
     knowledge_and_input = {"context": "Initial context"}
-    user_context = ""
+    user_context = None
 
     result = prompt_list.appendUserContext(knowledge_and_input, user_context)
 
     assert result["context"] == "Initial context"
 
 
-def test_append_user_context_if_context_key_doesnt_exist():
+def test_append_user_context_if_knowledge_pack_context_key_doesnt_exist():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
 
