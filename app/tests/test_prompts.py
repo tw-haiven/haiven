@@ -49,23 +49,6 @@ def test_init_should_set_defaults_for_metadata():
     assert prompt_to_assert.metadata["show"] is True
 
 
-def test_get_title_id_tuples():
-    # chat_prompts_dir = create_prompts_directory(xtmpdir)
-    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
-
-    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    titles = prompt_list.get_title_id_tuples()
-    assert titles == [
-        ("Test0", "uuid-0"),
-        ("Test1", "uuid-1"),
-        ("Test2", "uuid-2"),
-        ("Test3", "uuid-3"),
-        ("Test4", "uuid-4"),
-        ("Test5", "uuid-5"),
-        ("Test6", "uuid-6"),
-    ]
-
-
 def test_get_should_return_prompt_data():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
 
@@ -218,15 +201,6 @@ def test_create_markdown_summary():
     )
 
     assert expected_summary in markdown_summary
-
-
-def test_get_knowledge_used():
-    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
-
-    prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    vars = prompt_list.get_knowledge_used("uuid-5", ACTIVE_KNOWLEDGE_CONTEXT)
-    assert len(vars) == 1
-    assert {"title": "Context A"} in vars
 
 
 def test_get_prompts_with_follow_ups():

@@ -74,19 +74,6 @@ class PromptList:
                 return []
         return []
 
-    def get_title_id_tuples(self):
-        tuples = [
-            (
-                prompt.metadata.get("title", "Unnamed use case"),
-                prompt.metadata.get("identifier"),
-            )
-            for prompt in self.prompts
-        ]
-
-        sorted_tuples = sorted(tuples, key=lambda x: x[0])
-
-        return sorted_tuples
-
     def get(self, identifier):
         for prompt in self.prompts:
             if prompt.metadata.get("identifier") == identifier:
@@ -217,67 +204,8 @@ class PromptList:
             return rendered, template
         return "", None
 
-    def get_knowledge_used_keys(self, active_knowledge_context: str, identifier: str):
-        if identifier is not None:
-            template = self.create_template(active_knowledge_context, identifier).dict()
-            return template["input_variables"]
-
     def get_default_context(self, prompt_choice: str):
         return self.get(prompt_choice).metadata.get("context", "None")
-
-    def get_knowledge_used(self, prompt_choice: str, active_knowledge_context: str):
-        prompt = self.get(prompt_choice)
-        if prompt is not None:
-            knowledge_keys = self.get_knowledge_used_keys(
-                active_knowledge_context, prompt_choice
-            )
-            knowledge = []
-            for key in knowledge_keys:
-                knowledge_entry = self.knowledge_base.get_knowledge_document(
-                    active_knowledge_context, key
-                )
-                if knowledge_entry:
-                    knowledge.append(knowledge_entry.metadata)
-
-            return knowledge
-
-    def render_help_markdown(self, prompt_choice: str, context_selected: str):
-        prompt = self.get(prompt_choice)
-        if prompt is not None:
-            title = f"## {prompt.metadata.get('title')}"
-
-            prompt_description = prompt.metadata.get("help_prompt_description", "")
-            prompt_markdown = (
-                f"**Description:** {prompt_description}" if prompt_description else ""
-            )
-            user_input_description = prompt.metadata.get("help_user_input", "")
-            user_input_markdown = (
-                f"**User input:** {user_input_description}"
-                if user_input_description
-                else ""
-            )
-            knowledge_used = self.get_knowledge_used(prompt_choice, context_selected)
-
-            knowledge_used_markdown = (
-                "**Knowledge used:** "
-                + ", ".join(
-                    f"_{knowledge['title']}_ from _{context_selected}_"
-                    for knowledge in knowledge_used
-                )
-                if knowledge_used
-                else None
-            )
-
-            sample_input = prompt.metadata.get("help_sample_input", "")
-            sample_input_markdown = (
-                f"**Sample input:** {sample_input}" if sample_input else ""
-            )
-
-            return (
-                f"{title}\n{prompt_markdown}\n\n{user_input_markdown}\n\n{sample_input_markdown}",
-                knowledge_used_markdown,
-            )
-        return None
 
     def render_prompts_summary_markdown(self):
         prompts_summary = ""
