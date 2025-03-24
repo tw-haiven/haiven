@@ -23,23 +23,11 @@ class KnowledgeManager:
         )
         self.active_knowledge_context = None
 
-        self.knowledge_base_markdown = self._load_base_markdown_knowledge()
         self._load_context_markdown_knowledge()
 
         self.knowledge_base_documents = self._load_base_documents_knowledge()
 
         self.system_message = self._load_system_message()
-
-    def _load_base_markdown_knowledge(self):
-        knowledge_base_markdown = KnowledgeBaseMarkdown()
-        try:
-            knowledge_base_markdown.load_for_base(self.knowledge_pack_definition.path)
-        except FileNotFoundError as error:
-            HaivenLogger.get().error(
-                str(error), extra={"ERROR": "KnowledgePackKnowledgeNotFound"}
-            )
-
-        return knowledge_base_markdown
 
     def _load_base_documents_knowledge(self):
         embedding_model = self._config_service.load_embedding_model()
@@ -59,6 +47,7 @@ class KnowledgeManager:
         return knowledge_base_documents
 
     def _load_context_markdown_knowledge(self):
+        self.knowledge_base_markdown = KnowledgeBaseMarkdown()
         for context in self.knowledge_pack_definition.contexts:
             self._load_context_knowledge(context)
 

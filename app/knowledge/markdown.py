@@ -54,15 +54,6 @@ class KnowledgeBaseMarkdown:
 
         return context_content
 
-    def load_for_base(self, path: str):
-        if not os.path.exists(path):
-            raise FileNotFoundError(
-                f"The specified path does not exist, no knowledge will be loaded: {path}"
-            )
-
-        base_content = self._load_context(path)
-        self._knowledge["base"] = base_content
-
     def load_for_context(self, context: str, path: str):
         if not os.path.exists(path):
             raise FileNotFoundError(

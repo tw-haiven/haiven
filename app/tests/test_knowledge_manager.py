@@ -43,9 +43,6 @@ class TestKnowledgeManager:
         )
 
         mock_knowledge_base_markdown.assert_called_once()
-        knowledge_manager.knowledge_base_markdown.load_for_base.assert_called_once_with(
-            self.knowledge_pack_path
-        )
 
         # Verify that the system message was loaded
         # Expected custom system message from the real file
