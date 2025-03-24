@@ -12,7 +12,7 @@ def create_knowledge_base(knowledge_pack_path):
     knowledge_base = KnowledgeBaseMarkdown()
     knowledge_base.load_for_context(
         ACTIVE_KNOWLEDGE_CONTEXT,
-        knowledge_pack_path + "/contexts",
+        knowledge_pack_path + "/contexts/" + ACTIVE_KNOWLEDGE_CONTEXT + ".md",
     )
     return knowledge_base
 
@@ -61,7 +61,7 @@ def test_create_template():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
-    template = prompt_list.create_template(ACTIVE_KNOWLEDGE_CONTEXT, "uuid-3")
+    template = prompt_list.create_template("uuid-3")
     assert template.template == "Content: {user_input} | Business: {context}"
 
 
@@ -70,11 +70,11 @@ def test_create_and_render_template_for_given_knowledge_pack_context():
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     rendered, template = prompt_list.create_and_render_template(
-        ACTIVE_KNOWLEDGE_CONTEXT, "uuid-3", {"user_input": "Some User Input"}
+        [ACTIVE_KNOWLEDGE_CONTEXT], "uuid-3", {"user_input": "Some User Input"}
     )
     assert template.template == "Content: {user_input} | Business: {context}"
     expected_rendered_output = (
-        "Content: Some User Input | Business: Domain knowledge from context_a"
+        "Content: Some User Input | Business: \nDomain knowledge from context_a"
     )
     assert rendered == expected_rendered_output
 
@@ -114,7 +114,7 @@ def test_create_and_render_template_overwrite_knowledge_base():
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     rendered, _ = prompt_list.create_and_render_template(
-        ACTIVE_KNOWLEDGE_CONTEXT,
+        [ACTIVE_KNOWLEDGE_CONTEXT],
         "uuid-3",
         {"user_input": "Some User Input", "context": "Overwritten Business"},
     )
@@ -126,7 +126,7 @@ def test_render_prompt_with_additional_vars():
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     rendered, _ = prompt_list.render_prompt(
-        ACTIVE_KNOWLEDGE_CONTEXT,
+        [ACTIVE_KNOWLEDGE_CONTEXT],
         "uuid-4",
         "Some User Input",
         {"additional": "Additional Var"},
@@ -140,12 +140,12 @@ def test_render_prompt_for_given_prompt_id_and_knowledge_pack_context():
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     rendered, _ = prompt_list.render_prompt(
-        ACTIVE_KNOWLEDGE_CONTEXT,
+        [ACTIVE_KNOWLEDGE_CONTEXT],
         "uuid-6",
         "Some User Input",
     )
 
-    assert rendered == """Content Some User Input Domain knowledge from context_a"""
+    assert rendered == """Content Some User Input \nDomain knowledge from context_a"""
 
 
 def test_render_prompt_for_given_prompt_id_and_user_context():
@@ -153,7 +153,7 @@ def test_render_prompt_for_given_prompt_id_and_user_context():
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     rendered, _ = prompt_list.render_prompt(
-        ACTIVE_KNOWLEDGE_CONTEXT,
+        [ACTIVE_KNOWLEDGE_CONTEXT],
         "uuid-6",
         "Some User Input",
         user_context="some user context",
@@ -161,7 +161,7 @@ def test_render_prompt_for_given_prompt_id_and_user_context():
 
     assert (
         rendered
-        == """Content Some User Input Domain knowledge from context_a some user context"""
+        == """Content Some User Input \nDomain knowledge from context_a some user context"""
     )
 
 
@@ -185,7 +185,7 @@ def test_render_prompt_without_prompt_choice():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     rendered, _ = prompt_list.render_prompt(
-        ACTIVE_KNOWLEDGE_CONTEXT, None, "Some User Input"
+        [ACTIVE_KNOWLEDGE_CONTEXT], None, "Some User Input"
     )
     assert rendered == ""
 
@@ -310,8 +310,8 @@ def test_get_rendered_context_with_knowledge_pack_context():
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
 
     rendered_context = prompt_list.get_rendered_context(
-        ACTIVE_KNOWLEDGE_CONTEXT, "uuid-3", None
+        [ACTIVE_KNOWLEDGE_CONTEXT], "uuid-3", None
     )
 
-    expected_context = "Domain knowledge from context_a"
+    expected_context = "\nDomain knowledge from context_a"
     assert rendered_context == expected_context

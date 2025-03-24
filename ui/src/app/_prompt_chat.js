@@ -2,7 +2,7 @@
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
-import { Input, Select, Button } from "antd";
+import { Input, Select } from "antd";
 import { toast } from "react-toastify";
 
 const { TextArea } = Input;
@@ -34,7 +34,7 @@ const PromptChat = ({
 
   // User inputs
   const [selectedPrompt, setPromptSelection] = useState(promptId); // via query parameter
-  const [selectedContext, setSelectedContext] = useState("");
+  const [selectedContexts, setSelectedContexts] = useState([]);
   const [selectedDocument, setSelectedDocument] = useState("");
   const [imageDescription, setImageDescription] = useState("");
   const [userInput, setUserInput] = useState(initialInput);
@@ -85,16 +85,25 @@ const PromptChat = ({
   };
 
   const buildFirstChatRequestBody = (userInput) => {
+    let userContextsSummary = "";
+    selectedContexts.forEach((context) => {
+      if (context.isUserDefined)
+        userContextsSummary +=
+          getSummaryForTheUserContext(context.value) + "\n";
+    });
+
+    const knowledgePackContexts = selectedContexts
+      .map((context) => (!context.isUserDefined ? context.value : null))
+      .filter((value) => value !== null);
+
     return {
       userinput: usePromptId ? appendImageDescription(userInput) : userInput,
       promptid: usePromptId ? selectedPrompt?.identifier : undefined,
       chatSessionId: chatSessionId,
-      ...(selectedContext.value !== "base" &&
-        selectedContext.isUserDefined && {
-          userContext: getSummaryForTheUserContext(selectedContext.value),
-        }),
-      ...(selectedContext.value !== "base" &&
-        !selectedContext.isUserDefined && { context: selectedContext.value }),
+      ...(userContextsSummary !== "" && { userContext: userContextsSummary }),
+      ...(knowledgePackContexts.length > 0 && {
+        context: knowledgePackContexts,
+      }),
       ...(selectedDocument !== "base" && { document: selectedDocument }),
     };
   };
@@ -171,8 +180,11 @@ const PromptChat = ({
     );
   }
 
-  const handleContextSelection = (value) => {
-    setSelectedContext(allContexts.find((context) => context.value === value));
+  const handleContextSelection = (values) => {
+    const selectedContexts = allContexts.filter((context) =>
+      values.includes(context.value),
+    );
+    setSelectedContexts(selectedContexts);
   };
 
   useEffect(() => {

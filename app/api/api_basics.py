@@ -27,7 +27,7 @@ class PromptRequestBody(BaseModel):
     userinput: str = None
     promptid: str = None
     chatSessionId: str = None
-    context: str = None
+    context: List[str] = None
     document: str = None
     json: bool = False
     userContext: str = None
@@ -259,17 +259,16 @@ class ApiBasics(HaivenBaseApi):
         @logger.catch(reraise=True)
         def get_knowledge_snippets(request: Request):
             try:
-                all_contexts = knowledge_manager.get_all_context_keys()
+                all_contexts = (
+                    knowledge_manager.knowledge_base_markdown.get_all_contexts()
+                )
                 response_data = []
-                for context_info in all_contexts:
-                    snippets = knowledge_manager.knowledge_base_markdown.get_knowledge_content_dict(
-                        context_info["context"]
-                    )
+                for key, context_info in all_contexts.items():
                     response_data.append(
                         {
-                            "context": context_info["context"],
-                            "title": context_info["title"],
-                            "snippets": snippets,
+                            "context": key,
+                            "title": context_info.metadata["title"],
+                            "snippets": {"context": context_info.content},
                         }
                     )
 

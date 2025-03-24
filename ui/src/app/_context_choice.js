@@ -37,8 +37,9 @@ function ContextChoice({ contexts, onChange }) {
       <Select
         onChange={onChange}
         options={contexts}
-        defaultValue="base"
         data-testid="context-select"
+        mode="multiple"
+        placeholder="Please select the context(s)"
       />
       <AddContext
         isAddingContext={isAddingContext}

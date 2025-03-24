@@ -306,7 +306,7 @@ describe("PromptChat Component", () => {
           userinput: "Here is my prompt input\n\nMocked image description",
           promptid: "1",
           chatSessionId: undefined,
-          context: "context1",
+          context: ["context1"],
           document: "document1",
         }),
       );
@@ -356,7 +356,7 @@ describe("PromptChat Component", () => {
           userinput: "Here is my prompt input",
           promptid: "1",
           chatSessionId: undefined,
-          userContext: "User Context 1 description",
+          userContext: "User Context 1 description\n",
           document: "",
         }),
       );

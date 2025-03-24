@@ -40,7 +40,7 @@ const CardsChat = ({
 
   const [scenarios, setScenarios] = useState([]);
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
-  const [selectedContext, setSelectedContext] = useState("");
+  const [selectedContexts, setSelectedContexts] = useState([]);
   const [promptInput, setPromptInput] = useState("");
 
   const [iterationPrompt, setIterationPrompt] = useState("");
@@ -105,18 +105,27 @@ const CardsChat = ({
   };
 
   const onExplore = (scenario) => {
+    let userContextsSummary = "";
+    selectedContexts.forEach((context) => {
+      if (context.isUserDefined)
+        userContextsSummary +=
+          getSummaryForTheUserContext(context.value) + "\n";
+    });
+
+    const knowledgePackContexts = selectedContexts
+      .map((context) => (!context.isUserDefined ? context.value : null))
+      .filter((value) => value !== null);
+
     setCardExplorationDrawerTitle("Explore scenario: " + scenario.title);
     setChatContext({
       id: scenario.id,
       firstStepInput: promptInput,
       type: "prompt",
       previousPromptId: selectedPromptId,
-      ...(selectedContext.value !== "base" &&
-        selectedContext.isUserDefined && {
-          userContext: getSummaryForTheUserContext(selectedContext.value),
-        }),
-      ...(selectedContext.value !== "base" &&
-        !selectedContext.isUserDefined && { context: selectedContext.value }),
+      ...(userContextsSummary !== "" && { userContext: userContextsSummary }),
+      ...(knowledgePackContexts.length > 0 && {
+        context: knowledgePackContexts,
+      }),
       itemSummary: scenarioToText(scenario),
       ...scenario,
     });
@@ -146,14 +155,23 @@ const CardsChat = ({
   };
 
   const buildRequestDataCardBuilding = () => {
+    let userContextsSummary = "";
+    selectedContexts.forEach((context) => {
+      if (context.isUserDefined)
+        userContextsSummary +=
+          getSummaryForTheUserContext(context.value) + "\n";
+    });
+
+    const knowledgePackContexts = selectedContexts
+      .map((context) => (!context.isUserDefined ? context.value : null))
+      .filter((value) => value !== null);
+
     return {
       userinput: promptInput,
-      ...(selectedContext.value !== "base" &&
-        selectedContext.isUserDefined && {
-          userContext: getSummaryForTheUserContext(selectedContext.value),
-        }),
-      ...(selectedContext.value !== "base" &&
-        !selectedContext.isUserDefined && { context: selectedContext.value }),
+      ...(userContextsSummary !== "" && { userContext: userContextsSummary }),
+      ...(knowledgePackContexts.length > 0 && {
+        context: knowledgePackContexts,
+      }),
       promptid: usePromptId
         ? selectedPromptConfiguration?.identifier
         : undefined,
@@ -161,16 +179,25 @@ const CardsChat = ({
   };
 
   const buildRequestDataGetMore = () => {
+    let userContextsSummary = "";
+    selectedContexts.forEach((context) => {
+      if (context.isUserDefined)
+        userContextsSummary +=
+          getSummaryForTheUserContext(context.value) + "\n";
+    });
+
+    const knowledgePackContexts = selectedContexts
+      .map((context) => (!context.isUserDefined ? context.value : null))
+      .filter((value) => value !== null);
+
     return {
       userinput:
         "Give me some additional ones, in the same JSON format. Do not repeat any of the ones you already told me about, come up with new ideas.\n\n" +
         "\n\nOnly return JSON, nothing else.\n",
-      ...(selectedContext.value !== "base" &&
-        selectedContext.isUserDefined && {
-          userContext: getSummaryForTheUserContext(selectedContext.value),
-        }),
-      ...(selectedContext.value !== "base" &&
-        !selectedContext.isUserDefined && { context: selectedContext.value }),
+      ...(userContextsSummary !== "" && { userContext: userContextsSummary }),
+      ...(knowledgePackContexts.length > 0 && {
+        context: knowledgePackContexts,
+      }),
       promptid: undefined,
       chatSessionId: chatSessionIdCardBuilding,
       json: true,
@@ -178,14 +205,23 @@ const CardsChat = ({
   };
 
   const buildRequestDataFollowUp = (followUpId) => {
+    let userContextsSummary = "";
+    selectedContexts.forEach((context) => {
+      if (context.isUserDefined)
+        userContextsSummary +=
+          getSummaryForTheUserContext(context.value) + "\n";
+    });
+
+    const knowledgePackContexts = selectedContexts
+      .map((context) => (!context.isUserDefined ? context.value : null))
+      .filter((value) => value !== null);
+
     return {
       userinput: promptInput,
-      ...(selectedContext.value !== "base" &&
-        selectedContext.isUserDefined && {
-          userContext: getSummaryForTheUserContext(selectedContext.value),
-        }),
-      ...(selectedContext.value !== "base" &&
-        !selectedContext.isUserDefined && { context: selectedContext.value }),
+      ...(userContextsSummary !== "" && { userContext: userContextsSummary }),
+      ...(knowledgePackContexts.length > 0 && {
+        context: knowledgePackContexts,
+      }),
       promptid: followUpId,
       scenarios: scenarios
         .filter((scenario) => scenario.exclude !== true)
@@ -485,10 +521,11 @@ const CardsChat = ({
       }
     };
 
-    const handleContextSelection = (value) => {
-      setSelectedContext(
-        allContexts.find((context) => context.value === value),
+    const handleContextSelection = (values) => {
+      const selectedContexts = allContexts.filter((context) =>
+        values.includes(context.value),
       );
+      setSelectedContexts(selectedContexts);
     };
 
     const advancedPromptingMenu = (
