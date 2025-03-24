@@ -287,33 +287,20 @@ class ApiBasics(HaivenBaseApi):
         @logger.catch(reraise=True)
         def get_knowledge_documents(request: Request):
             try:
-                base_context = None
-                # For the user, it doesn't make a difference anymore where the documents are coming from
-                # But we're still loading the ones from contexts as well, for backwards compatibility with
-                # older knowledge packs
-                all_contexts = knowledge_manager.get_all_context_keys()
-
-                # Extract just the context keys and append base_context
-                context_keys = [context["context"] for context in all_contexts]
-                context_keys.append(base_context)
-
                 response_data = []
-                for context in context_keys:
-                    documents: List[KnowledgeDocument] = (
-                        knowledge_manager.knowledge_base_documents.get_documents(
-                            context=context, include_base_context=False
-                        )
-                    )
+                documents: List[KnowledgeDocument] = (
+                    knowledge_manager.knowledge_base_documents.get_documents()
+                )
 
-                    for document in documents:
-                        response_data.append(
-                            {
-                                "key": document.key,
-                                "title": document.title,
-                                "description": document.description,
-                                "source": document.get_source_title_link(),
-                            }
-                        )
+                for document in documents:
+                    response_data.append(
+                        {
+                            "key": document.key,
+                            "title": document.title,
+                            "description": document.description,
+                            "source": document.get_source_title_link(),
+                        }
+                    )
 
                 return JSONResponse(response_data)
 

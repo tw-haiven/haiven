@@ -46,64 +46,34 @@ class TestsKnowledgeBaseDocuments:
             "tests/test_data/test_knowledge_pack",
         )
 
-    def test_load_base_knowledge_pack_creates_one_entry_in_stores(
-        self,
-    ):
-        assert len(self.service._document_stores) == 1
-        assert self.service._document_stores["base"]._embeddings == {}
-
-        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
-
-        assert len(self.service._document_stores) == 1
-        assert (
-            "ingenuity-wikipedia"
-            in self.service._document_stores["base"]._embeddings.keys()
-        )
-
     def test_load_base_knowledge_creates_entry_in_stores(
         self,
     ):
-        assert len(self.service._document_stores) == 1
+        # assert len(self.service._document_stores.get_keys()) == 2
 
         self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
-        assert len(self.service._document_stores) == 1
-        assert "base" in self.service._document_stores.keys()
-        base_document_store = self.service._document_stores["base"]
-        assert len(base_document_store.get_documents()) == 2
+        assert len(self.service._document_stores.get_keys()) == 2
+        assert len(self.service._document_stores.get_documents()) == 2
         assert (
-            base_document_store.get_document("ingenuity-wikipedia").title
+            self.service._document_stores.get_document("ingenuity-wikipedia").title
             == "Wikipedia entry about Ingenuity"
         )
         assert (
-            base_document_store.get_document("tw-guide-agile-sd").title
+            self.service._document_stores.get_document("tw-guide-agile-sd").title
             == "The Thoughtworks guide to agile software delivery"
         )
 
     def test_re_load_base_knowledge_should_not_create_extra_entries(
         self,
     ):
-        assert len(self.service._document_stores) == 1
+        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
+
+        assert len(self.service._document_stores.get_keys()) == 2
 
         self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
-        assert len(self.service._document_stores) == 1
-        assert "base" in self.service._document_stores.keys()
-
-        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
-
-        assert len(self.service._document_stores) == 1
-        assert "base" in self.service._document_stores.keys()
-
-    def test_generate_load_knowledge_base_should_load_two_embedding(self):
-        self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
-
-        assert len(self.service._document_stores) == 1
-        assert len(self.service._document_stores.keys()) == 1
-        assert "base" in self.service._document_stores.keys()
-
-        assert "ingenuity-wikipedia" in self.service._document_stores["base"].get_keys()
-        assert "tw-guide-agile-sd" in self.service._document_stores["base"].get_keys()
+        assert len(self.service._document_stores.get_keys()) == 2
 
     def test_similarity_search_on_single_document_with_scores_for_base_return_documents_and_scores(
         self,
@@ -114,7 +84,6 @@ class TestsKnowledgeBaseDocuments:
             self.service._similarity_search_on_single_document_with_scores(
                 query="When Ingenuity was launched?",
                 document_key="ingenuity-wikipedia",
-                document_base_key="base",
             )
         )
 
@@ -125,8 +94,6 @@ class TestsKnowledgeBaseDocuments:
     def test_similarity_search_with_scores_should_return_documents_from_base_stores_sorted_by_scores(
         self,
     ):
-        assert len(self.service._document_stores) == 1
-
         self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
         similarity_results = self.service.similarity_search_with_scores(

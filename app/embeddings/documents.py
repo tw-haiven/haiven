@@ -13,7 +13,6 @@ class KnowledgeDocument:
         source: str,
         sample_question: str,
         description: str,
-        context: str,
         provider: str,
     ):
         self.key = key
@@ -23,7 +22,6 @@ class KnowledgeDocument:
         self.sample_question = sample_question
         self.description = description
         self.provider = provider
-        self.context = context
 
     def get_source_title_link(self) -> str:
         document_metadata = vars(self)

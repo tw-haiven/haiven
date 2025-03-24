@@ -101,30 +101,30 @@ class TestApi(unittest.TestCase):
 
     def test_get_documents(self):
         mock_knowledge_manager = MagicMock()
-        mock_knowledge_manager.get_all_context_keys.return_value = [
-            {"context": "context1", "title": "Context One"},
-            {"context": "context2", "title": "Context One"},
-        ]
 
         mock_kb_documents = MagicMock()
         mock_doc_base = MagicMock(
             key="some-document-base",
             title="Some title base",
-            description="Some description",
+            description="Some description 1",
         )
         mock_doc_base.get_source_title_link.return_value = "some source title link"
         mock_doc_1 = MagicMock(
-            key="some-document-1", title="Some title 1", description="Some description"
+            key="some-document-1",
+            title="Some title 1",
+            description="Some description 2",
         )
         mock_doc_1.get_source_title_link.return_value = "some source title link"
         mock_doc_2 = MagicMock(
-            key="some-document-2", title="Some title 2", description="Some description"
+            key="some-document-2",
+            title="Some title 2",
+            description="Some description 3",
         )
         mock_doc_2.get_source_title_link.return_value = "some source title link"
-        mock_kb_documents.get_documents.side_effect = [
-            [mock_doc_base],
-            [mock_doc_1],
-            [mock_doc_2],
+        mock_kb_documents.get_documents.return_value = [
+            mock_doc_base,
+            mock_doc_1,
+            mock_doc_2,
         ]
         mock_knowledge_manager.knowledge_base_documents = mock_kb_documents
 
@@ -146,13 +146,7 @@ class TestApi(unittest.TestCase):
         # Assert the response
         assert response.status_code == 200
 
-        assert mock_kb_documents.get_documents.call_count == 3
-        args, context_1_kwargs = mock_kb_documents.get_documents.call_args_list[0]
-        assert context_1_kwargs["context"] == "context1"
-        args, context_2_kwargs = mock_kb_documents.get_documents.call_args_list[1]
-        assert context_2_kwargs["context"] == "context2"
-        args, base_kwargs = mock_kb_documents.get_documents.call_args_list[2]
-        assert base_kwargs["context"] is None
+        assert mock_kb_documents.get_documents.call_count == 1
 
         response_data = json.loads(response.content)
         assert isinstance(response_data, list)

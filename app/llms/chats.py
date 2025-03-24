@@ -88,15 +88,9 @@ class HaivenBaseChat:
             return None, None
 
         if knowledge_document_key:
-            knowledge_document = (
-                self.knowledge_manager.knowledge_base_documents.get_document(
-                    knowledge_document_key
-                )
-            )
             context_documents = self.knowledge_manager.knowledge_base_documents.similarity_search_on_single_document(
                 query=similarity_query,
-                document_key=knowledge_document.key,
-                document_base_key=knowledge_document.context,
+                document_key=knowledge_document_key,
             )
         else:
             return None, None

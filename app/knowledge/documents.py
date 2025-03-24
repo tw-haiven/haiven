@@ -23,7 +23,7 @@ class KnowledgeBaseDocuments:
         _embeddings_provider (Embeddings): The provider used for generating embeddings.
     """
 
-    _document_stores: dict[str, InMemoryEmbeddingsDB] = None
+    _document_stores: InMemoryEmbeddingsDB = None
 
     def __init__(
         self,
@@ -37,8 +37,7 @@ class KnowledgeBaseDocuments:
             self._embeddings_provider = embeddings_provider
 
         if self._document_stores is None:
-            self._document_stores = {}
-            self._document_stores["base"] = InMemoryEmbeddingsDB()
+            self._document_stores = InMemoryEmbeddingsDB()
 
     def load_documents_for_base(self, knowledge_pack_path: str) -> None:
         """
@@ -47,57 +46,17 @@ class KnowledgeBaseDocuments:
         Parameters:
             knowledge_pack_path (str): The file system path to the directory containing the knowledge pack documents.
         """
-        self._load_documents(path=knowledge_pack_path, name="base")
+        self._load_documents(path=knowledge_pack_path)
 
-    def get_document(self, document_key: str) -> KnowledgeDocument:
-        """
-        Retrieves a specific document embedding by its key. This method is useful for accessing the embedding of a previously loaded or generated document.
-
-        Parameters:
-            document_key (str): The key of the document whose embedding is to be retrieved.
-
-        Returns:
-            DocumentEmbedding: The embedding of the specified document.
-        """
-        for _, store in self._document_stores.items():
-            embedding = store.get_document(document_key)
-            if embedding is not None:
-                return embedding
-
-        return None
-
-    def get_documents(
-        self, context: str = None, include_base_context=True
-    ) -> List[KnowledgeDocument]:
+    def get_documents(self) -> List[KnowledgeDocument]:
         """
         Retrieves all stored document embeddings. This method provides access to the complete set of embeddings currently managed by the service.
-
-        Parameters:
-            context (str, optional): The context to retrieve embeddings from. If None, retrieves embeddings only from base context. Defaults to None.
 
         Returns:
             List[DocumentEmbedding]: A list of all document embeddings stored in the service.
         """
-        all_embeddings = []
 
-        if include_base_context:
-            store = self._document_stores["base"]
-            all_embeddings.extend(store.get_documents())
-
-        if context is not None and context != "":
-            store = self._document_stores.get(context)
-            if store is not None:
-                all_embeddings.extend(store.get_documents())
-
-        return all_embeddings
-
-    def _get_or_create_embeddings_db_for_context(
-        self, context: str
-    ) -> InMemoryEmbeddingsDB:
-        if context not in self._document_stores:
-            self._document_stores[context] = InMemoryEmbeddingsDB()
-
-        return self._document_stores[context]
+        return self._document_stores.get_documents()
 
     def _get_retriever_from_file(self, kb_path: str) -> FAISS:
         path = Path(kb_path)
@@ -106,7 +65,7 @@ class KnowledgeBaseDocuments:
 
         return faiss
 
-    def _load_documents(self, path: str, name: str) -> None:
+    def _load_documents(self, path: str) -> None:
         if not os.path.exists(path):
             raise FileNotFoundError(
                 f"The specified path does not exist, no embeddings will be loaded: {path}"
@@ -116,15 +75,15 @@ class KnowledgeBaseDocuments:
             [f for f in os.listdir(path) if f.endswith(".md") and f != "README.md"]
         )
 
-        if knowledge_document_files is not None:
-            self._document_stores[name] = InMemoryEmbeddingsDB()
+        if knowledge_document_files is not None and self._document_stores is None:
+            self._document_stores = InMemoryEmbeddingsDB()
 
         for knowledge_document_file in knowledge_document_files:
             self._load_document_into_store(
-                document_path=os.path.join(path, knowledge_document_file), context=name
+                document_path=os.path.join(path, knowledge_document_file)
             )
 
-    def _load_document_into_store(self, document_path: str, context: str) -> None:
+    def _load_document_into_store(self, document_path: str) -> None:
         document = frontmatter.load(document_path)
         if (
             document.metadata.get("provider").lower()
@@ -134,7 +93,6 @@ class KnowledgeBaseDocuments:
             kb_path = document.metadata["path"]
             kb_full_path = os.path.join(folder_path, kb_path)
             knowledge_document = KnowledgeDocument(
-                context=context,
                 key=document.metadata["key"],
                 title=document.metadata.get("title", ""),
                 source=document.metadata.get("source", ""),
@@ -144,9 +102,9 @@ class KnowledgeBaseDocuments:
                 retriever=self._get_retriever_from_file(kb_full_path),
             )
 
-            store_for_context = self._get_or_create_embeddings_db_for_context(context)
-
-            store_for_context.add_embedding(knowledge_document.key, knowledge_document)
+            self._document_stores.add_embedding(
+                knowledge_document.key, knowledge_document
+            )
 
     def similarity_search_with_scores(
         self, query: str, k: int = 5, score_threshold: float = None
@@ -164,17 +122,11 @@ class KnowledgeBaseDocuments:
         """
         similar_documents = []
 
-        stores_to_search_in = {}
-        stores_to_search_in["base"] = self._document_stores["base"]
-
-        for key, store in stores_to_search_in.items():
-            for embedding_key in store.get_keys():
-                partial_results = (
-                    self._similarity_search_on_single_document_with_scores(
-                        query, embedding_key, key, k, score_threshold
-                    )
-                )
-                similar_documents.extend(partial_results)
+        for embedding_key in self._document_stores.get_keys():
+            partial_results = self._similarity_search_on_single_document_with_scores(
+                query, embedding_key, k, score_threshold
+            )
+            similar_documents.extend(partial_results)
 
         similar_documents.sort(key=lambda x: x[1], reverse=False)
 
@@ -186,15 +138,10 @@ class KnowledgeBaseDocuments:
         self,
         query: str,
         document_key: str,
-        document_base_key: str,
         k: int = 5,
         score_threshold: float = None,
     ) -> List[Tuple[Document, float]]:
-        store = self._document_stores.get(document_base_key, None)
-        if store is None:
-            return []
-
-        embedding = store.get_document(document_key)
+        embedding = self._document_stores.get_document(document_key)
 
         if embedding is None:
             return []
@@ -208,7 +155,6 @@ class KnowledgeBaseDocuments:
         self,
         query: str,
         document_key: str,
-        document_base_key: str,
         k: int = 5,
         score_threshold: float = None,
     ) -> List[Document]:
@@ -226,7 +172,7 @@ class KnowledgeBaseDocuments:
             List[Document]: A list of documents that are similar to the query.
         """
         documents_with_scores = self._similarity_search_on_single_document_with_scores(
-            query, document_key, document_base_key, k, score_threshold
+            query, document_key, k, score_threshold
         )
         documents = [doc for doc, _ in documents_with_scores]
         return documents
