@@ -226,7 +226,7 @@ def test_get_knowledge_used():
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     vars = prompt_list.get_knowledge_used("uuid-5", ACTIVE_KNOWLEDGE_CONTEXT)
     assert len(vars) == 1
-    assert {"key": "context", "title": "Context A"} in vars
+    assert {"title": "Context A"} in vars
 
 
 def test_get_prompts_with_follow_ups():

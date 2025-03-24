@@ -1,5 +1,4 @@
 ---
-key: context
 title: Context A
 ---
 

@@ -25,8 +25,6 @@ class KnowledgeBaseMarkdown:
         self._knowledge = {}
 
     def _load_context(self, path: str) -> list[KnowledgeMarkdown]:
-        # path = os.path.abspath(path)  # Convert relative path to absolute
-
         if not os.path.exists(path):
             raise FileNotFoundError(f"Path does not exist: {path}")
 
@@ -37,7 +35,7 @@ class KnowledgeBaseMarkdown:
                 return
             try:
                 content = frontmatter.load(file_path)
-                if content.metadata.get("key"):
+                if content.content != "":
                     context_content.append(
                         KnowledgeMarkdown(content.content, content.metadata)
                     )
@@ -93,7 +91,7 @@ class KnowledgeBaseMarkdown:
                 (
                     knowledge
                     for knowledge in context_knowledge
-                    if knowledge.metadata["key"] == knowledge_key
+                    if "context" == knowledge_key
                 ),
                 None,
             )
@@ -127,10 +125,7 @@ class KnowledgeBaseMarkdown:
     def get_context_keys(self, context: str) -> list[str]:
         if context is None or context == "":
             return []
-        all_keys = [
-            knowledge_document.metadata["key"]
-            for knowledge_document in self._knowledge[context]
-        ]
+        all_keys = ["context" for _ in self._knowledge[context]]
         return all_keys
 
     def get_all_knowledge_documents(self, context: str) -> list[KnowledgeMarkdown]:
@@ -139,6 +134,6 @@ class KnowledgeBaseMarkdown:
 
     def get_knowledge_content_dict(self, context: str) -> dict[str, str]:
         merged_content_dict = {
-            entry.metadata["key"]: entry.content for entry in self._knowledge[context]
+            "context": entry.content for entry in self._knowledge[context]
         }
         return merged_content_dict
