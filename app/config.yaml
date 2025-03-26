@@ -44,27 +44,15 @@ models:
     config:
       model: gemini-1.5-flash
 
-  - id: aws-claude-v2
-    name: Claude v2 on AWS
-    provider: AWS
-    features:
-      - text-generation
-      - stop-sequence
-    config:
-      model_id: anthropic.claude-v2
-      aws_region_name: ${AWS_BEDROCK_REGION}
-      aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
-      aws_access_key_id: ${AWS_ACCESS_KEY_ID}
-
-  - id: aws-claude-v3
-    name: Claude v3 on AWS
+  - id: aws-claude-sonnet-3.5
+    name: Claude-Sonnet-3.5 on AWS
     provider: AWS
     features:
       - text-generation
       - stop-sequence
       - image-to-text
     config:
-      model_id: anthropic.claude-3-sonnet-20240229-v1:0
+      model_id: us.anthropic.claude-3-5-sonnet-20241022-v2:0
       anthropic_version: bedrock-2023-05-31
       aws_region_name: ${AWS_BEDROCK_REGION}
       aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
@@ -78,7 +66,7 @@ models:
       - stop-sequence
       - image-to-text
     config:
-      model_id: ${AWS_BEDROCK_REGION}.anthropic.claude-3-7-sonnet-20250219-v1:0
+      model_id: us.anthropic.claude-3-7-sonnet-20250219-v1:0
       aws_region_name: ${AWS_BEDROCK_REGION}
       aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
       aws_access_key_id: ${AWS_ACCESS_KEY_ID}
