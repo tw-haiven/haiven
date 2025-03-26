@@ -29,10 +29,12 @@ def _get_azure_config():
 
 def _get_aws_config():
     return ModelConfig(
-        "sonnet",
+        "claude",
         "aws",
-        "Sonnet on AWS",
-        config={"model_id": "anthropic.claude-3-sonnet-20240229-v1:0"},
+        "Claude Sonnet on AWS",
+        config={
+            "model_id": "${AWS_BEDROCK_REGION}.anthropic.claude-3-5-sonnet-20241022-v2:0"
+        },
     )
 
 
