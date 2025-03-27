@@ -84,7 +84,7 @@ const PromptChat = ({
     return userInput;
   };
 
-  const buildFirstChatRequestBody = (userInput) => {
+  const attachContextsToRequestBody = (requestBody) => {
     let userContextsSummary = "";
     selectedContexts.forEach((context) => {
       if (context.isUserDefined)
@@ -96,16 +96,24 @@ const PromptChat = ({
       .map((context) => (!context.isUserDefined ? context.value : null))
       .filter((value) => value !== null);
 
-    return {
+    if (userContextsSummary !== "") {
+      requestBody.userContext = userContextsSummary;
+    }
+    if (knowledgePackContexts.length > 0) {
+      requestBody.context = knowledgePackContexts;
+    }
+    return requestBody;
+  };
+
+  const buildFirstChatRequestBody = (userInput) => {
+    const requestBody = {
       userinput: usePromptId ? appendImageDescription(userInput) : userInput,
       promptid: usePromptId ? selectedPrompt?.identifier : undefined,
       chatSessionId: chatSessionId,
-      ...(userContextsSummary !== "" && { userContext: userContextsSummary }),
-      ...(knowledgePackContexts.length > 0 && {
-        context: knowledgePackContexts,
-      }),
       ...(selectedDocument !== "base" && { document: selectedDocument }),
     };
+    attachContextsToRequestBody(requestBody);
+    return requestBody;
   };
 
   const startNewChat = async (userInput) => {
@@ -181,10 +189,10 @@ const PromptChat = ({
   }
 
   const handleContextSelection = (values) => {
-    const selectedContexts = allContexts.filter((context) =>
+    const userSelectedContexts = allContexts.filter((context) =>
       values.includes(context.value),
     );
-    setSelectedContexts(selectedContexts);
+    setSelectedContexts(userSelectedContexts);
   };
 
   useEffect(() => {

@@ -105,30 +105,18 @@ const CardsChat = ({
   };
 
   const onExplore = (scenario) => {
-    let userContextsSummary = "";
-    selectedContexts.forEach((context) => {
-      if (context.isUserDefined)
-        userContextsSummary +=
-          getSummaryForTheUserContext(context.value) + "\n";
-    });
-
-    const knowledgePackContexts = selectedContexts
-      .map((context) => (!context.isUserDefined ? context.value : null))
-      .filter((value) => value !== null);
-
     setCardExplorationDrawerTitle("Explore scenario: " + scenario.title);
-    setChatContext({
+    const chatContext = {
       id: scenario.id,
       firstStepInput: promptInput,
       type: "prompt",
       previousPromptId: selectedPromptId,
-      ...(userContextsSummary !== "" && { userContext: userContextsSummary }),
-      ...(knowledgePackContexts.length > 0 && {
-        context: knowledgePackContexts,
-      }),
       itemSummary: scenarioToText(scenario),
       ...scenario,
-    });
+    };
+    attachContextsToRequestBody(chatContext);
+
+    setChatContext(chatContext);
     setCardExplorationDrawerOpen(true);
   };
 
@@ -154,7 +142,7 @@ const CardsChat = ({
     addToPinboard(timestamp, followUpResults[id]);
   };
 
-  const buildRequestDataCardBuilding = () => {
+  const attachContextsToRequestBody = (requestBody) => {
     let userContextsSummary = "";
     selectedContexts.forEach((context) => {
       if (context.isUserDefined)
@@ -166,68 +154,52 @@ const CardsChat = ({
       .map((context) => (!context.isUserDefined ? context.value : null))
       .filter((value) => value !== null);
 
-    return {
+    if (userContextsSummary !== "") {
+      requestBody.userContext = userContextsSummary;
+    }
+    if (knowledgePackContexts.length > 0) {
+      requestBody.context = knowledgePackContexts;
+    }
+  };
+
+  const buildRequestDataCardBuilding = () => {
+    const requestBody = {
       userinput: promptInput,
-      ...(userContextsSummary !== "" && { userContext: userContextsSummary }),
-      ...(knowledgePackContexts.length > 0 && {
-        context: knowledgePackContexts,
-      }),
       promptid: usePromptId
         ? selectedPromptConfiguration?.identifier
         : undefined,
     };
+    attachContextsToRequestBody(requestBody);
+
+    return requestBody;
   };
 
   const buildRequestDataGetMore = () => {
-    let userContextsSummary = "";
-    selectedContexts.forEach((context) => {
-      if (context.isUserDefined)
-        userContextsSummary +=
-          getSummaryForTheUserContext(context.value) + "\n";
-    });
-
-    const knowledgePackContexts = selectedContexts
-      .map((context) => (!context.isUserDefined ? context.value : null))
-      .filter((value) => value !== null);
-
-    return {
+    const requestBody = {
       userinput:
         "Give me some additional ones, in the same JSON format. Do not repeat any of the ones you already told me about, come up with new ideas.\n\n" +
         "\n\nOnly return JSON, nothing else.\n",
-      ...(userContextsSummary !== "" && { userContext: userContextsSummary }),
-      ...(knowledgePackContexts.length > 0 && {
-        context: knowledgePackContexts,
-      }),
       promptid: undefined,
       chatSessionId: chatSessionIdCardBuilding,
       json: true,
     };
+    attachContextsToRequestBody(requestBody);
+
+    return requestBody;
   };
 
   const buildRequestDataFollowUp = (followUpId) => {
-    let userContextsSummary = "";
-    selectedContexts.forEach((context) => {
-      if (context.isUserDefined)
-        userContextsSummary +=
-          getSummaryForTheUserContext(context.value) + "\n";
-    });
-
-    const knowledgePackContexts = selectedContexts
-      .map((context) => (!context.isUserDefined ? context.value : null))
-      .filter((value) => value !== null);
-
-    return {
+    const requestBody = {
       userinput: promptInput,
-      ...(userContextsSummary !== "" && { userContext: userContextsSummary }),
-      ...(knowledgePackContexts.length > 0 && {
-        context: knowledgePackContexts,
-      }),
       promptid: followUpId,
       scenarios: scenarios
         .filter((scenario) => scenario.exclude !== true)
         .map(scenarioToJson),
       previous_promptid: selectedPromptConfiguration.identifier,
     };
+    attachContextsToRequestBody(requestBody);
+
+    return requestBody;
   };
 
   // Reset the chat session to start fresh

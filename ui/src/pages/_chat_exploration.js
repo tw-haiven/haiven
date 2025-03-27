@@ -34,7 +34,7 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
         body: JSON.stringify({
           userinput: lastMessage?.content,
           item: previousContext?.itemSummary,
-          context: previousContext?.context || "",
+          context: previousContext?.context || [],
           userContext: previousContext?.userContext || "",
           first_step_input: previousContext?.firstStepInput || "",
           previous_promptid: previousContext?.previousPromptId || "",

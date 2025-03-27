@@ -46,17 +46,10 @@ export default function App({
     getContextSnippets((data) => {
       const labelValuePairs = data.map((context) => {
         const contextCopy = { ...context };
-        if (context.context === "base") {
-          contextCopy.label = "None";
-          contextCopy.value = "base";
+        contextCopy.label = context.title;
+        contextCopy.value = context.context;
 
-          return contextCopy;
-        } else {
-          contextCopy.label = context.title;
-          contextCopy.value = context.context;
-
-          return contextCopy;
-        }
+        return contextCopy;
       });
       setContexts(labelValuePairs);
     });
