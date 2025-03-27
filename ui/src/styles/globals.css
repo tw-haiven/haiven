@@ -780,7 +780,6 @@ a.feedback:hover {
 .input-context-label {
   display: flex;
   justify-content: space-between;
-
 }
 .upload-image-menu {
   display: flex;
@@ -901,7 +900,7 @@ a.feedback:hover {
   flex-wrap: wrap;
   display: flex;
   flex-direction: column;
-  height: 157px;
+  height: 205px;
 
   .user-input {
     width: 50%;
@@ -916,7 +915,6 @@ a.feedback:hover {
       display: block;
       margin-top: 0.5em;
       margin-bottom: 1em;
-      height: 35px;
     }
   }
 }
@@ -981,7 +979,6 @@ a.feedback:hover {
     width: 100%;
     display: block;
     margin-top: 0.5em;
-    height: 35px;
   }
 }
 

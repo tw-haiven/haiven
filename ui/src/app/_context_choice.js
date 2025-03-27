@@ -40,6 +40,7 @@ function ContextChoice({ contexts, onChange }) {
         data-testid="context-select"
         mode="multiple"
         placeholder="Please select the context(s)"
+        maxCount="3"
       />
       <AddContext
         isAddingContext={isAddingContext}
