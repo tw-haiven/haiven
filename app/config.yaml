@@ -35,14 +35,14 @@ models:
       azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4o}
       api_key: ${AZURE_OPENAI_API_KEY}
 
-  - id: google-gemini
+  - id: gemini-2.0-flash
     name: Gemini on Google
     provider: GCP
     features:
       - text-generation
       - image-to-text
     config:
-      model: gemini-1.5-flash
+      model: gemini-2.0-flash
 
   - id: aws-claude-sonnet-3.5
     name: Claude-Sonnet-3.5 on AWS Bedrock
