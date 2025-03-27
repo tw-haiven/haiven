@@ -45,7 +45,7 @@ models:
       model: gemini-1.5-flash
 
   - id: aws-claude-sonnet-3.5
-    name: Claude-Sonnet-3.5 on AWS
+    name: Claude-Sonnet-3.5 on AWS Bedrock
     provider: AWS
     features:
       - text-generation
@@ -59,7 +59,7 @@ models:
       aws_access_key_id: ${AWS_ACCESS_KEY_ID}
 
   - id: aws-claude-sonnet-3.7
-    name: Claude-Sonnet-3.7 on AWS
+    name: Claude-Sonnet-3.7 on AWS Bedrock
     provider: AWS
     features:
       - text-generation
