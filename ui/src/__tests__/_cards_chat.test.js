@@ -306,7 +306,7 @@ describe("CardsChat Component", () => {
       const body = JSON.parse(bodyString);
       expect(body.userinput).toBe(someUserInput);
       expect(body.promptid).toBe(mockPrompts[0].identifier);
-      expect(body.userContext).toBe("User Context 1 description\n");
+      expect(body.userContext).toBe("User Context 1 description");
       expect(body.context).not.toBeDefined();
     };
 

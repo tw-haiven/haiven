@@ -85,12 +85,10 @@ const PromptChat = ({
   };
 
   const attachContextsToRequestBody = (requestBody) => {
-    let userContextsSummary = "";
-    selectedContexts.forEach((context) => {
-      if (context.isUserDefined)
-        userContextsSummary +=
-          getSummaryForTheUserContext(context.value) + "\n";
-    });
+    const userContextsSummary = selectedContexts
+      .filter((context) => context.isUserDefined)
+      .map((context) => getSummaryForTheUserContext(context.value))
+      .join("\n");
 
     const knowledgePackContexts = selectedContexts
       .map((context) => (!context.isUserDefined ? context.value : null))
