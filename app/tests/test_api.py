@@ -193,6 +193,7 @@ class TestApi(unittest.TestCase):
                 "promptid": "some-prompt-id",
                 "userinput": "some user input",
                 "userContext": "some user defined context",
+                "contexts": ["some context"],
             },
         )
 
@@ -201,7 +202,7 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
         mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_contexts=ANY,
+            active_knowledge_contexts=["some context"],
             prompt_choice="some-prompt-id",
             user_input="some user input",
             additional_vars={},

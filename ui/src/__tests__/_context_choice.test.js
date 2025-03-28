@@ -9,6 +9,8 @@ describe("ContextChoice Component", () => {
     { value: "base", label: "base" },
     { value: "context1", label: "Context 1" },
     { value: "context2", label: "Context 2" },
+    { value: "context3", label: "Context 3" },
+    { value: "context4", label: "Context 4" },
   ];
 
   const verifyTooltip = async (testId, tooltipText) => {
@@ -28,7 +30,7 @@ describe("ContextChoice Component", () => {
     expect(screen.getByText("Description")).toBeInTheDocument();
   }
 
-  it("should render context dropdown", async () => {
+  it("should render context dropdown with multiple choice", async () => {
     render(<ContextChoice contexts={mockContexts} />);
     expect(screen.getByText("Select your context")).toBeInTheDocument();
     expect(screen.getByTestId("context-select")).toBeInTheDocument();
@@ -42,11 +44,43 @@ describe("ContextChoice Component", () => {
 
     expect(screen.getByText("Context 1")).toBeInTheDocument();
     expect(screen.getByText("Context 2")).toBeInTheDocument();
+    expect(screen.getByText("Context 3")).toBeInTheDocument();
+    expect(screen.getByText("Context 4")).toBeInTheDocument();
+
     verifyAddContextLink();
 
-    const option = await screen.findByText("Context 1");
-    fireEvent.click(option);
+    const option1 = await screen.findByText("Context 1");
+    fireEvent.click(option1);
+
+    const option2 = await screen.findByText("Context 2");
+    fireEvent.click(option2);
 
     expect(within(select).getByText("Context 1")).toBeInTheDocument();
+    expect(within(select).getByText("Context 2")).toBeInTheDocument();
+    expect(within(select).queryByText("Context 3")).not.toBeInTheDocument();
+  });
+
+  it("should not allow user to select more than 3 which is the maximum count", async () => {
+    render(<ContextChoice contexts={mockContexts} />);
+    const select = screen.getByTestId("context-select").firstChild;
+    fireEvent.mouseDown(select);
+
+    verifyAddContextLink();
+
+    const option1 = await screen.findByText("Context 1");
+    fireEvent.click(option1);
+    expect(within(select).getByText("Context 1")).toBeInTheDocument();
+
+    const option2 = await screen.findByText("Context 2");
+    fireEvent.click(option2);
+    expect(within(select).getByText("Context 2")).toBeInTheDocument();
+
+    const option3 = await screen.findByText("Context 3");
+    fireEvent.click(option3);
+    expect(within(select).getByText("Context 3")).toBeInTheDocument();
+
+    const option4 = await screen.findByText("Context 4");
+    fireEvent.click(option4);
+    expect(within(select).queryByText("Context 4")).not.toBeInTheDocument();
   });
 });

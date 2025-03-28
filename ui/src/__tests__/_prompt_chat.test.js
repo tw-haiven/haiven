@@ -76,7 +76,6 @@ describe("PromptChat Component", () => {
   ];
 
   const mockContexts = [
-    { value: "base", label: "base" },
     { value: "context1", label: "Context 1" },
     { value: "context2", label: "Context 2" },
   ];
@@ -235,8 +234,15 @@ describe("PromptChat Component", () => {
   }
 
   function setUpUserContexts() {
+    vi.useFakeTimers();
+
+    vi.setSystemTime(new Date("2025-03-28T12:00:00.000Z"));
     saveContext("User Context 1", "User Context 1 description");
+
+    vi.setSystemTime(new Date("2025-03-28T12:00:00.005Z"));
     saveContext("User Context 2", "User Context 2 description");
+
+    vi.useRealTimers();
   }
 
   it("should render chat area with initial components", async () => {
@@ -289,6 +295,7 @@ describe("PromptChat Component", () => {
 
     clickAdvancedPrompt();
     await selectContext("Context 1");
+    await selectContext("Context 2");
     await selectDocument();
     uploadImage();
     givenUserInput();
@@ -307,14 +314,14 @@ describe("PromptChat Component", () => {
           promptid: "1",
           chatSessionId: undefined,
           document: "document1",
-          contexts: ["context1"],
+          contexts: ["context1", "context2"],
         }),
       );
       expect(screen.getByText(mockResponse)).toBeInTheDocument();
     });
   });
 
-  it("should fetch chat response for the selected user context", async () => {
+  it("should fetch chat response for multiple contexts which includes knowledge pack contexts and user contexts", async () => {
     setUpUserContexts();
     const mockResponse = "Sample response from LLM";
     const fetchMock = setupFetchMock(mockResponse);
@@ -337,10 +344,10 @@ describe("PromptChat Component", () => {
     clickAdvancedPrompt();
     const contextDropdown = screen.getByTestId("context-select").firstChild;
     fireEvent.mouseDown(contextDropdown);
-    expect(screen.getByText("User Context 1")).toBeInTheDocument();
-    expect(screen.getByText("User Context 2")).toBeInTheDocument();
 
     await selectContext("User Context 1");
+    await selectContext("User Context 2");
+    await selectContext("Context 1");
     givenUserInput();
 
     const sendButton = screen.getByRole("button", { name: "SEND" });
@@ -357,7 +364,9 @@ describe("PromptChat Component", () => {
           promptid: "1",
           chatSessionId: undefined,
           document: "",
-          userContext: "User Context 1 description",
+          userContext:
+            "User Context 2 description\n\nUser Context 1 description",
+          contexts: ["context1"],
         }),
       );
       expect(screen.getByText(mockResponse)).toBeInTheDocument();

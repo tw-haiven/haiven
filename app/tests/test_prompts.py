@@ -6,6 +6,7 @@ from prompts.prompts import PromptList
 
 TEST_KNOWLEDGE_PACK_PATH = get_test_data_path() + "/test_knowledge_pack"
 ACTIVE_KNOWLEDGE_CONTEXT = "context_a"
+CONTEXT_B = "context_b"
 
 
 def create_knowledge_base(knowledge_pack_path):
@@ -13,6 +14,10 @@ def create_knowledge_base(knowledge_pack_path):
     knowledge_base.load_for_context(
         ACTIVE_KNOWLEDGE_CONTEXT,
         knowledge_pack_path + "/contexts/" + ACTIVE_KNOWLEDGE_CONTEXT + ".md",
+    )
+    knowledge_base.load_for_context(
+        CONTEXT_B,
+        knowledge_pack_path + "/contexts/" + CONTEXT_B + ".md",
     )
     return knowledge_base
 
@@ -65,21 +70,21 @@ def test_create_template():
     assert template.template == "Content: {user_input} | Business: {context}"
 
 
-def test_create_and_render_template_for_given_knowledge_pack_context():
+def test_create_and_render_template_for_given_multiple_knowledge_pack_contexts():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)
     rendered, template = prompt_list.create_and_render_template(
-        [ACTIVE_KNOWLEDGE_CONTEXT], "uuid-3", {"user_input": "Some User Input"}
+        [ACTIVE_KNOWLEDGE_CONTEXT, CONTEXT_B],
+        "uuid-3",
+        {"user_input": "Some User Input"},
     )
     assert template.template == "Content: {user_input} | Business: {context}"
-    expected_rendered_output = (
-        "Content: Some User Input | Business: Domain knowledge from context_a"
-    )
+    expected_rendered_output = "Content: Some User Input | Business: Domain knowledge from context_a\n\ncontext_b domain knowledge"
     assert rendered == expected_rendered_output
 
 
-def test_create_and_render_template_for_given_user_context():
+def test_create_and_render_template_for_given_user_context_without_knowledge_pack_context():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
 
     prompt_list = PromptList("chat", knowledge_base, root_dir=TEST_KNOWLEDGE_PACK_PATH)

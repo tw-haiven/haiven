@@ -146,7 +146,7 @@ const CardsChat = ({
     const userContextsSummary = selectedContexts
       .filter((context) => context.isUserDefined)
       .map((context) => getSummaryForTheUserContext(context.value))
-      .join("\n");
+      .join("\n\n");
 
     const knowledgePackContexts = selectedContexts
       .map((context) => (!context.isUserDefined ? context.value : null))

@@ -68,8 +68,8 @@ const mockPrompts = [
   { identifier: "2", title: "Contract Test Generation", followUps: [] },
 ];
 const mockContexts = [
-  { key: "base", label: "Base Context" },
-  { key: "context1", label: "Context 1" },
+  { value: "context1", label: "Context 1" },
+  { value: "context2", label: "Context 2" },
 ];
 const mockModels = [
   {
@@ -179,6 +179,22 @@ async function selectContext(contextTitle) {
   const selectedContext = await screen.findByText(contextTitle);
   fireEvent.click(selectedContext);
 }
+
+function setUpUserContexts() {
+  vi.useFakeTimers();
+
+  vi.setSystemTime(new Date("2025-03-28T12:00:00.000Z"));
+  saveContext("User Context 1", "User Context 1 description");
+
+  vi.setSystemTime(new Date("2025-03-28T12:00:00.005Z"));
+  saveContext("User Context 2", "User Context 2 description");
+
+  vi.useRealTimers();
+}
+
+afterEach(() => {
+  localStorage.clear();
+});
 
 describe("CardsChat Component", () => {
   afterEach(() => {
@@ -296,25 +312,15 @@ describe("CardsChat Component", () => {
     });
   });
 
-  it("should render data for the given user defined context", async () => {
-    const setUpUserContexts = () => {
-      saveContext("User Context 1", "User Context 1 description");
-      saveContext("User Context 2", "User Context 2 description");
-    };
-
+  it("should fetch cards chat response for multiple contexts which includes knowledge pack contexts and user contexts", async () => {
     const thenFirstPromptRequestHappensWithUserContext = (bodyString) => {
       const body = JSON.parse(bodyString);
       expect(body.userinput).toBe(someUserInput);
       expect(body.promptid).toBe(mockPrompts[0].identifier);
-      expect(body.userContext).toBe("User Context 1 description");
-      expect(body.context).not.toBeDefined();
-    };
-
-    const thenUserContextsAreAddedInDropdown = () => {
-      const contextDropdown = screen.getByTestId("context-select").firstChild;
-      fireEvent.mouseDown(contextDropdown);
-      expect(screen.getByText("User Context 1")).toBeInTheDocument();
-      expect(screen.getByText("User Context 2")).toBeInTheDocument();
+      expect(body.userContext).toBe(
+        "User Context 2 description\n\nUser Context 1 description",
+      );
+      expect(body.contexts).toEqual(["context1"]);
     };
 
     fetchSSE.mockImplementationOnce((url, options, { onMessageHandle }) => {
@@ -323,11 +329,39 @@ describe("CardsChat Component", () => {
 
     setUpUserContexts();
     await setup();
+
     clickAdvancedPrompt();
 
-    thenUserContextsAreAddedInDropdown();
+    const contextDropdown = screen.getByTestId("context-select").firstChild;
+    fireEvent.mouseDown(contextDropdown);
 
     await selectContext("User Context 1");
+    await selectContext("User Context 2");
+    await selectContext("Context 1");
+
+    givenUserInput(someUserInput);
+    await whenSendIsClicked();
+    expect(fetchSSE).toHaveBeenCalledTimes(1);
+  });
+
+  it("should fetch cards chat response when user selects multiple knowledge pack contexts", async () => {
+    const thenFirstPromptRequestHappensWithUserContext = (bodyString) => {
+      const body = JSON.parse(bodyString);
+      expect(body.contexts).toEqual(["context1", "context2"]);
+    };
+
+    fetchSSE.mockImplementationOnce((url, options, { onMessageHandle }) => {
+      thenFirstPromptRequestHappensWithUserContext(options.body);
+    });
+
+    await setup();
+    clickAdvancedPrompt();
+
+    const contextDropdown = screen.getByTestId("context-select").firstChild;
+    fireEvent.mouseDown(contextDropdown);
+
+    await selectContext("Context 1");
+    await selectContext("Context 2");
 
     givenUserInput(someUserInput);
     await whenSendIsClicked();
