@@ -82,6 +82,8 @@ class ApiMultiStep(HaivenBaseApi):
                     document_key=prompt_data.document,
                     user_identifier=self.get_hashed_user_id(request),
                     origin_url=origin_url,
+                    context=prompt_data.context,
+                    userContext=prompt_data.userContext,
                 )
 
             except Exception as error:
@@ -160,6 +162,8 @@ I want to focus on this item:
                     document_key=prompt_data.document,
                     user_identifier=self.get_hashed_user_id(request),
                     origin_url=origin_url,
+                    context=prompt_data.context,
+                    userContext=prompt_data.userContext,
                 )
 
             except Exception as error:

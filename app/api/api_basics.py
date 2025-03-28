@@ -84,6 +84,7 @@ class HaivenBaseApi:
         context=None,
         origin_url=None,
         model_config=None,
+        userContext=None,
     ):
         try:
             chat_session_key_value, chat_session = self.chat_manager.json_chat(
@@ -92,14 +93,14 @@ class HaivenBaseApi:
                 options=ChatOptions(category=chat_category),
             )
 
-            chat_session.log_run(
-                {
-                    "url": origin_url,
-                    "user_id": user_identifier,
-                    "session": chat_session_key_value,
-                    "prompt_id": prompt_id,
-                    "context": context,
-                }
+            self.log_run(
+                chat_session,
+                origin_url,
+                user_identifier,
+                chat_session_key_value,
+                prompt_id,
+                context,
+                userContext,
             )
 
             return StreamingResponse(
@@ -111,6 +112,27 @@ class HaivenBaseApi:
         except Exception as error:
             raise Exception(error)
 
+    def log_run(
+        self,
+        chat_session,
+        origin_url,
+        user_identifier,
+        chat_session_key_value,
+        prompt_id,
+        context,
+        userContext,
+    ):
+        return chat_session.log_run(
+            {
+                "url": origin_url,
+                "user_id": user_identifier,
+                "session": chat_session_key_value,
+                "prompt_id": prompt_id,
+                "context": ",".join(context or []),
+                "user_context": userContext or "",
+            }
+        )
+
     def stream_text_chat(
         self,
         prompt,
@@ -121,6 +143,7 @@ class HaivenBaseApi:
         user_identifier=None,
         context=None,
         origin_url=None,
+        userContext=None,
     ):
         try:
 
@@ -149,14 +172,14 @@ class HaivenBaseApi:
                 options=ChatOptions(in_chunks=True, category=chat_category),
             )
 
-            chat_session.log_run(
-                {
-                    "url": origin_url,
-                    "user_id": user_identifier,
-                    "session": chat_session_key_value,
-                    "prompt_id": prompt_id,
-                    "context": context,
-                }
+            self.log_run(
+                chat_session,
+                origin_url,
+                user_identifier,
+                chat_session_key_value,
+                prompt_id,
+                context,
+                userContext,
             )
 
             return StreamingResponse(
@@ -167,13 +190,6 @@ class HaivenBaseApi:
 
         except Exception as error:
             raise Exception(error)
-
-
-def contextNameForLogging(prompt_data):
-    if prompt_data.userContext:
-        return "User context: " + prompt_data.userContext
-    else:
-        return prompt_data.context
 
 
 class ApiBasics(HaivenBaseApi):
@@ -344,7 +360,8 @@ class ApiBasics(HaivenBaseApi):
                     document_key=prompt_data.document,
                     prompt_id=prompt_data.promptid,
                     user_identifier=self.get_hashed_user_id(request),
-                    context=contextNameForLogging(prompt_data),
+                    context=prompt_data.context,
+                    userContext=prompt_data.userContext,
                     origin_url=origin_url,
                 )
 
