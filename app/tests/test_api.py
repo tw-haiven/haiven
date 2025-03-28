@@ -201,7 +201,7 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
         mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_context=ANY,
+            active_knowledge_contexts=ANY,
             prompt_choice="some-prompt-id",
             user_input="some user input",
             additional_vars={},
@@ -244,7 +244,7 @@ class TestApi(unittest.TestCase):
             "/api/prompt",
             json={
                 "userinput": user_input,
-                "context": ["some context"],
+                "contexts": ["some context"],
                 "promptid": "guided-requirements",
                 "userContext": "some user defined context",
             },
@@ -255,7 +255,7 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
         mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_context=["some context"],
+            active_knowledge_contexts=["some context"],
             prompt_choice="guided-requirements",
             user_input=user_input,
             additional_vars={},
@@ -295,7 +295,7 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
         mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_context=ANY,
+            active_knowledge_contexts=ANY,
             prompt_choice="guided-scenarios-detailed",
             user_input=ANY,
             additional_vars={
@@ -379,7 +379,7 @@ class TestApi(unittest.TestCase):
 
         body_dict = {
             "userinput": "some user question",
-            "context": ["some context"],
+            "contexts": ["some context"],
             "item": "some scenario item",
             "first_step_input": "some original prompt",
             "chatSessionId": "",
@@ -438,7 +438,7 @@ class TestApi(unittest.TestCase):
                 "chat_session_id": None,
                 "userinput": "some original requirement",
                 "promptid": "follow-up-prompt-2345",
-                "context": ["some-context"],
+                "contexts": ["some-context"],
                 # additional data for the follow-up
                 "scenarios": [{"title": "some title", "content": "some content"}],
                 "previous_promptid": "first-step-prompt-1234",
@@ -497,7 +497,7 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
         mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_context=ANY,
+            active_knowledge_contexts=ANY,
             prompt_choice="guided-creative-matrix",
             user_input=ANY,
             additional_vars={

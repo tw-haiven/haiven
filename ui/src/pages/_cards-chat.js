@@ -156,7 +156,7 @@ const CardsChat = ({
       requestBody.userContext = userContextsSummary;
     }
     if (knowledgePackContexts.length > 0) {
-      requestBody.context = knowledgePackContexts;
+      requestBody.contexts = knowledgePackContexts;
     }
   };
 

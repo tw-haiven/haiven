@@ -67,7 +67,7 @@ class ApiMultiStep(HaivenBaseApi):
                     """
 
                 rendered_prompt, _ = prompts.render_prompt(
-                    active_knowledge_context=prompt_data.context,
+                    active_knowledge_contexts=prompt_data.contexts,
                     prompt_choice=prompt_data.promptid,
                     user_input=user_input,
                     additional_vars={},
@@ -82,7 +82,7 @@ class ApiMultiStep(HaivenBaseApi):
                     document_key=prompt_data.document,
                     user_identifier=self.get_hashed_user_id(request),
                     origin_url=origin_url,
-                    context=prompt_data.context,
+                    contexts=prompt_data.contexts,
                     userContext=prompt_data.userContext,
                 )
 
@@ -102,9 +102,9 @@ class ApiMultiStep(HaivenBaseApi):
 
                 user_input = prompt_data.userinput
                 if prompt_data.previous_promptid:
-                    if prompt_data.context or prompt_data.userContext:
+                    if prompt_data.contexts or prompt_data.userContext:
                         context = prompts.get_rendered_context(
-                            prompt_data.context,
+                            prompt_data.contexts,
                             prompt_data.previous_promptid,
                             prompt_data.userContext,
                         )
@@ -162,7 +162,7 @@ I want to focus on this item:
                     document_key=prompt_data.document,
                     user_identifier=self.get_hashed_user_id(request),
                     origin_url=origin_url,
-                    context=prompt_data.context,
+                    contexts=prompt_data.contexts,
                     userContext=prompt_data.userContext,
                 )
 

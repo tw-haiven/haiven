@@ -27,7 +27,7 @@ class PromptRequestBody(BaseModel):
     userinput: str = None
     promptid: str = None
     chatSessionId: str = None
-    context: List[str] = None
+    contexts: List[str] = None
     document: str = None
     json: bool = False
     userContext: str = None
@@ -81,7 +81,7 @@ class HaivenBaseApi:
         document_key=None,
         prompt_id=None,
         user_identifier=None,
-        context=None,
+        contexts=None,
         origin_url=None,
         model_config=None,
         userContext=None,
@@ -99,7 +99,7 @@ class HaivenBaseApi:
                 user_identifier,
                 chat_session_key_value,
                 prompt_id,
-                context,
+                contexts,
                 userContext,
             )
 
@@ -141,7 +141,7 @@ class HaivenBaseApi:
         document_key=None,
         prompt_id=None,
         user_identifier=None,
-        context=None,
+        contexts=None,
         origin_url=None,
         userContext=None,
     ):
@@ -178,7 +178,7 @@ class HaivenBaseApi:
                 user_identifier,
                 chat_session_key_value,
                 prompt_id,
-                context,
+                contexts,
                 userContext,
             )
 
@@ -338,7 +338,7 @@ class ApiBasics(HaivenBaseApi):
                         else prompts_chat
                     )
                     rendered_prompt, _ = prompts.render_prompt(
-                        active_knowledge_context=prompt_data.context,
+                        active_knowledge_contexts=prompt_data.contexts,
                         prompt_choice=prompt_data.promptid,
                         user_input=prompt_data.userinput,
                         additional_vars={},
@@ -360,7 +360,7 @@ class ApiBasics(HaivenBaseApi):
                     document_key=prompt_data.document,
                     prompt_id=prompt_data.promptid,
                     user_identifier=self.get_hashed_user_id(request),
-                    context=prompt_data.context,
+                    contexts=prompt_data.contexts,
                     userContext=prompt_data.userContext,
                     origin_url=origin_url,
                 )
@@ -424,7 +424,7 @@ class ApiBasics(HaivenBaseApi):
                 )
 
                 rendered_prompt, template = prompts.render_prompt(
-                    active_knowledge_context=prompt_data.context,
+                    active_knowledge_contexts=prompt_data.contexts,
                     prompt_choice=prompt_data.promptid,
                     user_input=prompt_data.userinput,
                     additional_vars={},

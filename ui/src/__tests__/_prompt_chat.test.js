@@ -307,7 +307,7 @@ describe("PromptChat Component", () => {
           promptid: "1",
           chatSessionId: undefined,
           document: "document1",
-          context: ["context1"],
+          contexts: ["context1"],
         }),
       );
       expect(screen.getByText(mockResponse)).toBeInTheDocument();

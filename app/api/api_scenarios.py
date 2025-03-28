@@ -23,7 +23,7 @@ class ApiScenarios(HaivenBaseApi):
             detailed = request.query_params.get("detail") == "true"
 
             prompt, _ = prompt_list.render_prompt(
-                active_knowledge_context=None,
+                active_knowledge_contexts=None,
                 prompt_choice="guided-scenarios-detailed"
                 if detailed
                 else "guided-scenarios",

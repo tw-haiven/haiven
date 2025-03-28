@@ -21,7 +21,6 @@ class KnowledgeManager:
         self.knowledge_pack_definition = KnowledgePack(
             config_service.load_knowledge_pack_path()
         )
-        self.active_knowledge_context = None
 
         self._load_context_markdown_knowledge()
 
@@ -67,11 +66,6 @@ class KnowledgeManager:
             HaivenLogger.get().error(
                 str(error), extra={"ERROR": "KnowledgePackContextNotFound"}
             )
-
-    def on_context_selected(self, context_name: str) -> str:
-        self.active_knowledge_context = context_name
-
-        return self.active_knowledge_context
 
     def _load_system_message(self):
         system_message_path = os.path.join(
