@@ -120,7 +120,7 @@ class PromptList:
             context = user_context
 
             if knowledge_and_input.get("context") is not None:
-                context = knowledge_and_input["context"] + " " + user_context
+                context = knowledge_and_input["context"] + "\n\n" + user_context
 
             knowledge_and_input["context"] = context
         return knowledge_and_input

@@ -61,12 +61,10 @@ class KnowledgeBaseMarkdown:
 
     def aggregate_context_contents(self, contexts: List[str]) -> dict[str, str]:
         """
-        Returns a dictionary with context as key and all ccontext content appended
+        Returns a dictionary with context as key and all contexts' contents appended as one string
         """
-        aggregated_content = ""
 
-        for context_key in contexts:
-            aggregated_content = (
-                aggregated_content + "\n" + self._knowledge[context_key].content
-            )
+        aggregated_content = "\n\n".join(
+            self._knowledge[context_key].content for context_key in contexts
+        )
         return {"context": aggregated_content}

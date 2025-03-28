@@ -74,7 +74,7 @@ def test_create_and_render_template_for_given_knowledge_pack_context():
     )
     assert template.template == "Content: {user_input} | Business: {context}"
     expected_rendered_output = (
-        "Content: Some User Input | Business: \nDomain knowledge from context_a"
+        "Content: Some User Input | Business: Domain knowledge from context_a"
     )
     assert rendered == expected_rendered_output
 
@@ -145,7 +145,7 @@ def test_render_prompt_for_given_prompt_id_and_knowledge_pack_context():
         "Some User Input",
     )
 
-    assert rendered == """Content Some User Input \nDomain knowledge from context_a"""
+    assert rendered == """Content Some User Input Domain knowledge from context_a"""
 
 
 def test_render_prompt_for_given_prompt_id_and_user_context():
@@ -161,7 +161,7 @@ def test_render_prompt_for_given_prompt_id_and_user_context():
 
     assert (
         rendered
-        == """Content Some User Input \nDomain knowledge from context_a some user context"""
+        == """Content Some User Input Domain knowledge from context_a\n\nsome user context"""
     )
 
 
@@ -266,7 +266,7 @@ def test_append_user_context_if_knowledge_pack_context_exists():
 
     result = prompt_list.appendUserContext(knowledge_and_input, user_context)
 
-    assert result["context"] == "Initial context additional context"
+    assert result["context"] == "Initial context\n\nadditional context"
 
 
 def test_should_not_append_user_context_if_user_context_doesnt_exists():
@@ -313,5 +313,5 @@ def test_get_rendered_context_with_knowledge_pack_context():
         [ACTIVE_KNOWLEDGE_CONTEXT], "uuid-3", None
     )
 
-    expected_context = "\nDomain knowledge from context_a"
+    expected_context = "Domain knowledge from context_a"
     assert rendered_context == expected_context
