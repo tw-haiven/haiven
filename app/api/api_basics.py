@@ -129,7 +129,7 @@ class HaivenBaseApi:
                 "session": chat_session_key_value,
                 "prompt_id": prompt_id,
                 "context": ",".join(context or []),
-                "user_context": userContext or "",
+                "is_user_context_included": True if userContext else False,
             }
         )
 
