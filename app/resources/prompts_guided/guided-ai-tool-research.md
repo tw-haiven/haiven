@@ -37,6 +37,7 @@ I want you to analyze the company or product:
     - Commercial Model
     - Usage costs
     - Open Source status
+    - Recency (how recent is the latest information you have found, e.g. is it only information that is at least a year old)
   2. Competitors:
     - Name
     - Rationale
@@ -68,6 +69,7 @@ I want you to analyze the company or product:
       - commercial_model: <string>
       - usage_costs: <string>
       - open_source_status: <string>
+      - recency: <string>
   
     - competitors: <array of objects, with each object representing a competitor object with the following keys:>
       - name: <string>
