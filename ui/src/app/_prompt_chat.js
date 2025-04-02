@@ -269,6 +269,7 @@ const PromptChat = ({
 
   const promptPreview = showTextSnippets ? (
     <PromptPreview
+      selectedContexts={selectedContexts}
       renderPromptRequest={renderPromptRequest}
       startNewChat={startNewChat}
       setUsePromptId={setUsePromptId}

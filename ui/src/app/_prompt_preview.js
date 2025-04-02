@@ -12,6 +12,7 @@ import PromptSampleInput from "./_prompt_sample_input";
 import ConfirmClose from "./_confirm_close";
 
 export default function PromptPreview({
+  selectedContexts = [],
   renderPromptRequest,
   startNewChat = () => {},
   setUsePromptId = () => {},
@@ -155,6 +156,12 @@ export default function PromptPreview({
           <p>
             This is the text that will be sent to the AI model. It includes your
             input and any contexts you selected.
+            <br />
+            <span>
+              {selectedContexts.length > 0
+                ? `Contexts selected: ${selectedContexts.map((context) => context.label).join(", ")}`
+                : "No contexts selected."}
+            </span>
           </p>
 
           <div className="actions">
