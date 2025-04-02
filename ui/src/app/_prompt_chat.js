@@ -35,7 +35,7 @@ const PromptChat = ({
   // User inputs
   const [selectedPrompt, setPromptSelection] = useState(promptId); // via query parameter
   const [selectedContexts, setSelectedContexts] = useState([]);
-  const [selectedDocument, setSelectedDocument] = useState("");
+  const [selectedDocument, setSelectedDocument] = useState([]);
   const [imageDescription, setImageDescription] = useState("");
   const [userInput, setUserInput] = useState(initialInput);
 
@@ -108,7 +108,7 @@ const PromptChat = ({
       userinput: usePromptId ? appendImageDescription(userInput) : userInput,
       promptid: usePromptId ? selectedPrompt?.identifier : undefined,
       chatSessionId: chatSessionId,
-      ...(selectedDocument !== "base" && { document: selectedDocument }),
+      document: selectedDocument,
     };
     attachContextsToRequestBody(requestBody);
     return requestBody;
@@ -237,7 +237,8 @@ const PromptChat = ({
           onChange={setSelectedDocument}
           options={documents}
           value={selectedDocument?.key}
-          defaultValue={"base"}
+          mode="multiple"
+          maxCount="3"
           data-testid="document-select"
         ></Select>
       </div>

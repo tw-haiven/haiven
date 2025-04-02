@@ -96,21 +96,22 @@ class TestsKnowledgeBaseDocuments:
     ):
         self.service.load_documents_for_base(self.knowledge_pack_path + "/embeddings")
 
-        similarity_results = self.service.similarity_search_with_scores(
-            query="When Ingenuity was launched?"
+        similarity_results = self.service.similarity_search_on_multiple_documents(
+            query="When Ingenuity was launched?",
+            document_keys=["ingenuity-wikipedia", "tw-guide-agile-sd"],
         )
 
-        assert len(similarity_results) == 5
+        assert len(similarity_results) == 10
 
         # Since both stores retrievers will return the same results, results will be duplicated as there are 2 documents in total
-        assert similarity_results[0][0].page_content == "document content A"
-        assert similarity_results[1][0].page_content == "document content A"
-        assert similarity_results[2][0].page_content == "document content B"
-        assert similarity_results[3][0].page_content == "document content B"
-        assert similarity_results[4][0].page_content == "document content C"
+        assert similarity_results[0].page_content == "document content A"
+        assert similarity_results[1].page_content == "document content B"
+        assert similarity_results[2].page_content == "document content C"
+        assert similarity_results[3].page_content == "document content D"
+        assert similarity_results[4].page_content == "document content E"
 
-        assert similarity_results[0][1] == 0.2
-        assert similarity_results[1][1] == 0.2
-        assert similarity_results[2][1] == 0.23
-        assert similarity_results[3][1] == 0.23
-        assert similarity_results[4][1] == 0.27
+        assert similarity_results[0].page_content == "document content A"
+        assert similarity_results[1].page_content == "document content B"
+        assert similarity_results[2].page_content == "document content C"
+        assert similarity_results[3].page_content == "document content D"
+        assert similarity_results[4].page_content == "document content E"

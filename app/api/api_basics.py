@@ -28,7 +28,7 @@ class PromptRequestBody(BaseModel):
     promptid: str = None
     chatSessionId: str = None
     contexts: List[str] = None
-    document: str = None
+    document: List[str] = None
     json: bool = False
     userContext: str = None
 
@@ -78,7 +78,7 @@ class HaivenBaseApi:
         prompt,
         chat_category,
         chat_session_key_value=None,
-        document_key=None,
+        document_keys=None,
         prompt_id=None,
         user_identifier=None,
         contexts=None,
@@ -138,7 +138,7 @@ class HaivenBaseApi:
         prompt,
         chat_category,
         chat_session_key_value=None,
-        document_key=None,
+        document_keys=[],
         prompt_id=None,
         user_identifier=None,
         contexts=None,
@@ -149,10 +149,10 @@ class HaivenBaseApi:
 
             def stream(chat_session: StreamingChat, prompt):
                 try:
-                    if document_key:
+                    if document_keys:
                         sources = ""
                         for chunk, sources in chat_session.run_with_document(
-                            document_key, prompt
+                            document_keys, prompt
                         ):
                             sources = sources
                             yield chunk
@@ -364,7 +364,7 @@ class ApiBasics(HaivenBaseApi):
                     prompt=prompt,
                     chat_category="boba-chat",
                     chat_session_key_value=session_id,
-                    document_key=document,
+                    document_keys=document,
                     prompt_id=promptid,
                     user_identifier=user_id,
                     contexts=contexts,

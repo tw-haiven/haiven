@@ -167,12 +167,10 @@ class TestEmbeddings:
 
     @mock.patch("embeddings.client.FAISS.load_local")
     @mock.patch("embeddings.client.FAISS.from_documents")
-    @mock.patch("embeddings.client.RecursiveCharacterTextSplitter")
     @mock.patch("embeddings.client.OpenAIEmbeddings")
     def test_generate_openai_provider_embeddings(
         self,
         openai_embeddings_mock,
-        text_splitter_mock,
         from_documents_mock,
         load_local_mock,
     ):
@@ -185,9 +183,6 @@ class TestEmbeddings:
             provider="OpenAI",
             config={"model": openai_model, "api_key": openai_api_key},
         )
-
-        text_splitter = mock.MagicMock()
-        text_splitter_mock.return_value = text_splitter
 
         faiss_embeddings = "faiss_embeddings"
         from_documents_mock.return_value = faiss_embeddings
@@ -207,10 +202,9 @@ class TestEmbeddings:
         )
 
     @mock.patch("embeddings.client.FAISS.from_documents")
-    @mock.patch("embeddings.client.RecursiveCharacterTextSplitter")
     @mock.patch("embeddings.client.AzureOpenAIEmbeddings")
     def test_generate_azure_provider_embeddings(
-        self, azure_openai_embeddings_mock, text_splitter_mock, from_documents_mock
+        self, azure_openai_embeddings_mock, from_documents_mock
     ):
         # given I have a list of Documents and a model
         azure_openai_api_key = "azure_openai_key"
@@ -229,9 +223,6 @@ class TestEmbeddings:
             },
         )
 
-        text_splitter = mock.MagicMock()
-        text_splitter_mock.return_value = text_splitter
-
         faiss_embeddings = "faiss_embeddings"
         from_documents_mock.return_value = faiss_embeddings
 
@@ -246,12 +237,10 @@ class TestEmbeddings:
 
     @mock.patch("embeddings.client.FAISS.load_local")
     @mock.patch("embeddings.client.FAISS.from_documents")
-    @mock.patch("embeddings.client.RecursiveCharacterTextSplitter")
     @mock.patch("embeddings.client.BedrockEmbeddings")
     def test_generate_aws_provider_embeddings(
         self,
         bedrock_embeddings_mock,
-        text_splitter_mock,
         from_documents_mock,
         load_local_mock,
     ):
@@ -263,9 +252,6 @@ class TestEmbeddings:
                 "aws_region": "us-east-1",
             },
         )
-
-        text_splitter = mock.MagicMock()
-        text_splitter_mock.return_value = text_splitter
 
         faiss_embeddings = "faiss_embeddings"
         from_documents_mock.return_value = faiss_embeddings

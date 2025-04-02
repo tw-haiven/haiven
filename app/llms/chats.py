@@ -2,6 +2,7 @@
 import json
 import time
 import uuid
+from typing import List
 
 from pydantic import BaseModel
 from config_service import ConfigService
@@ -85,16 +86,16 @@ class HaivenBaseChat:
         else:
             return query
 
-    def _similarity_search_based_on_history(self, message, knowledge_document_key):
+    def _similarity_search_based_on_history(self, message, knowledge_document_keys):
         similarity_query = self._similarity_query(message)
         print("Similarity Query:", similarity_query)
         if similarity_query is None:
             return None, None
 
-        if knowledge_document_key:
-            context_documents = self.knowledge_manager.knowledge_base_documents.similarity_search_on_single_document(
+        if knowledge_document_keys:
+            context_documents = self.knowledge_manager.knowledge_base_documents.similarity_search_on_multiple_documents(
                 query=similarity_query,
-                document_key=knowledge_document_key,
+                document_keys=knowledge_document_keys,
             )
         else:
             return None, None
@@ -146,13 +147,13 @@ class StreamingChat(HaivenBaseChat):
 
     def run_with_document(
         self,
-        knowledge_document_key: str,
+        knowledge_document_keys: List[str],
         message: str = None,
     ):
         try:
             context_for_prompt, sources_markdown = (
                 self._similarity_search_based_on_history(
-                    message, knowledge_document_key
+                    message, knowledge_document_keys
                 )
             )
 

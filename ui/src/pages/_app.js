@@ -54,8 +54,7 @@ export default function App({
       setContexts(labelValuePairs);
     });
     getDocuments((data) => {
-      const updatedDocuments = [{ label: "None", value: "base" }, ...data];
-      setDocuments(updatedDocuments);
+      setDocuments(data);
     });
     getModels(setModels);
     initializeLocalStorage();
