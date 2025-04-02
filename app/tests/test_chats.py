@@ -18,6 +18,7 @@ class TestChats(unittest.TestCase):
         # Setup knowledge manager to return a specific system message
         custom_system_message = "You are a test assistant"
         mock_knowledge_manager.get_system_message.return_value = custom_system_message
+        mock_knowledge_manager.get_complete_context.return_value = ""
 
         mock_chat_client = MagicMock()
         mock_chat_client.stream.return_value = (
@@ -89,6 +90,7 @@ class TestChats(unittest.TestCase):
         # Setup knowledge manager to return a specific system message
         custom_system_message = "You are a test assistant"
         mock_knowledge_manager.get_system_message.return_value = custom_system_message
+        mock_knowledge_manager.get_complete_context.return_value = ""
 
         mock_chat_client = MagicMock()
         actual_chunks = (
@@ -141,6 +143,7 @@ class TestChats(unittest.TestCase):
     def test_haiven_base_chat(self, mock_knowledge_manager):
         # Setup knowledge manager to return the default system message
         mock_knowledge_manager.get_system_message.return_value = SYSTEM_MESSAGE
+        mock_knowledge_manager.get_complete_context.return_value = "some context"
 
         mock_chat_client = MagicMock()
 
@@ -150,10 +153,10 @@ class TestChats(unittest.TestCase):
         )
 
         # Verify system message is correctly set from knowledge manager
-        assert base_chat.system == SYSTEM_MESSAGE
+        assert base_chat.system == SYSTEM_MESSAGE + "\n\n" + "some context"
         assert len(base_chat.memory) == 1
         assert isinstance(base_chat.memory[0], HaivenSystemMessage)
-        assert base_chat.memory[0].content == SYSTEM_MESSAGE
+        assert base_chat.memory[0].content == SYSTEM_MESSAGE + "\n\n" + "some context"
 
         # Test memory_as_text method
         memory_text = base_chat.memory_as_text()

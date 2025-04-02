@@ -426,7 +426,8 @@ class TestApi(unittest.TestCase):
         )
         prompts_factory_guided = PromptsFactory(guided_prompts_path)
         prompts_guided = prompts_factory_guided.create_guided_prompt_list(
-            MagicMock()  # knowledge_base_markdown
+            MagicMock(),  # knowledge_base_markdown
+            MagicMock(),  # knowledge_manager,
         )
 
         ApiMultiStep(self.app, mock_chat_manager, "some_model_key", prompts_guided)

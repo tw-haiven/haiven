@@ -26,6 +26,10 @@ class HaivenBaseChat:
     ):
         self.knowledge_manager = knowledge_manager
         self.system = knowledge_manager.get_system_message()
+        complete_context = knowledge_manager.get_complete_context()
+        if complete_context:
+            self.system += "\n\n" + complete_context
+
         self.memory = [HaivenSystemMessage(content=self.system)]
         self.chat_client = chat_client
 
@@ -179,11 +183,7 @@ class StreamingChat(HaivenBaseChat):
 
 
 class JSONChat(HaivenBaseChat):
-    def __init__(
-        self,
-        chat_client: ChatClient,
-        knowledge_manager: KnowledgeManager,
-    ):
+    def __init__(self, chat_client: ChatClient, knowledge_manager: KnowledgeManager):
         super().__init__(chat_client, knowledge_manager)
 
     def stream_from_model(self, new_message):

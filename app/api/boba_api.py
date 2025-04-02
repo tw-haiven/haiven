@@ -32,11 +32,11 @@ class BobaApi:
         self.inspirations_manager = InspirationsManager()
 
         self.prompts_chat = prompts_factory.create_chat_prompt_list(
-            self.knowledge_manager.knowledge_base_markdown
+            self.knowledge_manager.knowledge_base_markdown, self.knowledge_manager
         )
         prompts_factory_guided = PromptsFactory("./resources/prompts_guided")
         self.prompts_guided = prompts_factory_guided.create_guided_prompt_list(
-            self.knowledge_manager.knowledge_base_markdown
+            self.knowledge_manager.knowledge_base_markdown, self.knowledge_manager
         )
 
         self.model_config = self.config_service.get_chat_model()

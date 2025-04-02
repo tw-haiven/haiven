@@ -28,6 +28,8 @@ class KnowledgeManager:
 
         self.system_message = self._load_system_message()
 
+        self.complete_context = ""
+
     def _load_base_documents_knowledge(self):
         embedding_model = self._config_service.load_embedding_model()
         base_embeddings_path = self.knowledge_pack_definition.path + "/embeddings"
@@ -49,6 +51,13 @@ class KnowledgeManager:
         self.knowledge_base_markdown = KnowledgeBaseMarkdown()
         for context in self.knowledge_pack_definition.contexts:
             self._load_context_knowledge(context)
+
+    def on_context_selected(self, context: str) -> str:
+        self.complete_context = context
+        return self.complete_context
+
+    def get_complete_context(self) -> str:
+        return self.complete_context
 
     def _load_context_knowledge(self, knowledge_context: KnowledgeContext):
         if knowledge_context is None:

@@ -6,6 +6,7 @@ from typing import List
 import frontmatter
 from langchain.prompts import PromptTemplate
 from knowledge.markdown import KnowledgeBaseMarkdown
+from knowledge_manager import KnowledgeManager
 
 
 class PromptList:
@@ -13,6 +14,7 @@ class PromptList:
         self,
         interaction_type,
         knowledge_base: KnowledgeBaseMarkdown,
+        knowledge_manager: KnowledgeManager,
         variables=[],
         root_dir="teams",
     ):
@@ -44,6 +46,7 @@ class PromptList:
         ]
 
         self.knowledge_base = knowledge_base
+        self.knowledge_manager = knowledge_manager
         self.extra_variables = variables
 
         for prompt in self.prompts:
@@ -145,6 +148,8 @@ class PromptList:
 
         knowledge_and_input = self.appendUserContext(knowledge_and_input, user_context)
 
+        if "context" in knowledge_and_input:
+            self.knowledge_manager.on_context_selected(knowledge_and_input["context"])
         template = self.create_template(identifier)
         # template.get_input_schema()
         # template.dict()

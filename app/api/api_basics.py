@@ -353,15 +353,22 @@ class ApiBasics(HaivenBaseApi):
                 if prompt_data.json is True:
                     stream_fn = self.stream_json_chat
 
+                prompt = rendered_prompt
+                session_id = prompt_data.chatSessionId
+                document = prompt_data.document
+                promptid = prompt_data.promptid
+                user_id = self.get_hashed_user_id(request)
+                contexts = prompt_data.contexts
+                data = prompt_data
                 return stream_fn(
-                    prompt=rendered_prompt,
+                    prompt=prompt,
                     chat_category="boba-chat",
-                    chat_session_key_value=prompt_data.chatSessionId,
-                    document_key=prompt_data.document,
-                    prompt_id=prompt_data.promptid,
-                    user_identifier=self.get_hashed_user_id(request),
-                    contexts=prompt_data.contexts,
-                    userContext=prompt_data.userContext,
+                    chat_session_key_value=session_id,
+                    document_key=document,
+                    prompt_id=promptid,
+                    user_identifier=user_id,
+                    contexts=contexts,
+                    userContext=data.userContext,
                     origin_url=origin_url,
                 )
 
