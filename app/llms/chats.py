@@ -29,7 +29,11 @@ class HaivenBaseChat:
         self.system = knowledge_manager.get_system_message()
         complete_context = knowledge_manager.get_complete_context()
         if complete_context:
-            self.system += "\n\n" + complete_context
+            self.system += (
+                "\n\nMultiple contexts will be given. Consider "
+                + "all contexts when responding to the given prompt "
+                + complete_context
+            )
 
         self.memory = [HaivenSystemMessage(content=self.system)]
         self.chat_client = chat_client

@@ -153,10 +153,20 @@ class TestChats(unittest.TestCase):
         )
 
         # Verify system message is correctly set from knowledge manager
-        assert base_chat.system == SYSTEM_MESSAGE + "\n\n" + "some context"
+        assert base_chat.system == SYSTEM_MESSAGE + (
+            "\n\nMultiple contexts "
+            + "will be given. Consider all contexts when responding to "
+            + "the given prompt "
+            + "some context"
+        )
         assert len(base_chat.memory) == 1
         assert isinstance(base_chat.memory[0], HaivenSystemMessage)
-        assert base_chat.memory[0].content == SYSTEM_MESSAGE + "\n\n" + "some context"
+        assert base_chat.memory[0].content == SYSTEM_MESSAGE + (
+            "\n\nMultiple contexts "
+            + "will be given. Consider all contexts when responding to "
+            + "the given prompt "
+            + "some context"
+        )
 
         # Test memory_as_text method
         memory_text = base_chat.memory_as_text()
