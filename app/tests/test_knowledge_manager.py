@@ -50,6 +50,29 @@ class TestKnowledgeManager:
         assert knowledge_manager.system_message == expected_system_message
         assert knowledge_manager.get_system_message() == expected_system_message
 
+    @patch("knowledge_manager.EmbeddingsClient")
+    @patch("knowledge_manager.KnowledgeBaseDocuments")
+    @patch("knowledge_manager.ConfigService")
+    @patch("knowledge_manager.KnowledgeBaseMarkdown")
+    def test_complete_context_loaded(
+        self,
+        mock_knowledge_base_markdown,
+        mock_config_service,
+        mock_knowledge_base_documents,
+        mock_embeddings,
+    ):
+        mock_config_service.load_embedding_model.return_value = {}
+        mock_config_service.load_knowledge_pack_path.return_value = (
+            self.knowledge_pack_path
+        )
+        knowledge_manager = KnowledgeManager(
+            config_service=mock_config_service,
+        )
+
+        assert knowledge_manager.get_complete_context() == ""
+        knowledge_manager.add_complete_context("some complete context value")
+        assert knowledge_manager.get_complete_context() == "some complete context value"
+
     @patch("knowledge_manager.ConfigService")
     @patch("knowledge_manager.KnowledgeBaseMarkdown")
     def test_load_context_knowledge_with_empty_embeddings_should_not_fail(

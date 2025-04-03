@@ -52,7 +52,7 @@ class KnowledgeManager:
         for context in self.knowledge_pack_definition.contexts:
             self._load_context_knowledge(context)
 
-    def on_context_selected(self, context: str) -> str:
+    def add_complete_context(self, context: str) -> str:
         self.complete_context = context
         return self.complete_context
 
