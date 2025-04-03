@@ -93,14 +93,19 @@ def test_create_template():
 def test_create_and_render_template_for_given_multiple_knowledge_pack_contexts():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
     knowledge_manager = create_knowledge_manager()
-
     prompt_list = PromptList(
         "chat", knowledge_base, knowledge_manager, root_dir=TEST_KNOWLEDGE_PACK_PATH
     )
+
     rendered, template = prompt_list.create_and_render_template(
         [ACTIVE_KNOWLEDGE_CONTEXT, CONTEXT_B],
         "uuid-3",
         {"user_input": "Some User Input"},
+    )
+
+    knowledge_manager.add_complete_context.assert_called_once()
+    knowledge_manager.add_complete_context.assert_called_with(
+        "Domain knowledge from context_a\n\ncontext_b domain knowledge"
     )
     assert template.template == "Content: {user_input} | Business: {context}"
     expected_rendered_output = "Content: Some User Input | Business: Domain knowledge from context_a\n\ncontext_b domain knowledge"
@@ -120,9 +125,26 @@ def test_create_and_render_template_for_given_user_context_without_knowledge_pac
         {"user_input": "Some User Input"},
         user_context="some user context",
     )
+    knowledge_manager.add_complete_context.assert_called_once()
+    knowledge_manager.add_complete_context.assert_called_with("some user context")
     assert template.template == "Content: {user_input} | Business: {context}"
     expected_rendered_output = "Content: Some User Input | Business: some user context"
     assert rendered == expected_rendered_output
+
+
+def test_create_and_render_template_for_given_user_context_without_knowledge_pack_context_and_user_context():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+    knowledge_manager = create_knowledge_manager()
+
+    prompt_list = PromptList(
+        "chat", knowledge_base, knowledge_manager, root_dir=TEST_KNOWLEDGE_PACK_PATH
+    )
+    rendered, template = prompt_list.create_and_render_template(
+        None,
+        "uuid-3",
+        {"user_input": "Some User Input"},
+    )
+    knowledge_manager.add_complete_context.assert_not_called()
 
 
 def test_create_and_render_template_with_missing_variables():
