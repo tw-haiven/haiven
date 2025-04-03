@@ -4,6 +4,7 @@ import { ProChatProvider } from "@ant-design/pro-chat";
 import { useEffect, useState, useRef } from "react";
 import { Input, Select } from "antd";
 import { toast } from "react-toastify";
+import { DownOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
 import ChatWidget from "./_chat";
@@ -35,7 +36,7 @@ const PromptChat = ({
   // User inputs
   const [selectedPrompt, setPromptSelection] = useState(promptId); // via query parameter
   const [selectedContexts, setSelectedContexts] = useState([]);
-  const [selectedDocument, setSelectedDocument] = useState([]);
+  const [selectedDocuments, setSelectedDocuments] = useState([]);
   const [imageDescription, setImageDescription] = useState("");
   const [userInput, setUserInput] = useState(initialInput);
 
@@ -46,6 +47,7 @@ const PromptChat = ({
   const [placeholder, setPlaceholder] = useState("");
   const [allContexts, setAllContexts] = useState([]);
 
+  const MAX_COUNT = 3;
   function combineAllContexts(contexts) {
     const userContexts = getSortedUserContexts();
     const userContextsForDropdown = userContexts.map((context) => ({
@@ -108,7 +110,7 @@ const PromptChat = ({
       userinput: usePromptId ? appendImageDescription(userInput) : userInput,
       promptid: usePromptId ? selectedPrompt?.identifier : undefined,
       chatSessionId: chatSessionId,
-      document: selectedDocument,
+      document: selectedDocuments,
     };
     attachContextsToRequestBody(requestBody);
     return requestBody;
@@ -137,7 +139,7 @@ const PromptChat = ({
       requestData = {
         userinput: lastMessage?.content,
         chatSessionId: chatSessionId,
-        ...(selectedDocument !== "base" && { document: selectedDocument }),
+        ...(selectedDocuments !== "base" && { document: selectedDocuments }),
       };
     }
 
@@ -223,6 +225,15 @@ const PromptChat = ({
     <></>
   );
 
+  const dropdownSuffix = (
+    <>
+      <span>
+        {selectedDocuments.length} / {MAX_COUNT}
+      </span>
+      <DownOutlined />
+    </>
+  );
+
   const documentsMenu =
     showDocuments && documents ? (
       <div className="user-input">
@@ -234,11 +245,12 @@ const PromptChat = ({
           />
         </label>
         <Select
-          onChange={setSelectedDocument}
+          onChange={setSelectedDocuments}
           options={documents}
-          value={selectedDocument?.key}
           mode="multiple"
-          maxCount="3"
+          maxCount={MAX_COUNT}
+          placeholder="Please select the document(s)"
+          suffixIcon={dropdownSuffix}
           data-testid="document-select"
         ></Select>
       </div>
@@ -247,7 +259,11 @@ const PromptChat = ({
     );
 
   const contextsMenu = showTextSnippets ? (
-    <ContextChoice onChange={handleContextSelection} contexts={allContexts} />
+    <ContextChoice
+      onChange={handleContextSelection}
+      selectedContexts={selectedContexts}
+      contexts={allContexts}
+    />
   ) : (
     <></>
   );

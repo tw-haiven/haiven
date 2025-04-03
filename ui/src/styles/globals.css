@@ -900,7 +900,7 @@ a.feedback:hover {
   flex-wrap: wrap;
   display: flex;
   flex-direction: column;
-  height: 205px;
+  height: 260px;
 
   .user-input {
     width: 50%;

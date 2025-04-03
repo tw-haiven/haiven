@@ -31,7 +31,7 @@ describe("ContextChoice Component", () => {
   }
 
   it("should render context dropdown with multiple choice", async () => {
-    render(<ContextChoice contexts={mockContexts} />);
+    render(<ContextChoice contexts={mockContexts} selectedContexts={[]} />);
     expect(screen.getByText("Select your context")).toBeInTheDocument();
     expect(screen.getByTestId("context-select")).toBeInTheDocument();
     await verifyTooltip(
@@ -61,7 +61,7 @@ describe("ContextChoice Component", () => {
   });
 
   it("should not allow user to select more than 3 which is the maximum count", async () => {
-    render(<ContextChoice contexts={mockContexts} />);
+    render(<ContextChoice contexts={mockContexts} selectedContexts={[]} />);
     const select = screen.getByTestId("context-select").firstChild;
     fireEvent.mouseDown(select);
 

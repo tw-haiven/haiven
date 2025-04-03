@@ -504,6 +504,7 @@ const CardsChat = ({
           <ContextChoice
             onChange={handleContextSelection}
             contexts={allContexts}
+            selectedContexts={selectedContexts}
           />
         </div>
       </div>
