@@ -8,7 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "~3.11"
 Authlib = "^1.5.1"
-boto3 = "^1.37.11"
+boto3 = "^1.37.27"
 faiss-cpu = "^1.10.0"
 fastapi = "^0.115.11"
 google-cloud-aiplatform = "^1.84.0"
