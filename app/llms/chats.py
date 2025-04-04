@@ -239,7 +239,7 @@ class ServerChatSessionMemory:
         allowed_age_in_minutes = 30
         allowed_age_in_seconds = 60 * allowed_age_in_minutes
         print(
-            f"CLEANUP: Removing chat sessions with age > {allowed_age_in_minutes} mins from memory. Currently {len(self.USER_CHATS)} entries in memory"
+            f"CLEANUP: Removing chat sessions with last user access > {allowed_age_in_minutes} mins from memory. Currently {len(self.USER_CHATS)} entries in memory"
         )
 
         entries_to_remove = list(
