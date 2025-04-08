@@ -23,6 +23,7 @@ const CardsList = ({
   editable,
   onDelete,
   listIndex,
+  featureToggleConfig,
 }) => {
   const [displayMode, setDisplayMode] = useState("grid");
 
@@ -160,6 +161,7 @@ const CardsList = ({
                     {renderScenarioDetails(scenario)}
                   </div>
                   <CardActions
+                    featureToggleConfig={featureToggleConfig}
                     scenario={scenario}
                     onExploreHandler={onExplore}
                     selfReview={

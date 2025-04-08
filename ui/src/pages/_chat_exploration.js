@@ -1,9 +1,8 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { useState, useRef, useEffect } from "react";
 import { ProChatProvider } from "@ant-design/pro-chat";
-import { Button, Flex } from "antd";
-import { RiLightbulbLine } from "react-icons/ri";
 import ChatWidget from "../app/_chat";
+import VerticalPossibilityPanel from "./_vertical-possibility-panel";
 
 export default function ChatExploration({ context, scenarioQueries = [] }) {
   const [promptStarted, setPromptStarted] = useState(false);
@@ -68,38 +67,17 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
     }
   };
 
-  const PossibilityPanel = () => {
-    return (
-      <Flex
-        marginBottom="1em"
-        style={{ width: "100%" }}
-        className="suggestions-list"
-      >
-        <Flex align="flex-start" gap="small" vertical style={{ width: "100%" }}>
-          <div className="suggestions-title">Suggestions:</div>
-          {scenarioQueries.map((text, i) => (
-            <Button
-              key={i}
-              onClick={() => {
-                addMessageToChatWidget(text);
-              }}
-              className="suggestion"
-            >
-              <RiLightbulbLine />
-              {text}
-            </Button>
-          ))}
-        </Flex>
-      </Flex>
-    );
-  };
-
   return (
     <div className="chat-exploration">
       <div className="chat-exploration__header">
         <p>{previousContext?.summary || "No summary available"}</p>
       </div>
-      {scenarioQueries.length > 0 ? <PossibilityPanel /> : null}
+      {scenarioQueries.length > 0 ? (
+        <VerticalPossibilityPanel
+          scenarioQueries={scenarioQueries}
+          onClick={addMessageToChatWidget}
+        />
+      ) : null}
       <ProChatProvider>
         <ChatWidget
           onSubmitMessage={submitPromptToBackend}

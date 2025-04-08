@@ -9,7 +9,6 @@ import {
   RiPushpinLine,
   RiAttachment2,
   RiSendPlane2Line,
-  RiStopCircleFill,
 } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
@@ -26,6 +25,7 @@ import {
 import PromptPreview from "../app/_prompt_preview";
 import MarkdownRenderer from "../app/_markdown_renderer";
 import { scenarioToText } from "../app/_dynamic_data_renderer";
+import HorizontalPossibilityPanel from "./_horizontal-possibility-panel";
 
 const CardsChat = ({
   promptId,
@@ -510,8 +510,25 @@ const CardsChat = ({
       </div>
     );
 
+    const submitGivenPrompt = (prompt) => {
+      setPromptInput(prompt);
+      setIsInputCollapsed(true);
+      sendFirstStepPrompt(true);
+    };
+
     const inputAreaContent = (
       <div className="card-chat-input-container">
+        <div>
+          {featureToggleConfig["unified_card_iteration_interface"] && (
+            <HorizontalPossibilityPanel
+              displayAsRow
+              scenarioQueries={
+                selectedPromptConfiguration.scenario_queries || []
+              }
+              onClick={submitGivenPrompt}
+            />
+          )}
+        </div>
         <div>
           <Form
             onFinish={async () => {
@@ -668,6 +685,7 @@ const CardsChat = ({
             <ChatHeader models={models} titleComponent={title} />
             <div className="card-chat-container card-chat-overflow">
               <CardsList
+                featureToggleConfig={featureToggleConfig}
                 scenarios={scenarios}
                 setScenarios={setScenarios}
                 editable={selectedPromptConfiguration.editable}

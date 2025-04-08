@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { scenarioToText } from "./_dynamic_data_renderer";
 
 export default function CardActions({
+  featureToggleConfig,
   scenario,
   onExploreHandler,
   selfReview,

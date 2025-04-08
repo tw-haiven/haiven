@@ -1633,13 +1633,26 @@ a.feedback:hover {
   font-size: 85%;
 }
 
-.suggestion {
+.suggestions-description {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.horizontal-suggestion {
+    min-width: 0;
+}
+
+.suggestion, .horizontal-suggestion {
   width: 100%;
   margin-bottom: 1px;
-  overflow: hidden;
-  text-overflow: clip;
   padding: 0.4em 0.3em;
   font-size: 85%;
+}
+
+.suggestion {
+  overflow: hidden;
+  text-overflow: clip;
 }
 
 .ant-drawer-header {

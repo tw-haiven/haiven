@@ -81,6 +81,7 @@ const mockModels = [
 
 const mockFeatureToggleConfig = {
   cards_iteration: true,
+  unified_card_iteration_interface: true,
 };
 
 const someScenarios = [
