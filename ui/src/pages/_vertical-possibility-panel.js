@@ -2,7 +2,7 @@
 import { Button, Flex } from "antd";
 import { RiLightbulbLine } from "react-icons/ri";
 
-const VerticalPossibilityPanel = ({ scenarioQueries, onClick }) => {
+const VerticalPossibilityPanel = ({ scenarioQueries = [], onClick }) => {
   return (
     <Flex
       marginBottom="1em"

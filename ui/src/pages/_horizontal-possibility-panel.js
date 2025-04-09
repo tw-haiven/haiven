@@ -2,7 +2,7 @@
 import { Button, Flex } from "antd";
 import { RiLightbulbLine } from "react-icons/ri";
 
-const HorizontalPossibilityPanel = ({ scenarioQueries, onClick }) => {
+const HorizontalPossibilityPanel = ({ scenarioQueries = [], onClick }) => {
   return (
     <div>
       <div className="suggestions-title">Suggestions:</div>
