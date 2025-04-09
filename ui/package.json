@@ -52,7 +52,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/node": "22.13.13",
+    "@types/node": "22.14.0",
     "@types/react": "^19.0.12",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "9.23.0",
