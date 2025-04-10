@@ -1,13 +1,13 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import { Drawer, Button, Input, Collapse, Form } from "antd";
+import { Button, Collapse, Drawer, Form, Input } from "antd";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 import {
+  RiAttachment2,
   RiFileCopyLine,
   RiPushpinLine,
-  RiAttachment2,
   RiSendPlane2Line,
 } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
@@ -44,6 +44,7 @@ const CardsChat = ({
   const [promptInput, setPromptInput] = useState("");
 
   const [iterationPrompt, setIterationPrompt] = useState("");
+  const [enableGenerateMoreCards, setEnableGenerateMoreCards] = useState(true);
 
   const [cardExplorationDrawerOpen, setCardExplorationDrawerOpen] =
     useState(false);
@@ -292,13 +293,13 @@ const CardsChat = ({
    * Switch on with:
    * window.localStorage.setItem("toggles", '{ "cards_iteration": true }')
    * */
-  const buildRequestDataIterate = () => {
+  const buildRequestDataIterate = (prompt) => {
     // add IDs to the scenarios
     scenarios.forEach((scenario, i) => {
       if (scenario.id === undefined) scenario.id = i + 1;
     });
     return {
-      userinput: iterationPrompt,
+      userinput: prompt,
       scenarios: JSON.stringify(
         scenarios
           .filter((scenario) => scenario.exclude !== true)
@@ -328,7 +329,7 @@ const CardsChat = ({
     setScenarios([...scenarios]);
   };
 
-  const sendIteration = () => {
+  const sendIteration = (prompt) => {
     const uri = "/api/prompt/iterate";
 
     let ms = "";
@@ -339,7 +340,7 @@ const CardsChat = ({
       {
         method: "POST",
         signal: startLoad(),
-        body: JSON.stringify(buildRequestDataIterate()),
+        body: JSON.stringify(buildRequestDataIterate(prompt)),
       },
       {
         json: true,
@@ -519,17 +520,6 @@ const CardsChat = ({
     const inputAreaContent = (
       <div className="card-chat-input-container">
         <div>
-          {featureToggleConfig["unified_card_iteration_interface"] && (
-            <HorizontalPossibilityPanel
-              displayAsRow
-              scenarioQueries={
-                selectedPromptConfiguration.scenario_queries || []
-              }
-              onClick={submitGivenPrompt}
-            />
-          )}
-        </div>
-        <div>
           <Form
             onFinish={async () => {
               setIsInputCollapsed(true);
@@ -660,6 +650,12 @@ const CardsChat = ({
     }
   };
 
+  const submitIterationPrompt = (prompt) => {
+    setEnableGenerateMoreCards(false);
+    setIterationPrompt(prompt);
+    sendIteration(prompt);
+  };
+
   return (
     <>
       <Drawer
@@ -699,7 +695,7 @@ const CardsChat = ({
                   <Button
                     onClick={sendGetMorePrompt}
                     className="go-button"
-                    disabled={loading}
+                    disabled={loading || !enableGenerateMoreCards}
                   >
                     GENERATE MORE CARDS
                   </Button>
@@ -712,6 +708,14 @@ const CardsChat = ({
                     <p>
                       [EXPERIMENT] What else do you want to add to the cards?
                     </p>
+                    <HorizontalPossibilityPanel
+                      displayAsRow
+                      scenarioQueries={
+                        selectedPromptConfiguration.scenario_queries || []
+                      }
+                      onClick={submitIterationPrompt}
+                    />
+
                     <Input
                       value={iterationPrompt}
                       onChange={(e, v) => {
@@ -719,7 +723,10 @@ const CardsChat = ({
                       }}
                     />
                     <Button
-                      onClick={sendIteration}
+                      onClick={() => {
+                        setEnableGenerateMoreCards(false);
+                        sendIteration(iterationPrompt);
+                      }}
                       size="small"
                       className="go-button"
                     >
