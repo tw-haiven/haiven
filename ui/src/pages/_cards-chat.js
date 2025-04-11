@@ -26,6 +26,7 @@ import PromptPreview from "../app/_prompt_preview";
 import MarkdownRenderer from "../app/_markdown_renderer";
 import { scenarioToText } from "../app/_dynamic_data_renderer";
 import HorizontalPossibilityPanel from "./_horizontal-possibility-panel";
+import Disclaimer from "../pages/_disclaimer";
 
 const CardsChat = ({
   promptId,
@@ -34,6 +35,8 @@ const CardsChat = ({
   prompts,
   featureToggleConfig,
 }) => {
+  const [progress, setProgress] = useState(0);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [selectedPromptId, setSelectedPromptId] = useState(promptId); // via query parameter
   const [selectedPromptConfiguration, setSelectedPromptConfiguration] =
     useState({});
@@ -335,6 +338,17 @@ const CardsChat = ({
     let ms = "";
     let output = [];
 
+    setIsGenerating(true);
+    setProgress(0);
+
+    // Simulate progress
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 90) return prev; // avoid hitting 100 before done
+        return prev + 10;
+      });
+    }, 500);
+
     fetchSSE(
       uri,
       {
@@ -346,6 +360,12 @@ const CardsChat = ({
         json: true,
         onErrorHandle: () => {
           abortLoad();
+          clearInterval(interval);
+          setProgress(100);
+          setTimeout(() => {
+            setIsGenerating(false);
+            setProgress(0); // reset if you want
+          }, 1000);
         },
         onFinish: () => {
           if (ms == "") {
@@ -354,6 +374,12 @@ const CardsChat = ({
             );
           }
           abortLoad();
+          clearInterval(interval);
+          setProgress(100);
+          setTimeout(() => {
+            setIsGenerating(false);
+            setProgress(0); // reset if you want
+          }, 1000);
         },
         onMessageHandle: (data) => {
           if (data.data) {
@@ -510,12 +536,6 @@ const CardsChat = ({
         </div>
       </div>
     );
-
-    const submitGivenPrompt = (prompt) => {
-      setPromptInput(prompt);
-      setIsInputCollapsed(true);
-      sendFirstStepPrompt(true);
-    };
 
     const inputAreaContent = (
       <div className="card-chat-input-container">
@@ -681,6 +701,8 @@ const CardsChat = ({
             <ChatHeader models={models} titleComponent={title} />
             <div className="card-chat-container card-chat-overflow">
               <CardsList
+                progress={progress}
+                isGenerating={isGenerating}
                 featureToggleConfig={featureToggleConfig}
                 scenarios={scenarios}
                 setScenarios={setScenarios}
@@ -704,11 +726,13 @@ const CardsChat = ({
               {/* Iteration experiment */}
               {featureToggleConfig["cards_iteration"] === true &&
                 scenarios.length > 0 && (
-                  <div style={{ width: "50%", paddingLeft: "2em" }}>
+                  <div style={{ width: "88%", paddingLeft: "2em" }}>
+                    <Disclaimer message="Once you click on 'ENRICH CARDS', 'GENERATE MORE CARDS' will get disabled" />
                     <p>
                       [EXPERIMENT] What else do you want to add to the cards?
                     </p>
                     <HorizontalPossibilityPanel
+                      disable={loading}
                       displayAsRow
                       scenarioQueries={
                         selectedPromptConfiguration.scenario_queries || []
@@ -723,6 +747,7 @@ const CardsChat = ({
                       }}
                     />
                     <Button
+                      disabled={loading}
                       onClick={() => {
                         setEnableGenerateMoreCards(false);
                         sendIteration(iterationPrompt);

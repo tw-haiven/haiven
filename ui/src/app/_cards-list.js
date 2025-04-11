@@ -8,13 +8,15 @@ import {
   RiFileCopyLine,
   RiCloseFill,
 } from "react-icons/ri";
-import { Card, Button, Input, Radio, Tooltip, Typography } from "antd";
+import { Card, Button, Input, Radio, Tooltip, Progress } from "antd";
 import { toast } from "react-toastify";
 import { DynamicDataRenderer, scenarioToText } from "./_dynamic_data_renderer";
 import MarkdownRenderer from "./_markdown_renderer";
 const { TextArea } = Input;
 
 const CardsList = ({
+  progress,
+  isGenerating,
   scenarios,
   setScenarios,
   onExplore,
@@ -141,6 +143,13 @@ const CardsList = ({
                     )
                   }
                 >
+                  {isGenerating && (
+                    <Progress
+                      percent={progress}
+                      showInfo={false}
+                      status="active"
+                    />
+                  )}
                   <div className="scenario-card-content">
                     {editable === true ? (
                       <TextArea

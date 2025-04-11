@@ -2,7 +2,11 @@
 import { Button, Flex } from "antd";
 import { RiLightbulbLine } from "react-icons/ri";
 
-const HorizontalPossibilityPanel = ({ scenarioQueries = [], onClick }) => {
+const HorizontalPossibilityPanel = ({
+  scenarioQueries = [],
+  disable = false,
+  onClick,
+}) => {
   return (
     <div>
       <div className="suggestions-title">Suggestions:</div>
@@ -14,6 +18,7 @@ const HorizontalPossibilityPanel = ({ scenarioQueries = [], onClick }) => {
         <Flex align="flex-start" gap="small" style={{ width: "100%" }}>
           {scenarioQueries.map((text, i) => (
             <Button
+              disabled={disable}
               key={i}
               onClick={() => {
                 onClick(text);
