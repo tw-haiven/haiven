@@ -30,7 +30,7 @@
     "google-search-results-nodejs": "^2.1.0",
     "hnswlib-node": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mermaid": "^11.5.0",
+    "mermaid": "^11.6.0",
     "next": "^15.2.4",
     "partial-json-parser": "^1.2.2",
     "postcss": "8.5.3",
