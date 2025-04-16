@@ -1,6 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
-from langchain_aws import ChatBedrockConverse
+from langchain_openai import ChatOpenAI
 from ragas.llms import LangchainLLMWrapper
 from ragas.dataset_schema import SingleTurnSample
 from ragas.metrics._factual_correctness import FactualCorrectness
@@ -10,14 +10,8 @@ from ragas.metrics._context_precision import ContextPrecision
 
 os.environ["AZURE_OPENAI_API_KEY"] = os.environ["OPENAI_API_KEY"]
 
-# AWS Bedrock Claude Sonnet 3.7
-bedrock_llm = ChatBedrockConverse(
-    region_name="us-east-1",
-    model="us.anthropic.claude-3-7-sonnet-20250219-v1:0",
-    temperature=0.9,
-)
-evaluator_llm = LangchainLLMWrapper(bedrock_llm)
-
+#OPEN AI gpt4o
+evaluator_llm = LangchainLLMWrapper(ChatOpenAI(model="gpt-4o"))
 
 # GENERATION METRIC
 
