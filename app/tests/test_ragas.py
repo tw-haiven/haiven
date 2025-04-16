@@ -10,7 +10,7 @@ from ragas.metrics._context_precision import ContextPrecision
 
 os.environ["AZURE_OPENAI_API_KEY"] = os.environ["OPENAI_API_KEY"]
 
-#OPEN AI gpt4o
+# OPEN AI gpt4o
 evaluator_llm = LangchainLLMWrapper(ChatOpenAI(model="gpt-4o"))
 
 # GENERATION METRIC
