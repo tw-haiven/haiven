@@ -1,14 +1,11 @@
+# © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
-from langchain_openai import ChatOpenAI
-from langchain_openai import AzureOpenAIEmbeddings
 from langchain_aws import ChatBedrockConverse
-from langchain_aws import BedrockEmbeddings
 from ragas.llms import LangchainLLMWrapper
-from ragas.embeddings import LangchainEmbeddingsWrapper
 from ragas.dataset_schema import SingleTurnSample
 from ragas.metrics._factual_correctness import FactualCorrectness
 from ragas.metrics._faithfulness import Faithfulness
-from ragas.metrics import LLMContextPrecisionWithReference, LLMContextRecall, ContextRelevance, ResponseGroundedness
+from ragas.metrics import LLMContextRecall, ContextRelevance
 from ragas.metrics._context_precision import ContextPrecision
 
 os.environ["AZURE_OPENAI_API_KEY"] = os.environ["OPENAI_API_KEY"]
