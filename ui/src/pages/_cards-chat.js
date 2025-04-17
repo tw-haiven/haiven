@@ -333,6 +333,7 @@ const CardsChat = ({
   };
 
   const sendIteration = (prompt) => {
+    setEnableGenerateMoreCards(false);
     const uri = "/api/prompt/iterate";
 
     let ms = "";
@@ -671,9 +672,7 @@ const CardsChat = ({
   };
 
   const submitIterationPrompt = (prompt) => {
-    setEnableGenerateMoreCards(false);
     setIterationPrompt(prompt);
-    sendIteration(prompt);
   };
 
   return (
@@ -727,36 +726,36 @@ const CardsChat = ({
               {featureToggleConfig["cards_iteration"] === true &&
                 scenarios.length > 0 && (
                   <div style={{ width: "88%", paddingLeft: "2em" }}>
-                    <Disclaimer message="Once you click on 'ENRICH CARDS', 'GENERATE MORE CARDS' will get disabled" />
-                    <p>
-                      [EXPERIMENT] What else do you want to add to the cards?
-                    </p>
+                    <h3>What else do you want to add to the cards?</h3>
+                    <Disclaimer message="Clicking 'Enrich Cards' will disable the 'Generate More Cards' button." />
                     <HorizontalPossibilityPanel
                       disable={loading}
-                      displayAsRow
                       scenarioQueries={
                         selectedPromptConfiguration.scenario_queries || []
                       }
                       onClick={submitIterationPrompt}
+                      tempClick={onFollowUp}
                     />
 
-                    <Input
-                      value={iterationPrompt}
-                      onChange={(e, v) => {
-                        setIterationPrompt(e.target.value);
-                      }}
-                    />
-                    <Button
-                      disabled={loading}
-                      onClick={() => {
-                        setEnableGenerateMoreCards(false);
-                        sendIteration(iterationPrompt);
-                      }}
-                      size="small"
-                      className="go-button"
-                    >
-                      ENRICH CARDS
-                    </Button>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <Input
+                        value={iterationPrompt}
+                        onChange={(e, v) => {
+                          setIterationPrompt(e.target.value);
+                        }}
+                      />
+                      <Button
+                        style={{ marginBottom: "1px" }}
+                        disabled={loading}
+                        onClick={() => {
+                          setEnableGenerateMoreCards(false);
+                          sendIteration(iterationPrompt);
+                        }}
+                        className="go-button"
+                      >
+                        ENRICH CARDS
+                      </Button>
+                    </div>
                   </div>
                 )}
               {/* / End iteration experiment */}

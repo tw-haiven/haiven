@@ -7,16 +7,20 @@ import {
   RiAlertLine,
   RiCheckboxCircleLine,
 } from "react-icons/ri";
-import { Button, Tooltip } from "antd";
+import { Button, Progress, Tooltip } from "antd";
 import { toast } from "react-toastify";
 import { scenarioToText } from "./_dynamic_data_renderer";
+import React from "react";
 
 export default function CardActions({
   featureToggleConfig,
   scenario,
   onExploreHandler,
   selfReview,
+  progress,
+  isGenerating,
 }) {
+  const colorFlamingo = "#f2617aff";
   let review = null;
 
   if (selfReview) {
@@ -56,44 +60,55 @@ export default function CardActions({
   };
 
   return (
-    <div className="card-actions-footer">
-      <div className="actions-container">
-        {onExploreHandler && (
-          <Tooltip title="Chat with Haiven" key="chat">
-            <Button type="link" onClick={() => onExploreHandler(scenario)}>
-              <RiChat2Line fontSize="large" />
+    <div>
+      <div className="card-actions-footer">
+        <div className="actions-container">
+          {onExploreHandler && (
+            <Tooltip title="Chat with Haiven" key="chat">
+              <Button type="link" onClick={() => onExploreHandler(scenario)}>
+                <RiChat2Line fontSize="large" />
+              </Button>
+            </Tooltip>
+          )}
+          <Tooltip title="Copy" key="copy">
+            <Button type="link" onClick={() => onCopyOne(scenario)}>
+              <RiFileCopyLine fontSize="large" />
             </Button>
           </Tooltip>
-        )}
-        <Tooltip title="Copy" key="copy">
-          <Button type="link" onClick={() => onCopyOne(scenario)}>
-            <RiFileCopyLine fontSize="large" />
-          </Button>
-        </Tooltip>
-        <Tooltip title="Pin to pinboard" key="pin">
-          <Button
-            type="link"
-            onClick={() => onPin()}
-            style={{ paddingRight: "0" }}
-          >
-            <RiPushpinLine fontSize="large" />
-          </Button>
-        </Tooltip>
+          <Tooltip title="Pin to pinboard" key="pin">
+            <Button
+              type="link"
+              onClick={() => onPin()}
+              style={{ paddingRight: "0" }}
+            >
+              <RiPushpinLine fontSize="large" />
+            </Button>
+          </Tooltip>
+        </div>
+        {review &&
+          review.status &&
+          review.explanation &&
+          review.explanation !== "" && (
+            <div className="review-container">
+              <Tooltip title={review.explanation} key="review">
+                {review.status === "🤔" || review.status === "\uD83E"
+                  ? unsureIcon
+                  : review.status === "✅" || review.status === "\u2705"
+                    ? prettySureIcon
+                    : null}
+              </Tooltip>
+            </div>
+          )}
       </div>
-      {review &&
-        review.status &&
-        review.explanation &&
-        review.explanation !== "" && (
-          <div className="review-container">
-            <Tooltip title={review.explanation} key="review">
-              {review.status === "🤔" || review.status === "\uD83E"
-                ? unsureIcon
-                : review.status === "✅" || review.status === "\u2705"
-                  ? prettySureIcon
-                  : null}
-            </Tooltip>
-          </div>
-        )}
+      {isGenerating && (
+        <Progress
+          data-testid="progress-bar"
+          percent={progress}
+          showInfo={false}
+          status="active"
+          strokeColor={colorFlamingo}
+        />
+      )}
     </div>
   );
 }

@@ -143,13 +143,6 @@ const CardsList = ({
                     )
                   }
                 >
-                  {isGenerating && (
-                    <Progress
-                      percent={progress}
-                      showInfo={false}
-                      status="active"
-                    />
-                  )}
                   <div className="scenario-card-content">
                     {editable === true ? (
                       <TextArea
@@ -170,6 +163,8 @@ const CardsList = ({
                     {renderScenarioDetails(scenario)}
                   </div>
                   <CardActions
+                    progress={progress}
+                    isGenerating={isGenerating}
                     featureToggleConfig={featureToggleConfig}
                     scenario={scenario}
                     onExploreHandler={onExplore}
