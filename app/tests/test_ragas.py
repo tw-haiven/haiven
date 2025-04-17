@@ -1,5 +1,4 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import os
 from langchain_aws import ChatBedrockConverse
 from ragas.llms import LangchainLLMWrapper
 from ragas.dataset_schema import SingleTurnSample
@@ -8,7 +7,6 @@ from ragas.metrics._faithfulness import Faithfulness
 from ragas.metrics import LLMContextRecall, ContextRelevance
 from ragas.metrics._context_precision import ContextPrecision
 
-os.environ["AZURE_OPENAI_API_KEY"] = os.environ["OPENAI_API_KEY"]
 
 # AWS Bedrock Claude Sonnet 3.7
 bedrock_llm = ChatBedrockConverse(
