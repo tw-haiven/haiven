@@ -3,6 +3,7 @@ run-name: Test and Build
 
 env:
   REGISTRY: "ghcr.io"
+  AWS_BEDROCK_REGION: "us-east-1"
 
 on:
   push:
@@ -46,15 +47,19 @@ jobs:
         run: |
           cd app
           poetry install --no-interaction --no-root
-      - name: Run App unit tests
+      - name: Run Backend unit tests
         run: |
           cd app
           poetry run pytest -m 'not integration' tests/
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_BEDROCK_REGION: ${{ env.AWS_BEDROCK_REGION }}
       - name: Install CLI dependencies
         run: |
           cd cli && \
           poetry install --no-interaction --no-root
-      - name: Run Backend tests
+      - name: Run CLI tests
         run: |
           cd cli && \
           poetry run pytest tests/
