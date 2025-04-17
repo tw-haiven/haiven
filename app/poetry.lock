@@ -200,17 +200,17 @@ cryptography = "*"
 
 [[package]]
 name = "boto3"
-version = "1.37.11"
+version = "1.37.35"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "boto3-1.37.11-py3-none-any.whl", hash = "sha256:da6c22fc8a7e9bca5d7fc465a877ac3d45b6b086d776bd1a6c55bdde60523741"},
-    {file = "boto3-1.37.11.tar.gz", hash = "sha256:8eec08363ef5db05c2fbf58e89f0c0de6276cda2fdce01e76b3b5f423cd5c0f4"},
+    {file = "boto3-1.37.35-py3-none-any.whl", hash = "sha256:5a90d674830adbaf86456d6b27a18f5f11378277da5286511fa860d2e7b14261"},
+    {file = "boto3-1.37.35.tar.gz", hash = "sha256:751ed599c8fd9ca24896edcd6620e8a32b3db1b68efea3a90126312240e668a2"},
 ]
 
 [package.dependencies]
-botocore = ">=1.37.11,<1.38.0"
+botocore = ">=1.37.35,<1.38.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.11.0,<0.12.0"
 
@@ -219,13 +219,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.37.11"
+version = "1.37.35"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.37.11-py3-none-any.whl", hash = "sha256:02505309b1235f9f15a6da79103ca224b3f3dc5f6a62f8630fbb2c6ed05e2da8"},
-    {file = "botocore-1.37.11.tar.gz", hash = "sha256:72eb3a9a58b064be26ba154e5e56373633b58f951941c340ace0d379590d98b5"},
+    {file = "botocore-1.37.35-py3-none-any.whl", hash = "sha256:50839212e90650d0b0fa6b8f7514876bf802f6164f2775f3abcd4d53c98bb73c"},
+    {file = "botocore-1.37.35.tar.gz", hash = "sha256:197a9bf8251c45b9d882c405ec0d0ab40c10e2d2a55ee66960185daec4beb6ec"},
 ]
 
 [package.dependencies]
@@ -1737,6 +1737,23 @@ together = ["langchain-together"]
 xai = ["langchain-xai"]
 
 [[package]]
+name = "langchain-aws"
+version = "0.2.20"
+description = "An integration package connecting AWS and LangChain"
+optional = false
+python-versions = "<4.0,>=3.9"
+files = [
+    {file = "langchain_aws-0.2.20-py3-none-any.whl", hash = "sha256:de3f2021683dcc15a5bea3a937470506dcbebf654302d20a127908f73f7854f8"},
+    {file = "langchain_aws-0.2.20.tar.gz", hash = "sha256:d28e82b82e24c194992116489664c5bb770f95c685d0e7bbc940b6e2ec7efdbb"},
+]
+
+[package.dependencies]
+boto3 = ">=1.37.24"
+langchain-core = ">=0.3.52,<0.4.0"
+numpy = {version = ">=1,<2", markers = "python_version < \"3.12\""}
+pydantic = ">=2.10.0,<3"
+
+[[package]]
 name = "langchain-community"
 version = "0.3.19"
 description = "Community contributed LangChain integrations."
@@ -1763,13 +1780,13 @@ tenacity = ">=8.1.0,<8.4.0 || >8.4.0,<10"
 
 [[package]]
 name = "langchain-core"
-version = "0.3.44"
+version = "0.3.52"
 description = "Building applications with LLMs through composability"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "langchain_core-0.3.44-py3-none-any.whl", hash = "sha256:d989ce8bd62f1d07765acd575e6ec1254aec0cf7775aaea39fe4af8102377459"},
-    {file = "langchain_core-0.3.44.tar.gz", hash = "sha256:7c0a01e78360f007cbca448178fe7e032404068e6431dbe8ce905f84febbdfa5"},
+    {file = "langchain_core-0.3.52-py3-none-any.whl", hash = "sha256:cd137109c1e3d04f5a582c2cae9539b2cd5e4b795f486b58969dbc3d0387fe7c"},
+    {file = "langchain_core-0.3.52.tar.gz", hash = "sha256:f1981ec9efa4fceb11ff5ca57f5f9c8e22859cea3a94f8a044e6de8815afbd57"},
 ]
 
 [package.dependencies]
@@ -4034,4 +4051,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "d707dbfacf7cb854235f1196c1628ceb67900f8298c39dc871023ee63fd53736"
+content-hash = "877b2e1a265fbcfbf2c3c3ae8e1287da230083f4a6664f7ea4bcad0b39164b57"

@@ -21,6 +21,7 @@ evaluator_llm = LangchainLLMWrapper(bedrock_llm)
 
 # GENERATION METRIC
 
+
 # FACTUAL CORRECTNESS:  NON_RAG METRIC
 # Metric that compares and evaluates the factual accuracy of the generated response with the reference
 def test_factual_correctness():
@@ -35,6 +36,7 @@ def test_factual_correctness():
 
 
 # GENERATION METRIC
+
 
 # FAITHFULLNESS:
 # A response is considered faithful if all claims of llm response can be supported by the retrieved context(factually correct)
