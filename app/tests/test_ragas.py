@@ -1,6 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
-from langchain_openai import ChatOpenAI
+from langchain_aws import ChatBedrockConverse
 from ragas.llms import LangchainLLMWrapper
 from ragas.dataset_schema import SingleTurnSample
 from ragas.metrics._factual_correctness import FactualCorrectness
@@ -10,11 +10,16 @@ from ragas.metrics._context_precision import ContextPrecision
 
 os.environ["AZURE_OPENAI_API_KEY"] = os.environ["OPENAI_API_KEY"]
 
-# OPEN AI gpt4o
-evaluator_llm = LangchainLLMWrapper(ChatOpenAI(model="gpt-4o"))
+# AWS Bedrock Claude Sonnet 3.7
+bedrock_llm = ChatBedrockConverse(
+    region_name="us-east-1",
+    model="us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+    temperature=0.9,
+)
+evaluator_llm = LangchainLLMWrapper(bedrock_llm)
+
 
 # GENERATION METRIC
-
 
 # FACTUAL CORRECTNESS:  NON_RAG METRIC
 # Metric that compares and evaluates the factual accuracy of the generated response with the reference
@@ -30,7 +35,6 @@ def test_factual_correctness():
 
 
 # GENERATION METRIC
-
 
 # FAITHFULLNESS:
 # A response is considered faithful if all claims of llm response can be supported by the retrieved context(factually correct)
