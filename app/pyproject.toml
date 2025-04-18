@@ -38,7 +38,7 @@ tenacity = "^9.0.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
 pytest-mock = "^3.14.0"
-pytest-cov = "^6.0.0"
+pytest-cov = "^6.1.1"
 ragas = "^0.2.14"
 langchain-aws="^0.2.20"
 
