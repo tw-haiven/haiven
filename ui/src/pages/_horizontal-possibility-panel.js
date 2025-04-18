@@ -6,7 +6,6 @@ const HorizontalPossibilityPanel = ({
   scenarioQueries = [],
   disable = false,
   onClick,
-  tempClick,
 }) => {
   return (
     <div>
@@ -22,25 +21,14 @@ const HorizontalPossibilityPanel = ({
               disabled={disable}
               key={i}
               onClick={() => {
-                onClick(text);
+                onClick(text.description);
               }}
               className="horizontal-suggestion"
             >
               <RiLightbulbLine />
-              <span className={"suggestions-description"}>{text}</span>
+              <span className={"suggestions-description"}>{text.name}</span>
             </Button>
           ))}
-          {/*Below code is temporary added but commented to demo it to
-           Birgitta*/}
-          {/*<Button disabled={disable}*/}
-          {/*        onClick={() => {*/}
-          {/*          tempClick("threat-modelling-plan-mitigations-61755970");*/}
-          {/*        }}*/}
-          {/*        className="horizontal-suggestion"*/}
-          {/*>*/}
-          {/*  <RiLightbulbLine />*/}
-          {/*  <span className={"suggestions-description"}>Create mitigation plan below</span>*/}
-          {/*</Button>*/}
         </Flex>
       </Flex>
     </div>

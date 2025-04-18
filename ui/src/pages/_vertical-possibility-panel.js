@@ -15,12 +15,12 @@ const VerticalPossibilityPanel = ({ scenarioQueries = [], onClick }) => {
           <Button
             key={i}
             onClick={() => {
-              onClick(text);
+              onClick(text.description);
             }}
             className="suggestion"
           >
             <RiLightbulbLine />
-            {text}
+            {text.name}
           </Button>
         ))}
       </Flex>

@@ -5,9 +5,18 @@ import VerticalPossibilityPanel from "../pages/_vertical-possibility-panel";
 
 describe("VerticalPossibilityPanel", () => {
   const mockQueries = [
-    "What's the weather like tomorrow?",
-    "Show me vacation ideas.",
-    "Plan a weekend getaway.",
+    {
+      name: "What is the weather today?",
+      description: "What is the weather today?",
+    },
+    {
+      name: "Show me vacation ideas.",
+      description: "Show me vacation ideas.",
+    },
+    {
+      name: "Plan a weekend getaway.",
+      description: "Plan a weekend getaway.",
+    },
   ];
 
   it("renders the suggestions", () => {
@@ -23,7 +32,7 @@ describe("VerticalPossibilityPanel", () => {
     expect(screen.getByText("Suggestions:")).toBeInTheDocument();
 
     mockQueries.forEach((query) => {
-      expect(screen.getByText(query)).toBeInTheDocument();
+      expect(screen.getByText(query.description)).toBeInTheDocument();
     });
   });
 
@@ -35,11 +44,11 @@ describe("VerticalPossibilityPanel", () => {
         onClick={mockOnClick}
       />,
     );
-    const firstButton = screen.getByText(mockQueries[0]);
+    const firstButton = screen.getByText(mockQueries[0].name);
 
     fireEvent.click(firstButton);
 
     expect(mockOnClick).toHaveBeenCalledOnce();
-    expect(mockOnClick).toHaveBeenCalledWith(mockQueries[0]);
+    expect(mockOnClick).toHaveBeenCalledWith(mockQueries[0].description);
   });
 });
