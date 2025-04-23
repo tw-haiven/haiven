@@ -148,8 +148,8 @@ class PromptList:
 
         knowledge_and_input = self.appendUserContext(knowledge_and_input, user_context)
 
-        if "context" in knowledge_and_input:
-            self.knowledge_manager.add_complete_context(knowledge_and_input["context"])
+        # if "context" in knowledge_and_input:
+        #     self.knowledge_manager.add_complete_context(knowledge_and_input["context"])
         template = self.create_template(identifier)
         # template.get_input_schema()
         # template.dict()

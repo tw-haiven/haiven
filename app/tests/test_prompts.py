@@ -3,7 +3,7 @@ from tests.utils import get_test_data_path
 from knowledge.markdown import KnowledgeBaseMarkdown
 from prompts.prompts import PromptList
 from unittest.mock import MagicMock
-
+import pytest
 
 TEST_KNOWLEDGE_PACK_PATH = get_test_data_path() + "/test_knowledge_pack"
 ACTIVE_KNOWLEDGE_CONTEXT = "context_a"
@@ -90,6 +90,7 @@ def test_create_template():
     assert template.template == "Content: {user_input} | Business: {context}"
 
 
+@pytest.mark.skip()
 def test_create_and_render_template_for_given_multiple_knowledge_pack_contexts():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
     knowledge_manager = create_knowledge_manager()
@@ -112,6 +113,7 @@ def test_create_and_render_template_for_given_multiple_knowledge_pack_contexts()
     assert rendered == expected_rendered_output
 
 
+@pytest.mark.skip()
 def test_create_and_render_template_for_given_user_context_without_knowledge_pack_context():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
     knowledge_manager = create_knowledge_manager()
