@@ -202,12 +202,10 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
         mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_contexts=["some context"],
             prompt_choice="some-prompt-id",
             user_input="some user input",
             additional_vars={},
             warnings=ANY,
-            user_context="some user defined context",
         )
 
     @patch("llms.chats.JSONChat")
@@ -256,12 +254,10 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
         mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_contexts=["some context"],
             prompt_choice="guided-requirements",
             user_input=user_input,
             additional_vars={},
             warnings=ANY,
-            user_context="some user defined context",
         )
 
     @patch("llms.chats.JSONChat")
@@ -296,7 +292,6 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
         mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_contexts=ANY,
             prompt_choice="guided-scenarios-detailed",
             user_input=ANY,
             additional_vars={
@@ -373,8 +368,6 @@ class TestApi(unittest.TestCase):
             mock_streaming_chat,
         )
         mock_prompt_list.render_prompt.return_value = "some prompt", "template"
-        some_context = "some context for example a domain description"
-        mock_prompt_list.get_rendered_context.return_value = some_context
 
         ApiMultiStep(self.app, mock_chat_manager, "some_model_key", mock_prompt_list)
 
@@ -401,7 +394,6 @@ class TestApi(unittest.TestCase):
         args, kwargs = mock_streaming_chat.run.call_args
         actual_composed_prompt = args[0]
         assert body_dict["userinput"] in actual_composed_prompt
-        assert some_context in actual_composed_prompt
         assert body_dict["first_step_input"] in actual_composed_prompt
 
         args, kwargs = mock_chat_manager.streaming_chat.call_args
@@ -460,7 +452,6 @@ class TestApi(unittest.TestCase):
         assert "some title" in prompt_argument
         assert "some content" in prompt_argument
         assert "Follow up" in prompt_argument
-        assert "some user context" in prompt_argument
 
         args, kwargs = mock_chat_manager.streaming_chat.call_args
         assert kwargs["session_id"] is None
@@ -499,7 +490,6 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         assert streamed_content == "some response from the model"
         mock_prompt_list.render_prompt.assert_called_with(
-            active_knowledge_contexts=ANY,
             prompt_choice="guided-creative-matrix",
             user_input=ANY,
             additional_vars={

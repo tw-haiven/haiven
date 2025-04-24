@@ -90,66 +90,18 @@ class PromptList:
 
         prompt_text = prompt_data.content
 
-        variables = ["user_input", "context"] + self.extra_variables
+        variables = ["user_input"] + self.extra_variables
 
         return PromptTemplate(input_variables=variables, template=prompt_text)
 
-    def get_rendered_context(self, active_knowledge_contexts, identifier, user_context):
-        """
-        Args:
-            active_knowledge_contexts (List(str): The context identifiers for the knowledge base.
-            identifier (str): The identifier for the prompt
-            user_context (str): The user defined context added to the local storage
-
-        Returns:
-            str: The content of the context placeholder used in a prompt
-        """
-        knowledge = {}
-        if active_knowledge_contexts:
-            knowledge = self.knowledge_base.aggregate_context_contents(
-                active_knowledge_contexts
-            )
-        knowledge = self.appendUserContext(knowledge, user_context)
-        template = self.create_template(identifier)
-        result = ""
-        for key in template.input_variables:
-            if key in knowledge and key != "user_input":
-                result += knowledge[key]
-        return result
-
-    def appendUserContext(self, knowledge_and_input, user_context):
-        if user_context:
-            knowledge_and_input = knowledge_and_input or {}
-            context = user_context
-
-            if knowledge_and_input.get("context") is not None:
-                context = knowledge_and_input["context"] + "\n\n" + user_context
-
-            knowledge_and_input["context"] = context
-        return knowledge_and_input
-
     def create_and_render_template(
         self,
-        active_knowledge_contexts,
         identifier,
         variables,
         warnings=None,
-        user_context="",
     ):
-        if active_knowledge_contexts:
-            knowledge_and_input = {
-                **self.knowledge_base.aggregate_context_contents(
-                    active_knowledge_contexts
-                ),
-                **variables,
-            }
-        else:
-            knowledge_and_input = {**variables}
+        knowledge_and_input = {**variables}
 
-        knowledge_and_input = self.appendUserContext(knowledge_and_input, user_context)
-
-        # if "context" in knowledge_and_input:
-        #     self.knowledge_manager.add_complete_context(knowledge_and_input["context"])
         template = self.create_template(identifier)
         # template.get_input_schema()
         # template.dict()
@@ -185,22 +137,18 @@ class PromptList:
 
     def render_prompt(
         self,
-        active_knowledge_contexts: List[str],
         prompt_choice: str,
         user_input: str,
         additional_vars: dict = {},
         warnings=None,
-        user_context: str = "",
     ) -> str:
         if prompt_choice is not None:
             vars = additional_vars
             vars["user_input"] = user_input
             rendered, template = self.create_and_render_template(
-                active_knowledge_contexts,
                 prompt_choice,
                 vars,
                 warnings=warnings,
-                user_context=user_context,
             )
             return rendered, template
         return "", None

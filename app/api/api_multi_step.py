@@ -67,12 +67,10 @@ class ApiMultiStep(HaivenBaseApi):
                     """
 
                 rendered_prompt, _ = prompts.render_prompt(
-                    active_knowledge_contexts=prompt_data.contexts,
                     prompt_choice=prompt_data.promptid,
                     user_input=user_input,
                     additional_vars={},
                     warnings=[],
-                    user_context=prompt_data.userContext,
                 )
 
                 return stream_fn(
@@ -102,21 +100,7 @@ class ApiMultiStep(HaivenBaseApi):
 
                 user_input = prompt_data.userinput
                 if prompt_data.previous_promptid:
-                    if prompt_data.contexts or prompt_data.userContext:
-                        context = prompts.get_rendered_context(
-                            prompt_data.contexts,
-                            prompt_data.previous_promptid,
-                            prompt_data.userContext,
-                        )
-                        context = f"""
-                        ## General context
-                        {context}
-                        """
-                    else:
-                        context = ""
-
                     user_input = f"""
-{context}
 
 ## Specific task we're working on
 

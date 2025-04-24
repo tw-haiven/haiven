@@ -86,11 +86,15 @@ class HaivenBaseApi:
         model_config=None,
         userContext=None,
     ):
+        aggregatedContext = self.prompt_list.knowledge_base.aggregate_all_contexts(
+            contexts, userContext
+        )
         try:
             chat_session_key_value, chat_session = self.chat_manager.json_chat(
                 model_config=model_config or self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(category=chat_category),
+                aggregatedContext=aggregatedContext,
             )
 
             self.log_run(
@@ -166,10 +170,14 @@ class HaivenBaseApi:
                     print(f"[ERROR]: {str(error)}")
                     yield f"[ERROR]: {str(error)}"
 
+            aggregatedContext = self.prompt_list.knowledge_base.aggregate_all_contexts(
+                contexts, userContext
+            )
             chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
                 model_config=self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(in_chunks=True, category=chat_category),
+                aggregatedContext=aggregatedContext,
             )
 
             self.log_run(
@@ -338,12 +346,10 @@ class ApiBasics(HaivenBaseApi):
                         else prompts_chat
                     )
                     rendered_prompt, _ = prompts.render_prompt(
-                        active_knowledge_contexts=prompt_data.contexts,
                         prompt_choice=prompt_data.promptid,
                         user_input=prompt_data.userinput,
                         additional_vars={},
                         warnings=[],
-                        user_context=prompt_data.userContext,
                     )
                     if prompts.produces_json_output(prompt_data.promptid):
                         stream_fn = self.stream_json_chat
@@ -431,12 +437,10 @@ class ApiBasics(HaivenBaseApi):
                 )
 
                 rendered_prompt, template = prompts.render_prompt(
-                    active_knowledge_contexts=prompt_data.contexts,
                     prompt_choice=prompt_data.promptid,
                     user_input=prompt_data.userinput,
                     additional_vars={},
                     warnings=[],
-                    user_context=prompt_data.userContext,
                 )
                 return JSONResponse(
                     {"prompt": rendered_prompt, "template": template.template}
