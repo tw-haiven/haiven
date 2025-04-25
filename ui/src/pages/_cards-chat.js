@@ -605,6 +605,7 @@ const CardsChat = ({
                 setIsGenerating={setIsGenerating}
                 setProgress={setProgress}
                 scenarioToJson={scenarioToJson}
+                attachContextsToRequestBody={attachContextsToRequestBody}
               />
               {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
                 <div className="follow-up-container">

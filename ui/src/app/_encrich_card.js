@@ -26,6 +26,7 @@ const EnrichCard = ({
   setIsGenerating,
   setProgress,
   scenarioToJson,
+  attachContextsToRequestBody,
 }) => {
   const [iterationPrompt, setIterationPrompt] = useState("");
   const submitIterationPrompt = (prompt) => {
@@ -36,7 +37,7 @@ const EnrichCard = ({
     scenarios.forEach((scenario, i) => {
       if (scenario.id === undefined) scenario.id = i + 1;
     });
-    return {
+    let requestBody = {
       userinput: prompt,
       scenarios: JSON.stringify(
         scenarios
@@ -45,6 +46,8 @@ const EnrichCard = ({
       ),
       chatSessionId: chatSessionIdCardBuilding,
     };
+    attachContextsToRequestBody(requestBody);
+    return requestBody;
   };
 
   const iterateScenarios = (partiallyParsed) => {

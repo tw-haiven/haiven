@@ -35,6 +35,8 @@ class PromptRequestBody(BaseModel):
 
 class IterateRequest(PromptRequestBody):
     scenarios: str
+    contexts: List[str] = None
+    user_context: str = None
 
 
 def streaming_media_type() -> str:
@@ -421,6 +423,8 @@ class ApiBasics(HaivenBaseApi):
                     prompt=rendered_prompt,
                     chat_category="boba-chat",
                     chat_session_key_value=prompt_data.chatSessionId,
+                    contexts=prompt_data.contexts,
+                    userContext=prompt_data.user_context,
                 )
 
             except Exception as e:
