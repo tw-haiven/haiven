@@ -25,7 +25,7 @@ import {
 import PromptPreview from "../app/_prompt_preview";
 import MarkdownRenderer from "../app/_markdown_renderer";
 import { scenarioToText } from "../app/_dynamic_data_renderer";
-import EnrichCard from "../app/_encrich_card";
+import EnrichCard from "../app/_enrich_card";
 
 const CardsChat = ({
   promptId,
