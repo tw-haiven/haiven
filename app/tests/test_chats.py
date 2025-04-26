@@ -11,13 +11,17 @@ from config.constants import SYSTEM_MESSAGE
 
 class TestChats(unittest.TestCase):
     @patch("knowledge_manager.KnowledgeManager")
-    @patch("logger.HaivenLogger.get")
-    def test_streaming_chat(self, mock_logger, mock_knowledge_manager):
+    @patch("knowledge_manager.KnowledgeBaseMarkdown")
+    def test_streaming_chat(self, mock_knowledge_manager, mock_knowledge_base_markdown):
         os.environ["USE_AZURE"] = "true"
 
         # Setup knowledge manager to return a specific system message
         custom_system_message = "You are a test assistant"
         mock_knowledge_manager.get_system_message.return_value = custom_system_message
+        mock_knowledge_base_markdown.aggregate_all_contexts.return_value = (
+            "context1\nsome context"
+        )
+        mock_knowledge_manager.knowledge_base_markdown = mock_knowledge_base_markdown
 
         mock_chat_client = MagicMock()
         mock_chat_client.stream.return_value = (
@@ -25,17 +29,29 @@ class TestChats(unittest.TestCase):
         )
 
         streaming_chat = StreamingChat(
-            chat_client=mock_chat_client, knowledge_manager=mock_knowledge_manager
+            chat_client=mock_chat_client,
+            knowledge_manager=mock_knowledge_manager,
+            user_context="some context",
+            contexts=["context1"],
         )
 
+        expected_system_message = custom_system_message + (
+            "\n\nMultiple contexts "
+            + "will be given. Consider all contexts when responding to "
+            + "the given prompt "
+            + "context1\nsome context"
+        )
         # Verify system message is correctly set from knowledge manager
-        assert streaming_chat.system == custom_system_message
+        assert streaming_chat.system == expected_system_message
         assert len(streaming_chat.memory) == 1
         assert isinstance(streaming_chat.memory[0], HaivenSystemMessage)
-        assert streaming_chat.memory[0].content == custom_system_message
+        assert streaming_chat.memory[0].content == expected_system_message
 
         # Verify knowledge manager was called to get the system message
         mock_knowledge_manager.get_system_message.assert_called_once()
+        mock_knowledge_base_markdown.aggregate_all_contexts.assert_called_once_with(
+            ["context1"], "some context"
+        )
 
         question = "What is the capital of France?"
         answer = streaming_chat.run(question)
@@ -85,10 +101,15 @@ class TestChats(unittest.TestCase):
         assert "not found for this user" in result
 
     @patch("knowledge_manager.KnowledgeManager")
-    def test_json_chat(self, mock_knowledge_manager):
+    @patch("knowledge_manager.KnowledgeBaseMarkdown")
+    def test_json_chat(self, mock_knowledge_manager, mock_knowledge_base_markdown):
         # Setup knowledge manager to return a specific system message
         custom_system_message = "You are a test assistant"
         mock_knowledge_manager.get_system_message.return_value = custom_system_message
+        mock_knowledge_base_markdown.aggregate_all_contexts.return_value = (
+            "context1\nsome context"
+        )
+        mock_knowledge_manager.knowledge_base_markdown = mock_knowledge_base_markdown
 
         mock_chat_client = MagicMock()
         actual_chunks = (
@@ -101,17 +122,26 @@ class TestChats(unittest.TestCase):
         json_chat = JSONChat(
             chat_client=mock_chat_client,
             knowledge_manager=mock_knowledge_manager,
-            aggregatedContext="",
+            user_context="some context",
+            contexts=["context1"],
         )
-
+        expected_system_message = custom_system_message + (
+            "\n\nMultiple contexts "
+            + "will be given. Consider all contexts when responding to "
+            + "the given prompt "
+            + "context1\nsome context"
+        )
         # Verify system message is correctly set from knowledge manager
-        assert json_chat.system == custom_system_message
+        assert json_chat.system == expected_system_message
         assert len(json_chat.memory) == 1
         assert isinstance(json_chat.memory[0], HaivenSystemMessage)
-        assert json_chat.memory[0].content == custom_system_message
+        assert json_chat.memory[0].content == expected_system_message
 
         # Verify knowledge manager was called to get the system message
         mock_knowledge_manager.get_system_message.assert_called_once()
+        mock_knowledge_base_markdown.aggregate_all_contexts.assert_called_once_with(
+            ["context1"], "some context"
+        )
 
         # Test run method - collect the generator output
         question = "What is the capital of France?"
@@ -140,9 +170,16 @@ class TestChats(unittest.TestCase):
         assert json_chat.memory[2].content == '{"key":"value"}'
 
     @patch("knowledge_manager.KnowledgeManager")
-    def test_haiven_base_chat(self, mock_knowledge_manager):
+    @patch("knowledge_manager.KnowledgeBaseMarkdown")
+    def test_haiven_base_chat(
+        self, mock_knowledge_manager, mock_knowledge_base_markdown
+    ):
         # Setup knowledge manager to return the default system message
         mock_knowledge_manager.get_system_message.return_value = SYSTEM_MESSAGE
+        mock_knowledge_base_markdown.aggregate_all_contexts.return_value = (
+            "context1\nsome context"
+        )
+        mock_knowledge_manager.knowledge_base_markdown = mock_knowledge_base_markdown
 
         mock_chat_client = MagicMock()
 
@@ -150,24 +187,25 @@ class TestChats(unittest.TestCase):
         base_chat = HaivenBaseChat(
             chat_client=mock_chat_client,
             knowledge_manager=mock_knowledge_manager,
-            aggregatedContext="some context",
+            user_context="some context",
+            contexts=["context1"],
         )
 
-        # Verify system message is correctly set from knowledge manager
-        assert base_chat.system == SYSTEM_MESSAGE + (
+        mock_knowledge_base_markdown.aggregate_all_contexts.assert_called_once_with(
+            ["context1"], "some context"
+        )
+
+        expected_system_message = SYSTEM_MESSAGE + (
             "\n\nMultiple contexts "
             + "will be given. Consider all contexts when responding to "
             + "the given prompt "
-            + "some context"
+            + "context1\nsome context"
         )
+        # Verify system message is correctly set from knowledge manager
+        assert base_chat.system == expected_system_message
         assert len(base_chat.memory) == 1
         assert isinstance(base_chat.memory[0], HaivenSystemMessage)
-        assert base_chat.memory[0].content == SYSTEM_MESSAGE + (
-            "\n\nMultiple contexts "
-            + "will be given. Consider all contexts when responding to "
-            + "the given prompt "
-            + "some context"
-        )
+        assert base_chat.memory[0].content == expected_system_message
 
         # Test memory_as_text method
         memory_text = base_chat.memory_as_text()

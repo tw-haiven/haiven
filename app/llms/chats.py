@@ -24,10 +24,16 @@ class HaivenBaseChat:
         self,
         chat_client: ChatClient,
         knowledge_manager: KnowledgeManager,
-        aggregatedContext: str = None,
+        contexts: List[str] = None,
+        user_context: str = None,
     ):
         self.knowledge_manager = knowledge_manager
         self.system = knowledge_manager.get_system_message()
+        aggregatedContext = (
+            knowledge_manager.knowledge_base_markdown.aggregate_all_contexts(
+                contexts, user_context
+            )
+        )
         if aggregatedContext:
             self.system += (
                 "\n\nMultiple contexts will be given. Consider "
@@ -128,9 +134,10 @@ class StreamingChat(HaivenBaseChat):
         chat_client: ChatClient,
         knowledge_manager: KnowledgeManager,
         stream_in_chunks: bool = False,
-        aggregatedContext: str = None,
+        contexts: List[str] = None,
+        user_context: str = None,
     ):
-        super().__init__(chat_client, knowledge_manager, aggregatedContext)
+        super().__init__(chat_client, knowledge_manager, contexts, user_context)
         self.stream_in_chunks = stream_in_chunks
 
     def run(self, message: str, user_query: str = None):
@@ -193,9 +200,10 @@ class JSONChat(HaivenBaseChat):
         self,
         chat_client: ChatClient,
         knowledge_manager: KnowledgeManager,
-        aggregatedContext: str,
+        contexts: List[str] = None,
+        user_context: str = None,
     ):
-        super().__init__(chat_client, knowledge_manager, aggregatedContext)
+        super().__init__(chat_client, knowledge_manager, contexts, user_context)
 
     def stream_from_model(self, new_message):
         try:
@@ -351,7 +359,8 @@ class ChatManager:
         model_config: ModelConfig,
         session_id: str = None,
         options: ChatOptions = None,
-        aggregatedContext: str = None,
+        contexts: List[str] = None,
+        user_context: str = None,
     ):
         chat_client = self.llm_chat_factory.new_chat_client(model_config)
         return self.chat_session_memory.get_or_create_chat(
@@ -359,7 +368,8 @@ class ChatManager:
                 chat_client,
                 self.knowledge_manager,
                 stream_in_chunks=options.in_chunks if options else None,
-                aggregatedContext=aggregatedContext,
+                contexts=contexts,
+                user_context=user_context,
             ),
             chat_session_key_value=session_id,
             chat_category=options.category if options else None,
@@ -371,11 +381,14 @@ class ChatManager:
         model_config: ModelConfig,
         session_id: str = None,
         options: ChatOptions = None,
-        aggregatedContext: str = None,
+        contexts: List[str] = None,
+        user_context: str = None,
     ):
         chat_client = self.llm_chat_factory.new_chat_client(model_config)
         return self.chat_session_memory.get_or_create_chat(
-            lambda: JSONChat(chat_client, self.knowledge_manager, aggregatedContext),
+            lambda: JSONChat(
+                chat_client, self.knowledge_manager, contexts, user_context
+            ),
             chat_session_key_value=session_id,
             chat_category=options.category if options else None,
             user_identifier=options.user_identifier if options else None,

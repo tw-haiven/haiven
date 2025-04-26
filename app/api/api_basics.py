@@ -88,15 +88,13 @@ class HaivenBaseApi:
         model_config=None,
         userContext=None,
     ):
-        aggregatedContext = self.prompt_list.knowledge_base.aggregate_all_contexts(
-            contexts, userContext
-        )
         try:
             chat_session_key_value, chat_session = self.chat_manager.json_chat(
                 model_config=model_config or self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(category=chat_category),
-                aggregatedContext=aggregatedContext,
+                contexts=contexts,
+                user_context=userContext,
             )
 
             self.log_run(
@@ -172,14 +170,12 @@ class HaivenBaseApi:
                     print(f"[ERROR]: {str(error)}")
                     yield f"[ERROR]: {str(error)}"
 
-            aggregatedContext = self.prompt_list.knowledge_base.aggregate_all_contexts(
-                contexts, userContext
-            )
             chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
                 model_config=self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(in_chunks=True, category=chat_category),
-                aggregatedContext=aggregatedContext,
+                contexts=contexts,
+                user_context=userContext,
             )
 
             self.log_run(
