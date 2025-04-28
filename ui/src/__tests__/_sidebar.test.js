@@ -81,4 +81,103 @@ describe("Sidebar Component", () => {
 
     expect(screen.getByText(/User person creation/i)).toBeInTheDocument();
   });
+
+  describe("Sidebar Component - Delivery Management Feature Toggle via Env", () => {
+    beforeEach(() => {
+      delete process.env.NEXT_PUBLIC_FEATURE_DELIVERY_MANAGEMENT;
+      vi.resetModules();
+    });
+  
+    const mockPromptsForDeliveryManagement = [
+      {
+        identifier: "ahm-process",
+        title: "AHM Process",
+        categories: ["deliveryManagement"],
+        type: "chat",
+        show: true,
+      },
+    ];
+  
+    const mockPromptsForOtherCategory = [
+      {
+        identifier: "creative-matrix",
+        title: "Creative Matrix",
+        categories: ["something-else"],
+        type: "static",
+        show: true,
+      },
+    ];
+  
+    it("should render Delivery Management category and its prompt when feature flag is true", async () => {
+      process.env.NEXT_PUBLIC_FEATURE_DELIVERY_MANAGEMENT = "true";
+      const Sidebar = (await import("../pages/_sidebar")).default;
+  
+      useRouter.mockReturnValue({
+        pathname: "/delivery-management",
+      });
+  
+      await act(async () => {
+        render(<Sidebar prompts={mockPromptsForDeliveryManagement} />);
+      });
+  
+      expect(screen.getByText(/Delivery Management/i)).toBeInTheDocument();
+      const deliveryManagement = screen.getByText(/Delivery Management/i);
+      await act(async () => {
+        deliveryManagement.click();
+      });
+      expect(screen.getByText(/AHM Process/i)).toBeInTheDocument();
+    });
+  
+    it("should NOT render Delivery Management category when feature flag is false", async () => {
+      process.env.NEXT_PUBLIC_FEATURE_DELIVERY_MANAGEMENT = "false";
+      const Sidebar = (await import("../pages/_sidebar")).default;
+  
+      useRouter.mockReturnValue({
+        pathname: "/",
+      });
+  
+      await act(async () => {
+        render(<Sidebar prompts={mockPromptsForDeliveryManagement} />);
+      });
+  
+      expect(screen.queryByText(/Delivery Management/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/AHM Process/i)).not.toBeInTheDocument();
+    });
+  
+    it("should NOT render Delivery Management category when feature flag is not set", async () => {
+      const Sidebar = (await import("../pages/_sidebar")).default;
+  
+      useRouter.mockReturnValue({
+        pathname: "/",
+      });
+  
+      await act(async () => {
+        render(<Sidebar prompts={mockPromptsForDeliveryManagement} />);
+      });
+  
+      expect(screen.queryByText(/Delivery Management/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/AHM Process/i)).not.toBeInTheDocument();
+    });
+  
+    it("should always render items under others regardless of the feature flag", async () => {
+      process.env.NEXT_PUBLIC_FEATURE_DELIVERY_MANAGEMENT = "false"; // Even if disabled
+  
+      const Sidebar = (await import("../pages/_sidebar")).default;
+  
+      useRouter.mockReturnValue({
+        pathname: "/creative-matrix",
+      });
+  
+      await act(async () => {
+        render(<Sidebar prompts={mockPromptsForOtherCategory} />);
+      });
+  
+      expect(screen.getByText(/Ideate/i)).toBeInTheDocument();
+      const ideate = screen.getByText(/Ideate/i);
+      await act(async () => {
+        ideate.click();
+      });
+      expect(screen.getByText(/Creative Matrix/i)).toBeInTheDocument();
+    });
+  });  
 });
