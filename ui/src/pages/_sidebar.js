@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { initialiseMenuCategoriesForSidebar } from "../app/_navigation_items";
+import featureTogglesEnv from '../app/feature_toggles_env';
+
 
 const Sidebar = ({ prompts }) => {
   const pathToKey = {
@@ -27,6 +29,12 @@ const Sidebar = ({ prompts }) => {
 
     prompts
       .filter((prompt) => prompt.show !== false)
+      .filter((prompt) => {
+        if (prompt.categories.includes("deliveryManagement")) {
+          return featureTogglesEnv.DELIVERY_MANAGEMENT;
+        }
+        return true;
+      })
       .forEach((prompt) => {
         const url = typeToUrlMap[prompt.type] || "/chat";
         prompt.categories.forEach((category) => {
