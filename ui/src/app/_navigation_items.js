@@ -11,8 +11,7 @@ import {
   RiBook2Line,
   RiDashboardHorizontalLine,
 } from "react-icons/ri";
-import featureTogglesEnv from './feature_toggles_env';
-
+import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 
 // Keeping the implementation of menu items for the "static" features in one place
 // Will usually be enhanced by the dynamically loaded prompts afterwards
@@ -82,9 +81,8 @@ export const initialiseMenuCategoriesForSidebar = () => {
     },
   };
 
-  console.log('DELIVERY_MANAGEMENT: ', featureTogglesEnv.DELIVERY_MANAGEMENT);
 
-  if (featureTogglesEnv.DELIVERY_MANAGEMENT) {
+  if (isFeatureEnabled(FEATURES.FEATURE_DELIVERY_MANAGEMENT)) {
     categories.deliveryManagement = {
       key: "deliveryManagement",
       label: "Delivery Management",
@@ -93,7 +91,6 @@ export const initialiseMenuCategoriesForSidebar = () => {
     };
   }
 
-  console.log('categories: ', categories);
   return categories;
 };
 

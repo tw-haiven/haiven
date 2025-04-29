@@ -2,7 +2,7 @@
 import { getFeatureTogglesAsJson } from "../app/_local_store";
 
 export const FEATURES = {
-  ADD_CONTEXT_FROM_UI: "add_context_from_ui",
+  FEATURE_DELIVERY_MANAGEMENT: "FEATURE_DELIVERY_MANAGEMENT",
 };
 
 export const isFeatureEnabled = (featureName) => {
