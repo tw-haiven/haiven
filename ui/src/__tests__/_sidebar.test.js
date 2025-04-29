@@ -2,14 +2,28 @@
 import { render, screen } from "@testing-library/react";
 import { act } from "react";
 import Sidebar from "../pages/_sidebar";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { useRouter } from "next/router";
+import { getFeatureTogglesAsJson } from "../app/_local_store";
 
 vi.mock("next/router", () => ({
   useRouter: vi.fn(),
 }));
 
+vi.mock("../app/_local_store", async () => {
+  const actual = await vi.importActual("../app/_local_store");
+  return {
+    ...actual,
+    getFeatureTogglesAsJson: vi.fn(),
+  };
+});
+
 describe("Sidebar Component", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    getFeatureTogglesAsJson.mockReturnValue({});
+  });
+
   const mockPrompts = [
     {
       identifier: "1",
@@ -84,8 +98,8 @@ describe("Sidebar Component", () => {
 
   describe("Sidebar Component - Delivery Management Feature Toggle via Env", () => {
     beforeEach(() => {
-      delete process.env.NEXT_PUBLIC_FEATURE_DELIVERY_MANAGEMENT;
-      vi.resetModules();
+      vi.clearAllMocks();
+      getFeatureTogglesAsJson.mockReturnValue({});
     });
   
     const mockPromptsForDeliveryManagement = [
@@ -109,7 +123,7 @@ describe("Sidebar Component", () => {
     ];
   
     it("should render Delivery Management category and its prompt when feature flag is true", async () => {
-      process.env.NEXT_PUBLIC_FEATURE_DELIVERY_MANAGEMENT = "true";
+      getFeatureTogglesAsJson.mockReturnValue({FEATURE_DELIVERY_MANAGEMENT: true,});
       const Sidebar = (await import("../pages/_sidebar")).default;
   
       useRouter.mockReturnValue({
@@ -129,7 +143,7 @@ describe("Sidebar Component", () => {
     });
   
     it("should NOT render Delivery Management category when feature flag is false", async () => {
-      process.env.NEXT_PUBLIC_FEATURE_DELIVERY_MANAGEMENT = "false";
+      getFeatureTogglesAsJson.mockReturnValue({FEATURE_DELIVERY_MANAGEMENT: false,});
       const Sidebar = (await import("../pages/_sidebar")).default;
   
       useRouter.mockReturnValue({
@@ -160,7 +174,7 @@ describe("Sidebar Component", () => {
     });
   
     it("should always render items under others regardless of the feature flag", async () => {
-      process.env.NEXT_PUBLIC_FEATURE_DELIVERY_MANAGEMENT = "false"; // Even if disabled
+      getFeatureTogglesAsJson.mockReturnValue({FEATURE_DELIVERY_MANAGEMENT: false,});
   
       const Sidebar = (await import("../pages/_sidebar")).default;
   
