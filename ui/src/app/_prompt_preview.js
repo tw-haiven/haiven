@@ -199,17 +199,18 @@ export default function PromptPreview({
             }}
           ></textarea>
         ) : (
-          <ReactMarkdown
-            className="content-viewer"
-            remarkPlugins={[[remarkGfm]]}
-            components={{
-              del(props) {
-                return highlightDiffs(props);
-              },
-            }}
-          >
-            {prompt}
-          </ReactMarkdown>
+          <div className="content-viewer">
+            <ReactMarkdown
+              remarkPlugins={[[remarkGfm]]}
+              components={{
+                del(props) {
+                  return highlightDiffs(props);
+                },
+              }}
+            >
+              {prompt}
+            </ReactMarkdown>
+          </div>
         )}
         <div className="modal-footer">
           <Button
