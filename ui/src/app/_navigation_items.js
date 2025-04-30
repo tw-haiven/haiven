@@ -81,7 +81,6 @@ export const initialiseMenuCategoriesForSidebar = () => {
     },
   };
 
-
   if (isFeatureEnabled(FEATURES.FEATURE_DELIVERY_MANAGEMENT)) {
     categories.deliveryManagement = {
       key: "deliveryManagement",

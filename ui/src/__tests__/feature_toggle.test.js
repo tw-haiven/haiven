@@ -1,5 +1,5 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import { isFeatureEnabled, FEATURES } from "../app/feature_toggles";
+import { isFeatureEnabled, FEATURES } from "../app/feature_toggle";
 
 describe("Feature Toggles", () => {
   beforeEach(() => {
