@@ -11,12 +11,13 @@ import {
   RiBook2Line,
   RiDashboardHorizontalLine,
 } from "react-icons/ri";
+import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 
 // Keeping the implementation of menu items for the "static" features in one place
 // Will usually be enhanced by the dynamically loaded prompts afterwards
 
 export const initialiseMenuCategoriesForSidebar = () => {
-  return {
+  const categories = {
     dashboard: {
       key: "dashboard",
       label: <Link href="/">Dashboard</Link>,
@@ -79,6 +80,17 @@ export const initialiseMenuCategoriesForSidebar = () => {
       children: [],
     },
   };
+
+  if (isFeatureEnabled(FEATURES.FEATURE_DELIVERY_MANAGEMENT)) {
+    categories.deliveryManagement = {
+      key: "deliveryManagement",
+      label: "Delivery Management",
+      icon: <RiDashboardHorizontalLine style={{ fontSize: "large" }} />,
+      children: [],
+    };
+  }
+
+  return categories;
 };
 
 export const staticFeaturesForDashboard = () => {

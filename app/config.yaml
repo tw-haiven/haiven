@@ -36,7 +36,7 @@ models:
       api_key: ${AZURE_OPENAI_API_KEY}
 
   - id: gemini-2.0-flash
-    name: Gemini on Google
+    name: Gemini 2.0 Flash
     provider: GCP
     features:
       - text-generation

@@ -8,13 +8,15 @@ import {
   RiFileCopyLine,
   RiCloseFill,
 } from "react-icons/ri";
-import { Card, Button, Input, Radio, Tooltip, Typography } from "antd";
+import { Card, Button, Input, Radio, Tooltip, Progress } from "antd";
 import { toast } from "react-toastify";
 import { DynamicDataRenderer, scenarioToText } from "./_dynamic_data_renderer";
 import MarkdownRenderer from "./_markdown_renderer";
 const { TextArea } = Input;
 
 const CardsList = ({
+  progress,
+  isGenerating,
   scenarios,
   setScenarios,
   onExplore,
@@ -23,6 +25,7 @@ const CardsList = ({
   editable,
   onDelete,
   listIndex,
+  featureToggleConfig,
 }) => {
   const [displayMode, setDisplayMode] = useState("grid");
 
@@ -160,6 +163,9 @@ const CardsList = ({
                     {renderScenarioDetails(scenario)}
                   </div>
                   <CardActions
+                    progress={progress}
+                    isGenerating={isGenerating}
+                    featureToggleConfig={featureToggleConfig}
                     scenario={scenario}
                     onExploreHandler={onExplore}
                     selfReview={

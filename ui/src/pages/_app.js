@@ -2,7 +2,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Button, Tooltip, Layout, ConfigProvider } from "antd";
-import { BsChatHeartFill } from "react-icons/bs";
+import { RiFeedbackLine } from "react-icons/ri";
 import { ToastContainer, Slide } from "react-toastify";
 import Head from "next/head";
 import Header from "./_header";
@@ -54,8 +54,7 @@ export default function App({
       setContexts(labelValuePairs);
     });
     getDocuments((data) => {
-      const updatedDocuments = [{ label: "None", value: "base" }, ...data];
-      setDocuments(updatedDocuments);
+      setDocuments(data);
     });
     getModels(setModels);
     initializeLocalStorage();
@@ -180,7 +179,7 @@ export default function App({
               type="link"
               href="https://docs.google.com/forms/d/e/1FAIpQLSdo6QhkuCMfWqjFAXnYabW7BBGn1wLxk9dfIsmSPMg1Hcurng/viewform"
               target="_blank"
-              icon={<BsChatHeartFill />}
+              icon={<RiFeedbackLine />}
             ></Button>
           </Tooltip>
         </Layout>

@@ -78,11 +78,13 @@ describe("PromptChat Component", () => {
   const mockContexts = [
     { value: "context1", label: "Context 1" },
     { value: "context2", label: "Context 2" },
+    { value: "context3", label: "Context 3" },
   ];
 
   const mockDocuments = [
     { value: "document1", label: "Document 1" },
     { value: "document2", label: "Document 2" },
+    { value: "document3", label: "Document 3" },
   ];
 
   const mockModels = {
@@ -185,10 +187,10 @@ describe("PromptChat Component", () => {
     return fetchMock;
   };
 
-  async function selectDocument() {
+  async function selectDocument(documentTitle) {
     const documentDropdown = screen.getByTestId("document-select").firstChild;
     fireEvent.mouseDown(documentDropdown);
-    const selectedDocument = await screen.findByText("Document 1");
+    const selectedDocument = await screen.findByText(documentTitle);
     fireEvent.click(selectedDocument);
   }
 
@@ -296,7 +298,8 @@ describe("PromptChat Component", () => {
     clickAdvancedPrompt();
     await selectContext("Context 1");
     await selectContext("Context 2");
-    await selectDocument();
+    await selectDocument("Document 1");
+    await selectDocument("Document 2");
     uploadImage();
     givenUserInput();
 
@@ -313,7 +316,7 @@ describe("PromptChat Component", () => {
           userinput: "Here is my prompt input\n\nMocked image description",
           promptid: "1",
           chatSessionId: undefined,
-          document: "document1",
+          document: ["document1", "document2"],
           contexts: ["context1", "context2"],
         }),
       );
@@ -363,7 +366,7 @@ describe("PromptChat Component", () => {
           userinput: "Here is my prompt input",
           promptid: "1",
           chatSessionId: undefined,
-          document: "",
+          document: [],
           userContext:
             "User Context 2 description\n\nUser Context 1 description",
           contexts: ["context1"],

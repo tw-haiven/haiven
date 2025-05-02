@@ -20,7 +20,6 @@ class ApiCreativeMatrix(HaivenBaseApi):
             }
 
             prompt, _ = prompt_list.render_prompt(
-                active_knowledge_contexts=None,
                 prompt_choice="guided-creative-matrix",
                 user_input="",
                 additional_vars=variables,

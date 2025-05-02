@@ -23,7 +23,6 @@ class ApiCompanyResearch(HaivenBaseApi):
             config = body.get("config", "company")
 
             prompt, _ = prompt_list.render_prompt(
-                active_knowledge_contexts=None,
                 prompt_choice=CONFIG_TO_PROMPT_MAPPING.get(
                     config, "guided-company-research"
                 ),

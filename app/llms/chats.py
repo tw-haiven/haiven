@@ -2,6 +2,7 @@
 import json
 import time
 import uuid
+from typing import List
 
 from pydantic import BaseModel
 from config_service import ConfigService
@@ -23,9 +24,23 @@ class HaivenBaseChat:
         self,
         chat_client: ChatClient,
         knowledge_manager: KnowledgeManager,
+        contexts: List[str] = None,
+        user_context: str = None,
     ):
         self.knowledge_manager = knowledge_manager
         self.system = knowledge_manager.get_system_message()
+        aggregatedContext = (
+            knowledge_manager.knowledge_base_markdown.aggregate_all_contexts(
+                contexts, user_context
+            )
+        )
+        if aggregatedContext:
+            self.system += (
+                "\n\nMultiple contexts will be given. Consider "
+                + "all contexts when responding to the given prompt "
+                + aggregatedContext
+            )
+
         self.memory = [HaivenSystemMessage(content=self.system)]
         self.chat_client = chat_client
 
@@ -81,16 +96,16 @@ class HaivenBaseChat:
         else:
             return query
 
-    def _similarity_search_based_on_history(self, message, knowledge_document_key):
+    def _similarity_search_based_on_history(self, message, knowledge_document_keys):
         similarity_query = self._similarity_query(message)
         print("Similarity Query:", similarity_query)
         if similarity_query is None:
             return None, None
 
-        if knowledge_document_key:
-            context_documents = self.knowledge_manager.knowledge_base_documents.similarity_search_on_single_document(
+        if knowledge_document_keys:
+            context_documents = self.knowledge_manager.knowledge_base_documents.similarity_search_on_multiple_documents(
                 query=similarity_query,
-                document_key=knowledge_document_key,
+                document_keys=knowledge_document_keys,
             )
         else:
             return None, None
@@ -119,8 +134,10 @@ class StreamingChat(HaivenBaseChat):
         chat_client: ChatClient,
         knowledge_manager: KnowledgeManager,
         stream_in_chunks: bool = False,
+        contexts: List[str] = None,
+        user_context: str = None,
     ):
-        super().__init__(chat_client, knowledge_manager)
+        super().__init__(chat_client, knowledge_manager, contexts, user_context)
         self.stream_in_chunks = stream_in_chunks
 
     def run(self, message: str, user_query: str = None):
@@ -142,13 +159,13 @@ class StreamingChat(HaivenBaseChat):
 
     def run_with_document(
         self,
-        knowledge_document_key: str,
+        knowledge_document_keys: List[str],
         message: str = None,
     ):
         try:
             context_for_prompt, sources_markdown = (
                 self._similarity_search_based_on_history(
-                    message, knowledge_document_key
+                    message, knowledge_document_keys
                 )
             )
 
@@ -183,8 +200,10 @@ class JSONChat(HaivenBaseChat):
         self,
         chat_client: ChatClient,
         knowledge_manager: KnowledgeManager,
+        contexts: List[str] = None,
+        user_context: str = None,
     ):
-        super().__init__(chat_client, knowledge_manager)
+        super().__init__(chat_client, knowledge_manager, contexts, user_context)
 
     def stream_from_model(self, new_message):
         try:
@@ -234,7 +253,7 @@ class ServerChatSessionMemory:
         allowed_age_in_minutes = 30
         allowed_age_in_seconds = 60 * allowed_age_in_minutes
         print(
-            f"CLEANUP: Removing chat sessions with age > {allowed_age_in_minutes} mins from memory. Currently {len(self.USER_CHATS)} entries in memory"
+            f"CLEANUP: Removing chat sessions with last user access > {allowed_age_in_minutes} mins from memory. Currently {len(self.USER_CHATS)} entries in memory"
         )
 
         entries_to_remove = list(
@@ -340,6 +359,8 @@ class ChatManager:
         model_config: ModelConfig,
         session_id: str = None,
         options: ChatOptions = None,
+        contexts: List[str] = None,
+        user_context: str = None,
     ):
         chat_client = self.llm_chat_factory.new_chat_client(model_config)
         return self.chat_session_memory.get_or_create_chat(
@@ -347,6 +368,8 @@ class ChatManager:
                 chat_client,
                 self.knowledge_manager,
                 stream_in_chunks=options.in_chunks if options else None,
+                contexts=contexts,
+                user_context=user_context,
             ),
             chat_session_key_value=session_id,
             chat_category=options.category if options else None,
@@ -358,12 +381,13 @@ class ChatManager:
         model_config: ModelConfig,
         session_id: str = None,
         options: ChatOptions = None,
+        contexts: List[str] = None,
+        user_context: str = None,
     ):
         chat_client = self.llm_chat_factory.new_chat_client(model_config)
         return self.chat_session_memory.get_or_create_chat(
             lambda: JSONChat(
-                chat_client,
-                self.knowledge_manager,
+                chat_client, self.knowledge_manager, contexts, user_context
             ),
             chat_session_key_value=session_id,
             chat_category=options.category if options else None,

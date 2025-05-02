@@ -28,13 +28,15 @@ class PromptRequestBody(BaseModel):
     promptid: str = None
     chatSessionId: str = None
     contexts: List[str] = None
-    document: str = None
+    document: List[str] = None
     json: bool = False
     userContext: str = None
 
 
 class IterateRequest(PromptRequestBody):
     scenarios: str
+    contexts: List[str] = None
+    user_context: str = None
 
 
 def streaming_media_type() -> str:
@@ -78,7 +80,7 @@ class HaivenBaseApi:
         prompt,
         chat_category,
         chat_session_key_value=None,
-        document_key=None,
+        document_keys=None,
         prompt_id=None,
         user_identifier=None,
         contexts=None,
@@ -91,6 +93,8 @@ class HaivenBaseApi:
                 model_config=model_config or self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(category=chat_category),
+                contexts=contexts,
+                user_context=userContext,
             )
 
             self.log_run(
@@ -138,7 +142,7 @@ class HaivenBaseApi:
         prompt,
         chat_category,
         chat_session_key_value=None,
-        document_key=None,
+        document_keys=[],
         prompt_id=None,
         user_identifier=None,
         contexts=None,
@@ -149,10 +153,10 @@ class HaivenBaseApi:
 
             def stream(chat_session: StreamingChat, prompt):
                 try:
-                    if document_key:
+                    if document_keys:
                         sources = ""
                         for chunk, sources in chat_session.run_with_document(
-                            document_key, prompt
+                            document_keys, prompt
                         ):
                             sources = sources
                             yield chunk
@@ -170,6 +174,8 @@ class HaivenBaseApi:
                 model_config=self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(in_chunks=True, category=chat_category),
+                contexts=contexts,
+                user_context=userContext,
             )
 
             self.log_run(
@@ -338,12 +344,10 @@ class ApiBasics(HaivenBaseApi):
                         else prompts_chat
                     )
                     rendered_prompt, _ = prompts.render_prompt(
-                        active_knowledge_contexts=prompt_data.contexts,
                         prompt_choice=prompt_data.promptid,
                         user_input=prompt_data.userinput,
                         additional_vars={},
                         warnings=[],
-                        user_context=prompt_data.userContext,
                     )
                     if prompts.produces_json_output(prompt_data.promptid):
                         stream_fn = self.stream_json_chat
@@ -353,15 +357,22 @@ class ApiBasics(HaivenBaseApi):
                 if prompt_data.json is True:
                     stream_fn = self.stream_json_chat
 
+                prompt = rendered_prompt
+                session_id = prompt_data.chatSessionId
+                document = prompt_data.document
+                promptid = prompt_data.promptid
+                user_id = self.get_hashed_user_id(request)
+                contexts = prompt_data.contexts
+                data = prompt_data
                 return stream_fn(
-                    prompt=rendered_prompt,
+                    prompt=prompt,
                     chat_category="boba-chat",
-                    chat_session_key_value=prompt_data.chatSessionId,
-                    document_key=prompt_data.document,
-                    prompt_id=prompt_data.promptid,
-                    user_identifier=self.get_hashed_user_id(request),
-                    contexts=prompt_data.contexts,
-                    userContext=prompt_data.userContext,
+                    chat_session_key_value=session_id,
+                    document_keys=document,
+                    prompt_id=promptid,
+                    user_identifier=user_id,
+                    contexts=contexts,
+                    userContext=data.userContext,
                     origin_url=origin_url,
                 )
 
@@ -408,6 +419,8 @@ class ApiBasics(HaivenBaseApi):
                     prompt=rendered_prompt,
                     chat_category="boba-chat",
                     chat_session_key_value=prompt_data.chatSessionId,
+                    contexts=prompt_data.contexts,
+                    userContext=prompt_data.user_context,
                 )
 
             except Exception as e:
@@ -424,12 +437,10 @@ class ApiBasics(HaivenBaseApi):
                 )
 
                 rendered_prompt, template = prompts.render_prompt(
-                    active_knowledge_contexts=prompt_data.contexts,
                     prompt_choice=prompt_data.promptid,
                     user_input=prompt_data.userinput,
                     additional_vars={},
                     warnings=[],
-                    user_context=prompt_data.userContext,
                 )
                 return JSONResponse(
                     {"prompt": rendered_prompt, "template": template.template}

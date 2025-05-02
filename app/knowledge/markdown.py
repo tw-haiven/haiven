@@ -59,12 +59,18 @@ class KnowledgeBaseMarkdown:
         """
         return self._knowledge
 
-    def aggregate_context_contents(self, contexts: List[str]) -> dict[str, str]:
+    def aggregate_all_contexts(
+        self, contexts: List[str], user_context: str = None
+    ) -> str:
         """
-        Returns a dictionary with context as key and all contexts' contents appended as one string
+        Return all required contexts' contents appended as one string
         """
+        knowledgePackContextsAggregated = None
+        if contexts:
+            knowledgePackContextsAggregated = "\n\n".join(
+                self._knowledge[context_key].content for context_key in contexts
+            )
 
-        aggregated_content = "\n\n".join(
-            self._knowledge[context_key].content for context_key in contexts
+        return "\n\n".join(
+            filter(None, [knowledgePackContextsAggregated, user_context])
         )
-        return {"context": aggregated_content}

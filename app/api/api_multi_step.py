@@ -67,19 +67,17 @@ class ApiMultiStep(HaivenBaseApi):
                     """
 
                 rendered_prompt, _ = prompts.render_prompt(
-                    active_knowledge_contexts=prompt_data.contexts,
                     prompt_choice=prompt_data.promptid,
                     user_input=user_input,
                     additional_vars={},
                     warnings=[],
-                    user_context=prompt_data.userContext,
                 )
 
                 return stream_fn(
                     prompt=rendered_prompt,
                     chat_category="follow-up",
                     chat_session_key_value=prompt_data.chatSessionId,
-                    document_key=prompt_data.document,
+                    document_keys=prompt_data.document,
                     user_identifier=self.get_hashed_user_id(request),
                     origin_url=origin_url,
                     contexts=prompt_data.contexts,
@@ -102,21 +100,7 @@ class ApiMultiStep(HaivenBaseApi):
 
                 user_input = prompt_data.userinput
                 if prompt_data.previous_promptid:
-                    if prompt_data.contexts or prompt_data.userContext:
-                        context = prompts.get_rendered_context(
-                            prompt_data.contexts,
-                            prompt_data.previous_promptid,
-                            prompt_data.userContext,
-                        )
-                        context = f"""
-                        ## General context
-                        {context}
-                        """
-                    else:
-                        context = ""
-
                     user_input = f"""
-{context}
 
 ## Specific task we're working on
 
@@ -159,7 +143,7 @@ I want to focus on this item:
                     prompt=user_input,
                     chat_category="explore",
                     chat_session_key_value=prompt_data.chatSessionId,
-                    document_key=prompt_data.document,
+                    document_keys=prompt_data.document,
                     user_identifier=self.get_hashed_user_id(request),
                     origin_url=origin_url,
                     contexts=prompt_data.contexts,

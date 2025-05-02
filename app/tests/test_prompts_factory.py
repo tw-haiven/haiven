@@ -20,10 +20,11 @@ class TestPromptsFactory:
 
         prompt_list_mock.side_effect = mock_prompt_list_init
         knowledge_base_markdown = MagicMock()
+        knowledge_manager = MagicMock()
         prompts_parent_dir = "test_prompts_parent_dir"
 
         prompts = PromptsFactory(prompts_parent_dir).create_all_prompts_for_user_choice(
-            knowledge_base_markdown
+            knowledge_base_markdown, knowledge_manager
         )
 
         assert chat_prompt in prompts
@@ -31,13 +32,24 @@ class TestPromptsFactory:
         assert diagrams_prompt in prompts
         prompt_list_mock.assert_has_calls(
             [
-                call("chat", knowledge_base_markdown, root_dir=prompts_parent_dir),
+                call(
+                    "chat",
+                    knowledge_base_markdown,
+                    knowledge_manager,
+                    root_dir=prompts_parent_dir,
+                ),
                 call(
                     "brainstorming",
                     knowledge_base_markdown,
+                    knowledge_manager,
                     root_dir=prompts_parent_dir,
                 ),
-                call("diagrams", knowledge_base_markdown, root_dir=prompts_parent_dir),
+                call(
+                    "diagrams",
+                    knowledge_base_markdown,
+                    knowledge_manager,
+                    root_dir=prompts_parent_dir,
+                ),
             ]
         )
 
@@ -46,15 +58,19 @@ class TestPromptsFactory:
         brainstorming_prompt = MagicMock(name="brainstorming_prompt")
         prompt_list_mock.return_value = brainstorming_prompt
         knowledge_base_markdown = MagicMock()
+        knowledge_manager = MagicMock()
         prompts_parent_dir = "test_prompts_parent_dir"
 
         prompt = PromptsFactory(prompts_parent_dir).create_brainstorming_prompt_list(
-            knowledge_base_markdown
+            knowledge_base_markdown, knowledge_manager
         )
 
         assert brainstorming_prompt == prompt
         assert prompt_list_mock.call_args == call(
-            "brainstorming", knowledge_base_markdown, root_dir=prompts_parent_dir
+            "brainstorming",
+            knowledge_base_markdown,
+            knowledge_manager,
+            root_dir=prompts_parent_dir,
         )
 
     @patch("prompts.prompts_factory.PromptList")
@@ -62,15 +78,19 @@ class TestPromptsFactory:
         chat_prompt = MagicMock(name="chat_prompt")
         prompt_list_mock.return_value = chat_prompt
         knowledge_base_markdown = MagicMock()
+        knowledge_manager = MagicMock()
         prompts_parent_dir = "test_prompts_parent_dir"
 
         prompt = PromptsFactory(prompts_parent_dir).create_chat_prompt_list(
-            knowledge_base_markdown
+            knowledge_base_markdown, knowledge_manager
         )
 
         assert chat_prompt == prompt
         assert prompt_list_mock.call_args == call(
-            "chat", knowledge_base_markdown, root_dir=prompts_parent_dir
+            "chat",
+            knowledge_base_markdown,
+            knowledge_manager,
+            root_dir=prompts_parent_dir,
         )
 
     @patch("prompts.prompts_factory.PromptList")

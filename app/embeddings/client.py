@@ -1,8 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
 
-import tiktoken
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import BedrockEmbeddings, OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
@@ -14,7 +12,6 @@ class EmbeddingsClient:
 
     def __init__(self, embedding_model: EmbeddingModel):
         self.embedding_model: EmbeddingModel = embedding_model
-        self.__text_splitter = self._load_text_splitter()
         self.__embeddings_provider = None
 
         if self.embedding_model.provider.lower() == "openai":
@@ -33,14 +30,6 @@ class EmbeddingsClient:
 
     def _get_embeddings_provider(self):
         return self.__embeddings_provider
-
-    def _load_text_splitter(self):
-        return RecursiveCharacterTextSplitter(
-            chunk_size=500,
-            chunk_overlap=80,
-            length_function=self._tiktoken_len,
-            separators=["\n\n", "\n", " ", ""],
-        )
 
     def _is_valid_aws_config(self) -> bool:
         self._validate_config_key("aws_region")
@@ -91,15 +80,6 @@ class EmbeddingsClient:
     def _validate_config_key(self, key: str):
         if not self.embedding_model.config.get(key):
             raise ValueError(f"{key} config is not set for the given embedding model")
-
-    def _tiktoken_len(self, text) -> int:
-        tokenizer = tiktoken.get_encoding("cl100k_base")
-        tokens = tokenizer.encode(text, disallowed_special=())
-        return len(tokens)
-
-    def generate_from_documents(self, text, metadata):
-        chunks = self.__text_splitter.create_documents(text, metadatas=metadata)
-        return FAISS.from_documents(chunks, self.__embeddings_provider)
 
     def generate_from_filesystem(self, kb_folder_path):
         return FAISS.load_local(

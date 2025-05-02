@@ -1,15 +1,14 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import { Drawer, Button, Input, Collapse, Form } from "antd";
+import { Button, Collapse, Drawer, Form, Input } from "antd";
 import ChatExploration from "./_chat_exploration";
 import { parse } from "best-effort-json-parser";
 import {
+  RiAttachment2,
   RiFileCopyLine,
   RiPushpinLine,
-  RiAttachment2,
   RiSendPlane2Line,
-  RiStopCircleFill,
 } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
@@ -26,6 +25,7 @@ import {
 import PromptPreview from "../app/_prompt_preview";
 import MarkdownRenderer from "../app/_markdown_renderer";
 import { scenarioToText } from "../app/_dynamic_data_renderer";
+import EnrichCard from "../app/_enrich_card";
 
 const CardsChat = ({
   promptId,
@@ -34,6 +34,8 @@ const CardsChat = ({
   prompts,
   featureToggleConfig,
 }) => {
+  const [progress, setProgress] = useState(0);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [selectedPromptId, setSelectedPromptId] = useState(promptId); // via query parameter
   const [selectedPromptConfiguration, setSelectedPromptConfiguration] =
     useState({});
@@ -43,7 +45,7 @@ const CardsChat = ({
   const [selectedContexts, setSelectedContexts] = useState([]);
   const [promptInput, setPromptInput] = useState("");
 
-  const [iterationPrompt, setIterationPrompt] = useState("");
+  const [enableGenerateMoreCards, setEnableGenerateMoreCards] = useState(true);
 
   const [cardExplorationDrawerOpen, setCardExplorationDrawerOpen] =
     useState(false);
@@ -286,106 +288,6 @@ const CardsChat = ({
     sendCardBuildingPrompt(buildRequestDataGetMore());
   };
 
-  /** ITERATION EXPERIMENT
-   * (behind feature toggle, experimental implementation)
-   *
-   * Switch on with:
-   * window.localStorage.setItem("toggles", '{ "cards_iteration": true }')
-   * */
-  const buildRequestDataIterate = () => {
-    // add IDs to the scenarios
-    scenarios.forEach((scenario, i) => {
-      if (scenario.id === undefined) scenario.id = i + 1;
-    });
-    return {
-      userinput: iterationPrompt,
-      scenarios: JSON.stringify(
-        scenarios
-          .filter((scenario) => scenario.exclude !== true)
-          .map(scenarioToJson),
-      ),
-      chatSessionId: chatSessionIdCardBuilding,
-    };
-  };
-
-  const iterateScenarios = (partiallyParsed) => {
-    partiallyParsed.forEach((parsedScenario) => {
-      const existingScenario = scenarios.find(
-        (scenario) => scenario.id === parsedScenario.id,
-      );
-      if (existingScenario) {
-        Object.assign(existingScenario, parsedScenario);
-        console.log(JSON.stringify(existingScenario));
-        // Remove any empty properties (sometimes happens with partial parsing)
-        Object.keys(existingScenario).forEach(
-          (key) =>
-            existingScenario[key] === "" ||
-            (existingScenario[key] === undefined &&
-              delete existingScenario[key]),
-        );
-      }
-    });
-    setScenarios([...scenarios]);
-  };
-
-  const sendIteration = () => {
-    const uri = "/api/prompt/iterate";
-
-    let ms = "";
-    let output = [];
-
-    fetchSSE(
-      uri,
-      {
-        method: "POST",
-        signal: startLoad(),
-        body: JSON.stringify(buildRequestDataIterate()),
-      },
-      {
-        json: true,
-        onErrorHandle: () => {
-          abortLoad();
-        },
-        onFinish: () => {
-          if (ms == "") {
-            toast.warning(
-              "Model failed to respond rightly, please rewrite your message and try again",
-            );
-          }
-          abortLoad();
-        },
-        onMessageHandle: (data) => {
-          if (data.data) {
-            ms += data.data;
-            ms = ms.trim().replace(/^[^[]+/, "");
-            if (ms.startsWith("[")) {
-              try {
-                output = parse(ms || "[]");
-              } catch (error) {
-                console.log("error", error);
-              }
-              if (Array.isArray(output)) {
-                iterateScenarios(output);
-              } else {
-                abortLoad();
-                if (ms.includes("Error code:")) {
-                  toast.error(ms);
-                } else {
-                  toast.warning(
-                    "Model failed to respond rightly, please rewrite your message and try again",
-                  );
-                }
-                console.log("response is not parseable into an array");
-              }
-            }
-          }
-        },
-      },
-    );
-  };
-
-  /** END ITERATION EXPERIMENT CODE */
-
   const sendFollowUpPrompt = (apiEndpoint, onData, followUpId) => {
     let ms = "";
 
@@ -504,6 +406,7 @@ const CardsChat = ({
           <ContextChoice
             onChange={handleContextSelection}
             contexts={allContexts}
+            selectedContexts={selectedContexts}
           />
         </div>
       </div>
@@ -667,6 +570,9 @@ const CardsChat = ({
             <ChatHeader models={models} titleComponent={title} />
             <div className="card-chat-container card-chat-overflow">
               <CardsList
+                progress={progress}
+                isGenerating={isGenerating}
+                featureToggleConfig={featureToggleConfig}
                 scenarios={scenarios}
                 setScenarios={setScenarios}
                 editable={selectedPromptConfiguration.editable}
@@ -680,43 +586,32 @@ const CardsChat = ({
                   <Button
                     onClick={sendGetMorePrompt}
                     className="go-button"
-                    disabled={loading}
+                    disabled={loading || !enableGenerateMoreCards}
                   >
                     GENERATE MORE CARDS
                   </Button>
                 </div>
               )}
-              {/* Iteration experiment */}
-              {featureToggleConfig["cards_iteration"] === true &&
-                scenarios.length > 0 && (
-                  <div style={{ width: "50%", paddingLeft: "2em" }}>
-                    <p>
-                      [EXPERIMENT] What else do you want to add to the cards?
-                    </p>
-                    <Input
-                      value={iterationPrompt}
-                      onChange={(e, v) => {
-                        setIterationPrompt(e.target.value);
-                      }}
-                    />
-                    <Button
-                      onClick={sendIteration}
-                      size="small"
-                      className="go-button"
-                    >
-                      ENRICH CARDS
-                    </Button>
-                  </div>
-                )}
-              {/* / End iteration experiment */}
+              <EnrichCard
+                startLoad={startLoad}
+                abortLoad={abortLoad}
+                loading={loading}
+                featureToggleConfig={featureToggleConfig}
+                chatSessionIdCardBuilding={chatSessionIdCardBuilding}
+                scenarios={scenarios}
+                setScenarios={setScenarios}
+                selectedPromptConfiguration={selectedPromptConfiguration}
+                setEnableGenerateMoreCards={setEnableGenerateMoreCards}
+                setIsGenerating={setIsGenerating}
+                setProgress={setProgress}
+                scenarioToJson={scenarioToJson}
+                attachContextsToRequestBody={attachContextsToRequestBody}
+              />
               {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
                 <div className="follow-up-container">
                   <div style={{ marginTop: "1em" }}>
                     <h3>What you can do next</h3>
-                    <p>
-                      Generate content based on the cards above. Remove cards to
-                      exclude them from the next step.
-                    </p>
+                    <p>Generate content based on the cards above.</p>
                   </div>
                   <Collapse
                     items={followUpCollapseItems}

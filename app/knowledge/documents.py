@@ -151,10 +151,10 @@ class KnowledgeBaseDocuments:
         )
         return similar_documents
 
-    def similarity_search_on_single_document(
+    def similarity_search_on_multiple_documents(
         self,
         query: str,
-        document_key: str,
+        document_keys: List[str],
         k: int = 5,
         score_threshold: float = None,
     ) -> List[Document]:
@@ -163,36 +163,21 @@ class KnowledgeBaseDocuments:
 
         Parameters:
             query (str): The search query.
-            document_key (str): The key of the document to search within.
-            context (str): The context to search within.
+            document_keys List(str): The list of document keys to search within.
             k (int, optional): The number of results to return. Defaults to 5.
             score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
 
         Returns:
             List[Document]: A list of documents that are similar to the query.
         """
-        documents_with_scores = self._similarity_search_on_single_document_with_scores(
-            query, document_key, k, score_threshold
-        )
-        documents = [doc for doc, _ in documents_with_scores]
-        return documents
 
-    def similarity_search(
-        self, query: str, k: int = 5, score_threshold: float = None
-    ) -> List[Document]:
-        """
-        Performs a similarity search across all documents, returning only the documents that match the query criteria. This method abstracts away the scores for use cases where only the matching documents are required.
+        documents_with_scores = []
+        for document_key in document_keys:
+            documents_with_scores.extend(
+                self._similarity_search_on_single_document_with_scores(
+                    query, document_key, k, score_threshold
+                )
+            )
 
-        Parameters:
-            query (str): The search query.
-            k (int, optional): The number of results to return. Defaults to 5.
-            score_threshold (float, optional): The minimum similarity score for a document to be included in the results. Defaults to None.
-
-        Returns:
-            List[Document]: A list of documents that are similar to the query.
-        """
-        documents_with_scores = self.similarity_search_with_scores(
-            query, k, score_threshold
-        )
         documents = [doc for doc, _ in documents_with_scores]
         return documents
