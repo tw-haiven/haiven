@@ -31,12 +31,6 @@ Haiven lets you codify your practices and knowledge and make it available to an 
 
 ![Overview in more detail](./docs/images/overview_more_details.png)
 
-## Example
-
-[Click to see video](https://drive.google.com/file/d/105ksKtyfsoC98U_6O2m8gcrYkM4r3pBW/view?usp=sharing)
-
-[![Demo video showing threat modelling in Haiven](docs/images/demo_guided_mode_thumbnail.png)](https://drive.google.com/file/d/105ksKtyfsoC98U_6O2m8gcrYkM4r3pBW/view?usp=sharing)
-
 ## Quickest way to try it out
 
 *Disclaimer: As the majority of developers in Thoughtworks are using MacOS, all shell-related instructions are currently only build for and tested on MacOS.*
