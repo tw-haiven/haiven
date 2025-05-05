@@ -16,21 +16,22 @@ on:
       - '.gitignore'
   pull_request:
   workflow_dispatch: # allows for manual invocation
+  workflow_run:
+    workflows: ["Semgrep OSS scan"]
+    types:
+      - completed
 
 jobs:
 
   Test:
+    if: |
+      github.event.workflow_run.event == 'push' ||
+      github.event.workflow_run.event == 'pull_request' ||
+      github.event.workflow_run.event == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
     steps:
-      - name: Wait for Semgrep workflow
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          check-name: 'semgrep-oss/scan'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
       - uses: 'actions/checkout@v4.1.1'
       - name: Set up Python
         id: setup_python
