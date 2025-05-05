@@ -12,7 +12,6 @@ on:
     paths-ignore:
       - '.vscode/**'
       - 'docs/**'
-      - 'README.md'
       - '.gitignore'
   pull_request:
   workflow_dispatch: # allows for manual invocation
