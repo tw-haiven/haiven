@@ -74,7 +74,7 @@ class Server:
 
         @app.get(self.url.general())
         async def backwards_teamai(request: Request):
-            # backwards compatibility from when "/teamai" was the main entry path
+            # backwards compatibility from when "/teamai" was the main entry path.
             return RedirectResponse(url=self.url.analysis())
 
         @app.get(self.url.analysis())
