@@ -9,10 +9,6 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - '.vscode/**'
-      - 'docs/**'
-      - '.gitignore'
   pull_request:
   workflow_dispatch:
   schedule:
