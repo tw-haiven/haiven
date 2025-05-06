@@ -50,7 +50,6 @@ jobs:
           sarif_file: semgrep.sarif
           category: semgrep
 
-
   Test:
     needs: semgrep
     if: github.event_name != 'schedule'
