@@ -1,5 +1,5 @@
 name: Haiven
-run-name: Test and Build
+run-name: Security Scan, Test and Build
 
 env:
   REGISTRY: "ghcr.io"
@@ -14,19 +14,50 @@ on:
       - 'docs/**'
       - '.gitignore'
   pull_request:
-  workflow_dispatch: # allows for manual invocation
-  workflow_run:
-    workflows: ["Semgrep OSS scan"]
-    types:
-      - completed
+  workflow_dispatch:
+  schedule:
+    - cron: '20 17 * * *' # Sets Semgrep to scan every day at 17:20 UTC.
+
+permissions:
+  security-events: write
 
 jobs:
+  semgrep:
+    name: semgrep-oss/scan
+    runs-on: ubuntu-latest
+
+    container:
+      image: semgrep/semgrep
+
+    if: (github.actor != 'dependabot[bot]')
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run full Semgrep scan
+        run: semgrep scan --metrics=off --config "p/default" --sarif > semgrep.sarif
+
+      - name: Check for high severity issues
+        run: semgrep scan --metrics=off --config "p/default" --error --severity=ERROR
+        continue-on-error: false
+
+      - name: Upload SARIF file
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-results
+          path: semgrep.sarif
+          retention-days: 7
+
+      - name: Upload SARIF to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
+
 
   Test:
-    if: |
-      github.event.workflow_run.event == 'push' ||
-      github.event.workflow_run.event == 'pull_request' ||
-      github.event.workflow_run.event == 'workflow_dispatch'
+    needs: semgrep
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
