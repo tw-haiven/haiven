@@ -26,6 +26,7 @@ import PromptPreview from "../app/_prompt_preview";
 import MarkdownRenderer from "../app/_markdown_renderer";
 import { scenarioToText } from "../app/_dynamic_data_renderer";
 import EnrichCard from "../app/_enrich_card";
+import Citations from "../pages/_citations";
 
 const CardsChat = ({
   promptId,
@@ -41,6 +42,7 @@ const CardsChat = ({
     useState({});
 
   const [scenarios, setScenarios] = useState([]);
+  const [citations, setCitations] = useState([]);
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [selectedContexts, setSelectedContexts] = useState([]);
   const [promptInput, setPromptInput] = useState("");
@@ -57,6 +59,10 @@ const CardsChat = ({
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(false);
   const [isInputCollapsed, setIsInputCollapsed] = useState(false);
+  const [isCompanyResearch, setIsCompanyResearch] = useState(false);
+  const [isCompanyResearchEvolutionPage, setIsCompanyResearchEvolutionPage] =
+    useState(false);
+  const [followUpText, setFollowUpText] = useState("");
   const [usePromptId, setUsePromptId] = useState(true);
   const [chatSessionIdCardBuilding, setChatSessionIdCardBuilding] = useState();
   const [allContexts, setAllContexts] = useState([]);
@@ -79,6 +85,10 @@ const CardsChat = ({
     if (selectedPromptId !== undefined && selectedPromptId !== null) {
       const firstStepEntry = prompts.find(
         (entry) => entry.value === selectedPromptId,
+      );
+      setIsCompanyResearch(selectedPromptId.includes("company-research"));
+      setIsCompanyResearchEvolutionPage(
+        selectedPromptId.includes("company-research-product-evolution"),
       );
       if (firstStepEntry) {
         firstStepEntry.followUps.forEach((followUp) => {
@@ -188,9 +198,9 @@ const CardsChat = ({
     return requestBody;
   };
 
-  const buildRequestDataFollowUp = (followUpId) => {
+  const buildRequestDataFollowUp = (followUpId, followUpQuery) => {
     const requestBody = {
-      userinput: promptInput,
+      userinput: `${promptInput} ${followUpQuery}`,
       promptid: followUpId,
       scenarios: scenarios
         .filter((scenario) => scenario.exclude !== true)
@@ -273,6 +283,11 @@ const CardsChat = ({
                 console.log("response is not parseable into an array");
               }
             }
+          } else if (data.metadata) {
+            // Safely handle citations if they exist in metadata
+            if (data.metadata.citations) {
+              setCitations(data.metadata.citations);
+            }
           }
         },
       },
@@ -288,13 +303,20 @@ const CardsChat = ({
     sendCardBuildingPrompt(buildRequestDataGetMore());
   };
 
-  const sendFollowUpPrompt = (apiEndpoint, onData, followUpId) => {
+  const sendFollowUpPrompt = (
+    apiEndpoint,
+    onData,
+    followUpId,
+    followUpQuery,
+  ) => {
     let ms = "";
 
     fetchSSE(
       apiEndpoint,
       {
-        body: JSON.stringify(buildRequestDataFollowUp(followUpId)),
+        body: JSON.stringify(
+          buildRequestDataFollowUp(followUpId, followUpQuery),
+        ),
         signal: startLoad(),
       },
       {
@@ -327,6 +349,7 @@ const CardsChat = ({
         }));
       },
       followUpId,
+      followUpText,
     );
   };
 
@@ -345,12 +368,15 @@ const CardsChat = ({
         ),
         children: (
           <div className="second-step-section">
-            <Button
-              onClick={() => onFollowUp(followUp.identifier)}
-              className="go-button"
-            >
-              {followUpResults[followUp.identifier] ? "REGENERATE" : "GENERATE"}
-            </Button>
+            {isCompanyResearchEvolutionPage &&
+              !followUpResults[followUp.identifier] && (
+                <Input
+                  placeholder="Provide an overview of the account's product, to identify market competitors, and leverage generative AI to suggest impactful client-ready enhancements."
+                  onChange={(e, v) => {
+                    setFollowUpText(e.target.value);
+                  }}
+                />
+              )}
             {followUpResults[followUp.identifier] && (
               <>
                 <div className="generated-text-results">
@@ -376,8 +402,20 @@ const CardsChat = ({
                     content={followUpResults[followUp.identifier]}
                   />
                 </div>
+                <Input
+                  placeholder="Please enter follow up query"
+                  onChange={(e, v) => {
+                    setFollowUpText(e.target.value);
+                  }}
+                />
               </>
             )}
+            <Button
+              onClick={() => onFollowUp(followUp.identifier)}
+              className="go-button"
+            >
+              {followUpResults[followUp.identifier] ? "SUBMIT" : "GENERATE"}
+            </Button>
           </div>
         ),
       };
@@ -570,6 +608,7 @@ const CardsChat = ({
             <ChatHeader models={models} titleComponent={title} />
             <div className="card-chat-container card-chat-overflow">
               <CardsList
+                showBiggerCards={isCompanyResearch}
                 progress={progress}
                 isGenerating={isGenerating}
                 featureToggleConfig={featureToggleConfig}
@@ -581,7 +620,7 @@ const CardsChat = ({
                 onDelete={onDeleteCard}
               />
               {inputAreaRender()}
-              {scenarios.length > 0 && (
+              {scenarios.length > 0 && !isCompanyResearch && (
                 <div className="generate-more">
                   <Button
                     onClick={sendGetMorePrompt}
@@ -592,21 +631,26 @@ const CardsChat = ({
                   </Button>
                 </div>
               )}
-              <EnrichCard
-                startLoad={startLoad}
-                abortLoad={abortLoad}
-                loading={loading}
-                featureToggleConfig={featureToggleConfig}
-                chatSessionIdCardBuilding={chatSessionIdCardBuilding}
-                scenarios={scenarios}
-                setScenarios={setScenarios}
-                selectedPromptConfiguration={selectedPromptConfiguration}
-                setEnableGenerateMoreCards={setEnableGenerateMoreCards}
-                setIsGenerating={setIsGenerating}
-                setProgress={setProgress}
-                scenarioToJson={scenarioToJson}
-                attachContextsToRequestBody={attachContextsToRequestBody}
-              />
+              {!isCompanyResearch && (
+                <EnrichCard
+                  startLoad={startLoad}
+                  abortLoad={abortLoad}
+                  loading={loading}
+                  featureToggleConfig={featureToggleConfig}
+                  chatSessionIdCardBuilding={chatSessionIdCardBuilding}
+                  scenarios={scenarios}
+                  setScenarios={setScenarios}
+                  selectedPromptConfiguration={selectedPromptConfiguration}
+                  setEnableGenerateMoreCards={setEnableGenerateMoreCards}
+                  setIsGenerating={setIsGenerating}
+                  setProgress={setProgress}
+                  scenarioToJson={scenarioToJson}
+                  attachContextsToRequestBody={attachContextsToRequestBody}
+                />
+              )}
+              <div style={{ paddingLeft: "2em" }}>
+                <Citations citations={citations} />
+              </div>
               {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
                 <div className="follow-up-container">
                   <div style={{ marginTop: "1em" }}>

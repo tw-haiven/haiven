@@ -127,12 +127,15 @@ const EnrichCard = ({
             if (ms.startsWith("[")) {
               try {
                 output = parse(ms || "[]");
+                console.log("------> output ->", output);
               } catch (error) {
                 console.log("error", error);
               }
               if (Array.isArray(output)) {
+                console.log("------> it's an array: ->", output);
                 iterateScenarios(output);
               } else {
+                console.log("------> error: ->", output);
                 abortLoad();
                 if (ms.includes("Error code:")) {
                   toast.error(ms);

@@ -249,7 +249,7 @@ describe("CardsChat Component", () => {
 
     const thenFollowUpPromptRequestHappens = (bodyString) => {
       const body = JSON.parse(bodyString);
-      expect(body.userinput).toBe(someUserInput);
+      expect(body.userinput).toBe("Here is my prompt input ");
       expect(body.promptid).toBe(mockPrompts[0].followUps[0].identifier);
       expect(body.scenarios.length).toBe(someScenarios.length);
       expect(body.scenarios[0].title).toBe(someScenarios[0].title);
@@ -706,5 +706,71 @@ describe("CardsChat Component", () => {
         );
       });
     });
+  });
+});
+
+describe("CardsChat special prompt logic (company-research)", () => {
+  const companyResearchPrompt = {
+    identifier: "company-research-123",
+    value: "company-research-123",
+    title: "Company Research",
+    label: "Company Research",
+    help_prompt_description: "Help description for company research",
+    help_user_input: "Help input for company research",
+    help_sample_input: "Sample input for company research",
+    followUps: [
+      {
+        identifier: "followUp1",
+        title: "Follow Up 1",
+        help_prompt_description: "Follow Up 1 Description",
+      },
+    ],
+  };
+
+  const companyResearchEvolutionPrompt = {
+    identifier: "company-research-product-evolution-456",
+    value: "company-research-product-evolution-456",
+    title: "Company Research Product Evolution",
+    label: "Company Research Product Evolution",
+    help_prompt_description: "Help description for company research evolution",
+    help_user_input: "Help input for company research evolution",
+    help_sample_input: "Sample input for company research evolution",
+    followUps: [
+      {
+        identifier: "followUp2",
+        title: "Evolution Follow Up",
+        help_prompt_description: "Evolution Follow Up Description",
+      },
+    ],
+  };
+
+  it("should show special follow-up input for company-research-product-evolution prompts", async () => {
+    fetchSSE.mockImplementationOnce((url, options, { onMessageHandle }) => {
+      const scenarioString = JSON.stringify(someScenarios);
+      onMessageHandle({ data: scenarioString }, mockResponseHeadersWithChatId);
+    });
+    await act(async () => {
+      render(
+        <CardsChat
+          promptId={companyResearchEvolutionPrompt.identifier}
+          prompts={[companyResearchEvolutionPrompt]}
+          contexts={mockContexts}
+          models={mockModels}
+          featureToggleConfig={mockFeatureToggleConfig}
+        />,
+      );
+    });
+    givenUserInput(someUserInput);
+    await whenSendIsClicked();
+    // Expand follow-up
+    const followUpCollapse = await screen.findByTestId("follow-up-collapse");
+    const followUpTitle = companyResearchEvolutionPrompt.followUps[0].title;
+    fireEvent.click(within(followUpCollapse).getByText(followUpTitle));
+    // Should see the special input placeholder for product evolution
+    expect(
+      screen.getByPlaceholderText(
+        /Provide an overview of the account's product/i,
+      ),
+    ).toBeInTheDocument();
   });
 });

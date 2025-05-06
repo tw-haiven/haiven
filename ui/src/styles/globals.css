@@ -1399,9 +1399,17 @@ a.feedback:hover {
   display: block;
 }
 
+.scenario-big {
+  width: 500px;
+  height: 550px;
+}
+
 .scenario {
   width: 300px;
   height: 350px;
+}
+
+.scenario, .scenario-big {
   display: flex;
   flex-direction: column;
   margin-right: 1.6em;
