@@ -3,6 +3,7 @@ import { Menu } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import { RiGlobalLine } from "react-icons/ri";
 import { initialiseMenuCategoriesForSidebar } from "../app/_navigation_items";
 import { isFeatureEnabled, FEATURES } from "../app/feature_toggle";
 
@@ -46,6 +47,16 @@ const Sidebar = ({ prompts }) => {
                 href={`${url}?prompt=${prompt.identifier}`}
                 className="submenu-entry"
               >
+                {prompt.title.toLowerCase().includes("company research") && (
+                  <RiGlobalLine
+                    style={{
+                      marginTop: "-2px",
+                      marginRight: "4px",
+                      fontSize: "0.8rem",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                )}
                 {prompt.title}
               </Link>
             ),
@@ -59,7 +70,13 @@ const Sidebar = ({ prompts }) => {
         finalMenuItems.push(menuCategories[key]);
       } else if (menuCategories[key].children.length > 0) {
         menuCategories[key].children.sort((a, b) => {
-          return a.label.props.children.localeCompare(b.label.props.children);
+          const aText = Array.isArray(a.label.props.children)
+            ? a.label.props.children[a.label.props.children.length - 1]
+            : a.label.props.children;
+          const bText = Array.isArray(b.label.props.children)
+            ? b.label.props.children[b.label.props.children.length - 1]
+            : b.label.props.children;
+          return aText.localeCompare(bText);
         });
         finalMenuItems.push(menuCategories[key]);
       }

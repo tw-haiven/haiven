@@ -204,4 +204,74 @@ describe("Sidebar Component", () => {
       expect(screen.getByText(/Creative Matrix/i)).toBeInTheDocument();
     });
   });
+
+  describe("Company Research Icon", () => {
+    const mockPromptsWithCompanyResearch = [
+      {
+        identifier: "company-research-1",
+        title: "Company Research Analysis",
+        categories: ["research"],
+        type: "chat",
+        show: true,
+      },
+      {
+        identifier: "regular-prompt",
+        title: "Regular Prompt",
+        categories: ["research"],
+        type: "chat",
+        show: true,
+      },
+    ];
+
+    it("should render RiGlobalLine icon for company research items", async () => {
+      useRouter.mockReturnValue({
+        pathname: "/scenarios",
+      });
+
+      await act(async () => {
+        render(<Sidebar prompts={mockPromptsWithCompanyResearch} />);
+      });
+
+      const researchCategory = screen.getByText(/Research/i);
+      await act(async () => {
+        researchCategory.click();
+      });
+
+      // Check if the icon is present for company research item
+      const companyResearchItem = screen.getByText(
+        /Company Research Analysis/i,
+      );
+      expect(companyResearchItem.closest("a")).toContainHTML("svg");
+
+      // Check if the icon is not present for regular item
+      const regularItem = screen.getByText(/Regular Prompt/i);
+      expect(regularItem.closest("a")).not.toContainHTML("svg");
+    });
+
+    it("should maintain correct sorting with icons", async () => {
+      useRouter.mockReturnValue({
+        pathname: "/scenarios",
+      });
+
+      await act(async () => {
+        render(<Sidebar prompts={mockPromptsWithCompanyResearch} />);
+      });
+
+      const researchCategory = screen.getByText(/Research/i);
+      await act(async () => {
+        researchCategory.click();
+      });
+
+      const items = screen.getAllByRole("link");
+      const itemTexts = items.map((item) => item.textContent.trim());
+
+      // Verify that items are sorted alphabetically regardless of icon presence
+      expect(itemTexts).toEqual([
+        "Dashboard",
+        "Chat with Haiven",
+        "Company Research Analysis",
+        "Regular Prompt",
+      ]);
+    });
+  });
 });

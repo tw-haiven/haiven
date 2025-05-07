@@ -9,6 +9,7 @@ import {
   RiFileCopyLine,
   RiPushpinLine,
   RiSendPlane2Line,
+  RiGlobalLine,
 } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
@@ -555,7 +556,8 @@ const CardsChat = ({
 
   const title = (
     <div className="title">
-      <h3>
+      <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        {isCompanyResearch && <RiGlobalLine />}
         {selectedPromptConfiguration.title}
         <HelpTooltip
           text={selectedPromptConfiguration.help_prompt_description}
