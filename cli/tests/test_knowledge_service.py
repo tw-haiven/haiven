@@ -75,8 +75,8 @@ class TestKnowledgeService:
         knowledge_service.index(texts, metadatas, embedding_model, ouput_dir)
 
         mock_text_splitter.assert_called_once_with(
-            chunk_size=100,
-            chunk_overlap=20,
+            chunk_size=300,
+            chunk_overlap=50,
             length_function=token_service.get_tokens_length,
             separators=["\n\n", "\n", " ", ""],
         )
@@ -115,8 +115,8 @@ class TestKnowledgeService:
         knowledge_service.index(texts, metadatas, embedding_model, ouput_dir)
 
         mock_text_splitter.assert_called_once_with(
-            chunk_size=100,
-            chunk_overlap=20,
+            chunk_size=300,
+            chunk_overlap=50,
             length_function=token_service.get_tokens_length,
             separators=["\n\n", "\n", " ", ""],
         )

@@ -20,8 +20,8 @@ class KnowledgeService:
             raise ValueError("embedding model has no value")
 
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=100,
-            chunk_overlap=20,
+            chunk_size=300,
+            chunk_overlap=50,
             length_function=self.token_service.get_tokens_length,
             separators=["\n\n", "\n", " ", ""],
         )
