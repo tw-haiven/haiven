@@ -148,6 +148,7 @@ class HaivenBaseApi:
         contexts=None,
         origin_url=None,
         userContext=None,
+        model_config=None,
     ):
         try:
 
@@ -171,7 +172,7 @@ class HaivenBaseApi:
                     yield f"[ERROR]: {str(error)}"
 
             chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
-                model_config=self.model_config,
+                model_config=model_config or self.model_config,
                 session_id=chat_session_key_value,
                 options=ChatOptions(in_chunks=True, category=chat_category),
                 contexts=contexts,
@@ -357,6 +358,13 @@ class ApiBasics(HaivenBaseApi):
                 if prompt_data.json is True:
                     stream_fn = self.stream_json_chat
 
+                selected_model_config = self.model_config
+                if prompt_data.promptid.__contains__("company-research"):
+                    perplexity_model_config = ModelConfig(
+                        "perplexity", "perplexity", "Perplexity"
+                    )
+                    selected_model_config = perplexity_model_config
+
                 prompt = rendered_prompt
                 session_id = prompt_data.chatSessionId
                 document = prompt_data.document
@@ -366,6 +374,7 @@ class ApiBasics(HaivenBaseApi):
                 data = prompt_data
                 return stream_fn(
                     prompt=prompt,
+                    model_config=selected_model_config,
                     chat_category="boba-chat",
                     chat_session_key_value=session_id,
                     document_keys=document,
