@@ -585,8 +585,6 @@ const CardsChat = ({
     }
   };
 
-  const perplexityModelName = { chat: { name: "Perplexity AI" } };
-
   return (
     <>
       <Drawer
@@ -609,10 +607,7 @@ const CardsChat = ({
       <div id="canvas">
         <div className="prompt-chat-container">
           <div className="chat-container-wrapper">
-            <ChatHeader
-              models={isCompanyResearch ? perplexityModelName : models}
-              titleComponent={title}
-            />
+            <ChatHeader models={models} titleComponent={title} />
             <div className="card-chat-container card-chat-overflow">
               <CardsList
                 showBiggerCards={isCompanyResearch}
