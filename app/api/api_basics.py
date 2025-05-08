@@ -347,8 +347,6 @@ class ApiBasics(HaivenBaseApi):
                     rendered_prompt, _ = prompts.render_prompt(
                         prompt_choice=prompt_data.promptid,
                         user_input=prompt_data.userinput,
-                        additional_vars={},
-                        warnings=[],
                     )
                     if prompts.produces_json_output(prompt_data.promptid):
                         stream_fn = self.stream_json_chat
@@ -450,8 +448,6 @@ class ApiBasics(HaivenBaseApi):
                 rendered_prompt, template = prompts.render_prompt(
                     prompt_choice=prompt_data.promptid,
                     user_input=prompt_data.userinput,
-                    additional_vars={},
-                    warnings=[],
                 )
                 return JSONResponse(
                     {"prompt": rendered_prompt, "template": template.template}
@@ -505,6 +501,26 @@ class ApiBasics(HaivenBaseApi):
                 if inspiration is None:
                     raise HTTPException(status_code=404, detail="Inspiration not found")
                 return JSONResponse(inspiration)
+            except HTTPException:
+                raise
+            except Exception as error:
+                HaivenLogger.get().error(str(error))
+                raise HTTPException(
+                    status_code=500, detail=f"Server error: {str(error)}"
+                )
+
+        @app.get("/api/prompt/{prompt_id}")
+        @logger.catch(reraise=True)
+        def get_prompt_by_id(request: Request, prompt_id: str):
+            try:
+                prompt = prompts_chat.get_a_prompt_with_follow_ups(
+                    prompt_id, includeContent=True
+                )
+
+                if not prompt:
+                    raise HTTPException(status_code=404, detail="Prompt not found")
+
+                return JSONResponse(prompt)
             except HTTPException:
                 raise
             except Exception as error:

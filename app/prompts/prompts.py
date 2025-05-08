@@ -98,24 +98,16 @@ class PromptList:
         self,
         identifier,
         variables,
-        warnings=None,
     ):
         knowledge_and_input = {**variables}
 
         template = self.create_template(identifier)
-        # template.get_input_schema()
-        # template.dict()
 
-        # make sure all input variables are present for template rendering (as it will otherwise fail)
         for key in template.input_variables:
             if key not in knowledge_and_input:
                 knowledge_and_input[str(key)] = (
                     "None provided, please try to help without this information."  # placeholder for the prompt
                 )
-                if key != "user_input":
-                    message = f"No context selected, no '{key}' added to the prompt."  # message shown to the user
-                    if warnings is not None:
-                        warnings.append(message)
 
         rendered = template.format(**knowledge_and_input)
         return rendered, template
@@ -140,7 +132,6 @@ class PromptList:
         prompt_choice: str,
         user_input: str,
         additional_vars: dict = {},
-        warnings=None,
     ) -> str:
         if prompt_choice is not None:
             vars = additional_vars
@@ -148,7 +139,6 @@ class PromptList:
             rendered, template = self.create_and_render_template(
                 prompt_choice,
                 vars,
-                warnings=warnings,
             )
             return rendered, template
         return "", None
@@ -188,24 +178,36 @@ class PromptList:
     def get_prompts_with_follow_ups(self):
         prompts_with_follow_ups = []
         for prompt in self.prompts:
-            follow_ups = self.get_follow_ups(prompt.metadata.get("identifier"))
-            prompt_data = {
-                "identifier": prompt.metadata.get("identifier"),
-                "title": prompt.metadata.get("title"),
-                "categories": prompt.metadata.get("categories"),
-                "help_prompt_description": prompt.metadata.get(
-                    "help_prompt_description"
-                ),
-                "help_user_input": prompt.metadata.get("help_user_input"),
-                "help_sample_input": prompt.metadata.get("help_sample_input"),
-                "follow_ups": follow_ups,
-                "type": prompt.metadata.get("type", "chat"),
-                "scenario_queries": prompt.metadata.get("scenario_queries"),
-                "editable": prompt.metadata.get("editable"),
-                "show": prompt.metadata.get("show"),
-            }
+            prompt_data = self.attach_follow_ups(prompt)
             prompts_with_follow_ups.append(prompt_data)
         return prompts_with_follow_ups
+
+    def get_a_prompt_with_follow_ups(self, prompt_id, includeContent=False):
+        prompt = self.get(prompt_id)
+        prompt_with_follow_ups = self.attach_follow_ups(prompt, includeContent)
+
+        return prompt_with_follow_ups
+
+    def attach_follow_ups(self, prompt, includeContent=False):
+        follow_ups = self.get_follow_ups(prompt.metadata.get("identifier"))
+        prompt_data = {
+            "identifier": prompt.metadata.get("identifier"),
+            "title": prompt.metadata.get("title"),
+            "categories": prompt.metadata.get("categories"),
+            "help_prompt_description": prompt.metadata.get("help_prompt_description"),
+            "help_user_input": prompt.metadata.get("help_user_input"),
+            "help_sample_input": prompt.metadata.get("help_sample_input"),
+            "follow_ups": follow_ups,
+            "type": prompt.metadata.get("type", "chat"),
+            "scenario_queries": prompt.metadata.get("scenario_queries"),
+            "editable": prompt.metadata.get("editable"),
+            "show": prompt.metadata.get("show"),
+            **(
+                {"content": prompt.content} if includeContent and prompt.content else {}
+            ),
+        }
+
+        return prompt_data
 
     def produces_json_output(self, identifier):
         prompt = self.get(identifier)

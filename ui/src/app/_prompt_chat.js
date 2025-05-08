@@ -17,6 +17,7 @@ import {
   getSortedUserContexts,
   getSummaryForTheUserContext,
 } from "./_local_store";
+import DownloadPrompt from "./_download_prompt";
 
 const PromptChat = ({
   promptId,
@@ -272,7 +273,6 @@ const PromptChat = ({
     <div className="title">
       <h3>
         {selectedPrompt?.title || pageTitle}
-
         <HelpTooltip
           text={
             selectedPrompt?.help_prompt_description ||
@@ -281,6 +281,7 @@ const PromptChat = ({
           testid="page-title-tooltip"
         />
       </h3>
+      {selectedPrompt && <DownloadPrompt prompt={selectedPrompt} />}
     </div>
   );
 

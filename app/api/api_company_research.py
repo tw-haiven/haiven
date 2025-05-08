@@ -27,8 +27,6 @@ class ApiCompanyResearch(HaivenBaseApi):
                     config, "guided-company-research"
                 ),
                 user_input=user_input,
-                additional_vars={},
-                warnings=[],
             )
 
             perplexity_model_config = ModelConfig(

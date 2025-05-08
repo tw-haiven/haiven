@@ -28,6 +28,7 @@ import MarkdownRenderer from "../app/_markdown_renderer";
 import { scenarioToText } from "../app/_dynamic_data_renderer";
 import EnrichCard from "../app/_enrich_card";
 import Citations from "../pages/_citations";
+import DownloadPrompt from "../app/_download_prompt";
 
 const CardsChat = ({
   promptId,
@@ -556,13 +557,14 @@ const CardsChat = ({
 
   const title = (
     <div className="title">
-      <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+      <h3>
         {isCompanyResearch && <RiGlobalLine />}
         {selectedPromptConfiguration.title}
         <HelpTooltip
           text={selectedPromptConfiguration.help_prompt_description}
         />
       </h3>
+      <DownloadPrompt prompt={selectedPromptConfiguration} />
     </div>
   );
 

@@ -1965,6 +1965,13 @@ a.feedback:hover {
    color: black;
    flex: 30%;
    align-content: center;
+   display: flex;
+   gap: 0.75rem;
+   h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+   }
   }
 
   .model-disclaimer {
@@ -2045,6 +2052,11 @@ a.feedback:hover {
 /****** KNOWLEDGE OVERVIEW ******/
 .knowledge-overview {
   padding: var(--standard-left-padding);
+  .knowledge-overview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 .knowledge-columns-container {
   display: flex;
@@ -2248,4 +2260,22 @@ a.feedback:hover {
     display: none !important;
   }
 
+}
+
+.download-prompt-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-flamingo);
+  transition: all 0.3s ease;
+  gap: 0.5rem;
+  font-size: 1.3em;
+}
+
+.download-prompt-button:hover {
+  color: var(--color-dark-blue);
 }

@@ -28,7 +28,6 @@ class ApiScenarios(HaivenBaseApi):
                 else "guided-scenarios",
                 user_input="",
                 additional_vars=variables,
-                warnings=[],
             )
 
             return self.stream_json_chat(

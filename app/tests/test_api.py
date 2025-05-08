@@ -204,8 +204,6 @@ class TestApi(unittest.TestCase):
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="some-prompt-id",
             user_input="some user input",
-            additional_vars={},
-            warnings=ANY,
         )
 
     @patch("llms.chats.JSONChat")
@@ -256,8 +254,6 @@ class TestApi(unittest.TestCase):
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="guided-requirements",
             user_input=user_input,
-            additional_vars={},
-            warnings=ANY,
         )
 
     @patch("llms.chats.JSONChat")
@@ -301,7 +297,6 @@ class TestApi(unittest.TestCase):
                 "optimism": optimism,
                 "realism": realism,
             },
-            warnings=ANY,
         )
 
     @patch("llms.chats.StreamingChat")
@@ -499,7 +494,6 @@ class TestApi(unittest.TestCase):
                 "idea_qualifiers": idea_qualifiers,
                 "num_ideas": num_ideas,
             },
-            warnings=ANY,
         )
 
     def test_get_inspirations(self):
@@ -592,4 +586,94 @@ class TestApi(unittest.TestCase):
         assert response.status_code == 404
         mock_inspirations_manager.get_inspiration_by_id.assert_called_once_with(
             "non-existent"
+        )
+
+    def test_get_prompt_with_follow_ups_should_return_prompt_for_the_given_id(self):
+        mock_prompts_chat = MagicMock()
+
+        mock_prompt = MagicMock()
+        mock_prompt.content = "Content {user_input} {context}"
+        mock_prompt.metadata = {
+            "title": "Test Prompt",
+            "identifier": "test-prompt-id",
+            "categories": ["test"],
+            "type": "chat",
+            "editable": False,
+            "show": True,
+            "help_prompt_description": "Test description",
+            "help_user_input": "Test user input help",
+            "help_sample_input": "Test sample input",
+        }
+
+        mock_prompts_chat.get_a_prompt_with_follow_ups.return_value = {
+            "content": "PromptContent {user_input}",
+            "title": "Test Prompt",
+            "identifier": "test-prompt-id",
+            "categories": ["test"],
+            "type": "chat",
+            "editable": False,
+            "show": True,
+            "help_prompt_description": "Test description",
+            "help_user_input": "Test user input help",
+            "help_sample_input": "Test sample input",
+            "follow_ups": [],
+        }
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            image_service=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+
+        response = self.client.get("/api/prompt/test-prompt-id")
+
+        assert response.status_code == 200
+        mock_prompts_chat.get_a_prompt_with_follow_ups.assert_called_with(
+            "test-prompt-id", includeContent=True
+        )
+
+        response_data = json.loads(response.content)
+        assert response_data["content"] == "PromptContent {user_input}"
+        assert response_data["title"] == "Test Prompt"
+        assert response_data["identifier"] == "test-prompt-id"
+        assert response_data["categories"] == ["test"]
+        assert response_data["type"] == "chat"
+        assert response_data["editable"] is False
+        assert response_data["show"] is True
+        assert response_data["help_prompt_description"] == "Test description"
+        assert response_data["help_user_input"] == "Test user input help"
+        assert response_data["help_sample_input"] == "Test sample input"
+        assert len(response_data["follow_ups"]) == 0
+
+    def test_get_prompt_with_follow_ups_should_return_404_if_prompt_not_found(self):
+        mock_prompts_chat = MagicMock()
+        mock_prompts_chat.get_a_prompt_with_follow_ups.return_value = None
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            image_service=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+
+        response = self.client.get("/api/prompt/non-existent-id")
+
+        # Assert the response
+        assert response.status_code == 404
+        assert mock_prompts_chat.get_a_prompt_with_follow_ups.call_count == 1
+        mock_prompts_chat.get_a_prompt_with_follow_ups.assert_called_with(
+            "non-existent-id", includeContent=True
         )

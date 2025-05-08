@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Collapse } from "antd";
 import MarkdownRenderer from "../app/_markdown_renderer";
+import DownloadAllPrompts from "../app/_download_all_prompts";
 
-const KnowledgePackPage = ({ contexts, documents }) => {
+const KnowledgePackPage = ({ contexts, documents, prompts }) => {
   const [renderedSnippets, setRenderedSnippets] = useState();
   const [renderedDocuments, setRenderedDocuments] = useState();
 
@@ -69,7 +70,10 @@ const KnowledgePackPage = ({ contexts, documents }) => {
   return (
     <div id="canvas">
       <div className={"knowledge-overview"}>
-        <h1>Your knowledge</h1>
+        <div className="knowledge-overview-header">
+          <h1>Your knowledge</h1>
+          <DownloadAllPrompts prompts={prompts} />
+        </div>
         <p>
           This page shows an overview of the knowledge you currently have in
           your knowledge pack.

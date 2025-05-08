@@ -23,7 +23,6 @@ class ApiCreativeMatrix(HaivenBaseApi):
                 prompt_choice="guided-creative-matrix",
                 user_input="",
                 additional_vars=variables,
-                warnings=[],
             )
 
             return self.stream_json_chat(
