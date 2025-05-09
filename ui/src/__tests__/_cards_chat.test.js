@@ -71,13 +71,11 @@ const mockContexts = [
   { value: "context1", label: "Context 1" },
   { value: "context2", label: "Context 2" },
 ];
-const mockModels = [
-  {
-    chat: "Chat Model",
-    vision: "Vision Model ",
-    embeddings: "Embeddings Model",
-  },
-];
+const mockModels = {
+  chat: { name: "Chat Model" },
+  vision: { name: "Vision Model" },
+  embeddings: { name: "Embeddings Model" },
+};
 
 const mockFeatureToggleConfig = {
   cards_iteration: true,
@@ -743,6 +741,40 @@ describe("CardsChat special prompt logic (company-research)", () => {
       },
     ],
   };
+
+  it("should use Perplexity AI model name for company research prompts", async () => {
+    await act(async () => {
+      render(
+        <CardsChat
+          promptId={companyResearchPrompt.identifier}
+          prompts={[companyResearchPrompt]}
+          contexts={mockContexts}
+          models={mockModels}
+          featureToggleConfig={mockFeatureToggleConfig}
+        />,
+      );
+    });
+
+    const modelNameElement = screen.getByText("Perplexity AI");
+    expect(modelNameElement).toBeInTheDocument();
+  });
+
+  it("should use provided model name for non-company research prompts", async () => {
+    await act(async () => {
+      render(
+        <CardsChat
+          promptId="some-other-prompt"
+          prompts={[mockPrompts[0]]}
+          contexts={mockContexts}
+          models={mockModels}
+          featureToggleConfig={mockFeatureToggleConfig}
+        />,
+      );
+    });
+
+    const modelNameElement = screen.getByText("Chat Model");
+    expect(modelNameElement).toBeInTheDocument();
+  });
 
   it("should show special follow-up input for company-research-product-evolution prompts", async () => {
     fetchSSE.mockImplementationOnce((url, options, { onMessageHandle }) => {
