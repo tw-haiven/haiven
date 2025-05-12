@@ -1,7 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { RiDownload2Line } from "react-icons/ri";
 import { Tooltip } from "antd";
-import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 
 const DownloadPrompt = ({ prompt }) => {
   const prompt_file_content = async (prompt) => {
@@ -62,17 +61,15 @@ Prompt: ${promptData.content || ""}`;
   };
 
   return (
-    isFeatureEnabled(FEATURES.DOWNLOAD_PROMPTS) && (
-      <Tooltip title="Download Prompt" placement="bottom">
-        <button
-          onClick={handleDownload}
-          className="download-prompt-button"
-          data-testid="download-prompt-button"
-        >
-          <RiDownload2Line />
-        </button>
-      </Tooltip>
-    )
+    <Tooltip title="Download Prompt" placement="bottom">
+      <button
+        onClick={handleDownload}
+        className="download-prompt-button"
+        data-testid="download-prompt-button"
+      >
+        <RiDownload2Line />
+      </button>
+    </Tooltip>
   );
 };
 
