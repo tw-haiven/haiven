@@ -1,9 +1,20 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+import { useEffect, useState } from "react";
 import { RiDownload2Line } from "react-icons/ri";
 import { Dropdown } from "antd";
 import JSZip from "jszip";
+import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 
 const DownloadAllPrompts = ({ prompts }) => {
+  const [isDownloadPromptsEnabled, setIsDownloadPromptsEnabled] =
+    useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsDownloadPromptsEnabled(isFeatureEnabled(FEATURES.DOWNLOAD_PROMPTS));
+    }
+  }, []);
+
   const prompt_file_content = async (prompt) => {
     const response = await fetch(`/api/prompt/${prompt.identifier}`, {
       method: "GET",
@@ -20,7 +31,7 @@ const DownloadAllPrompts = ({ prompts }) => {
     const promptData = await response.json();
 
     let textContent = `Description: ${promptData.help_prompt_description || ""}
-      Prompt: ${promptData.content || ""}`;
+Prompt: ${promptData.content || ""}`;
 
     if (promptData.help_sample_input) {
       textContent += `\nSample Input: ${promptData.help_sample_input}`;
@@ -128,17 +139,19 @@ const DownloadAllPrompts = ({ prompts }) => {
   ];
 
   return (
-    <div>
-      <Dropdown menu={{ items }} trigger={["click"]} placement="bottomRight">
-        <button
-          className="download-prompt-button"
-          data-testid="download-all-prompts-button"
-        >
-          <span>Download prompts</span>
-          <RiDownload2Line />
-        </button>
-      </Dropdown>
-    </div>
+    isDownloadPromptsEnabled && (
+      <div>
+        <Dropdown menu={{ items }} trigger={["click"]} placement="bottomRight">
+          <button
+            className="download-prompt-button"
+            data-testid="download-all-prompts-button"
+          >
+            <span>Download prompts</span>
+            <RiDownload2Line />
+          </button>
+        </Dropdown>
+      </div>
+    )
   );
 };
 

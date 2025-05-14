@@ -3,6 +3,7 @@ import { getFeatureTogglesAsJson } from "../app/_local_store";
 
 export const FEATURES = {
   FEATURE_DELIVERY_MANAGEMENT: "FEATURE_DELIVERY_MANAGEMENT",
+  DOWNLOAD_PROMPTS: "DOWNLOAD_PROMPTS",
 };
 
 export const isFeatureEnabled = (featureName) => {

@@ -1,8 +1,19 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+import { useEffect, useState } from "react";
 import { RiDownload2Line } from "react-icons/ri";
 import { Tooltip } from "antd";
+import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 
 const DownloadPrompt = ({ prompt }) => {
+  const [isDownloadPromptsEnabled, setIsDownloadPromptsEnabled] =
+    useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsDownloadPromptsEnabled(isFeatureEnabled(FEATURES.DOWNLOAD_PROMPTS));
+    }
+  }, []);
+
   const prompt_file_content = async (prompt) => {
     const response = await fetch(`/api/prompt/${prompt.identifier}`, {
       method: "GET",
@@ -61,15 +72,17 @@ Prompt: ${promptData.content || ""}`;
   };
 
   return (
-    <Tooltip title="Download Prompt" placement="bottom">
-      <button
-        onClick={handleDownload}
-        className="download-prompt-button"
-        data-testid="download-prompt-button"
-      >
-        <RiDownload2Line />
-      </button>
-    </Tooltip>
+    isDownloadPromptsEnabled && (
+      <Tooltip title="Download Prompt" placement="bottom">
+        <button
+          onClick={handleDownload}
+          className="download-prompt-button"
+          data-testid="download-prompt-button"
+        >
+          <RiDownload2Line />
+        </button>
+      </Tooltip>
+    )
   );
 };
 
