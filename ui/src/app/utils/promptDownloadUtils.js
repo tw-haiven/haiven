@@ -35,10 +35,10 @@ export const fetchPromptContent = async (prompt) => {
 };
 
 export const getFileName = (prompt) => {
-  const hyphenatedTitle = prompt.title.toLowerCase().replace(/\s+/g, "-");
+  console.log(prompt);
   const date = new Date();
   const month = date.toLocaleString("en-US", { month: "short" });
   const day = date.getDate();
   const year = date.getFullYear();
-  return `${hyphenatedTitle}-prompt-${day}-${month}-${year}.txt`;
+  return `${prompt.filename}_prompt_${day}_${month}_${year}.txt`;
 };

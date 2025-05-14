@@ -41,7 +41,9 @@ class PromptList:
             [f for f in os.listdir(directory) if f.endswith(".md") and f != "README.md"]
         )
         self.prompts = [
-            frontmatter.load(os.path.join(directory, filename))
+            self.add_filename_to_metadata(
+                frontmatter.load(os.path.join(directory, filename)), filename
+            )
             for filename in prompt_files
         ]
 
@@ -202,6 +204,7 @@ class PromptList:
             "scenario_queries": prompt.metadata.get("scenario_queries"),
             "editable": prompt.metadata.get("editable"),
             "show": prompt.metadata.get("show"),
+            "filename": prompt.metadata.get("filename"),
             **(
                 {"content": prompt.content} if includeContent and prompt.content else {}
             ),
@@ -215,3 +218,8 @@ class PromptList:
             prompt.metadata.get("identifier").startswith("guided-")
             or prompt.metadata.get("type") == "cards"
         )
+
+    def add_filename_to_metadata(self, prompt, filename):
+        file_name_without_extension = os.path.splitext(filename)[0]
+        prompt.metadata["filename"] = file_name_without_extension
+        return prompt
