@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { RiDownload2Line } from "react-icons/ri";
 import { Tooltip } from "antd";
 import { isFeatureEnabled, FEATURES } from "./feature_toggle";
-import { fetchPromptContent, getFileName } from "./utils/promptDataUtils";
+import { fetchPromptContent, getFileName } from "./utils/promptDownloadUtils";
 
 const DownloadPrompt = ({ prompt }) => {
   const [isDownloadPromptsEnabled, setIsDownloadPromptsEnabled] =

@@ -4,7 +4,7 @@ import { RiDownload2Line } from "react-icons/ri";
 import { Dropdown } from "antd";
 import JSZip from "jszip";
 import { isFeatureEnabled, FEATURES } from "./feature_toggle";
-import { fetchPromptContent, getFileName } from "./utils/promptDataUtils";
+import { fetchPromptContent, getFileName } from "./utils/promptDownloadUtils";
 
 const DownloadAllPrompts = ({ prompts }) => {
   const [isDownloadPromptsEnabled, setIsDownloadPromptsEnabled] =
