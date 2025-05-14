@@ -10,6 +10,7 @@ import {
   RiCompasses2Line,
   RiBook2Line,
   RiDashboardHorizontalLine,
+  RiUserAddLine,
 } from "react-icons/ri";
 import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 
@@ -71,6 +72,12 @@ export const initialiseMenuCategoriesForSidebar = () => {
       key: "architecture",
       label: "Architecture",
       icon: <RiCompasses2Line style={{ fontSize: "large" }} />,
+      children: [],
+    },
+    onboarding: {
+      key: "onboarding",
+      label: "Onboarding",
+      icon: <RiUserAddLine style={{ fontSize: "large" }} />,
       children: [],
     },
     other: {
