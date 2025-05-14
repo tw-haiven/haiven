@@ -4,6 +4,7 @@ import { RiDownload2Line } from "react-icons/ri";
 import { Dropdown } from "antd";
 import JSZip from "jszip";
 import { isFeatureEnabled, FEATURES } from "./feature_toggle";
+import { fetchPromptContent, getFileName } from "./utils/promptDataUtils";
 
 const DownloadAllPrompts = ({ prompts }) => {
   const [isDownloadPromptsEnabled, setIsDownloadPromptsEnabled] =
@@ -15,87 +16,26 @@ const DownloadAllPrompts = ({ prompts }) => {
     }
   }, []);
 
-  const prompt_file_content = async (prompt) => {
-    const response = await fetch(`/api/prompt/${prompt.identifier}`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch prompt data");
-    }
-
-    const promptData = await response.json();
-
-    let textContent = `Description: ${promptData.help_prompt_description || ""}
-Prompt: ${promptData.content || ""}`;
-
-    if (promptData.help_sample_input) {
-      textContent += `\nSample Input: ${promptData.help_sample_input}`;
-    }
-
-    if (promptData.follow_ups && promptData.follow_ups.length > 0) {
-      textContent += "\n\nFollow-up Prompts:";
-      promptData.follow_ups.forEach((followUp, index) => {
-        textContent += `\n\n${index + 1}. ${followUp.title}`;
-        if (followUp.help_prompt_description) {
-          textContent += `\n   Description: ${followUp.help_prompt_description}`;
-        }
-      });
-    }
-    return textContent;
-  };
-
-  const handleDownloadAll = async () => {
+  const handleMultiplePromptsDownload = async (category = "") => {
     if (!prompts || prompts.length === 0) return;
 
-    try {
-      const zip = new JSZip();
-
-      const allPromptsFolder = zip.folder("all-prompts");
-
-      for (const prompt of prompts) {
-        const fileName = `${prompt.title.toLowerCase().replace(/\s+/g, "-")}.txt`;
-        allPromptsFolder.file(fileName, prompt_file_content(prompt));
-      }
-
-      const content = await zip.generateAsync({ type: "blob" });
-
-      const url = URL.createObjectURL(content);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "all-prompts.zip";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading prompts:", error);
-    }
-  };
-
-  const handleDownloadByCategory = async (category) => {
-    if (!prompts || prompts.length === 0) return;
-
-    try {
+    var folderName = "all-prompts";
+    if (category !== "") {
+      folderName = category.toLowerCase().replace(/\s+/g, "-") + "-prompts";
       const categoryPrompts = prompts.filter(
         (prompt) => prompt.categories && prompt.categories.includes(category),
       );
-
       if (categoryPrompts.length === 0) return;
-
+      prompts = categoryPrompts;
+    }
+    try {
       const zip = new JSZip();
 
-      const categoryFolder = zip.folder(
-        category.toLowerCase().replace(/\s+/g, "-"),
-      );
+      const allPromptsFolder = zip.folder(folderName);
 
-      for (const prompt of categoryPrompts) {
-        const fileName = `${prompt.title.toLowerCase().replace(/\s+/g, "-")}.txt`;
-        categoryFolder.file(fileName, prompt_file_content(prompt));
+      for (const prompt of prompts) {
+        const fileName = getFileName(prompt);
+        allPromptsFolder.file(fileName, fetchPromptContent(prompt));
       }
 
       const content = await zip.generateAsync({ type: "blob" });
@@ -103,13 +43,13 @@ Prompt: ${promptData.content || ""}`;
       const url = URL.createObjectURL(content);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${category.toLowerCase().replace(/\s+/g, "-")}-prompts.zip`;
+      link.download = `${folderName}.zip`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading category prompts:", error);
+      console.error("Error downloading prompt:", error);
     }
   };
 
@@ -122,7 +62,7 @@ Prompt: ${promptData.content || ""}`;
     return categories.map((category) => ({
       key: category,
       label: category.charAt(0).toUpperCase() + category.slice(1),
-      onClick: () => handleDownloadByCategory(category),
+      onClick: () => handleMultiplePromptsDownload(category),
     }));
   };
 
@@ -130,7 +70,7 @@ Prompt: ${promptData.content || ""}`;
     {
       key: "all",
       label: "All Prompts",
-      onClick: handleDownloadAll,
+      onClick: () => handleMultiplePromptsDownload(),
     },
     {
       type: "divider",
