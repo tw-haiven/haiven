@@ -520,6 +520,11 @@ class ApiBasics(HaivenBaseApi):
                 if not prompt:
                     raise HTTPException(status_code=404, detail="Prompt not found")
 
+                user_id = self.get_hashed_user_id(request)
+                HaivenLogger.get().analytics(
+                    "Download prompt", {"user_id": user_id, "prompt_id": prompt_id}
+                )
+
                 return JSONResponse(prompt)
             except HTTPException:
                 raise
