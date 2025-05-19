@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { RiDownload2Line } from "react-icons/ri";
 import { Tooltip } from "antd";
 import { isFeatureEnabled, FEATURES } from "./feature_toggle";
-import { fetchPromptContent, getFileName } from "./utils/promptDownloadUtils";
+import { fetchPromptContent } from "./utils/promptDownloadUtils";
 
 const DownloadPrompt = ({ prompt }) => {
   const [isDownloadPromptsEnabled, setIsDownloadPromptsEnabled] =
@@ -19,14 +19,16 @@ const DownloadPrompt = ({ prompt }) => {
     if (!prompt) return;
 
     try {
-      var textContent = await fetchPromptContent(prompt);
+      var downloadablePrompt = await fetchPromptContent(prompt);
 
-      const blob = new Blob([textContent], { type: "text/plain" });
+      const blob = new Blob([downloadablePrompt.content], {
+        type: "text/plain",
+      });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
 
-      link.download = getFileName(prompt);
+      link.download = downloadablePrompt.filename;
 
       document.body.appendChild(link);
       link.click();

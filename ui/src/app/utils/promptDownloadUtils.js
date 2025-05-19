@@ -1,19 +1,5 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-export const fetchPromptContent = async (prompt) => {
-  const response = await fetch(`/api/prompt/${prompt.identifier}`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch prompt data");
-  }
-
-  const promptData = await response.json();
-
+export const framePromptContent = (promptData) => {
   let textContent = `DESCRIPTION:\n\n${promptData.help_prompt_description || ""}`;
 
   if (promptData.help_sample_input) {
@@ -32,6 +18,54 @@ export const fetchPromptContent = async (prompt) => {
 
   textContent += `\n\n\n\n\n\n\nPROMPT:\n\n${promptData.content || ""}`;
   return textContent;
+};
+
+const promptToDownload = (promptData) => {
+  return {
+    filename: getFileName(promptData),
+    content: framePromptContent(promptData),
+  };
+};
+
+export const fetchPromptContent = async (prompt) => {
+  const response = await fetch(
+    `/api/prompts-content?prompt_id=${prompt.identifier}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch prompt data");
+  }
+
+  const responseArray = await response.json();
+  const promptData = responseArray[0];
+  return promptToDownload(promptData);
+};
+
+export const fetchAllPromptsContents = async (category = "") => {
+  const response = await fetch(`/api/prompts-content?category=${category}`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch prompt data");
+  }
+
+  const promptDataArray = await response.json();
+  const promptContents = promptDataArray.map((promptData) => {
+    return promptToDownload(promptData);
+  });
+  return promptContents;
 };
 
 export const getFileName = (prompt) => {

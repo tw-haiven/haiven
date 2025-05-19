@@ -178,8 +178,6 @@ def test_get_prompts_with_follow_ups():
     )
     prompts_with_follow_ups = prompt_list.get_prompts_with_follow_ups()
 
-    # test knowledge pack configures 2 valid follow up prompts for uuid-1
-
     uuid_1_entry = [
         prompt for prompt in prompts_with_follow_ups if prompt["identifier"] == "uuid-1"
     ][0]
@@ -216,3 +214,33 @@ def test_get_prompts_with_follow_ups_invalid_prompt_id():
     assert uuid_2_entry is not None
     assert len(uuid_2_entry["follow_ups"]) == 1
     assert uuid_2_entry["follow_ups"][0]["identifier"] == "uuid-3"
+
+
+def test_get_prompts_with_follow_ups_with_categor_and_includeContent():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+    knowledge_manager = create_knowledge_manager()
+
+    prompt_list = PromptList(
+        "chat", knowledge_base, knowledge_manager, root_dir=TEST_KNOWLEDGE_PACK_PATH
+    )
+
+    # Get prompts with category "architecture" and includeContent=True
+    prompts_with_follow_ups = prompt_list.get_prompts_with_follow_ups(
+        includeContent=True, category="architecture"
+    )
+
+    # Verify only prompts with "architecture" category are returned
+    assert all(
+        "architecture" in prompt["categories"] for prompt in prompts_with_follow_ups
+    )
+
+    # Verify content is included in the response
+    uuid_1_entry = [
+        prompt for prompt in prompts_with_follow_ups if prompt["identifier"] == "uuid-1"
+    ][0]
+    assert uuid_1_entry["content"] == "Content {user_input} {context}"
+
+    uuid_5_entry = [
+        prompt for prompt in prompts_with_follow_ups if prompt["identifier"] == "uuid-5"
+    ][0]
+    assert uuid_5_entry["content"] == "Content  {context}"

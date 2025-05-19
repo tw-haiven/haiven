@@ -177,10 +177,19 @@ class PromptList:
                         )
         return follow_ups
 
-    def get_prompts_with_follow_ups(self):
+    def get_prompts_with_follow_ups(self, includeContent=False, category=None):
         prompts_with_follow_ups = []
-        for prompt in self.prompts:
-            prompt_data = self.attach_follow_ups(prompt)
+        prompts = self.prompts
+
+        if category:
+            prompts = [
+                prompt
+                for prompt in self.prompts
+                if category in prompt.metadata.get("categories", [])
+            ]
+
+        for prompt in prompts:
+            prompt_data = self.attach_follow_ups(prompt, includeContent)
             prompts_with_follow_ups.append(prompt_data)
         return prompts_with_follow_ups
 

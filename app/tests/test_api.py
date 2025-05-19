@@ -632,14 +632,14 @@ class TestApi(unittest.TestCase):
             inspirations_manager=MagicMock(),
         )
 
-        response = self.client.get("/api/prompt/test-prompt-id")
+        response = self.client.get("/api/prompts-content?prompt_id=test-prompt-id")
 
         assert response.status_code == 200
         mock_prompts_chat.get_a_prompt_with_follow_ups.assert_called_with(
             "test-prompt-id", includeContent=True
         )
 
-        response_data = json.loads(response.content)
+        response_data = json.loads(response.content)[0]
         assert response_data["content"] == "PromptContent {user_input}"
         assert response_data["title"] == "Test Prompt"
         assert response_data["identifier"] == "test-prompt-id"
@@ -669,7 +669,7 @@ class TestApi(unittest.TestCase):
             inspirations_manager=MagicMock(),
         )
 
-        response = self.client.get("/api/prompt/non-existent-id")
+        response = self.client.get("/api/prompts-content?prompt_id=non-existent-id")
 
         # Assert the response
         assert response.status_code == 404
@@ -677,3 +677,123 @@ class TestApi(unittest.TestCase):
         mock_prompts_chat.get_a_prompt_with_follow_ups.assert_called_with(
             "non-existent-id", includeContent=True
         )
+
+    def test_get_prompts_with_category(self):
+        mock_prompts = MagicMock()
+        category_prompts = [
+            {
+                "identifier": "prompt-1",
+                "title": "Prompt 1",
+                "categories": ["architecture"],
+                "content": "Content 1",
+            },
+            {
+                "identifier": "prompt-2",
+                "title": "Prompt 2",
+                "categories": ["architecture"],
+                "content": "Content 2",
+            },
+        ]
+
+        mock_prompts.get_prompts_with_follow_ups.return_value = category_prompts
+
+        # Mock the HaivenLogger
+        with patch("api.api_basics.HaivenLogger") as mock_logger:
+            mock_logger_instance = MagicMock()
+            mock_logger.get.return_value = mock_logger_instance
+
+            ApiBasics(
+                self.app,
+                chat_manager=MagicMock(),
+                model_config=MagicMock(),
+                image_service=MagicMock(),
+                prompts_chat=mock_prompts,
+                prompts_guided=MagicMock(),
+                knowledge_manager=MagicMock(),
+                config_service=MagicMock(),
+                disclaimer_and_guidelines=MagicMock(),
+                inspirations_manager=MagicMock(),
+            )
+
+            # Test the endpoint with category parameter
+            response = self.client.get("/api/prompts-content?category=architecture")
+
+            # Assert response
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json(), category_prompts)
+
+            # Verify the method was called with the right parameters
+            mock_prompts.get_prompts_with_follow_ups.assert_called_with(
+                includeContent=True, category="architecture"
+            )
+
+            # Check that analytics was logged for each prompt
+            calls = mock_logger_instance.analytics.call_args_list
+            self.assertEqual(len(calls), 2)
+
+            for i, call in enumerate(calls):
+                args, kwargs = call
+                self.assertEqual(args[0], "Download prompt")
+                self.assertEqual(
+                    args[1]["prompt_id"], category_prompts[i]["identifier"]
+                )
+                self.assertEqual(args[1]["category"], "architecture")
+
+    def test_get_all_prompts(self):
+        mock_prompts = MagicMock()
+        all_prompts = [
+            {
+                "identifier": "prompt-1",
+                "title": "Prompt 1",
+                "categories": ["architecture"],
+                "content": "Content 1",
+            },
+            {
+                "identifier": "prompt-2",
+                "title": "Prompt 2",
+                "categories": ["coding"],
+                "content": "Content 2",
+            },
+        ]
+
+        mock_prompts.get_prompts_with_follow_ups.return_value = all_prompts
+
+        # Mock the HaivenLogger
+        with patch("api.api_basics.HaivenLogger") as mock_logger:
+            mock_logger_instance = MagicMock()
+            mock_logger.get.return_value = mock_logger_instance
+
+            ApiBasics(
+                self.app,
+                chat_manager=MagicMock(),
+                model_config=MagicMock(),
+                image_service=MagicMock(),
+                prompts_chat=mock_prompts,
+                prompts_guided=MagicMock(),
+                knowledge_manager=MagicMock(),
+                config_service=MagicMock(),
+                disclaimer_and_guidelines=MagicMock(),
+                inspirations_manager=MagicMock(),
+            )
+
+            # Test the endpoint with category parameter
+            response = self.client.get("/api/prompts-content")
+
+            # Assert response
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json(), all_prompts)
+
+            # Verify the method was called with the right parameters
+            mock_prompts.get_prompts_with_follow_ups.assert_called_with(
+                includeContent=True,
+            )
+
+            # Check that analytics was logged for each prompt
+            calls = mock_logger_instance.analytics.call_args_list
+            self.assertEqual(len(calls), 2)
+
+            for i, call in enumerate(calls):
+                args, kwargs = call
+                self.assertEqual(args[0], "Download prompt")
+                self.assertEqual(args[1]["prompt_id"], all_prompts[i]["identifier"])
+                self.assertEqual(args[1]["category"], "all")

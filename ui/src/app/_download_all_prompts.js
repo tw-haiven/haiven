@@ -4,7 +4,7 @@ import { RiDownload2Line } from "react-icons/ri";
 import { Dropdown } from "antd";
 import JSZip from "jszip";
 import { isFeatureEnabled, FEATURES } from "./feature_toggle";
-import { fetchPromptContent, getFileName } from "./utils/promptDownloadUtils";
+import { fetchAllPromptsContents } from "./utils/promptDownloadUtils";
 
 const DownloadAllPrompts = ({ prompts }) => {
   const [isDownloadPromptsEnabled, setIsDownloadPromptsEnabled] =
@@ -17,26 +17,21 @@ const DownloadAllPrompts = ({ prompts }) => {
   }, []);
 
   const handleMultiplePromptsDownload = async (category = "") => {
-    if (!prompts || prompts.length === 0) return;
-
-    var folderName = "all-prompts";
-    if (category !== "") {
-      folderName = category.toLowerCase().replace(/\s+/g, "-") + "-prompts";
-      const categoryPrompts = prompts.filter(
-        (prompt) => prompt.categories && prompt.categories.includes(category),
-      );
-      if (categoryPrompts.length === 0) return;
-      prompts = categoryPrompts;
-    }
+    var folderName = category
+      ? category.toLowerCase().replace(/\s+/g, "-") + "-prompts"
+      : "all-prompts";
     try {
       const zip = new JSZip();
 
       const allPromptsFolder = zip.folder(folderName);
 
-      for (const prompt of prompts) {
-        const fileName = getFileName(prompt);
-        allPromptsFolder.file(fileName, fetchPromptContent(prompt));
-      }
+      const allPromptsContents = await fetchAllPromptsContents(
+        (category = category),
+      );
+
+      allPromptsContents.forEach((prompt) => {
+        allPromptsFolder.file(prompt.filename, prompt.content);
+      });
 
       const content = await zip.generateAsync({ type: "blob" });
 

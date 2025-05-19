@@ -509,23 +509,59 @@ class ApiBasics(HaivenBaseApi):
                     status_code=500, detail=f"Server error: {str(error)}"
                 )
 
-        @app.get("/api/prompt/{prompt_id}")
+        @app.get("/api/prompts-content")
         @logger.catch(reraise=True)
-        def get_prompt_by_id(request: Request, prompt_id: str):
+        def get_prompts_with_content(
+            request: Request, prompt_id: str = None, category: str = None
+        ):
+            user_id = self.get_hashed_user_id(request)
+
             try:
-                prompt = prompts_chat.get_a_prompt_with_follow_ups(
-                    prompt_id, includeContent=True
-                )
+                if prompt_id:
+                    prompt = prompts_chat.get_a_prompt_with_follow_ups(
+                        prompt_id, includeContent=True
+                    )
 
-                if not prompt:
-                    raise HTTPException(status_code=404, detail="Prompt not found")
+                    if not prompt:
+                        raise HTTPException(status_code=404, detail="Prompt not found")
 
-                user_id = self.get_hashed_user_id(request)
-                HaivenLogger.get().analytics(
-                    "Download prompt", {"user_id": user_id, "prompt_id": prompt_id}
-                )
+                    HaivenLogger.get().analytics(
+                        "Download prompt",
+                        {"user_id": user_id, "prompt_id": prompt_id, "category": None},
+                    )
 
-                return JSONResponse(prompt)
+                    return JSONResponse([prompt])
+                elif category:
+                    prompts = prompts_chat.get_prompts_with_follow_ups(
+                        includeContent=True, category=category
+                    )
+                    for prompt in prompts:
+                        HaivenLogger.get().analytics(
+                            "Download prompt",
+                            {
+                                "user_id": user_id,
+                                "prompt_id": prompt.get("identifier"),
+                                "category": category,
+                            },
+                        )
+
+                    return JSONResponse(prompts)
+                else:
+                    # Return all prompts if no prompt_id and no category provided
+                    prompts = prompts_chat.get_prompts_with_follow_ups(
+                        includeContent=True
+                    )
+                    for prompt in prompts:
+                        HaivenLogger.get().analytics(
+                            "Download prompt",
+                            {
+                                "user_id": user_id,
+                                "prompt_id": prompt.get("identifier"),
+                                "category": "all",
+                            },
+                        )
+
+                    return JSONResponse(prompts)
             except HTTPException:
                 raise
             except Exception as error:
