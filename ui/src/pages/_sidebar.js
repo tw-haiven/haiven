@@ -5,9 +5,9 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { RiGlobalLine } from "react-icons/ri";
 import { initialiseMenuCategoriesForSidebar } from "../app/_navigation_items";
-import { isFeatureEnabled, FEATURES } from "../app/feature_toggle";
+import { FEATURES } from "../app/feature_toggle";
 
-const Sidebar = ({ prompts }) => {
+const Sidebar = ({ prompts, featureToggleConfig }) => {
   const pathToKey = {
     "/scenarios": "scenarios",
     "/creative-matrix": "creative-matrix",
@@ -25,13 +25,17 @@ const Sidebar = ({ prompts }) => {
   };
 
   useEffect(() => {
-    const menuCategories = initialiseMenuCategoriesForSidebar();
+    const menuCategories = initialiseMenuCategoriesForSidebar(
+      featureToggleConfig[FEATURES.FEATURE_DELIVERY_MANAGEMENT] === true,
+    );
 
     prompts
       .filter((prompt) => prompt.show !== false)
       .filter((prompt) => {
         if (prompt.categories.includes("deliveryManagement")) {
-          return isFeatureEnabled(FEATURES.FEATURE_DELIVERY_MANAGEMENT);
+          return (
+            featureToggleConfig[FEATURES.FEATURE_DELIVERY_MANAGEMENT] === true
+          );
         }
         return true;
       })

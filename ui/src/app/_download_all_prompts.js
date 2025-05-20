@@ -3,19 +3,9 @@ import { useEffect, useState } from "react";
 import { RiDownload2Line } from "react-icons/ri";
 import { Dropdown } from "antd";
 import JSZip from "jszip";
-import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 import { fetchAllPromptsContents } from "./utils/promptDownloadUtils";
 
 const DownloadAllPrompts = ({ prompts }) => {
-  const [isDownloadPromptsEnabled, setIsDownloadPromptsEnabled] =
-    useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsDownloadPromptsEnabled(isFeatureEnabled(FEATURES.DOWNLOAD_PROMPTS));
-    }
-  }, []);
-
   const handleMultiplePromptsDownload = async (category = "") => {
     var folderName = category
       ? category.toLowerCase().replace(/\s+/g, "-") + "-prompts"
@@ -74,19 +64,17 @@ const DownloadAllPrompts = ({ prompts }) => {
   ];
 
   return (
-    isDownloadPromptsEnabled && (
-      <div>
-        <Dropdown menu={{ items }} trigger={["click"]} placement="bottomRight">
-          <button
-            className="download-prompt-button"
-            data-testid="download-all-prompts-button"
-          >
-            <span>Download prompts</span>
-            <RiDownload2Line />
-          </button>
-        </Dropdown>
-      </div>
-    )
+    <div>
+      <Dropdown menu={{ items }} trigger={["click"]} placement="bottomRight">
+        <button
+          className="download-prompt-button"
+          data-testid="download-all-prompts-button"
+        >
+          <span>Download prompts</span>
+          <RiDownload2Line />
+        </button>
+      </Dropdown>
+    </div>
   );
 };
 

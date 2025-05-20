@@ -60,14 +60,6 @@ export const getPinboardData = () => {
   return entries.sort((a, b) => b.isUserDefined - a.isUserDefined);
 };
 
-export const getFeatureToggleConfiguration = () => {
-  return localStorage.getItem("toggles");
-};
-
-export const getFeatureTogglesAsJson = () => {
-  return JSON.parse(localStorage.getItem("toggles")) || {};
-};
-
 const getContexts = () => {
   return JSON.parse(localStorage.getItem("context")) || [];
 };

@@ -2,19 +2,9 @@
 import { useEffect, useState } from "react";
 import { RiDownload2Line } from "react-icons/ri";
 import { Tooltip } from "antd";
-import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 import { fetchPromptContent } from "./utils/promptDownloadUtils";
 
 const DownloadPrompt = ({ prompt }) => {
-  const [isDownloadPromptsEnabled, setIsDownloadPromptsEnabled] =
-    useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsDownloadPromptsEnabled(isFeatureEnabled(FEATURES.DOWNLOAD_PROMPTS));
-    }
-  }, []);
-
   const handleDownload = async () => {
     if (!prompt) return;
 
@@ -40,17 +30,15 @@ const DownloadPrompt = ({ prompt }) => {
   };
 
   return (
-    isDownloadPromptsEnabled && (
-      <Tooltip title="Download Prompt" placement="bottom">
-        <button
-          onClick={handleDownload}
-          className="download-prompt-button"
-          data-testid="download-prompt-button"
-        >
-          <RiDownload2Line />
-        </button>
-      </Tooltip>
-    )
+    <Tooltip title="Download Prompt" placement="bottom">
+      <button
+        onClick={handleDownload}
+        className="download-prompt-button"
+        data-testid="download-prompt-button"
+      >
+        <RiDownload2Line />
+      </button>
+    </Tooltip>
   );
 };
 

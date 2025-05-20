@@ -11,7 +11,6 @@ import { staticFeaturesForDashboard } from "../app/_navigation_items";
 import DisclaimerPopup from "../app/_disclaimer_popup";
 import { RiBookShelfLine } from "react-icons/ri";
 import { MdLightbulb } from "react-icons/md";
-import { getFeatureToggleConfiguration } from "../app/_local_store";
 import ReactMarkdown from "react-markdown";
 
 export default function ChatDashboard() {
@@ -21,7 +20,6 @@ export default function ChatDashboard() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [disclaimerConfig, setDisclaimerConfig] = useState({});
   const [inspirations, setInspirations] = useState([]);
-  const [featureToggleConfig, setFeatureToggleConfig] = useState({});
 
   // !! If changed, also needs to be changed in CSS, for the filter selection colors
   const categoryColors = {
@@ -126,9 +124,6 @@ export default function ChatDashboard() {
       setAllCategories(categories);
       setSelectedCategories(categories);
     });
-
-    const toggleConfig = getFeatureToggleConfiguration() || "{}";
-    setFeatureToggleConfig(JSON.parse(toggleConfig));
 
     getInspirations((data) => {
       setInspirations(data);

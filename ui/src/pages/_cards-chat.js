@@ -29,6 +29,7 @@ import { scenarioToText } from "../app/_dynamic_data_renderer";
 import EnrichCard from "../app/_enrich_card";
 import Citations from "../pages/_citations";
 import DownloadPrompt from "../app/_download_prompt";
+import { FEATURES } from "../app/feature_toggle";
 
 const CardsChat = ({
   promptId,
@@ -563,6 +564,9 @@ const CardsChat = ({
     );
   };
 
+  const downloadPrompt = featureToggleConfig[FEATURES.DOWNLOAD_PROMPTS] ===
+    true && <DownloadPrompt prompt={selectedPromptConfiguration} />;
+
   const title = (
     <div className="title">
       <h3>
@@ -572,7 +576,7 @@ const CardsChat = ({
           text={selectedPromptConfiguration.help_prompt_description}
         />
       </h3>
-      <DownloadPrompt prompt={selectedPromptConfiguration} />
+      {downloadPrompt}
     </div>
   );
 

@@ -4,24 +4,14 @@ import { act } from "react";
 import Sidebar from "../pages/_sidebar";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { useRouter } from "next/router";
-import { getFeatureTogglesAsJson } from "../app/_local_store";
 
 vi.mock("next/router", () => ({
   useRouter: vi.fn(),
 }));
 
-vi.mock("../app/_local_store", async () => {
-  const actual = await vi.importActual("../app/_local_store");
-  return {
-    ...actual,
-    getFeatureTogglesAsJson: vi.fn(),
-  };
-});
-
 describe("Sidebar Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    getFeatureTogglesAsJson.mockReturnValue({});
   });
 
   const mockPrompts = [
@@ -48,7 +38,7 @@ describe("Sidebar Component", () => {
     });
 
     await act(async () => {
-      render(<Sidebar prompts={[]} />);
+      render(<Sidebar prompts={[]} featureToggleConfig={{}} />);
     });
 
     expect(
@@ -67,7 +57,7 @@ describe("Sidebar Component", () => {
     });
 
     await act(async () => {
-      render(<Sidebar prompts={mockPrompts} />);
+      render(<Sidebar prompts={mockPrompts} featureToggleConfig={{}} />);
     });
 
     expect(screen.getByText(/Research/i)).toBeInTheDocument();
@@ -86,7 +76,7 @@ describe("Sidebar Component", () => {
     });
 
     await act(async () => {
-      render(<Sidebar prompts={mockPrompts} />);
+      render(<Sidebar prompts={mockPrompts} featureToggleConfig={{}} />);
     });
 
     await act(async () => {
@@ -97,11 +87,6 @@ describe("Sidebar Component", () => {
   });
 
   describe("Sidebar Component - Delivery Management Feature Toggle via Env", () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-      getFeatureTogglesAsJson.mockReturnValue({});
-    });
-
     const mockPromptsForDeliveryManagement = [
       {
         identifier: "ahm-process",
@@ -123,9 +108,6 @@ describe("Sidebar Component", () => {
     ];
 
     it("should render Delivery Management category and its prompt when feature flag is true", async () => {
-      getFeatureTogglesAsJson.mockReturnValue({
-        FEATURE_DELIVERY_MANAGEMENT: true,
-      });
       const Sidebar = (await import("../pages/_sidebar")).default;
 
       useRouter.mockReturnValue({
@@ -133,7 +115,12 @@ describe("Sidebar Component", () => {
       });
 
       await act(async () => {
-        render(<Sidebar prompts={mockPromptsForDeliveryManagement} />);
+        render(
+          <Sidebar
+            prompts={mockPromptsForDeliveryManagement}
+            featureToggleConfig={{ FEATURE_DELIVERY_MANAGEMENT: true }}
+          />,
+        );
       });
 
       expect(screen.getByText(/Delivery Management/i)).toBeInTheDocument();
@@ -145,9 +132,6 @@ describe("Sidebar Component", () => {
     });
 
     it("should NOT render Delivery Management category when feature flag is false", async () => {
-      getFeatureTogglesAsJson.mockReturnValue({
-        FEATURE_DELIVERY_MANAGEMENT: false,
-      });
       const Sidebar = (await import("../pages/_sidebar")).default;
 
       useRouter.mockReturnValue({
@@ -155,7 +139,12 @@ describe("Sidebar Component", () => {
       });
 
       await act(async () => {
-        render(<Sidebar prompts={mockPromptsForDeliveryManagement} />);
+        render(
+          <Sidebar
+            prompts={mockPromptsForDeliveryManagement}
+            featureToggleConfig={{ FEATURE_DELIVERY_MANAGEMENT: false }}
+          />,
+        );
       });
 
       expect(
@@ -172,7 +161,12 @@ describe("Sidebar Component", () => {
       });
 
       await act(async () => {
-        render(<Sidebar prompts={mockPromptsForDeliveryManagement} />);
+        render(
+          <Sidebar
+            prompts={mockPromptsForDeliveryManagement}
+            featureToggleConfig={{}}
+          />,
+        );
       });
 
       expect(
@@ -182,10 +176,6 @@ describe("Sidebar Component", () => {
     });
 
     it("should always render items under others regardless of the feature flag", async () => {
-      getFeatureTogglesAsJson.mockReturnValue({
-        FEATURE_DELIVERY_MANAGEMENT: false,
-      });
-
       const Sidebar = (await import("../pages/_sidebar")).default;
 
       useRouter.mockReturnValue({
@@ -193,7 +183,12 @@ describe("Sidebar Component", () => {
       });
 
       await act(async () => {
-        render(<Sidebar prompts={mockPromptsForOtherCategory} />);
+        render(
+          <Sidebar
+            prompts={mockPromptsForOtherCategory}
+            featureToggleConfig={{ FEATURE_DELIVERY_MANAGEMENT: false }}
+          />,
+        );
       });
 
       expect(screen.getByText(/Ideate/i)).toBeInTheDocument();
@@ -231,7 +226,12 @@ describe("Sidebar Component", () => {
       });
 
       await act(async () => {
-        render(<Sidebar prompts={mockPromptsWithGroundedAttribute} />);
+        render(
+          <Sidebar
+            prompts={mockPromptsWithGroundedAttribute}
+            featureToggleConfig={{}}
+          />,
+        );
       });
 
       const researchCategory = screen.getByText(/Research/i);
@@ -256,7 +256,12 @@ describe("Sidebar Component", () => {
       });
 
       await act(async () => {
-        render(<Sidebar prompts={mockPromptsWithGroundedAttribute} />);
+        render(
+          <Sidebar
+            prompts={mockPromptsWithGroundedAttribute}
+            featureToggleConfig={{}}
+          />,
+        );
       });
 
       const researchCategory = screen.getByText(/Research/i);

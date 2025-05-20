@@ -18,6 +18,7 @@ import {
   getSummaryForTheUserContext,
 } from "./_local_store";
 import DownloadPrompt from "./_download_prompt";
+import { FEATURES } from "../app/feature_toggle";
 
 const PromptChat = ({
   promptId,
@@ -31,6 +32,7 @@ const PromptChat = ({
   pageTitle,
   pageIntro,
   initialInput = "",
+  featureToggleConfig = {},
 }) => {
   const chatRef = useRef();
 
@@ -281,7 +283,10 @@ const PromptChat = ({
           testid="page-title-tooltip"
         />
       </h3>
-      {selectedPrompt && <DownloadPrompt prompt={selectedPrompt} />}
+      {selectedPrompt &&
+        featureToggleConfig[FEATURES.DOWNLOAD_PROMPTS] === true && (
+          <DownloadPrompt prompt={selectedPrompt} />
+        )}
     </div>
   );
 

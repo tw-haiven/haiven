@@ -13,12 +13,11 @@ import {
   RiGlobalLine,
   RiBriefcase2Line,
 } from "react-icons/ri";
-import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 
 // Keeping the implementation of menu items for the "static" features in one place
 // Will usually be enhanced by the dynamically loaded prompts afterwards
 
-export const initialiseMenuCategoriesForSidebar = () => {
+export const initialiseMenuCategoriesForSidebar = (isThoughtworksInstance) => {
   const categories = {
     dashboard: {
       key: "dashboard",
@@ -101,7 +100,7 @@ export const initialiseMenuCategoriesForSidebar = () => {
     },
   };
 
-  if (isFeatureEnabled(FEATURES.FEATURE_DELIVERY_MANAGEMENT)) {
+  if (isThoughtworksInstance) {
     categories.deliveryManagement = {
       key: "deliveryManagement",
       label: "Delivery Management",

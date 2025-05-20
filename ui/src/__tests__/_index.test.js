@@ -72,7 +72,7 @@ describe("ChatDashboard Component", () => {
 
   it("should correctly fetch and display prompts and static features on initial render", async () => {
     await act(async () => {
-      render(<ChatDashboard featureToggleConfig={mockFeatureToggleConfig} />);
+      render(<ChatDashboard />);
     });
 
     expect(screen.getByText("User Persona Creation")).toBeInTheDocument();
@@ -82,7 +82,7 @@ describe("ChatDashboard Component", () => {
 
   it("should filter prompts based on selected categories", async () => {
     await act(async () => {
-      render(<ChatDashboard featureToggleConfig={mockFeatureToggleConfig} />);
+      render(<ChatDashboard />);
     });
 
     const researchTag = screen.getAllByText("research")[0];
@@ -102,7 +102,7 @@ describe("ChatDashboard Component", () => {
     staticFeaturesForDashboard.mockReturnValue([]);
 
     await act(async () => {
-      render(<ChatDashboard featureToggleConfig={mockFeatureToggleConfig} />);
+      render(<ChatDashboard />);
     });
 
     expect(screen.queryByText("User Persona Creation")).not.toBeInTheDocument();
