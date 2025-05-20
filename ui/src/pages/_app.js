@@ -146,7 +146,7 @@ export default function App({
               width: "100%",
             }}
           >
-            <Header />
+            <Header featureToggleConfig={featureToggleConfig} />
           </Layout.Header>
           <Layout style={{ marginTop: "64px", flex: 1, overflow: "hidden" }}>
             <Layout.Sider
