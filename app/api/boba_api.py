@@ -5,6 +5,7 @@ from api.api_multi_step import ApiMultiStep
 from api.api_scenarios import ApiScenarios
 from api.api_creative_matrix import ApiCreativeMatrix
 from api.api_company_research import ApiCompanyResearch
+from api.api_features import ApiFeatures
 from llms.chats import (
     ChatManager,
 )
@@ -85,3 +86,5 @@ class BobaApi:
             self.model_config,
             self.prompts_guided,
         )
+
+        ApiFeatures(app)

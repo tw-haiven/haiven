@@ -3,8 +3,29 @@
 export const FEATURES = {
   FEATURE_DELIVERY_MANAGEMENT: "FEATURE_DELIVERY_MANAGEMENT",
   DOWNLOAD_PROMPTS: "DOWNLOAD_PROMPTS",
+  THOUGHTWORKS: "THOUGHTWORKS",
 };
 
-export const getFeatureTogglesAsJson = () => {
-  return JSON.parse(localStorage.getItem("toggles")) || {};
+const fetchServerToggles = async () => {
+  try {
+    const response = await fetch("/api/features");
+    if (!response.ok) {
+      console.error("Failed to fetch server toggles:", response.status);
+      return {};
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching server toggles:", error);
+    return {};
+  }
+};
+
+export const getFeatureTogglesAsJson = async () => {
+  const localToggles = JSON.parse(localStorage.getItem("toggles")) || {};
+  const serverToggles = await fetchServerToggles();
+
+  // Merge toggles, with user toggles taking precedence
+  const mergedToggles = { ...serverToggles, ...localToggles };
+  console.log(mergedToggles);
+  return mergedToggles;
 };

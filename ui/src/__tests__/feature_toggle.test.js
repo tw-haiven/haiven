@@ -1,9 +1,6 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { describe, it, expect, vi } from "vitest";
-import {
-  getFeatureTogglesAsJson,
-  getFeatureToggleConfiguration,
-} from "../app/feature_toggle";
+import { getFeatureTogglesAsJson } from "../app/feature_toggle";
 
 const localStorageMock = (() => {
   let store = {};
@@ -29,17 +26,27 @@ describe("Feature Toggle", () => {
   });
 
   describe("getFeatureTogglesAsJson", () => {
-    it("should return an empty object if no toggles are set", () => {
-      const result = getFeatureTogglesAsJson();
-      expect(result).toEqual({});
+    beforeEach(() => {
+      // Mock fetchServerToggles to return server toggles
+      vi.spyOn(global, "fetch").mockImplementation(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ THOUGHTWORKS: true }),
+        }),
+      );
     });
 
-    it("should return the feature toggles as a JSON object", () => {
-      const toggles = { feature1: true, feature2: false };
-      localStorage.setItem("toggles", JSON.stringify(toggles));
+    it("should merge local and server toggles", async () => {
+      const localToggles = { feature1: true, feature2: false };
+      localStorage.setItem("toggles", JSON.stringify(localToggles));
 
-      const result = getFeatureTogglesAsJson();
-      expect(result).toEqual(toggles);
+      const result = await getFeatureTogglesAsJson();
+      expect(result).toEqual({ ...localToggles, THOUGHTWORKS: true });
+    });
+
+    it("should handle empty local toggles", async () => {
+      const result = await getFeatureTogglesAsJson();
+      expect(result).toEqual({ THOUGHTWORKS: true });
     });
   });
 });

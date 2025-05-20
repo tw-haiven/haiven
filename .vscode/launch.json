@@ -25,7 +25,10 @@
             "console": "integratedTerminal",
             "justMyCode": false,
             "cwd": "${workspaceFolder}/app",
-            "python": "${workspaceFolder}/app/.venv/bin/python"
+            "python": "${workspaceFolder}/app/.venv/bin/python",
+            "env": {
+                "THOUGHTWORKS_INSTANCE": "true"
+            }
         },
 
         {
