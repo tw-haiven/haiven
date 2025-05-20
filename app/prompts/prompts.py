@@ -62,6 +62,8 @@ class PromptList:
                 prompt.metadata["editable"] = False
             if "show" not in prompt.metadata:
                 prompt.metadata["show"] = True
+            if "grounded" not in prompt.metadata:
+                prompt.metadata["grounded"] = False
 
         self.prompt_flows = self.load_prompt_flows(
             os.path.join(directory, "prompt_flows.yaml")
@@ -214,6 +216,7 @@ class PromptList:
             "editable": prompt.metadata.get("editable"),
             "show": prompt.metadata.get("show"),
             "filename": prompt.metadata.get("filename"),
+            "grounded": prompt.metadata.get("grounded", False),
             **(
                 {"content": prompt.content} if includeContent and prompt.content else {}
             ),

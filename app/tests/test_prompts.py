@@ -183,6 +183,8 @@ def test_get_prompts_with_follow_ups():
     ][0]
     assert uuid_1_entry is not None
     assert len(uuid_1_entry["follow_ups"]) == 2
+    assert "grounded" in uuid_1_entry
+    assert uuid_1_entry["grounded"] is False
     assert uuid_1_entry["follow_ups"][0]["identifier"] == "uuid-2"
     assert uuid_1_entry["follow_ups"][0]["title"] == "Test2"
     assert "prompt 2" in uuid_1_entry["follow_ups"][0]["help_prompt_description"]
