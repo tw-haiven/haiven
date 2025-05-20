@@ -10,6 +10,8 @@ import {
   RiCompasses2Line,
   RiBook2Line,
   RiDashboardHorizontalLine,
+  RiGlobalLine,
+  RiBriefcase2Line,
 } from "react-icons/ri";
 import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 
@@ -27,6 +29,24 @@ export const initialiseMenuCategoriesForSidebar = () => {
       key: "knowledgeChat",
       label: <Link href="/knowledge-chat">Chat with Haiven</Link>,
       icon: <RiChatQuoteLine style={{ fontSize: "large" }} />,
+    },
+    thoughtworksLabel: {
+      key: "thoughtworksLabel",
+      label: "Thoughtworks",
+      className: "menu-divider",
+      type: "group",
+    },
+    "client-research": {
+      key: "client-research",
+      label: "Client research",
+      icon: <RiGlobalLine style={{ fontSize: "large" }} />,
+      children: [],
+    },
+    softwareDeliveryLabel: {
+      key: "softwareDeliveryLabel",
+      label: "Software Delivery",
+      className: "menu-divider",
+      type: "group",
     },
     research: {
       key: "research",

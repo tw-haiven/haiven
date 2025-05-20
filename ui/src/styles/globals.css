@@ -1728,6 +1728,14 @@ a.feedback:hover {
   background-color: var(--color-medium-gray);
 }
 
+.menu-divider {
+  color: black;
+  font-weight: var(--font-weight-semi-bold);
+  div {
+    color: black;
+  }
+}
+
 /* DASHBOARD - not used at the moment, hidden experiment */
 .dashboard-sections {
   display: flex;

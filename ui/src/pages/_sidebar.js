@@ -40,6 +40,10 @@ const Sidebar = ({ prompts }) => {
         prompt.categories.forEach((category) => {
           const menuCategory =
             menuCategories[category] || menuCategories["other"];
+          // Skip if this is a group or divider type category
+          if (menuCategory.type === "divider" || menuCategory.type === "group")
+            return;
+
           menuCategory.children.push({
             key: category + "-" + prompt.identifier,
             label: (
@@ -66,7 +70,13 @@ const Sidebar = ({ prompts }) => {
 
     const finalMenuItems = [];
     Object.keys(menuCategories).forEach((key) => {
-      if (!menuCategories[key].children) {
+      // Handle divider or group type categories
+      if (
+        menuCategories[key].type === "divider" ||
+        menuCategories[key].type === "group"
+      ) {
+        finalMenuItems.push(menuCategories[key]);
+      } else if (!menuCategories[key].children) {
         finalMenuItems.push(menuCategories[key]);
       } else if (menuCategories[key].children.length > 0) {
         menuCategories[key].children.sort((a, b) => {
