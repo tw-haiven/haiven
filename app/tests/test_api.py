@@ -9,6 +9,7 @@ from api.api_multi_step import ApiMultiStep
 from api.api_scenarios import ApiScenarios
 from api.api_creative_matrix import ApiCreativeMatrix
 from prompts.prompts_factory import PromptsFactory
+from llms.model_config import ModelConfig
 from tests.utils import get_test_data_path
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -797,3 +798,71 @@ class TestApi(unittest.TestCase):
                 self.assertEqual(args[0], "Download prompt")
                 self.assertEqual(args[1]["prompt_id"], all_prompts[i]["identifier"])
                 self.assertEqual(args[1]["category"], "all")
+
+    @patch("llms.chats.StreamingChat")
+    @patch("llms.chats.ChatManager")
+    @patch("prompts.prompts.PromptList")
+    def test_perplexity_used_for_grounded_prompts(
+        self,
+        mock_prompt_list,
+        mock_chat_manager,
+        mock_streaming_chat,
+    ):
+        # Setup mocks
+        mock_streaming_chat.run.return_value = "some response from the model"
+        mock_chat_manager.streaming_chat.return_value = (
+            "some_key",
+            mock_streaming_chat,
+        )
+        mock_prompt_list.render_prompt.return_value = "some prompt", None
+        mock_prompt_list.produces_json_output.return_value = False
+
+        # Create a mock prompt with grounded=True
+        mock_prompt = MagicMock()
+        mock_prompt.metadata = {"grounded": True}
+        mock_prompt_list.get.return_value = mock_prompt
+
+        # Setup the API with a default model config that we can recognize
+        default_model_config = MagicMock()
+        default_model_config.provider = "default-provider"
+
+        perplexity_model_config = MagicMock()
+        perplexity_model_config.provider = "perplexity"
+
+        # Create the API with our mocks
+        ApiBasics(
+            self.app,
+            chat_manager=mock_chat_manager,
+            model_config=default_model_config,
+            image_service=MagicMock(),
+            prompts_chat=mock_prompt_list,
+            prompts_guided=mock_prompt_list,
+            knowledge_manager=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+
+        # Make the request
+        response = self.client.post(
+            "/api/prompt",
+            json={
+                "userinput": "some user input",
+                "promptid": "grounded-prompt-id",
+            },
+        )
+
+        # Assert the response
+        self.assertEqual(response.status_code, 200)
+        streamed_content = response.content.decode("utf-8")
+        self.assertEqual(streamed_content, "some response from the model")
+
+        expected_model_config = ModelConfig("perplexity", "perplexity", "Perplexity")
+
+        # Verify that streaming_chat was called with the Perplexity model config
+        # and not the default config
+        mock_chat_manager.streaming_chat.assert_called_once()
+        actual_model_config = mock_chat_manager.streaming_chat.call_args[1][
+            "model_config"
+        ]
+        self.assertEqual(actual_model_config.provider, expected_model_config.provider)

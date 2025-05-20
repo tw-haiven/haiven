@@ -51,7 +51,7 @@ const Sidebar = ({ prompts }) => {
                 href={`${url}?prompt=${prompt.identifier}`}
                 className="submenu-entry"
               >
-                {prompt.title.toLowerCase().includes("company research") && (
+                {prompt.grounded && (
                   <RiGlobalLine
                     style={{
                       marginTop: "-2px",

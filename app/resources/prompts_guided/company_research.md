@@ -2,6 +2,7 @@
 identifier: guided-company-research
 title: "Company Research"
 categories: ["guided"]
+grounded: true
 
 help_prompt_description: "To be used and rendered only by the application for the 'guided' mode, not to offer to the user directly"
 

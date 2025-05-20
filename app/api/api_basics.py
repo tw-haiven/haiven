@@ -357,13 +357,13 @@ class ApiBasics(HaivenBaseApi):
                     stream_fn = self.stream_json_chat
 
                 selected_model_config = self.model_config
-                if prompt_data.promptid and prompt_data.promptid.__contains__(
-                    "company-research"
-                ):
-                    perplexity_model_config = ModelConfig(
-                        "perplexity", "perplexity", "Perplexity"
-                    )
-                    selected_model_config = perplexity_model_config
+                if prompt_data.promptid:
+                    prompt_obj = prompts.get(prompt_data.promptid)
+                    if prompt_obj and prompt_obj.metadata.get("grounded", True):
+                        perplexity_model_config = ModelConfig(
+                            "perplexity", "perplexity", "Perplexity"
+                        )
+                        selected_model_config = perplexity_model_config
 
                 prompt = rendered_prompt
                 session_id = prompt_data.chatSessionId

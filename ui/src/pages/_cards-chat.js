@@ -88,10 +88,18 @@ const CardsChat = ({
       const firstStepEntry = prompts.find(
         (entry) => entry.value === selectedPromptId,
       );
-      setIsCompanyResearch(selectedPromptId.includes("company-research"));
+
+      const promptConfig = prompts.find(
+        (entry) => entry.value === selectedPromptId,
+      );
+      setIsCompanyResearch(promptConfig?.grounded === true);
+
+      // special case for one particular prompt
+      // TODO: How to make this a proper feature that doesn't rely on a prompt ID?
       setIsCompanyResearchEvolutionPage(
         selectedPromptId.includes("company-research-product-evolution"),
       );
+
       if (firstStepEntry) {
         firstStepEntry.followUps.forEach((followUp) => {
           followUpResults[followUp.identifier] = "";

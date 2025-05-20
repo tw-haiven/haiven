@@ -205,14 +205,15 @@ describe("Sidebar Component", () => {
     });
   });
 
-  describe("Company Research Icon", () => {
-    const mockPromptsWithCompanyResearch = [
+  describe("Grounded Research Icon", () => {
+    const mockPromptsWithGroundedAttribute = [
       {
-        identifier: "company-research-1",
+        identifier: "grounded-research-1",
         title: "Company Research Analysis",
         categories: ["research"],
         type: "chat",
         show: true,
+        grounded: true,
       },
       {
         identifier: "regular-prompt",
@@ -220,16 +221,17 @@ describe("Sidebar Component", () => {
         categories: ["research"],
         type: "chat",
         show: true,
+        grounded: false,
       },
     ];
 
-    it("should render RiGlobalLine icon for company research items", async () => {
+    it("should render RiGlobalLine icon for grounded research items", async () => {
       useRouter.mockReturnValue({
         pathname: "/scenarios",
       });
 
       await act(async () => {
-        render(<Sidebar prompts={mockPromptsWithCompanyResearch} />);
+        render(<Sidebar prompts={mockPromptsWithGroundedAttribute} />);
       });
 
       const researchCategory = screen.getByText(/Research/i);
@@ -254,7 +256,7 @@ describe("Sidebar Component", () => {
       });
 
       await act(async () => {
-        render(<Sidebar prompts={mockPromptsWithCompanyResearch} />);
+        render(<Sidebar prompts={mockPromptsWithGroundedAttribute} />);
       });
 
       const researchCategory = screen.getByText(/Research/i);

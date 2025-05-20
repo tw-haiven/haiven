@@ -707,15 +707,16 @@ describe("CardsChat Component", () => {
   });
 });
 
-describe("CardsChat special prompt logic (company-research)", () => {
-  const companyResearchPrompt = {
-    identifier: "company-research-123",
-    value: "company-research-123",
+describe("CardsChat special prompt logic (grounded research)", () => {
+  const groundedResearchPrompt = {
+    identifier: "grounded-research-123",
+    value: "grounded-research-123",
     title: "Company Research",
     label: "Company Research",
     help_prompt_description: "Help description for company research",
     help_user_input: "Help input for company research",
     help_sample_input: "Sample input for company research",
+    grounded: true,
     followUps: [
       {
         identifier: "followUp1",
@@ -725,7 +726,7 @@ describe("CardsChat special prompt logic (company-research)", () => {
     ],
   };
 
-  const companyResearchEvolutionPrompt = {
+  const groundedResearchEvolutionPrompt = {
     identifier: "company-research-product-evolution-456",
     value: "company-research-product-evolution-456",
     title: "Company Research Product Evolution",
@@ -733,6 +734,7 @@ describe("CardsChat special prompt logic (company-research)", () => {
     help_prompt_description: "Help description for company research evolution",
     help_user_input: "Help input for company research evolution",
     help_sample_input: "Sample input for company research evolution",
+    grounded: true,
     followUps: [
       {
         identifier: "followUp2",
@@ -742,12 +744,12 @@ describe("CardsChat special prompt logic (company-research)", () => {
     ],
   };
 
-  it("should use Perplexity AI model name for company research prompts", async () => {
+  it("should use Perplexity AI model name for grounded research prompts", async () => {
     await act(async () => {
       render(
         <CardsChat
-          promptId={companyResearchPrompt.identifier}
-          prompts={[companyResearchPrompt]}
+          promptId={groundedResearchPrompt.identifier}
+          prompts={[groundedResearchPrompt]}
           contexts={mockContexts}
           models={mockModels}
           featureToggleConfig={mockFeatureToggleConfig}
@@ -759,7 +761,7 @@ describe("CardsChat special prompt logic (company-research)", () => {
     expect(modelNameElement).toBeInTheDocument();
   });
 
-  it("should use provided model name for non-company research prompts", async () => {
+  it("should use provided model name for non-grounded research prompts", async () => {
     await act(async () => {
       render(
         <CardsChat
@@ -776,7 +778,7 @@ describe("CardsChat special prompt logic (company-research)", () => {
     expect(modelNameElement).toBeInTheDocument();
   });
 
-  it("should show special follow-up input for company-research-product-evolution prompts", async () => {
+  it("should show special follow-up input for product evolution prompts", async () => {
     fetchSSE.mockImplementationOnce((url, options, { onMessageHandle }) => {
       const scenarioString = JSON.stringify(someScenarios);
       onMessageHandle({ data: scenarioString }, mockResponseHeadersWithChatId);
@@ -784,8 +786,8 @@ describe("CardsChat special prompt logic (company-research)", () => {
     await act(async () => {
       render(
         <CardsChat
-          promptId={companyResearchEvolutionPrompt.identifier}
-          prompts={[companyResearchEvolutionPrompt]}
+          promptId={groundedResearchEvolutionPrompt.identifier}
+          prompts={[groundedResearchEvolutionPrompt]}
           contexts={mockContexts}
           models={mockModels}
           featureToggleConfig={mockFeatureToggleConfig}
@@ -796,7 +798,7 @@ describe("CardsChat special prompt logic (company-research)", () => {
     await whenSendIsClicked();
     // Expand follow-up
     const followUpCollapse = await screen.findByTestId("follow-up-collapse");
-    const followUpTitle = companyResearchEvolutionPrompt.followUps[0].title;
+    const followUpTitle = groundedResearchEvolutionPrompt.followUps[0].title;
     fireEvent.click(within(followUpCollapse).getByText(followUpTitle));
     // Should see the special input placeholder for product evolution
     expect(
