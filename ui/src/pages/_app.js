@@ -59,7 +59,6 @@ export default function App({
     getModels(setModels);
     initializeLocalStorage();
 
-    // Fetch and set feature toggles (merged from local and server)
     const fetchToggles = async () => {
       const toggles = await getFeatureTogglesAsJson();
       setFeatureToggleConfig(toggles || {});

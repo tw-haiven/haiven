@@ -26,16 +26,14 @@ const Sidebar = ({ prompts, featureToggleConfig }) => {
 
   useEffect(() => {
     const menuCategories = initialiseMenuCategoriesForSidebar(
-      featureToggleConfig[FEATURES.FEATURE_DELIVERY_MANAGEMENT] === true,
+      featureToggleConfig[FEATURES.THOUGHTWORKS] === true,
     );
 
     prompts
       .filter((prompt) => prompt.show !== false)
       .filter((prompt) => {
         if (prompt.categories.includes("deliveryManagement")) {
-          return (
-            featureToggleConfig[FEATURES.FEATURE_DELIVERY_MANAGEMENT] === true
-          );
+          return featureToggleConfig[FEATURES.THOUGHTWORKS] === true;
         }
         return true;
       })

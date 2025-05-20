@@ -118,7 +118,7 @@ describe("Sidebar Component", () => {
         render(
           <Sidebar
             prompts={mockPromptsForDeliveryManagement}
-            featureToggleConfig={{ FEATURE_DELIVERY_MANAGEMENT: true }}
+            featureToggleConfig={{ THOUGHTWORKS: true }}
           />,
         );
       });
@@ -142,7 +142,7 @@ describe("Sidebar Component", () => {
         render(
           <Sidebar
             prompts={mockPromptsForDeliveryManagement}
-            featureToggleConfig={{ FEATURE_DELIVERY_MANAGEMENT: false }}
+            featureToggleConfig={{ THOUGHTWORKS: false }}
           />,
         );
       });
@@ -186,7 +186,7 @@ describe("Sidebar Component", () => {
         render(
           <Sidebar
             prompts={mockPromptsForOtherCategory}
-            featureToggleConfig={{ FEATURE_DELIVERY_MANAGEMENT: false }}
+            featureToggleConfig={{ THOUGHTWORKS: false }}
           />,
         );
       });

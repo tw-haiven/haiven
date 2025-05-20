@@ -1,14 +1,23 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { render, screen, fireEvent } from "@testing-library/react";
 import { act } from "react";
-import ChatDashboard from "../pages/index";
-import { describe, it, expect, vi } from "vitest";
-import {
-  getPrompts,
-  getDisclaimerAndGuidelines,
-  getInspirations,
-} from "../app/_boba_api";
-import { staticFeaturesForDashboard } from "../app/_navigation_items";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
+// Mock modules before importing the component
+vi.mock("../app/_local_store", () => ({
+  initializeLocalStorage: vi.fn(),
+}));
+
+vi.mock("../app/feature_toggle", () => ({
+  FEATURES: {
+    THOUGHTWORKS: "THOUGHTWORKS",
+  },
+  getFeatureTogglesAsJson: vi.fn().mockImplementation(() =>
+    Promise.resolve({
+      THOUGHTWORKS: true,
+    }),
+  ),
+}));
 
 vi.mock("../app/_boba_api", () => ({
   getPrompts: vi.fn(),
@@ -18,7 +27,21 @@ vi.mock("../app/_boba_api", () => ({
 
 vi.mock("../app/_navigation_items", () => ({
   staticFeaturesForDashboard: vi.fn(),
+  initialiseMenuCategoriesForSidebar: vi.fn(),
 }));
+
+// Import the component after mocking
+import ChatDashboard from "../pages/index";
+import {
+  getPrompts,
+  getDisclaimerAndGuidelines,
+  getInspirations,
+} from "../app/_boba_api";
+import {
+  staticFeaturesForDashboard,
+  initialiseMenuCategoriesForSidebar,
+} from "../app/_navigation_items";
+import { getFeatureTogglesAsJson } from "../app/feature_toggle";
 
 describe("ChatDashboard Component", () => {
   const mockPrompts = [
@@ -57,6 +80,11 @@ describe("ChatDashboard Component", () => {
     // Setup default mocks before each test
     getPrompts.mockImplementation((onSuccess) => onSuccess(mockPrompts));
     staticFeaturesForDashboard.mockReturnValue(mockStaticFeatures);
+    initialiseMenuCategoriesForSidebar.mockReturnValue({
+      research: true,
+      testing: true,
+      ideate: true,
+    });
     getDisclaimerAndGuidelines.mockImplementation((onSuccess) =>
       onSuccess({
         title: "Welcome",
@@ -64,6 +92,11 @@ describe("ChatDashboard Component", () => {
       }),
     );
     getInspirations.mockImplementation((onSuccess) => onSuccess([]));
+    getFeatureTogglesAsJson.mockImplementation(() =>
+      Promise.resolve({
+        THOUGHTWORKS: true,
+      }),
+    );
   });
 
   afterEach(() => {
