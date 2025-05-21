@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import CompanyCanvas from "./_company_canvas";
 
 export default function CompanyResearchPage() {
-  const [researchConfig, setResearchConfig] = useState(null);
+  const [researchConfig, setResearchConfig] = useState({});
 
   const searchParams = useSearchParams();
 

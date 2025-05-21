@@ -32,9 +32,11 @@ export default function CompanyCanvas({ researchConfig }) {
 
   const handleSearch = async (input) => {
     if (!input.trim()) {
-      toast.warning("Please enter a company name");
+      toast.error("Please enter a company name");
       return;
     }
+
+    const signal = startLoad();
 
     setCompanyName(input);
     setDisableInput(true);
@@ -54,7 +56,7 @@ export default function CompanyCanvas({ researchConfig }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ userinput: input, config: researchConfig.key }),
-        signal: startLoad(),
+        signal: signal,
       },
       {
         json: true,
@@ -91,16 +93,12 @@ export default function CompanyCanvas({ researchConfig }) {
                   setCompanyData(parsedData);
                 } else {
                   // not JSON
-                  console.log("not JSON");
-                  abortLoad();
-                  if (ms.includes("Error code:")) {
-                    toast.error(ms);
-                  } else {
-                    toast.warning(
-                      "Model failed to respond in a structured way, please rewrite your message and try again",
-                    );
-                  }
                   console.log("response is not parseable JSON");
+                  setDisableInput(false);
+                  toast.warning(
+                    "Model failed to respond in a structured way, this sometimes happens. You can try again.",
+                  );
+                  abortLoad();
                 }
               } catch (error) {
                 // This is expected for partial JSON, no need to log every attempt
@@ -286,6 +284,8 @@ export default function CompanyCanvas({ researchConfig }) {
           </div>
         )}
 
+        <StopLoad />
+
         {companyData && (
           <div className="research-results">
             <div className="research-results-section">
@@ -293,8 +293,6 @@ export default function CompanyCanvas({ researchConfig }) {
                 <Title level={3}>
                   {companyData.business_brief?.company_name || companyName}
                 </Title>
-
-                <StopLoad />
               </div>
 
               <Row gutter={[12, 12]} className="results-row">
