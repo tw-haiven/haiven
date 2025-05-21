@@ -1,4 +1,18 @@
 inspirations:
+  - id: diagram-explainer
+    title: Explain technical diagrams
+    category: communication
+    prompt_template: |
+      Explain this technical diagram to me, I'm a non-technical person:
+
+      [Upload the diagram as an image]
+
+      Please provide:
+      1. A simple overview using everyday analogies
+      2. Explanation of key components without technical jargon
+      3. The practical significance and business value
+      4. A storytelling approach that connects to real-world impact
+
   - id: retrospective-facilitator
     title: Get suggestions for retrospective formats and help analyzing team feedback patterns
     category: delivery
@@ -11,7 +25,7 @@ inspirations:
       1. Suggestions for an engaging retrospective format that fits this context
       2. Key questions to ask the team
       3. Tips for facilitating constructive discussions
-      4. Ideas for capturing and organizing the feedback     title: Convert commit messages into a structured, user-friendly changelog    title: Convert technical changes into user-friendly language    title: Help structure and organize information effectively    title: Create clear and consistent UI copy
+      4. Ideas for capturing and organizing the feedback
 
 
   - id: changelog-builder
@@ -137,5 +151,6 @@ inspirations:
       Analyze:
       1. User journey steps
       2. Potential pain points
-      3. Cognitive load      4. Improvement suggestions 
+      3. Cognitive load
+      4. Improvement suggestions 
     
