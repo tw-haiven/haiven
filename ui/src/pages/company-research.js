@@ -34,7 +34,9 @@ export default function CompanyResearchPage() {
 
   const availableResearchConfig = {
     company: {
-      title: "Company Research",
+      title: "Company overview",
+      description:
+        "Creates a 'quick glance' overview of a company, grounded with web search",
       key: "company",
       column1: [{ title: "Business Snapshot", property: "business_brief" }],
       column2: [
@@ -45,7 +47,9 @@ export default function CompanyResearchPage() {
       column3: [{ title: "Domain Functions", property: "domain_functions" }],
     },
     "ai-tool": {
-      title: "AI Tool Research",
+      title: "Company overview - AI tools for the SDLC",
+      description:
+        "Creates a 'quick glance' overview of a company that builds AI tools for the SDLC, grounded with web search",
       key: "ai-tool",
       column1: [
         { title: "Business Snapshot", property: "business_brief" },
@@ -175,7 +179,7 @@ export default function CompanyResearchPage() {
     <div className="title">
       <h3>
         {researchConfig.title}
-        <HelpTooltip text="Get a company brief" />
+        <HelpTooltip text={researchConfig.description} />
       </h3>
     </div>
   );

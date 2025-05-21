@@ -84,7 +84,7 @@ class BobaApi:
             app,
             self.chat_manager,
             self.model_config,
-            self.prompts_guided,
+            self.prompts_chat,
         )
 
         ApiFeatures(app)

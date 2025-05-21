@@ -4,8 +4,8 @@ from api.api_basics import HaivenBaseApi
 from llms.model_config import ModelConfig
 
 CONFIG_TO_PROMPT_MAPPING = {
-    "company": "guided-company-research",
-    "ai-tool": "guided-ai-tool-research",
+    "company": "company-overview",
+    "ai-tool": "company-overview-ai-tool",
 }
 
 
@@ -21,11 +21,10 @@ class ApiCompanyResearch(HaivenBaseApi):
             body = await request.json()
             user_input = body.get("userinput", "")
             config = body.get("config", "company")
+            prompt_id = CONFIG_TO_PROMPT_MAPPING.get(config, "company-overview")
 
             prompt, _ = prompt_list.render_prompt(
-                prompt_choice=CONFIG_TO_PROMPT_MAPPING.get(
-                    config, "guided-company-research"
-                ),
+                prompt_choice=prompt_id,
                 user_input=user_input,
             )
 
