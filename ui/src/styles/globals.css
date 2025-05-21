@@ -2236,3 +2236,37 @@ a.feedback:hover {
   }
 }
 
+/* Print layout for the company overviews */
+@media print {
+
+  /* Reset Ant Design layout, otherwise scroll and scrollbars will stay in effect when printing */
+  .ant-layout {
+    min-height: 0 !important;
+    height: auto !important;
+    background: none !important;
+  }
+
+  .ant-layout-content {
+    margin: 0 !important;
+    min-height: 0 !important;
+    background: none !important;
+  }
+
+  .research-results-section {
+    page-break-inside: avoid !important;
+  }
+
+  .title-container {
+    page-break-after: avoid;
+    page-break-before: avoid;
+  }
+
+  .search-container,
+  .chat-header,
+  .ant-layout-sider,
+  .ant-layout-header,
+  .feedback {
+    display: none !important;
+  }
+
+}
