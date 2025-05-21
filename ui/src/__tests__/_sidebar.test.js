@@ -281,4 +281,57 @@ describe("Sidebar Component", () => {
       ]);
     });
   });
+
+  describe("Thoughtworks-only Categories", () => {
+    const mockPromptsWithThoughtworksOnlyCategory = [
+      {
+        identifier: "client-research-prompt",
+        title: "Client Research Prompt",
+        categories: ["client-research"],
+        type: "chat",
+        show: true,
+      },
+      {
+        identifier: "regular-prompt",
+        title: "Regular Prompt",
+        categories: ["architecture"],
+        type: "chat",
+        show: true,
+      },
+    ];
+
+    it("should not add Thoughtworks-only category prompts to 'Other' when feature flag is false", async () => {
+      const Sidebar = (await import("../pages/_sidebar")).default;
+
+      useRouter.mockReturnValue({
+        pathname: "/",
+      });
+
+      await act(async () => {
+        render(
+          <Sidebar
+            prompts={mockPromptsWithThoughtworksOnlyCategory}
+            featureToggleConfig={{ THOUGHTWORKS: false }}
+          />,
+        );
+      });
+
+      // Architecture category should be present
+      const architectureCategory = screen.getByText(/Architecture/i);
+      await act(async () => {
+        architectureCategory.click();
+      });
+
+      // The regular prompt should be there
+      expect(screen.getByText(/Regular Prompt/i)).toBeInTheDocument();
+
+      // The client research prompt should not be added anywhere
+      expect(
+        screen.queryByText(/Client Research Prompt/i),
+      ).not.toBeInTheDocument();
+
+      // Other category should not be present at all
+      expect(screen.queryByText(/Other/i)).not.toBeInTheDocument();
+    });
+  });
 });

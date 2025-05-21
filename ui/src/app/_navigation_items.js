@@ -17,6 +17,11 @@ import {
 // Keeping the implementation of menu items for the "static" features in one place
 // Will usually be enhanced by the dynamically loaded prompts afterwards
 
+export const THOUGHTWORKS_ONLY_CATEGORIES = [
+  "client-research",
+  "deliveryManagement",
+];
+
 export const initialiseMenuCategoriesForSidebar = (isThoughtworksInstance) => {
   const addThoughtworksMenuItems = (categories) => {
     categories.thoughtworksLabel = {

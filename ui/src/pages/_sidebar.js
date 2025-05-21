@@ -4,7 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { RiGlobalLine } from "react-icons/ri";
-import { initialiseMenuCategoriesForSidebar } from "../app/_navigation_items";
+import {
+  initialiseMenuCategoriesForSidebar,
+  THOUGHTWORKS_ONLY_CATEGORIES,
+} from "../app/_navigation_items";
 import { FEATURES } from "../app/feature_toggle";
 
 const Sidebar = ({ prompts, featureToggleConfig }) => {
@@ -25,21 +28,34 @@ const Sidebar = ({ prompts, featureToggleConfig }) => {
   };
 
   useEffect(() => {
+    const isThoughtworksInstance =
+      featureToggleConfig[FEATURES.THOUGHTWORKS] === true;
     const menuCategories = initialiseMenuCategoriesForSidebar(
-      featureToggleConfig[FEATURES.THOUGHTWORKS] === true,
+      isThoughtworksInstance,
     );
 
     prompts
       .filter((prompt) => prompt.show !== false)
       .filter((prompt) => {
-        if (prompt.categories.includes("deliveryManagement")) {
-          return featureToggleConfig[FEATURES.THOUGHTWORKS] === true;
+        if (
+          prompt.categories.some((category) =>
+            THOUGHTWORKS_ONLY_CATEGORIES.includes(category),
+          )
+        ) {
+          return isThoughtworksInstance;
         }
         return true;
       })
       .forEach((prompt) => {
         const url = typeToUrlMap[prompt.type] || "/chat";
         prompt.categories.forEach((category) => {
+          // For categories that are Thoughtworks-only - if they are not available, do not add to "Other"
+          if (
+            THOUGHTWORKS_ONLY_CATEGORIES.includes(category) &&
+            !isThoughtworksInstance
+          ) {
+            return;
+          }
           const menuCategory =
             menuCategories[category] || menuCategories["other"];
           // Skip if this is a group or divider type category
