@@ -84,3 +84,4 @@ I want you to analyze the company {user_input}.
       - acronym: <string>
       - meaning: <string>
 
+Return this in JSON format, and do not include any additional text or formatting, stick strictly to JSON.

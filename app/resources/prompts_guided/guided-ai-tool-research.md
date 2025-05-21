@@ -97,4 +97,4 @@ I want you to analyze the company or product:
 
     - reception: <string>
 
-
+Return this in JSON format, and do not include any additional text or formatting, stick strictly to JSON.
