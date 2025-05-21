@@ -29,7 +29,38 @@ export const initialiseMenuCategoriesForSidebar = (isThoughtworksInstance) => {
       key: "client-research",
       label: "Client research",
       icon: <RiGlobalLine style={{ fontSize: "large" }} />,
-      children: [],
+      children: [
+        {
+          key: "company-research",
+          label: <Link href="/company-research">Company overview</Link>,
+          icon: (
+            <RiGlobalLine
+              style={{
+                marginTop: "-2px",
+                fontSize: "0.8rem",
+                verticalAlign: "middle",
+              }}
+            />
+          ),
+        },
+        {
+          key: "company-research-ai-tool",
+          label: (
+            <Link href="/company-research?config=ai-tool">
+              Company overview: AI tools
+            </Link>
+          ),
+          icon: (
+            <RiGlobalLine
+              style={{
+                marginTop: "-2px",
+                fontSize: "0.8rem",
+                verticalAlign: "middle",
+              }}
+            />
+          ),
+        },
+      ],
     };
     categories.deliveryManagement = {
       key: "deliveryManagement",
