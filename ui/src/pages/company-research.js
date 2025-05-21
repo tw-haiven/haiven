@@ -121,9 +121,14 @@ export default function CompanyResearchPage() {
         onMessageHandle: (data) => {
           try {
             if (data.data) {
-              jsonResponse += data.data;
+              if (data.data.startsWith("```")) {
+                data.data = data.data.substring(3);
+              }
+              if (data.data.startsWith("json")) {
+                data.data = data.data.substring(4);
+              }
 
-              // Clean up the response if needed
+              jsonResponse += data.data;
               jsonResponse = jsonResponse.trim();
 
               // Try to parse the JSON even if it's incomplete
@@ -131,6 +136,18 @@ export default function CompanyResearchPage() {
                 const parsedData = parse(jsonResponse);
                 if (parsedData && typeof parsedData === "object") {
                   setCompanyData(parsedData);
+                } else {
+                  // not JSON
+                  console.log("not JSON");
+                  abortLoad();
+                  if (ms.includes("Error code:")) {
+                    toast.error(ms);
+                  } else {
+                    toast.warning(
+                      "Model failed to respond in a structured way, please rewrite your message and try again",
+                    );
+                  }
+                  console.log("response is not parseable JSON");
                 }
               } catch (error) {
                 // This is expected for partial JSON, no need to log every attempt
