@@ -372,7 +372,7 @@ const CardsChat = ({
           <div className="second-step-section">
             {isCompanyResearchEvolutionPage &&
               !followUpResults[followUp.identifier] && (
-                <Input
+                <Input.TextArea
                   placeholder="Provide an overview of the account's product, to identify market competitors, and leverage generative AI to suggest impactful client-ready enhancements."
                   onChange={(e, v) => {
                     setFollowUpText(e.target.value);
@@ -404,7 +404,7 @@ const CardsChat = ({
                     content={followUpResults[followUp.identifier]}
                   />
                 </div>
-                <Input
+                <Input.TextArea
                   placeholder="Please enter follow up query"
                   onChange={(e, v) => {
                     setFollowUpText(e.target.value);
