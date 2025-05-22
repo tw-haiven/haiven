@@ -527,7 +527,11 @@ class ApiBasics(HaivenBaseApi):
 
                     HaivenLogger.get().analytics(
                         "Download prompt",
-                        {"user_id": user_id, "prompt_id": prompt_id, "category": None},
+                        {
+                            "user_id": user_id,
+                            "prompt_id": prompt_id,
+                            "category": None,
+                        },
                     )
 
                     return JSONResponse([prompt])
@@ -564,7 +568,13 @@ class ApiBasics(HaivenBaseApi):
                     return JSONResponse(prompts)
             except Exception as error:
                 HaivenLogger.get().error(
-                    str(error), extra={"ERROR": "Downloading prompts failed"}
+                    str(error),
+                    extra={
+                        "ERROR": "Downloading prompts failed",
+                        "user_id": user_id,
+                        "prompt_id": prompt_id,
+                        "category": category,
+                    },
                 )
                 raise HTTPException(
                     status_code=500, detail=f"Server error: {str(error)}"
