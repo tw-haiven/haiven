@@ -653,7 +653,9 @@ class TestApi(unittest.TestCase):
         assert response_data["help_sample_input"] == "Test sample input"
         assert len(response_data["follow_ups"]) == 0
 
-    def test_get_prompt_with_follow_ups_should_return_404_if_prompt_not_found(self):
+    def test_get_prompt_with_follow_ups_should_throw_exception_if_prompt_not_found(
+        self,
+    ):
         mock_prompts_chat = MagicMock()
         mock_prompts_chat.get_a_prompt_with_follow_ups.return_value = None
 
@@ -673,7 +675,8 @@ class TestApi(unittest.TestCase):
         response = self.client.get("/api/prompts-content?prompt_id=non-existent-id")
 
         # Assert the response
-        assert response.status_code == 404
+        assert response.status_code == 500
+        assert b"Prompt not found" in response.content
         assert mock_prompts_chat.get_a_prompt_with_follow_ups.call_count == 1
         mock_prompts_chat.get_a_prompt_with_follow_ups.assert_called_with(
             "non-existent-id", includeContent=True

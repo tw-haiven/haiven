@@ -523,7 +523,7 @@ class ApiBasics(HaivenBaseApi):
                     )
 
                     if not prompt:
-                        raise HTTPException(status_code=404, detail="Prompt not found")
+                        raise Exception("Prompt not found")
 
                     HaivenLogger.get().analytics(
                         "Download prompt",
