@@ -35,6 +35,10 @@ describe("toReadableText", () => {
   it("handles mixed case_and_camel", () => {
     expect(toReadableText("mixed_case_andCamel")).toBe("Mixed case and Camel");
   });
+
+  it("converts dash-separated text", () => {
+    expect(toReadableText("client-research")).toBe("Client Research");
+  });
 });
 
 describe("scenarioToText", () => {

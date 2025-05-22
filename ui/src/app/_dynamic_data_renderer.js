@@ -16,8 +16,9 @@ const EXCLUDE = [
 // Helper function to convert camelCase or snake_case to readable text
 export const toReadableText = (key) => {
   return key
-    .replace(/_/g, " ")
+    .replace(/[_-]/g, " ")
     .replace(/([A-Z])/g, " $1")
+    .replace(/\s+/g, " ")
     .replace(/^./, (str) => str.toUpperCase())
     .trim();
 };
