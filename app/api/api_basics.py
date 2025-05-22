@@ -562,10 +562,10 @@ class ApiBasics(HaivenBaseApi):
                         )
 
                     return JSONResponse(prompts)
-            except HTTPException:
-                raise
             except Exception as error:
-                HaivenLogger.get().error(str(error))
+                HaivenLogger.get().error(
+                    str(error), extra={"ERROR": "Downloading prompts failed"}
+                )
                 raise HTTPException(
                     status_code=500, detail=f"Server error: {str(error)}"
                 )
