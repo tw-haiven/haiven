@@ -9,6 +9,8 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '.cursor/**'
   pull_request:
   workflow_dispatch:
   schedule:
