@@ -9,9 +9,6 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install yarn (should already be included in node image, but ensure it's available)
-RUN npm install -g yarn
-
 # Install Poetry
 RUN pip3 install poetry
 
