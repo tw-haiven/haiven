@@ -28,7 +28,7 @@ typing-extensions = "^4.13.2"
 typing-inspect = "^0.9.0"
 pytest-cov = "^6.1.1"
 toml = "^0.10.2"
-pydantic = "^2.11.3"
+pydantic = "^2.11.5"
 
 [build-system]
 requires = ["poetry-core"]
