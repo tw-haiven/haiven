@@ -218,7 +218,7 @@ def test_get_prompts_with_follow_ups_invalid_prompt_id():
     assert uuid_2_entry["follow_ups"][0]["identifier"] == "uuid-3"
 
 
-def test_get_prompts_with_follow_ups_with_categor_and_includeContent():
+def test_get_prompts_with_follow_ups_with_categor_and_download_prompt():
     knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
     knowledge_manager = create_knowledge_manager()
 
@@ -226,9 +226,9 @@ def test_get_prompts_with_follow_ups_with_categor_and_includeContent():
         "chat", knowledge_base, knowledge_manager, root_dir=TEST_KNOWLEDGE_PACK_PATH
     )
 
-    # Get prompts with category "architecture" and includeContent=True
+    # Get prompts with category "architecture" and download_prompt=True
     prompts_with_follow_ups = prompt_list.get_prompts_with_follow_ups(
-        includeContent=True, category="architecture"
+        download_prompt=True, category="architecture"
     )
 
     # Verify only prompts with "architecture" category are returned
@@ -246,3 +246,31 @@ def test_get_prompts_with_follow_ups_with_categor_and_includeContent():
         prompt for prompt in prompts_with_follow_ups if prompt["identifier"] == "uuid-5"
     ][0]
     assert uuid_5_entry["content"] == "Content  {context}"
+
+
+def test_prompt_content_for_download():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+    knowledge_manager = create_knowledge_manager()
+
+    prompt_list = PromptList(
+        "chat", knowledge_base, knowledge_manager, root_dir=TEST_KNOWLEDGE_PACK_PATH
+    )
+
+    # Create a mock prompt with type "cards"
+    mock_cards_prompt = MagicMock()
+    mock_cards_prompt.content = "Test cards content"
+    mock_cards_prompt.metadata = {"type": "cards"}
+
+    # Create a mock prompt with type "chat"
+    mock_chat_prompt = MagicMock()
+    mock_chat_prompt.content = "Test chat content"
+    mock_chat_prompt.metadata = {"type": "chat"}
+
+    # Test cards prompt content formatting - verify the exact full string
+    expected_cards_content = "Test cards content\n\n##OUTPUT INSTRUCTIONS: \n\nYou will respond in Markdown format. If it is an array, respond in tabular format."
+    cards_content = prompt_list.prompt_content_for_download(mock_cards_prompt)
+    assert cards_content == expected_cards_content
+
+    # Test chat prompt content (should be unchanged)
+    chat_content = prompt_list.prompt_content_for_download(mock_chat_prompt)
+    assert chat_content == "Test chat content"

@@ -95,7 +95,14 @@ class PromptList:
         prompt_text = prompt_data.content
 
         variables = ["user_input"] + self.extra_variables
-
+        if prompt_data.metadata.get("type") == "cards":
+            prompt_text = (
+                prompt_text
+                + "\n\n##OUTPUT INSTRUCTIONS: \n\n"
+                + "Stricty, You will respond ONLY the above mentioned JSON format without any surrounding data or text or quotes. \n\n"
+                + "Strictly don't prefix or suffix the JSON format with explanation, comments, or Markdown formatting (such as triple backticks) or any text or anything.\n\n"
+                + 'Do not wrap the output JSON inside another object or field like "data" or "result".'
+            )
         return PromptTemplate(input_variables=variables, template=prompt_text)
 
     def create_and_render_template(
@@ -179,7 +186,7 @@ class PromptList:
                         )
         return follow_ups
 
-    def get_prompts_with_follow_ups(self, includeContent=False, category=None):
+    def get_prompts_with_follow_ups(self, download_prompt=False, category=None):
         prompts_with_follow_ups = []
         prompts = self.prompts
 
@@ -191,17 +198,27 @@ class PromptList:
             ]
 
         for prompt in prompts:
-            prompt_data = self.attach_follow_ups(prompt, includeContent)
+            prompt_data = self.attach_follow_ups(prompt, download_prompt)
             prompts_with_follow_ups.append(prompt_data)
         return prompts_with_follow_ups
 
-    def get_a_prompt_with_follow_ups(self, prompt_id, includeContent=False):
+    def get_a_prompt_with_follow_ups(self, prompt_id, download_prompt=False):
         prompt = self.get(prompt_id)
-        prompt_with_follow_ups = self.attach_follow_ups(prompt, includeContent)
+        prompt_with_follow_ups = self.attach_follow_ups(prompt, download_prompt)
 
         return prompt_with_follow_ups
 
-    def attach_follow_ups(self, prompt, includeContent=False):
+    def prompt_content_for_download(self, prompt):
+        if prompt.metadata.get("type") == "cards":
+            return (
+                prompt.content
+                + "\n\n##OUTPUT INSTRUCTIONS: \n\n"
+                + "You will respond in Markdown format. If it is an array, respond in tabular format."
+            )
+        else:
+            return prompt.content
+
+    def attach_follow_ups(self, prompt, download_prompt=False):
         follow_ups = self.get_follow_ups(prompt.metadata.get("identifier"))
         prompt_data = {
             "identifier": prompt.metadata.get("identifier"),
@@ -218,7 +235,9 @@ class PromptList:
             "filename": prompt.metadata.get("filename"),
             "grounded": prompt.metadata.get("grounded", False),
             **(
-                {"content": prompt.content} if includeContent and prompt.content else {}
+                {"content": self.prompt_content_for_download(prompt)}
+                if download_prompt and prompt.content
+                else {}
             ),
         }
 

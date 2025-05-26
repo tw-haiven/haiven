@@ -29,7 +29,7 @@ const promptToDownload = (promptData) => {
 
 export const fetchPromptContent = async (prompt) => {
   const response = await fetch(
-    `/api/prompts-content?prompt_id=${prompt.identifier}`,
+    `/api/download-prompt?prompt_id=${prompt.identifier}`,
     {
       method: "GET",
       credentials: "include",
@@ -49,7 +49,7 @@ export const fetchPromptContent = async (prompt) => {
 };
 
 export const fetchAllPromptsContents = async (category = "") => {
-  const response = await fetch(`/api/prompts-content?category=${category}`, {
+  const response = await fetch(`/api/download-prompt?category=${category}`, {
     method: "GET",
     credentials: "include",
     headers: {

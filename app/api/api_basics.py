@@ -509,9 +509,9 @@ class ApiBasics(HaivenBaseApi):
                     status_code=500, detail=f"Server error: {str(error)}"
                 )
 
-        @app.get("/api/prompts-content")
+        @app.get("/api/download-prompt")
         @logger.catch(reraise=True)
-        def get_prompts_with_content(
+        def download_prompt(
             request: Request, prompt_id: str = None, category: str = None
         ):
             user_id = self.get_hashed_user_id(request)
@@ -519,7 +519,7 @@ class ApiBasics(HaivenBaseApi):
             try:
                 if prompt_id:
                     prompt = prompts_chat.get_a_prompt_with_follow_ups(
-                        prompt_id, includeContent=True
+                        prompt_id, download_prompt=True
                     )
 
                     if not prompt:
@@ -537,7 +537,7 @@ class ApiBasics(HaivenBaseApi):
                     return JSONResponse([prompt])
                 elif category:
                     prompts = prompts_chat.get_prompts_with_follow_ups(
-                        includeContent=True, category=category
+                        download_prompt=True, category=category
                     )
                     for prompt in prompts:
                         HaivenLogger.get().analytics(
@@ -553,7 +553,7 @@ class ApiBasics(HaivenBaseApi):
                 else:
                     # Return all prompts if no prompt_id and no category provided
                     prompts = prompts_chat.get_prompts_with_follow_ups(
-                        includeContent=True
+                        download_prompt=True
                     )
                     for prompt in prompts:
                         HaivenLogger.get().analytics(

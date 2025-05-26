@@ -130,7 +130,7 @@ describe("promptDownloadUtils", () => {
       const result = await fetchPromptContent(mockPrompt);
 
       expect(fetch).toHaveBeenCalledWith(
-        "/api/prompts-content?prompt_id=test-id",
+        "/api/download-prompt?prompt_id=test-id",
         {
           method: "GET",
           credentials: "include",
@@ -191,7 +191,7 @@ describe("promptDownloadUtils", () => {
 
       const result = await fetchAllPromptsContents();
 
-      expect(fetch).toHaveBeenCalledWith("/api/prompts-content?category=", {
+      expect(fetch).toHaveBeenCalledWith("/api/download-prompt?category=", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -236,7 +236,7 @@ describe("promptDownloadUtils", () => {
       const result = await fetchAllPromptsContents("architecture");
 
       expect(fetch).toHaveBeenCalledWith(
-        "/api/prompts-content?category=architecture",
+        "/api/download-prompt?category=architecture",
         {
           method: "GET",
           credentials: "include",

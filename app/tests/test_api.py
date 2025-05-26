@@ -633,11 +633,11 @@ class TestApi(unittest.TestCase):
             inspirations_manager=MagicMock(),
         )
 
-        response = self.client.get("/api/prompts-content?prompt_id=test-prompt-id")
+        response = self.client.get("/api/download-prompt?prompt_id=test-prompt-id")
 
         assert response.status_code == 200
         mock_prompts_chat.get_a_prompt_with_follow_ups.assert_called_with(
-            "test-prompt-id", includeContent=True
+            "test-prompt-id", download_prompt=True
         )
 
         response_data = json.loads(response.content)[0]
@@ -672,14 +672,14 @@ class TestApi(unittest.TestCase):
             inspirations_manager=MagicMock(),
         )
 
-        response = self.client.get("/api/prompts-content?prompt_id=non-existent-id")
+        response = self.client.get("/api/download-prompt?prompt_id=non-existent-id")
 
         # Assert the response
         assert response.status_code == 500
         assert b"Prompt not found" in response.content
         assert mock_prompts_chat.get_a_prompt_with_follow_ups.call_count == 1
         mock_prompts_chat.get_a_prompt_with_follow_ups.assert_called_with(
-            "non-existent-id", includeContent=True
+            "non-existent-id", download_prompt=True
         )
 
     def test_get_prompts_with_category(self):
@@ -720,7 +720,7 @@ class TestApi(unittest.TestCase):
             )
 
             # Test the endpoint with category parameter
-            response = self.client.get("/api/prompts-content?category=architecture")
+            response = self.client.get("/api/download-prompt?category=architecture")
 
             # Assert response
             self.assertEqual(response.status_code, 200)
@@ -728,7 +728,7 @@ class TestApi(unittest.TestCase):
 
             # Verify the method was called with the right parameters
             mock_prompts.get_prompts_with_follow_ups.assert_called_with(
-                includeContent=True, category="architecture"
+                download_prompt=True, category="architecture"
             )
 
             # Check that analytics was logged for each prompt
@@ -781,7 +781,7 @@ class TestApi(unittest.TestCase):
             )
 
             # Test the endpoint with category parameter
-            response = self.client.get("/api/prompts-content")
+            response = self.client.get("/api/download-prompt")
 
             # Assert response
             self.assertEqual(response.status_code, 200)
@@ -789,7 +789,7 @@ class TestApi(unittest.TestCase):
 
             # Verify the method was called with the right parameters
             mock_prompts.get_prompts_with_follow_ups.assert_called_with(
-                includeContent=True,
+                download_prompt=True,
             )
 
             # Check that analytics was logged for each prompt
