@@ -152,13 +152,3 @@ def create_cli_readme(
     new_readme_content = f"{readme_content[: start_index]}{docs_content}"
     with open(readme_path, "w") as f:
         f.write(new_readme_content)
-
-
-def ui_test():
-    command = """
-    cd ui && \
-    yarn run test:run
-    """
-    result = subprocess.run(command, shell=True)
-    if result.returncode != 0:
-        raise Exception("UI tests failed")
