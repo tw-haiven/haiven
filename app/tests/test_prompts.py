@@ -274,3 +274,66 @@ def test_prompt_content_for_download():
     # Test chat prompt content (should be unchanged)
     chat_content = prompt_list.prompt_content_for_download(mock_chat_prompt)
     assert chat_content == "Test chat content"
+
+
+def test_attach_follow_ups_for_chat_prompt():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+    knowledge_manager = create_knowledge_manager()
+
+    prompt_list = PromptList(
+        "chat", knowledge_base, knowledge_manager, root_dir=TEST_KNOWLEDGE_PACK_PATH
+    )
+
+    # Get a prompt known to have follow-ups
+    prompt = prompt_list.get("uuid-1")
+
+    # Test default behavior (download_prompt=False)
+    result = prompt_list.attach_follow_ups(prompt)
+
+    # Verify basic metadata is included
+    assert result["identifier"] == "uuid-1"
+    assert result["title"] == "Test1"
+    assert "content" not in result  # Content should not be included by default
+
+    # Verify follow-ups are attached
+    assert len(result["follow_ups"]) == 2
+    assert result["follow_ups"][0]["identifier"] == "uuid-2"
+    assert result["follow_ups"][1]["identifier"] == "uuid-3"
+
+    # Test with download_prompt=True
+    result_with_download = prompt_list.attach_follow_ups(prompt, download_prompt=True)
+
+    # Content should now be included
+    assert "content" in result_with_download
+    assert result_with_download["content"] == prompt.content
+
+
+def test_attach_follow_ups_for_cards_prompt():
+    knowledge_base = create_knowledge_base(TEST_KNOWLEDGE_PACK_PATH)
+    knowledge_manager = create_knowledge_manager()
+
+    prompt_list = PromptList(
+        "chat", knowledge_base, knowledge_manager, root_dir=TEST_KNOWLEDGE_PACK_PATH
+    )
+
+    # Test with a cards-type prompt and download_prompt=True
+    cards_prompt = MagicMock()
+    cards_prompt.content = "Test cards content"
+    cards_prompt.metadata = {
+        "identifier": "test-cards",
+        "type": "cards",
+        "title": "Test Cards",
+        "categories": ["test"],
+        "help_prompt_description": "Test description",
+        "grounded": False,
+    }
+
+    # Mock the get_follow_ups method to return empty list for this test prompt
+    prompt_list.get_follow_ups = MagicMock(return_value=[])
+
+    result_cards = prompt_list.attach_follow_ups(cards_prompt, download_prompt=True)
+
+    # Verify content is formatted for cards-type with exact string comparison
+    expected_content = "Test cards content\n\n##OUTPUT INSTRUCTIONS: \n\nYou will respond in Markdown format. If it is an array, respond in tabular format."
+    assert "content" in result_cards
+    assert result_cards["content"] == expected_content
