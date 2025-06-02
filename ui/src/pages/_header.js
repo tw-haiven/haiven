@@ -45,19 +45,17 @@ export default function Header({ featureToggleConfig }) {
             }}
           >
             <div>
-              {featureToggleConfig["submit_prompt"] && (
-                <span>
-                  <Link
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault(); // prevents navigation
-                      openForm();
-                    }}
-                  >
-                    Submit Prompt
-                  </Link>
-                </span>
-              )}
+              <span>
+                <Link
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault(); // prevents navigation
+                    openForm();
+                  }}
+                >
+                  Submit Prompt
+                </Link>
+              </span>
 
               <span type="link">
                 <Link href="/about">About</Link>
