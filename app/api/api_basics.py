@@ -530,7 +530,7 @@ class ApiBasics(HaivenBaseApi):
                         {
                             "user_id": user_id,
                             "prompt_id": prompt_id,
-                            "category": None,
+                            "category": "Individual Prompt",
                         },
                     )
 
