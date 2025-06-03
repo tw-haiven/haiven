@@ -6,6 +6,8 @@ if [ "$CI" = "true" ]; then
   exit 0
 else
   echo "Running UI tests locally..."
-  # Run the actual UI tests here
-  poetry run ui-test
+  # Navigate to the ui directory and run the UI tests
+  cd ui
+  echo "Running tests in $(pwd)"
+  yarn run test:run
 fi
