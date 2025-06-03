@@ -73,15 +73,12 @@ const KnowledgePackPage = ({
     buildDocumentsOverview();
   }, [contexts, documents]);
 
-  const downloadPrompts = featureToggleConfig[FEATURES.DOWNLOAD_PROMPTS] ===
-    true && <DownloadAllPrompts prompts={prompts} />;
-
   return (
     <div id="canvas">
       <div className={"knowledge-overview"}>
         <div className="knowledge-overview-header">
           <h1>Your knowledge</h1>
-          {downloadPrompts}
+          <DownloadAllPrompts prompts={prompts} />
         </div>
         <p>
           This page shows an overview of the knowledge you currently have in

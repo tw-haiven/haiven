@@ -564,9 +564,6 @@ const CardsChat = ({
     );
   };
 
-  const downloadPrompt = featureToggleConfig[FEATURES.DOWNLOAD_PROMPTS] ===
-    true && <DownloadPrompt prompt={selectedPromptConfiguration} />;
-
   const title = (
     <div className="title">
       <h3>
@@ -576,7 +573,7 @@ const CardsChat = ({
           text={selectedPromptConfiguration.help_prompt_description}
         />
       </h3>
-      {downloadPrompt}
+      <DownloadPrompt prompt={selectedPromptConfiguration} />
     </div>
   );
 

@@ -283,10 +283,7 @@ const PromptChat = ({
           testid="page-title-tooltip"
         />
       </h3>
-      {selectedPrompt &&
-        featureToggleConfig[FEATURES.DOWNLOAD_PROMPTS] === true && (
-          <DownloadPrompt prompt={selectedPrompt} />
-        )}
+      {selectedPrompt && <DownloadPrompt prompt={selectedPrompt} />}
     </div>
   );
 
