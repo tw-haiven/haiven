@@ -17,6 +17,7 @@ import { MdLightbulb } from "react-icons/md";
 import ReactMarkdown from "react-markdown";
 import { initializeLocalStorage } from "../app/_local_store";
 import { FEATURES, getFeatureTogglesAsJson } from "../app/feature_toggle";
+import { toReadableText } from "../app/_dynamic_data_renderer";
 
 export default function ChatDashboard() {
   const [prompts, setPrompts] = useState([]);
@@ -229,7 +230,7 @@ export default function ChatDashboard() {
                             color="gray"
                             className={"dashboard-filter-category " + tag}
                           >
-                            {tag}
+                            {toReadableText(tag)}
                           </Tag.CheckableTag>
                         ))}
                       </p>
@@ -253,7 +254,7 @@ export default function ChatDashboard() {
                                       categoryColors["other"]
                                     }
                                   >
-                                    {category}
+                                    {toReadableText(category)}
                                   </Tag>
                                 ))}
                               >
