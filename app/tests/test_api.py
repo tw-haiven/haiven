@@ -40,6 +40,7 @@ class TestApi(unittest.TestCase):
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
             inspirations_manager=MagicMock(),
+            api_key_manager=MagicMock(),
         )
 
         response = self.client.get("/api/prompts")
@@ -79,6 +80,7 @@ class TestApi(unittest.TestCase):
             config_service=mock_config_service,
             disclaimer_and_guidelines=MagicMock(),
             inspirations_manager=MagicMock(),
+            api_key_manager=MagicMock(),
         )
 
         response = self.client.get("/api/models")
@@ -140,6 +142,7 @@ class TestApi(unittest.TestCase):
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
             inspirations_manager=MagicMock(),
+            api_key_manager=MagicMock(),
         )
 
         response = self.client.get("/api/knowledge/documents")
@@ -186,6 +189,7 @@ class TestApi(unittest.TestCase):
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
             inspirations_manager=MagicMock(),
+            api_key_manager=MagicMock(),
         )
 
         response = self.client.post(
@@ -234,6 +238,7 @@ class TestApi(unittest.TestCase):
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
             inspirations_manager=MagicMock(),
+            api_key_manager=MagicMock(),
         )
 
         # Make the request to the endpoint
@@ -513,6 +518,7 @@ class TestApi(unittest.TestCase):
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
             inspirations_manager=mock_inspirations_manager,
+            api_key_manager=MagicMock(),
         )
 
         response = self.client.get("/api/inspirations")
@@ -552,6 +558,7 @@ class TestApi(unittest.TestCase):
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
             inspirations_manager=mock_inspirations_manager,
+            api_key_manager=MagicMock(),
         )
 
         response = self.client.get("/api/inspirations/test-id")
@@ -579,6 +586,7 @@ class TestApi(unittest.TestCase):
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
             inspirations_manager=mock_inspirations_manager,
+            api_key_manager=MagicMock(),
         )
 
         response = self.client.get("/api/inspirations/non-existent")
@@ -631,6 +639,7 @@ class TestApi(unittest.TestCase):
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
             inspirations_manager=MagicMock(),
+            api_key_manager=MagicMock(),
         )
 
         response = self.client.get("/api/download-prompt?prompt_id=test-prompt-id")
@@ -670,6 +679,7 @@ class TestApi(unittest.TestCase):
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
             inspirations_manager=MagicMock(),
+            api_key_manager=MagicMock(),
         )
 
         response = self.client.get("/api/download-prompt?prompt_id=non-existent-id")
@@ -717,6 +727,7 @@ class TestApi(unittest.TestCase):
                 config_service=MagicMock(),
                 disclaimer_and_guidelines=MagicMock(),
                 inspirations_manager=MagicMock(),
+                api_key_manager=MagicMock(),
             )
 
             # Test the endpoint with category parameter
@@ -778,6 +789,7 @@ class TestApi(unittest.TestCase):
                 config_service=MagicMock(),
                 disclaimer_and_guidelines=MagicMock(),
                 inspirations_manager=MagicMock(),
+                api_key_manager=MagicMock(),
             )
 
             # Test the endpoint with category parameter
@@ -844,6 +856,7 @@ class TestApi(unittest.TestCase):
             config_service=MagicMock(),
             disclaimer_and_guidelines=MagicMock(),
             inspirations_manager=MagicMock(),
+            api_key_manager=MagicMock(),
         )
 
         # Make the request
