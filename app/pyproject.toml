@@ -7,6 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "~3.11"
+google-cloud-firestore = "^2.21.0" # Use the latest stable version
 Authlib = "^1.5.2"
 boto3 = "^1.38.4"
 faiss-cpu = "^1.11.0"
@@ -34,6 +35,8 @@ pillow = "^11.2.1"
 python-multipart = "^0.0.20"
 litellm = "^1.67.4.post1"
 tenacity = "^9.1.2"
+mcp = "^1.9.4"
+httpx = "^0.28.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"

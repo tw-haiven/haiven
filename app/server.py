@@ -133,6 +133,9 @@ class Server:
 
         async def check_authentication(request: Request, call_next):
             allowlist = [
+                "/api/prompt-mcp",
+                "/api/temporary-link",
+                "/api/generate-api-key",
                 "/",
                 "/auth",
                 "/login",
