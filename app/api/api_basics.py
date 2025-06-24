@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import io
 from typing import List
-from fastapi import FastAPI, HTTPException, Request, Security, Query
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi import File, Form, UploadFile
 from PIL import Image
@@ -21,11 +21,6 @@ from logger import HaivenLogger
 from loguru import logger
 import hashlib
 import json
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from api_key_manager import ApiKeyManager
-
-
-bearer_scheme = HTTPBearer()
 
 
 class PromptRequestBody(BaseModel):
@@ -217,11 +212,9 @@ class ApiBasics(HaivenBaseApi):
         config_service: ConfigService,
         disclaimer_and_guidelines: DisclaimerAndGuidelinesService,
         inspirations_manager: InspirationsManager,
-        api_key_manager: ApiKeyManager,
     ):
         super().__init__(app, chat_manager, model_config, prompts_guided)
         self.inspirations_manager = inspirations_manager
-        self.api_key_manager = api_key_manager
 
         @app.get("/api/models")
         @logger.catch(reraise=True)
@@ -585,75 +578,4 @@ class ApiBasics(HaivenBaseApi):
                 )
                 raise HTTPException(
                     status_code=500, detail=f"Server error: {str(error)}"
-                )
-
-        @app.get("/api/temporary-link")
-        @logger.catch(reraise=True)
-        def get_temporary_link(request: Request):
-            try:
-                temp_link = self.api_key_manager.create_temporary_link()
-                return JSONResponse({"temporary_link": temp_link})
-            except Exception as error:
-                HaivenLogger.get().error(str(error))
-                raise HTTPException(
-                    status_code=500, detail=f"Server error: {str(error)}"
-                )
-
-        @app.get("/api/generate-api-key")
-        @logger.catch(reraise=True)
-        def generate_user_api_key(request: Request, token: str = Query(...)):
-            try:
-                user_id = self.get_hashed_user_id(request)
-                api_key = self.api_key_manager.get_api_key_from_temp_link(
-                    token, user_id
-                )
-                if not api_key:
-                    raise HTTPException(
-                        status_code=400, detail="Invalid or expired temporary link"
-                    )
-                return JSONResponse({"api_key": api_key})
-            except HTTPException:
-                raise
-            except Exception as error:
-                HaivenLogger.get().error(str(error))
-                raise HTTPException(
-                    status_code=500, detail=f"Server error: {str(error)}"
-                )
-
-        @app.get("/api/prompt-mcp")
-        @logger.catch(reraise=True)
-        def get_mcp_prompt(
-            request: Request,
-            credentials: HTTPAuthorizationCredentials = Security(bearer_scheme),
-            search_key: str = Query(None),
-        ):
-            if not self.api_key_manager.validate_user_api_key(credentials.credentials):
-                raise HTTPException(status_code=401, detail="Unauthorized")
-
-            if not search_key:
-                raise HTTPException(
-                    status_code=400, detail="search_key query parameter is required"
-                )
-
-            found_prompt = None
-            search_key_lower = search_key.lower()
-
-            for prompt in prompts_chat.get_prompts_with_follow_ups(
-                download_prompt=True
-            ):
-                title = prompt.get("title", "").lower()
-                description = prompt.get("help_prompt_description", "").lower()
-
-                if search_key_lower in title or search_key_lower in description:
-                    found_prompt = prompt
-                    break
-
-            if found_prompt:
-                # Render the prompt content, assuming no user input is needed for direct prompt retrieval
-                # For a simple text return, just use prompt.content
-                return JSONResponse({"prompt": found_prompt.get("content", "")})
-            else:
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"No prompt found for search key: {search_key}",
                 )

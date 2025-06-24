@@ -15,8 +15,6 @@ from prompts.prompts_factory import PromptsFactory
 from config_service import ConfigService
 from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
 from prompts.inspirations import InspirationsManager
-from api_key_manager import ApiKeyManager
-import os
 
 
 class BobaApi:
@@ -33,7 +31,6 @@ class BobaApi:
         self.chat_manager = chat_manager
         self.config_service = config_service
         self.inspirations_manager = InspirationsManager()
-        self.api_key_manager = ApiKeyManager(project_id=os.getenv("GCP_PROJECT"))
 
         self.prompts_chat = prompts_factory.create_chat_prompt_list(
             self.knowledge_manager.knowledge_base_markdown, self.knowledge_manager
@@ -62,7 +59,6 @@ class BobaApi:
             self.config_service,
             self.disclaimer_and_guidelines,
             self.inspirations_manager,
-            self.api_key_manager,
         )
         ApiMultiStep(
             app,
