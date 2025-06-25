@@ -27,7 +27,7 @@ export default function App({
   const [prompts, setPrompts] = useState([]);
   const [contexts, setContexts] = useState([]);
   const [documents, setDocuments] = useState([]);
-  const [models, setModels] = useState([]);
+  const [models, setModels] = useState({});
   const [featureToggleConfig, setFeatureToggleConfig] = useState({});
 
   const colorlightgray = "#edf1f3";
@@ -65,6 +65,56 @@ export default function App({
     };
     fetchToggles();
   }, []);
+
+  // Use the getLayout function from the page component if it exists
+  const getLayout =
+    Component.getLayout ||
+    ((page) => (
+      <Layout
+        style={{ height: "100vh", display: "flex", flexDirection: "column" }}
+      >
+        <Layout.Header
+          style={{
+            position: "fixed",
+            height: "65px",
+            padding: 0,
+            top: 0,
+            zIndex: 20,
+            width: "100%",
+          }}
+        >
+          <Header featureToggleConfig={featureToggleConfig} />
+        </Layout.Header>
+        <Layout style={{ marginTop: "64px", flex: 1, overflow: "hidden" }}>
+          <Layout.Sider
+            theme="light"
+            collapsible
+            collapsed={collapsed}
+            onCollapse={(value) => setCollapsed(value)}
+            width={250}
+          >
+            <Sidebar
+              selectedKey={selectedKey}
+              collapse={true}
+              prompts={prompts}
+              featureToggleConfig={featureToggleConfig}
+            />
+          </Layout.Sider>
+          <Layout.Content style={{ overflow: "auto", background: "white" }}>
+            {page}
+          </Layout.Content>
+        </Layout>
+        <Tooltip title="Share feedback">
+          <Button
+            className="feedback"
+            type="link"
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdo6QhkuCMfWqjFAXnYabW7BBGn1wLxk9dfIsmSPMg1Hcurng/viewform"
+            target="_blank"
+            icon={<RiFeedbackLine />}
+          ></Button>
+        </Tooltip>
+      </Layout>
+    ));
 
   return (
     <>
@@ -136,57 +186,16 @@ export default function App({
             alt="haiven"
           />
         </div>
-        <Layout
-          style={{ height: "100vh", display: "flex", flexDirection: "column" }}
-        >
-          <Layout.Header
-            style={{
-              position: "fixed",
-              height: "65px",
-              padding: 0,
-              top: 0,
-              zIndex: 20,
-              width: "100%",
-            }}
-          >
-            <Header featureToggleConfig={featureToggleConfig} />
-          </Layout.Header>
-          <Layout style={{ marginTop: "64px", flex: 1, overflow: "hidden" }}>
-            <Layout.Sider
-              theme="light"
-              collapsible
-              collapsed={collapsed}
-              onCollapse={(value) => setCollapsed(value)}
-              width={250}
-            >
-              <Sidebar
-                selectedKey={selectedKey}
-                collapse={true}
-                prompts={prompts}
-                featureToggleConfig={featureToggleConfig}
-              />
-            </Layout.Sider>
-            <Layout.Content style={{ overflow: "auto", background: "white" }}>
-              <Component
-                {...pageProps}
-                prompts={prompts}
-                contexts={contexts}
-                documents={documents}
-                models={models}
-                featureToggleConfig={featureToggleConfig}
-              />
-            </Layout.Content>
-          </Layout>
-          <Tooltip title="Share feedback">
-            <Button
-              className="feedback"
-              type="link"
-              href="https://docs.google.com/forms/d/e/1FAIpQLSdo6QhkuCMfWqjFAXnYabW7BBGn1wLxk9dfIsmSPMg1Hcurng/viewform"
-              target="_blank"
-              icon={<RiFeedbackLine />}
-            ></Button>
-          </Tooltip>
-        </Layout>
+        {getLayout(
+          <Component
+            {...pageProps}
+            prompts={prompts}
+            contexts={contexts}
+            documents={documents}
+            models={models}
+            featureToggleConfig={featureToggleConfig}
+          />,
+        )}
       </ConfigProvider>
     </>
   );

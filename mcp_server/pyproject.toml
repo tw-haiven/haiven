@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "haiven-mcp-server"
+version = "0.1.0"
+description = "Haiven MCP Server for Cloud Run"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+httpx = "^0.27.0"
+fastmcp = "^0.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

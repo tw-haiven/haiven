@@ -58,6 +58,10 @@ export default function Header({ featureToggleConfig }) {
               </span>
 
               <span type="link">
+                <Link href="/api-access">API Access</Link>
+              </span>
+
+              <span type="link">
                 <Link href="/about">About</Link>
               </span>
               <span type="link">

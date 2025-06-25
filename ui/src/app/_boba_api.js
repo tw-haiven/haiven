@@ -133,3 +133,54 @@ export const getInspirationById = async (inspirationId, onSuccess) => {
     });
   });
 };
+
+export const getTemporaryLink = async (onSuccess, onError) => {
+  fetch("/api/temporary-link", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to generate temporary link");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      onSuccess(data);
+    })
+    .catch((error) => {
+      if (onError) {
+        onError(error);
+      }
+    });
+};
+
+export const generateApiKey = async (token, onSuccess, onError) => {
+  fetch(`/api/generate-api-key?token=${encodeURIComponent(token)}`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        if (response.status === 400) {
+          throw new Error("Invalid or expired temporary link");
+        }
+        throw new Error("Failed to generate API key");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      onSuccess(data);
+    })
+    .catch((error) => {
+      if (onError) {
+        onError(error);
+      }
+    });
+};

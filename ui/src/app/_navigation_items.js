@@ -176,5 +176,14 @@ export const staticFeaturesForDashboard = () => {
       type: "static",
       link: "/scenarios",
     },
+    {
+      identifier: "boba-api-access",
+      title: "API Access",
+      help_prompt_description:
+        "Generate temporary links to create API keys for programmatic access to Haiven.",
+      categories: ["other"],
+      type: "static",
+      link: "/api-access",
+    },
   ];
 };

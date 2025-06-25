@@ -119,6 +119,7 @@ class Server:
                 "creative-matrix",
                 "about",
                 "company-research",
+                "generate-api-key",
             ]
             paths = request.url.path.split("/")
             if (
@@ -133,6 +134,9 @@ class Server:
 
         async def check_authentication(request: Request, call_next):
             allowlist = [
+                "/api/prompt-mcp",
+                "/api/temporary-link",
+                "/boba/generate-api-key",
                 "/",
                 "/auth",
                 "/login",
