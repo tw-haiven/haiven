@@ -22,33 +22,11 @@ $ haiven-cli init --config-path <CONFIG_PATH> --env-path <ENV_PATH>
     By default you can use the one located at the following path `$(pwd)/app/.env`
 
 
-### Create context structure
-This will create a knowledge package structure for a given context name which will allow you to tailor the applicatioin to your specific needs.
-
-
-```console
-$ haiven-cli create-context --context-name <CONTEXT_NAME> --kp-root <KNOWLEDGE_ROOT_DIR>
-```
-- CONTEXT_NAME being the name of the context you want to create a knowledge package for.
-- KNOWLEDGE_ROOT_DIR being the path to the knowledge pack root directory.
-
-this should result in a context structure being created within your knowledge package root directory  withthe following structure:
-```
-<KNOWLEDGE_ROOT_DIR>
-├── embeddings
-├── prompts
-└──contexts
-  └──<CONTEXT_NAME>
-    ├── architecture.md
-    ├── domain.md
-    └── embeddings
-```
-
 ### Index all files in the source directory
 This will convert the files you want to rely on into embeddings and store them in the knowledge package directory.
 
 ```console
-$ haiven-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embedding-model <EMBEDDING_MODEL> --output-dir <KNOWLEDGE_ROOT_DIR>/contexts/<CONTEXT_NAME>/embeddings
+$ haiven-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embedding-model <EMBEDDING_MODEL> --output-dir <KNOWLEDGE_ROOT_DIR>/embeddings
 ```
 - SOURCE_DIR being the path to the source directory containing the files you want to index.
 - DESCRIPTION being a description of the ensemble files you want to index.
@@ -63,23 +41,6 @@ $ haiven-cli index-all-files <SOURCE_DIR>  --description <DESCRIPTION> --embeddi
   - metadata.title: The title to be displayed to the user (e.g. the title of the article or document)
   - metadata.source: The source of the document (e.g. a URL)
   - metadata.authors: The authors of the document
-
-#### Output
-For each file in the source directory a markdown file and a .kb folder should be created in the embeddings directory. Following the structure below:
-
-```
-<KNOWLEDGE_ROOT_DIR>
-├── embeddings
-├── prompts
-└──contexts
-  └──<CONTEXT_NAME>
-    ├── architecture.md
-    ├── domain.md
-    └── embeddings
-      ├── file1.md
-      └── file1.kb
-```
-
 
 ___
 # `haiven-cli`
@@ -98,28 +59,12 @@ $ haiven-cli [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `create-context`: Create a context package base structure.
 * `index-all-files`: Index all files in a directory to a given...
 * `index-file`: Index single file to a given destination...
 * `init`: Initialize the config file with the given...
 * `set-config-path`: Set the config path in the config file.
 * `set-env-path`: Set the env path in the config file.
 
-## `haiven-cli create-context`
-
-Create a context package base structure.
-
-**Usage**:
-
-```console
-$ haiven-cli create-context [OPTIONS]
-```
-
-**Options**:
-
-* `--context-name TEXT`
-* `--kp-root TEXT`
-* `--help`: Show this message and exit.
 
 ## `haiven-cli index-all-files`
 

@@ -1,5 +1,4 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import os
 import pytest
 
 from haiven_cli.app.app import App
@@ -400,77 +399,4 @@ class TestApp:
                 call(first_file_path, description, provider, output_dir),
                 call(second_file_path, description, provider, output_dir),
             ]
-        )
-
-    def test_create_context_structure_fails_if_context_name_is_not_set(self):
-        context_name = ""
-        parent_dir = "parent_dir"
-
-        config_service = MagicMock()
-        file_service = MagicMock()
-        knowledge_service = MagicMock()
-        metadata_service = MagicMock()
-
-        app = App(
-            config_service,
-            file_service,
-            knowledge_service,
-            metadata_service,
-        )
-
-        with pytest.raises(ValueError) as e:
-            app.create_context_structure(context_name, parent_dir)
-
-        assert str(e.value) == "please provide context name for context_name option"
-
-    def test_create_context_structure_fails_if_parent_dir_does_not_exist(self):
-        context_name = "context_name"
-        parent_dir = "parent_dir"
-
-        config_service = MagicMock()
-        file_service = MagicMock()
-        knowledge_service = MagicMock()
-        metadata_service = MagicMock()
-
-        app = App(
-            config_service,
-            file_service,
-            knowledge_service,
-            metadata_service,
-        )
-
-        with pytest.raises(ValueError) as e:
-            app.create_context_structure(context_name, parent_dir)
-
-        assert str(e.value) == "parent directory parent_dir does not exist"
-
-    def test_create_context_structure(self):
-        context_name = "context_name"
-        parent_dir = "test_parent_dir"
-        os.makedirs(parent_dir, exist_ok=True)
-
-        config_service = MagicMock()
-        file_service = MagicMock()
-        knowledge_service = MagicMock()
-        metadata_service = MagicMock()
-
-        app = App(
-            config_service,
-            file_service,
-            knowledge_service,
-            metadata_service,
-        )
-
-        app.create_context_structure(context_name, parent_dir)
-
-        file_service.create_context_structure.assert_called_once_with(
-            context_name, parent_dir
-        )
-
-        file_service.write_architecture_file.assert_called_once_with(
-            f"{parent_dir}/{context_name}/architecture.md"
-        )
-
-        file_service.write_business_context_file.assert_called_once_with(
-            f"{parent_dir}/{context_name}/business-context.md"
         )
