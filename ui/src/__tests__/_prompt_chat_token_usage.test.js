@@ -67,6 +67,13 @@ vi.mock('../app/_local_store', () => ({
   getSortedUserContexts: vi.fn(() => []),
   getSummaryForTheUserContext: vi.fn(() => ''),
   addToPinboard: vi.fn(),
+  getTokenUsage: vi.fn(() => ({})),
+  saveTokenUsage: vi.fn(),
+}));
+
+vi.mock('../app/_llm_token_usage', () => ({
+  __esModule: true,
+  default: () => <div data-testid="llm-token-usage">Token usage displayed</div>,
 }));
 
 describe('PromptChat Token Usage Stream Processing', () => {
@@ -127,14 +134,11 @@ describe('PromptChat Token Usage Stream Processing', () => {
 
     // Wait for token usage to be displayed
     await waitFor(() => {
-      expect(screen.getByText(/Tokens used:/)).toBeInTheDocument();
+      expect(screen.getByTestId('llm-token-usage')).toBeInTheDocument();
     });
 
-    // Verify token usage display
-    expect(screen.getByText(/300/)).toBeInTheDocument(); // total tokens
-    expect(screen.getByText(/100/)).toBeInTheDocument(); // prompt tokens  
-    expect(screen.getByText(/200/)).toBeInTheDocument(); // completion tokens
-    expect(screen.getByText(/gpt-4/)).toBeInTheDocument(); // model
+    // Verify token usage component is shown
+    expect(screen.getByText('Token usage displayed')).toBeInTheDocument();
   });
 
   it('should not pass token usage data to ProChat component', async () => {
@@ -273,7 +277,7 @@ This is a complete response with all formatting preserved.`;
     
     // Verify token usage is still displayed
     await waitFor(() => {
-      expect(screen.getByText(/Tokens used:/)).toBeInTheDocument();
+      expect(screen.getByTestId('llm-token-usage')).toBeInTheDocument();
     });
   });
 
@@ -301,7 +305,7 @@ This is a complete response with all formatting preserved.`;
     await testRequest([{ content: 'Test message' }]);
 
     // Verify token usage section is not displayed
-    expect(screen.queryByText(/Tokens used:/)).not.toBeInTheDocument();
+    expect(screen.queryByTestId('llm-token-usage')).not.toBeInTheDocument();
   });
 
 

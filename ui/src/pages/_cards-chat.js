@@ -22,7 +22,9 @@ import {
   addToPinboard,
   getSortedUserContexts,
   getSummaryForTheUserContext,
+  saveTokenUsage,
 } from "../app/_local_store";
+import LLMTokenUsage from "../app/_llm_token_usage";
 import PromptPreview from "../app/_prompt_preview";
 import MarkdownRenderer from "../app/_markdown_renderer";
 import { scenarioToText } from "../app/_dynamic_data_renderer";
@@ -275,6 +277,7 @@ const CardsChat = ({
 
           if (data.type === "token_usage") {
             setTokenUsage(data.data);
+            saveTokenUsage(data.data);
             return;
           }
 
@@ -689,12 +692,7 @@ const CardsChat = ({
                   />
                 </div>
               )}
-              {tokenUsage && (
-                <div className="token-usage-summary" style={{ marginTop: 16, textAlign: "center", color: "#888", fontSize: 14 }}>
-                  Tokens used: <b>{tokenUsage.total_tokens}</b> (Prompt: {tokenUsage.prompt_tokens}, Completion: {tokenUsage.completion_tokens})<br />
-                  Model: <b>{tokenUsage.model}</b>
-                </div>
-              )}
+              {tokenUsage && <LLMTokenUsage />}
             </div>
           </div>
         </div>

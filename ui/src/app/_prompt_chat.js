@@ -16,9 +16,11 @@ import PromptPreview from "./_prompt_preview";
 import {
   getSortedUserContexts,
   getSummaryForTheUserContext,
+  saveTokenUsage,
 } from "./_local_store";
 import DownloadPrompt from "./_download_prompt";
 import { FEATURES } from "../app/feature_toggle";
+import LLMTokenUsage from "./_llm_token_usage";
 
 const PromptChat = ({
   promptId,
@@ -214,6 +216,7 @@ const PromptChat = ({
                     try {
                       const tokenUsageData = JSON.parse(data);
                       setTokenUsage(tokenUsageData);
+                      saveTokenUsage(tokenUsageData);
                     } catch (parseError) {
                       console.log("Failed to parse token usage data:", data, parseError);
                     }
@@ -390,12 +393,7 @@ const PromptChat = ({
                   advancedPromptingMenu={advancedPromptingMenu}
                   conversationStarted={conversationStarted}
                 />
-                {tokenUsage && (
-                  <div className="token-usage-summary" style={{ marginTop: 16, textAlign: "center", color: "#888", fontSize: 14 }}>
-                    Tokens used: <b>{tokenUsage.total_tokens}</b> (Prompt: {tokenUsage.prompt_tokens}, Completion: {tokenUsage.completion_tokens})<br />
-                    Model: <b>{tokenUsage.model}</b>
-                  </div>
-                )}
+                {tokenUsage && <LLMTokenUsage />}
               </ProChatProvider>
             </div>
           </div>

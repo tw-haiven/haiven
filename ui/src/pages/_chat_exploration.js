@@ -3,6 +3,8 @@ import { useState, useRef, useEffect } from "react";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import ChatWidget from "../app/_chat";
 import VerticalPossibilityPanel from "./_vertical-possibility-panel";
+import { saveTokenUsage } from "../app/_local_store";
+import LLMTokenUsage from "../app/_llm_token_usage";
 
 export default function ChatExploration({ context, scenarioQueries = [] }) {
   const [promptStarted, setPromptStarted] = useState(false);
@@ -66,6 +68,7 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
                     try {
                       const tokenUsageData = JSON.parse(data);
                       setTokenUsage(tokenUsageData);
+                      saveTokenUsage(tokenUsageData);
                     } catch (parseError) {
                       console.log("Failed to parse token usage data:", data, parseError);
                     } break;
@@ -163,12 +166,7 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
               : "Chat with me! Type your question below."
           }
         />
-        {tokenUsage && (
-          <div className="token-usage-summary" style={{ marginTop: 16, textAlign: "center", color: "#888", fontSize: 14 }}>
-            Tokens used: <b>{tokenUsage.total_tokens}</b> (Prompt: {tokenUsage.prompt_tokens}, Completion: {tokenUsage.completion_tokens})<br />
-            Model: <b>{tokenUsage.model}</b>
-          </div>
-        )}
+        {tokenUsage && <LLMTokenUsage />}
       </ProChatProvider>
     </div>
   );

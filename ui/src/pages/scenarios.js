@@ -24,6 +24,8 @@ import useLoader from "../hooks/useLoader";
 import ChatExploration from "./_chat_exploration";
 import CardsList from "../app/_cards-list";
 import HelpTooltip from "../app/_help_tooltip";
+import { saveTokenUsage } from "../app/_local_store";
+import LLMTokenUsage from "../app/_llm_token_usage";
 
 const Home = ({ models }) => {
   const [numOfScenarios, setNumOfScenarios] = useState("6");
@@ -126,6 +128,7 @@ const Home = ({ models }) => {
           try {
             if (data.type === "token_usage") {
               setTokenUsage(data.data);
+              saveTokenUsage(data.data);
               return;
             }
             
@@ -404,12 +407,7 @@ const Home = ({ models }) => {
                 stopLoadComponent={<StopLoad />}
               />
               {inputAreaRender()}
-              {tokenUsage && (
-                <div className="token-usage-summary" style={{ marginTop: 16, textAlign: "center", color: "#888", fontSize: 14 }}>
-                  Tokens used: <b>{tokenUsage.total_tokens}</b> (Prompt: {tokenUsage.prompt_tokens}, Completion: {tokenUsage.completion_tokens})<br />
-                  Model: <b>{tokenUsage.model}</b>
-                </div>
-              )}
+              {tokenUsage && <LLMTokenUsage />}
             </div>
           </div>
         </div>

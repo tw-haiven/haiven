@@ -13,6 +13,8 @@ import { parse } from "best-effort-json-parser";
 import { fetchSSE } from "../app/_fetch_sse";
 import ChatHeader from "./_chat_header";
 import useLoader from "../hooks/useLoader";
+import { saveTokenUsage } from "../app/_local_store";
+import LLMTokenUsage from "../app/_llm_token_usage";
 
 const CreativeMatrix = ({ models }) => {
   const [promptInput, setPromptInput] = useState("");
@@ -169,6 +171,7 @@ const CreativeMatrix = ({ models }) => {
           onMessageHandle: (data) => {
             if (data.type === "token_usage") {
               setTokenUsage(data.data);
+              saveTokenUsage(data.data);
               return;
             }
             
@@ -447,12 +450,7 @@ const CreativeMatrix = ({ models }) => {
                 </table>
               </div>
               {inputAreaRender()}
-              {tokenUsage && (
-                <div className="token-usage-summary" style={{ marginTop: 16, textAlign: "center", color: "#888", fontSize: 14 }}>
-                  Tokens used: <b>{tokenUsage.total_tokens}</b> (Prompt: {tokenUsage.prompt_tokens}, Completion: {tokenUsage.completion_tokens})<br />
-                  Model: <b>{tokenUsage.model}</b>
-                </div>
-              )}
+              {tokenUsage && <LLMTokenUsage />}
             </div>
           </div>
         </div>
