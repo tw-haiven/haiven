@@ -393,7 +393,7 @@ const PromptChat = ({
                   advancedPromptingMenu={advancedPromptingMenu}
                   conversationStarted={conversationStarted}
                 />
-                {tokenUsage && <LLMTokenUsage />}
+                <LLMTokenUsage />
               </ProChatProvider>
             </div>
           </div>

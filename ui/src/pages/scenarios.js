@@ -407,7 +407,7 @@ const Home = ({ models }) => {
                 stopLoadComponent={<StopLoad />}
               />
               {inputAreaRender()}
-              {tokenUsage && <LLMTokenUsage />}
+              <LLMTokenUsage />
             </div>
           </div>
         </div>

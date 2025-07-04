@@ -450,7 +450,7 @@ const CreativeMatrix = ({ models }) => {
                 </table>
               </div>
               {inputAreaRender()}
-              {tokenUsage && <LLMTokenUsage />}
+              <LLMTokenUsage />
             </div>
           </div>
         </div>

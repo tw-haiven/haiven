@@ -166,7 +166,7 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
               : "Chat with me! Type your question below."
           }
         />
-        {tokenUsage && <LLMTokenUsage />}
+        <LLMTokenUsage />
       </ProChatProvider>
     </div>
   );

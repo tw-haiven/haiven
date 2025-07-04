@@ -692,7 +692,7 @@ const CardsChat = ({
                   />
                 </div>
               )}
-              {tokenUsage && <LLMTokenUsage />}
+              <LLMTokenUsage />
             </div>
           </div>
         </div>
