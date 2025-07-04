@@ -10,4 +10,13 @@ from litellm import RateLimitError
     retry=retry_if_exception_type(RateLimitError),
 )
 def llmCompletion(**kwargs):
+    """
+    Wrapper for litellm.completion that ensures usage info is included in streaming responses.
+    If stream=True, will set stream_options={"include_usage": True} unless already set.
+    """
+    if kwargs.get("stream", False):
+        stream_options = kwargs.get("stream_options", {})
+        if not stream_options.get("include_usage", False):
+            stream_options["include_usage"] = True
+        kwargs["stream_options"] = stream_options
     return completion(**kwargs)

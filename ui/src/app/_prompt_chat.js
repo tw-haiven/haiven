@@ -1,8 +1,8 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 "use client";
 import { ProChatProvider } from "@ant-design/pro-chat";
-import { useEffect, useState, useRef } from "react";
-import { Input, Select } from "antd";
+import React, { useEffect, useState, useRef } from "react";
+import { Input, Select, Tooltip } from "antd";
 import { toast } from "react-toastify";
 import { DownOutlined } from "@ant-design/icons";
 
@@ -19,6 +19,7 @@ import {
 } from "./_local_store";
 import DownloadPrompt from "./_download_prompt";
 import { FEATURES } from "../app/feature_toggle";
+import LLMTokenUsage from "./_LLM_token_usage";
 
 const PromptChat = ({
   promptId,
@@ -51,6 +52,7 @@ const PromptChat = ({
   const [allContexts, setAllContexts] = useState([]);
 
   const MAX_COUNT = 3;
+
   function combineAllContexts(contexts) {
     const userContexts = getSortedUserContexts();
     const userContextsForDropdown = userContexts.map((context) => ({
@@ -284,6 +286,7 @@ const PromptChat = ({
         />
       </h3>
       {selectedPrompt && <DownloadPrompt prompt={selectedPrompt} />}
+      <LLMTokenUsage />
     </div>
   );
 

@@ -148,8 +148,11 @@ class StreamingChat(HaivenBaseChat):
                     if user_query:
                         self.memory[-1].content = user_query
                     self.memory.append(HaivenAIMessage(content=""))
-                self.memory[-1].content += chunk.get("content", "")
-                yield chunk.get("content", "")
+                if "usage" in chunk:
+                    yield chunk.__str__()
+                else:
+                    self.memory[-1].content += chunk.get("content", "")
+                    yield chunk.get("content", "")
 
         except Exception as error:
             if not str(error).strip():
@@ -212,9 +215,8 @@ class JSONChat(HaivenBaseChat):
             for chunk in stream:
                 if "content" in chunk:
                     yield chunk.get("content", "")
-                elif "metadata" in chunk:
+                elif "metadata" in chunk or "usage" in chunk:
                     yield chunk
-
         except Exception as error:
             if not str(error).strip():
                 error = "Error while the model was processing the input"
@@ -229,15 +231,13 @@ class JSONChat(HaivenBaseChat):
         try:
             data = enumerate(self.stream_from_model(message))
             for i, chunk in data:
-                if "metadata" in chunk:
+                if "metadata" in chunk or "usage" in chunk:
                     yield json.dumps(chunk)
                 else:
                     if i == 0:
                         self.memory.append(HaivenAIMessage(content=""))
-
                     self.memory[-1].content += chunk
                     yield create_data_chunk(chunk)
-
         except Exception as error:
             if not str(error).strip():
                 error = "Error while the model was processing the input"

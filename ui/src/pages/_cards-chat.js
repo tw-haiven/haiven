@@ -22,6 +22,7 @@ import {
   addToPinboard,
   getSortedUserContexts,
   getSummaryForTheUserContext,
+  updateTokenUsage,
 } from "../app/_local_store";
 import PromptPreview from "../app/_prompt_preview";
 import MarkdownRenderer from "../app/_markdown_renderer";
@@ -30,6 +31,7 @@ import EnrichCard from "../app/_enrich_card";
 import Citations from "../pages/_citations";
 import DownloadPrompt from "../app/_download_prompt";
 import { FEATURES } from "../app/feature_toggle";
+import LLMTokenUsage from "../app/_LLM_token_usage";
 
 const CardsChat = ({
   promptId,
@@ -294,6 +296,11 @@ const CardsChat = ({
                 console.log("response is not parseable into an array");
               }
             }
+          } else if (data.usage) {
+            updateTokenUsage({
+              input_tokens: data.usage.prompt_tokens,
+              output_tokens: data.usage.completion_tokens,
+            });
           } else if (data.metadata) {
             // Safely handle citations if they exist in metadata
             if (data.metadata.citations) {
@@ -574,6 +581,7 @@ const CardsChat = ({
         />
       </h3>
       <DownloadPrompt prompt={selectedPromptConfiguration} />
+      <LLMTokenUsage />
     </div>
   );
 

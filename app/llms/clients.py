@@ -112,6 +112,11 @@ class ChatClient:
             **self._get_kwargs(),
         ):
             citations = citations or result.get("citations", None)
+            if hasattr(result, "usage") and result.usage is not None:
+                usage = result.usage
+                if hasattr(usage, "dict"):
+                    usage = usage.dict()
+                yield {"usage": usage}
             if result.choices[0].delta.content is not None:
                 yield {"content": result.choices[0].delta.content}
 

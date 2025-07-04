@@ -2236,7 +2236,7 @@ a.feedback:hover {
   }
 }
 
-.download-prompt-button {
+.download-prompt-button, .token-usage-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2250,7 +2250,7 @@ a.feedback:hover {
   font-size: 1.3em;
 }
 
-.download-prompt-button:hover {
+.download-prompt-button:hover, .token-usage-icon:hover {
   color: var(--color-dark-blue);
 }
 /* Print layout for the company overviews */

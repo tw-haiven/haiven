@@ -5,9 +5,20 @@ export const initializeLocalStorage = () => {
   if (!localStorage.getItem("pinboard")) {
     localStorage.setItem("pinboard", JSON.stringify({}));
   }
+  if (!localStorage.getItem("token-usage")) {
+    localStorage.setItem("token-usage", JSON.stringify({}));
+  }
   if (!localStorage.getItem("toggles")) {
     localStorage.setItem("toggles", JSON.stringify({}));
   }
+};
+
+export const updateTokenUsage = (tokenUsage) => {
+  localStorage.setItem("token-usage", JSON.stringify(tokenUsage));
+};
+
+export const getTokenUsage = () => {
+  return JSON.parse(localStorage.getItem("token-usage")) || [];
 };
 
 export const addToPinboard = (key, content, isUserDefined = false) => {
