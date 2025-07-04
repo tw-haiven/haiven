@@ -22,6 +22,7 @@ const CreativeMatrix = ({ models }) => {
   );
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(true);
+  const [tokenUsage, setTokenUsage] = useState(null);
   const [disableChatInput, setDisableChatInput] = useState(false);
   const [prompt, setPrompt] = useState(
     "Inspire me with generative AI use cases for Nike",
@@ -132,6 +133,7 @@ const CreativeMatrix = ({ models }) => {
     setDisableChatInput(true);
     setPrompt("");
     setPromptOptionsMenuExpanded(false);
+    setTokenUsage(null);
 
     const uri =
       "/api/creative-matrix?rows=" +
@@ -165,6 +167,11 @@ const CreativeMatrix = ({ models }) => {
             abortLoad();
           },
           onMessageHandle: (data) => {
+            if (data.type === "token_usage") {
+              setTokenUsage(data.data);
+              return;
+            }
+            
             if (data.data) {
               ms += data.data;
               ms = ms.trim().replace(/^[^[]+/, "");
@@ -440,6 +447,12 @@ const CreativeMatrix = ({ models }) => {
                 </table>
               </div>
               {inputAreaRender()}
+              {tokenUsage && (
+                <div className="token-usage-summary" style={{ marginTop: 16, textAlign: "center", color: "#888", fontSize: 14 }}>
+                  Tokens used: <b>{tokenUsage.total_tokens}</b> (Prompt: {tokenUsage.prompt_tokens}, Completion: {tokenUsage.completion_tokens})<br />
+                  Model: <b>{tokenUsage.model}</b>
+                </div>
+              )}
             </div>
           </div>
         </div>

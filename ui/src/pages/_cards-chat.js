@@ -69,6 +69,7 @@ const CardsChat = ({
   const [usePromptId, setUsePromptId] = useState(true);
   const [chatSessionIdCardBuilding, setChatSessionIdCardBuilding] = useState();
   const [allContexts, setAllContexts] = useState([]);
+  const [tokenUsage, setTokenUsage] = useState(null);
 
   function combineAllContexts(contexts) {
     const userContexts = getSortedUserContexts();
@@ -231,6 +232,7 @@ const CardsChat = ({
 
   const sendCardBuildingPrompt = (requestData, shouldReset = false) => {
     setIsInputCollapsed(true);
+    setTokenUsage(null);
 
     if (shouldReset) {
       resetChatSession();
@@ -270,6 +272,11 @@ const CardsChat = ({
             : scenarios.map((scenario) => ({
                 ...scenario,
               }));
+
+          if (data.type === "token_usage") {
+            setTokenUsage(data.data);
+            return;
+          }
 
           if (data.data) {
             ms += data.data;
@@ -680,6 +687,12 @@ const CardsChat = ({
                     className="second-step-collapsable"
                     data-testid="follow-up-collapse"
                   />
+                </div>
+              )}
+              {tokenUsage && (
+                <div className="token-usage-summary" style={{ marginTop: 16, textAlign: "center", color: "#888", fontSize: 14 }}>
+                  Tokens used: <b>{tokenUsage.total_tokens}</b> (Prompt: {tokenUsage.prompt_tokens}, Completion: {tokenUsage.completion_tokens})<br />
+                  Model: <b>{tokenUsage.model}</b>
                 </div>
               )}
             </div>

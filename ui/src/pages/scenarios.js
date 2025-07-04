@@ -19,7 +19,7 @@ import {
   RiAliensLine,
 } from "react-icons/ri";
 import ChatHeader from "./_chat_header";
-import { scenarioToText } from "../app/_card_actions";
+import { scenarioToText } from "../app/_dynamic_data_renderer";
 import useLoader from "../hooks/useLoader";
 import ChatExploration from "./_chat_exploration";
 import CardsList from "../app/_cards-list";
@@ -40,6 +40,7 @@ const Home = ({ models }) => {
   const [chatContext, setChatContext] = useState({});
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(true);
+  const [tokenUsage, setTokenUsage] = useState(null);
 
   const onClickAdvancedPromptOptions = (e) => {
     setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
@@ -85,6 +86,7 @@ const Home = ({ models }) => {
   const onSubmitPrompt = async (prompt) => {
     setPrompt(prompt);
     setDisableChatInput(true);
+    setTokenUsage(null);
 
     const uri =
       "/api/make-scenario" +
@@ -122,6 +124,11 @@ const Home = ({ models }) => {
         },
         onMessageHandle: (data) => {
           try {
+            if (data.type === "token_usage") {
+              setTokenUsage(data.data);
+              return;
+            }
+            
             if (data.data) {
               ms += data.data;
               ms = ms.trim().replace(/^[^[]+/, "");
@@ -371,9 +378,18 @@ const Home = ({ models }) => {
             avatar: "/boba/user-5-fill-dark-blue.svg",
           }}
           scenarioQueries={[
-            "What are the key drivers for this scenario?",
-            "What are the key uncertainties?",
-            "What business opportunities could this trigger?",
+            {
+              name: "What are the key drivers for this scenario?",
+              description: "What are the key drivers for this scenario?"
+            },
+            {
+              name: "What are the key uncertainties?",
+              description: "What are the key uncertainties?"
+            },
+            {
+              name: "What business opportunities could this trigger?",
+              description: "What business opportunities could this trigger?"
+            },
           ]}
         />
       </Drawer>
@@ -388,6 +404,12 @@ const Home = ({ models }) => {
                 stopLoadComponent={<StopLoad />}
               />
               {inputAreaRender()}
+              {tokenUsage && (
+                <div className="token-usage-summary" style={{ marginTop: 16, textAlign: "center", color: "#888", fontSize: 14 }}>
+                  Tokens used: <b>{tokenUsage.total_tokens}</b> (Prompt: {tokenUsage.prompt_tokens}, Completion: {tokenUsage.completion_tokens})<br />
+                  Model: <b>{tokenUsage.model}</b>
+                </div>
+              )}
             </div>
           </div>
         </div>

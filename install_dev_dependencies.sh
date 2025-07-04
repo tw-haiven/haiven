@@ -10,7 +10,7 @@ python3.11 -m pip install --user pipx
 python3.11 -m pipx ensurepath
 brew install nvm
 source "$(brew --prefix nvm)/nvm.sh"
-nvm install 22
+nvm install 22.6
 echo "Checking if Poetry is installed..."
 if ! command -v poetry &> /dev/null; then
     echo "Poetry is not installed. Installing Poetry using pipx..."

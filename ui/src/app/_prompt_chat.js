@@ -49,6 +49,7 @@ const PromptChat = ({
   const [usePromptId, setUsePromptId] = useState(true);
   const [placeholder, setPlaceholder] = useState("");
   const [allContexts, setAllContexts] = useState([]);
+  const [tokenUsage, setTokenUsage] = useState(null);
 
   const MAX_COUNT = 3;
   function combineAllContexts(contexts) {
@@ -135,11 +136,15 @@ const PromptChat = ({
 
   const submitPromptToBackend = async (messages) => {
     const lastMessage = messages[messages.length - 1];
-    let requestData;
+
+    // Reset token usage when starting new request
+    setTokenUsage(null);
+
+    let requestBody;
     if (!conversationStarted) {
-      requestData = buildFirstChatRequestBody(lastMessage?.content);
+      requestBody = buildFirstChatRequestBody(lastMessage?.content);
     } else {
-      requestData = {
+      requestBody = {
         userinput: lastMessage?.content,
         chatSessionId: chatSessionId,
         ...(selectedDocuments !== "base" && { document: selectedDocuments }),
@@ -153,16 +158,13 @@ const PromptChat = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
         const errorBody = await response.json();
-        const detailedErrorMessage =
-          errorBody.detail || "An unknown error occurred.";
-        const errorMessage = `ERROR: ${detailedErrorMessage}`;
-
-        throw new Error(errorMessage);
+        const detailedErrorMessage = errorBody.detail || "An unknown error occurred.";
+        throw new Error(`ERROR: ${detailedErrorMessage}`);
       }
 
       const chatId = response.headers.get("X-Chat-ID");
@@ -173,7 +175,74 @@ const PromptChat = ({
         setChatSessionId(chatId);
       }
 
-      return response;
+      // Create a stream that filters out token usage events and extracts clean content for ProChat
+      const sseStream = new ReadableStream({
+        start(controller) {
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+
+          function pump() {
+            return reader.read().then(({ done, value }) => {
+              if (done) {
+                controller.close();
+                return;
+              }
+
+              const chunk = decoder.decode(value, { stream: true });
+              buffer += chunk;
+
+              // Check if this chunk contains SSE token usage event
+              if (buffer.includes('event: token_usage')) {
+                // Split at the SSE event boundary
+                const parts = buffer.split('event: token_usage');
+                const contentPart = parts[0];
+                const sseEventPart = 'event: token_usage' + parts[1];
+
+                // Send content part to ProChat
+                if (contentPart) {
+                  controller.enqueue(new TextEncoder().encode(contentPart));
+                }
+
+                // Parse token usage from SSE event
+                const lines = sseEventPart.split('\n');
+                for (const line of lines) {
+                  if (line.startsWith('data: ')) {
+                    const data = line.substring(6);
+
+                    // Handle token usage
+                    try {
+                      const tokenUsageData = JSON.parse(data);
+                      setTokenUsage(tokenUsageData);
+                    } catch (parseError) {
+                      console.log("Failed to parse token usage data:", data, parseError);
+                    }
+                    break;
+                  }
+                }
+                
+                buffer = '';
+              } else {
+                // Regular content - stream directly to ProChat
+                controller.enqueue(new TextEncoder().encode(chunk));
+                buffer = '';
+          
+              }
+
+              return pump();
+            });
+          }
+
+          return pump();
+        }
+      });
+
+      // Return new response with filtered stream
+      return new Response(sseStream, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+      });
     } catch (error) {
       toast.error(error.message);
     }
@@ -321,6 +390,12 @@ const PromptChat = ({
                   advancedPromptingMenu={advancedPromptingMenu}
                   conversationStarted={conversationStarted}
                 />
+                {tokenUsage && (
+                  <div className="token-usage-summary" style={{ marginTop: 16, textAlign: "center", color: "#888", fontSize: 14 }}>
+                    Tokens used: <b>{tokenUsage.total_tokens}</b> (Prompt: {tokenUsage.prompt_tokens}, Completion: {tokenUsage.completion_tokens})<br />
+                    Model: <b>{tokenUsage.model}</b>
+                  </div>
+                )}
               </ProChatProvider>
             </div>
           </div>
