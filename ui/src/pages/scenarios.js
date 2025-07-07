@@ -4,7 +4,6 @@ import { fetchSSE } from "../app/_fetch_sse";
 import {
   RiSendPlane2Line,
   RiStopCircleFill,
-  RiAttachment2,
 } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
 import { Button, Drawer, Checkbox, Input, Select, Form, Collapse } from "antd";
@@ -19,7 +18,7 @@ import {
   RiAliensLine,
 } from "react-icons/ri";
 import ChatHeader from "./_chat_header";
-import { scenarioToText } from "../app/_card_actions";
+import { scenarioToText } from "../app/_dynamic_data_renderer";
 import useLoader from "../hooks/useLoader";
 import ChatExploration from "./_chat_exploration";
 import CardsList from "../app/_cards-list";
@@ -371,9 +370,18 @@ const Home = ({ models }) => {
             avatar: "/boba/user-5-fill-dark-blue.svg",
           }}
           scenarioQueries={[
-            "What are the key drivers for this scenario?",
-            "What are the key uncertainties?",
-            "What business opportunities could this trigger?",
+              {
+                  name: "What are the key drivers for this scenario?",
+                  description: "What are the key drivers for this scenario?"
+              },
+              {
+                  name: "What are the key uncertainties?",
+                  description: "What are the key uncertainties?"
+              },
+              {
+                  name: "What business opportunities could this trigger?",
+                  description: "What business opportunities could this trigger?"
+              },
           ]}
         />
       </Drawer>
