@@ -1,10 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import {
-  RiSendPlane2Line,
-  RiStopCircleFill,
-} from "react-icons/ri";
+import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
 import { Button, Drawer, Checkbox, Input, Select, Form, Collapse } from "antd";
 import { toast } from "react-toastify";
@@ -370,18 +367,18 @@ const Home = ({ models }) => {
             avatar: "/boba/user-5-fill-dark-blue.svg",
           }}
           scenarioQueries={[
-              {
-                  name: "What are the key drivers for this scenario?",
-                  description: "What are the key drivers for this scenario?"
-              },
-              {
-                  name: "What are the key uncertainties?",
-                  description: "What are the key uncertainties?"
-              },
-              {
-                  name: "What business opportunities could this trigger?",
-                  description: "What business opportunities could this trigger?"
-              },
+            {
+              name: "What are the key drivers for this scenario?",
+              description: "What are the key drivers for this scenario?",
+            },
+            {
+              name: "What are the key uncertainties?",
+              description: "What are the key uncertainties?",
+            },
+            {
+              name: "What business opportunities could this trigger?",
+              description: "What business opportunities could this trigger?",
+            },
           ]}
         />
       </Drawer>
