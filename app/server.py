@@ -18,7 +18,7 @@ from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.base_client import OAuthError
 from ui.url import HaivenUrl
-from auth.api_key_auth import authenticate_with_api_key
+from auth.api_key_auth import authenticate_with_api_key_for_mcp_only
 import hashlib
 import time
 import os
@@ -147,8 +147,8 @@ class Server:
 
             if request.url.path not in allowlist:
                 try:
-                    # First try API key authentication (always re-validate)
-                    api_user = await authenticate_with_api_key(request)
+                    # First try API key authentication (only for MCP endpoints)
+                    api_user = await authenticate_with_api_key_for_mcp_only(request)
                     if api_user:
                         # Store API user in session for this request only
                         request.session["user"] = api_user

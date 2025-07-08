@@ -1,3 +1,4 @@
+# © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 #!/usr/bin/env python3
 """
 Haiven MCP Server
@@ -19,29 +20,10 @@ from mcp.types import (
     TextContent,
     Tool,
 )
-from pydantic import BaseModel, Field
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-class PromptExecutionParams(BaseModel):
-    """Parameters for executing a prompt."""
-
-    userinput: str = Field(..., description="User input for the prompt")
-    promptid: Optional[str] = Field(None, description="ID of the prompt to execute")
-    chatSessionId: Optional[str] = Field(
-        None, description="Chat session ID for conversation continuity"
-    )
-    contexts: Optional[List[str]] = Field(
-        None, description="List of context identifiers"
-    )
-    document: Optional[List[str]] = Field(
-        None, description="List of document identifiers"
-    )
-    json_output: bool = Field(False, description="Whether to return JSON output")
-    userContext: Optional[str] = Field(None, description="Additional user context")
 
 
 class HaivenMCPServer:
@@ -92,43 +74,17 @@ class HaivenMCPServer:
                     inputSchema={"type": "object", "properties": {}, "required": []},
                 ),
                 Tool(
-                    name="execute_prompt",
-                    description="Execute a specific prompt with user input and optional parameters",
+                    name="get_prompt_text",
+                    description="Get the prompt text content by prompt ID",
                     inputSchema={
                         "type": "object",
                         "properties": {
-                            "userinput": {
+                            "prompt_id": {
                                 "type": "string",
-                                "description": "User input for the prompt",
-                            },
-                            "promptid": {
-                                "type": "string",
-                                "description": "ID of the prompt to execute (optional)",
-                            },
-                            "chatSessionId": {
-                                "type": "string",
-                                "description": "Chat session ID for conversation continuity (optional)",
-                            },
-                            "contexts": {
-                                "type": "array",
-                                "items": {"type": "string"},
-                                "description": "List of context identifiers (optional)",
-                            },
-                            "document": {
-                                "type": "array",
-                                "items": {"type": "string"},
-                                "description": "List of document identifiers (optional)",
-                            },
-                            "json_output": {
-                                "type": "boolean",
-                                "description": "Whether to return JSON output (default: false)",
-                            },
-                            "userContext": {
-                                "type": "string",
-                                "description": "Additional user context (optional)",
-                            },
+                                "description": "ID of the prompt to retrieve text for",
+                            }
                         },
-                        "required": ["userinput"],
+                        "required": ["prompt_id"],
                     },
                 ),
             ]
@@ -138,8 +94,8 @@ class HaivenMCPServer:
             """Handle tool calls."""
             if name == "get_prompts":
                 return await self._get_prompts()
-            elif name == "execute_prompt":
-                return await self._execute_prompt(arguments)
+            elif name == "get_prompt_text":
+                return await self._get_prompt_text(arguments)
             else:
                 raise ValueError(f"Unknown tool: {name}")
 
@@ -171,51 +127,61 @@ class HaivenMCPServer:
             logger.error(error_msg)
             return [TextContent(type="text", text=f"Error: {error_msg}")]
 
-    async def _execute_prompt(self, arguments: Dict[str, Any]) -> List[TextContent]:
-        """Execute a prompt with given parameters."""
+    async def _get_prompt_text(self, arguments: Dict[str, Any]) -> List[TextContent]:
+        """Get prompt text content by prompt ID."""
         try:
-            # Validate parameters
-            params = PromptExecutionParams(**arguments)
+            prompt_id = arguments.get("prompt_id")
+            if not prompt_id:
+                return [TextContent(type="text", text="Error: prompt_id is required")]
 
-            # Prepare request data
-            request_data = {"userinput": params.userinput, "json": params.json_output}
-
-            # Add optional parameters if provided
-            if params.promptid:
-                request_data["promptid"] = params.promptid
-            if params.chatSessionId:
-                request_data["chatSessionId"] = params.chatSessionId
-            if params.contexts:
-                request_data["contexts"] = params.contexts
-            if params.document:
-                request_data["document"] = params.document
-            if params.userContext:
-                request_data["userContext"] = params.userContext
-
-            # Make API call
-            response = await self.client.post(
-                f"{self.base_url}/api/prompt",
-                json=request_data,
-                headers={"Content-Type": "application/json"},
+            # Call the Haiven API to get the prompt with content
+            response = await self.client.get(
+                f"{self.base_url}/api/download-prompt?prompt_id={prompt_id}"
             )
             response.raise_for_status()
 
-            # Handle streaming response
-            if response.headers.get("content-type", "").startswith("text/plain"):
-                # Streaming response
-                content = response.text
-                return [TextContent(type="text", text=content)]
-            else:
-                # JSON response
-                result = response.json()
-                return [TextContent(type="text", text=json.dumps(result, indent=2))]
+            prompt_data = response.json()
 
+            # Handle case where prompt is not found
+            if not prompt_data:
+                return [
+                    TextContent(
+                        type="text",
+                        text=f"Error: Prompt with ID '{prompt_id}' not found",
+                    )
+                ]
+
+            # If the response is a list (array of prompts), get the first one
+            if isinstance(prompt_data, list):
+                if len(prompt_data) == 0:
+                    return [
+                        TextContent(
+                            type="text",
+                            text=f"Error: Prompt with ID '{prompt_id}' not found",
+                        )
+                    ]
+                prompt_data = prompt_data[0]
+
+            # Format the response for better readability
+            formatted_response = {
+                "prompt_id": prompt_data.get("identifier", prompt_id),
+                "title": prompt_data.get("title", "Unknown"),
+                "description": prompt_data.get("help_prompt_description", ""),
+                "categories": prompt_data.get("categories", []),
+                "content": prompt_data.get("content", "No content available"),
+                "type": prompt_data.get("type", "chat"),
+                "follow_ups": prompt_data.get("follow_ups", []),
+            }
+
+            return [
+                TextContent(type="text", text=json.dumps(formatted_response, indent=2))
+            ]
         except httpx.HTTPStatusError as e:
             error_msg = f"HTTP error from Haiven API: {e.response.status_code} - {e.response.text}"
             logger.error(error_msg)
             return [TextContent(type="text", text=f"Error: {error_msg}")]
         except Exception as e:
-            error_msg = f"Error executing prompt: {str(e)}"
+            error_msg = f"Error fetching prompt text: {str(e)}"
             logger.error(error_msg)
             return [TextContent(type="text", text=f"Error: {error_msg}")]
 

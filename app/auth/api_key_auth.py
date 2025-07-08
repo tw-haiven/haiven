@@ -91,3 +91,26 @@ async def authenticate_with_api_key(request: Request) -> Optional[Dict[str, Any]
         return create_api_user_session(user_info)
 
     return None
+
+
+def is_mcp_endpoint(request_path: str) -> bool:
+    """Check if the request path is an MCP endpoint that should allow API key authentication."""
+    # Check exact match for prompts endpoint
+    if request_path == "/api/prompts":
+        return True
+
+    # Check if it's the download-prompt endpoint (with or without query params)
+    if request_path.startswith("/api/download-prompt"):
+        return True
+
+    return False
+
+
+async def authenticate_with_api_key_for_mcp_only(
+    request: Request,
+) -> Optional[Dict[str, Any]]:
+    """Authenticate request using API key, but only for MCP endpoints."""
+    if not is_mcp_endpoint(request.url.path):
+        return None
+
+    return await authenticate_with_api_key(request)
