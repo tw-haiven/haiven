@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "haiven-prompts": {
+      "command": "python",
+      "args": ["mcp_server.py"],
+      "cwd": "/path/to/haiven/mcp-server",
+      "env": {
+        "HAIVEN_API_URL": "https://your-haiven-instance.com",
+        "HAIVEN_API_KEY": "your_api_key_generated_by_admin"
+      }
+    }
+  }
+} 
