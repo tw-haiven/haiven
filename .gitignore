@@ -54,6 +54,10 @@ db
 app/config.local.yaml
 tmp
 
+# API Keys (sensitive data)
+**/api_keys.json
+api_keys.json
+
 .coverage
 *.faiss
 *.pkl

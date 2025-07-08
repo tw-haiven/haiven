@@ -6,6 +6,8 @@ from api.api_scenarios import ApiScenarios
 from api.api_creative_matrix import ApiCreativeMatrix
 from api.api_company_research import ApiCompanyResearch
 from api.api_features import ApiFeatures
+from api.api_key_management import ApiKeyManagementAPI
+from auth.api_key_auth import get_api_key_repository
 from llms.chats import (
     ChatManager,
 )
@@ -88,3 +90,4 @@ class BobaApi:
         )
 
         ApiFeatures(app)
+        ApiKeyManagementAPI(app, get_api_key_repository())

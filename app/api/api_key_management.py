@@ -1,0 +1,177 @@
+# © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
+
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+import hashlib
+
+from auth.api_key_repository import ApiKeyRepository
+from logger import HaivenLogger
+
+
+class GenerateApiKeyRequest(BaseModel):
+    name: str
+
+
+class RevokeApiKeyRequest(BaseModel):
+    key_hash: str
+
+
+class ApiKeyManagementAPI:
+    def __init__(self, app: FastAPI, api_key_repository: ApiKeyRepository):
+        self.app = app
+        self.api_key_repository = api_key_repository
+        self.register_endpoints()
+
+    def get_user_email(self, request: Request) -> str:
+        """Get the authenticated user's email from session."""
+        user = request.session.get("user")
+        if not user:
+            raise HTTPException(status_code=401, detail="User not authenticated")
+        return user.get("email")
+
+    def register_endpoints(self):
+        @self.app.get("/api/apikeys")
+        async def list_api_keys(request: Request):
+            """List all API keys for the authenticated user."""
+            try:
+                user_email = self.get_user_email(request)
+
+                # Get keys for the specific user
+                user_keys = self.api_key_repository.list_keys_for_user(user_email)
+
+                # Format for frontend
+                formatted_keys = []
+                for key_hash, info in user_keys.items():
+                    formatted_keys.append(
+                        {
+                            "key_hash": key_hash,
+                            "name": info["name"],
+                            "created_at": info["created_at"],
+                            "expires_at": info["expires_at"],
+                            "last_used": info["last_used"],
+                            "usage_count": info["usage_count"],
+                        }
+                    )
+
+                # Sort by creation date (newest first)
+                formatted_keys.sort(key=lambda x: x["created_at"], reverse=True)
+
+                return JSONResponse(
+                    {"keys": formatted_keys, "total": len(formatted_keys)}
+                )
+
+            except Exception as e:
+                logger = HaivenLogger.get()
+                if logger:
+                    logger.error(f"Error listing API keys: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+
+        @self.app.post("/api/apikeys/generate")
+        async def generate_api_key(request: Request, body: GenerateApiKeyRequest):
+            """Generate a new API key for the authenticated user."""
+            try:
+                user_email = self.get_user_email(request)
+
+                # Generate the key (24 hours validity)
+                api_key = self.api_key_repository.generate_api_key(
+                    name=body.name,
+                    user_email=user_email,
+                    expires_days=1,  # Fixed 24-hour validity
+                )
+
+                # Calculate key hash for response
+                key_hash = hashlib.sha256(api_key.encode()).hexdigest()
+
+                logger = HaivenLogger.get()
+                if logger:
+                    logger.info(f"API key generated via web UI for user {user_email}")
+
+                return JSONResponse(
+                    {
+                        "success": True,
+                        "api_key": api_key,
+                        "key_hash": key_hash,
+                        "name": body.name,
+                        "expires_days": 1,  # Fixed 24-hour validity
+                        "message": "API key generated successfully",
+                    }
+                )
+
+            except Exception as e:
+                logger = HaivenLogger.get()
+                if logger:
+                    logger.error(f"Error generating API key: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+
+        @self.app.post("/api/apikeys/revoke")
+        async def revoke_api_key(request: Request, body: RevokeApiKeyRequest):
+            """Revoke an API key."""
+            try:
+                user_email = self.get_user_email(request)
+
+                # First verify the key belongs to the current user
+                user_keys = self.api_key_repository.list_keys_for_user(user_email)
+                key_info = user_keys.get(body.key_hash)
+
+                if not key_info:
+                    raise HTTPException(status_code=404, detail="API key not found")
+
+                # Revoke the key
+                success = self.api_key_repository.revoke_key(body.key_hash)
+
+                if success:
+                    logger = HaivenLogger.get()
+                    if logger:
+                        logger.info(f"API key revoked via web UI for user {user_email}")
+                    return JSONResponse(
+                        {"success": True, "message": "API key revoked successfully"}
+                    )
+                else:
+                    raise HTTPException(status_code=404, detail="API key not found")
+
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger = HaivenLogger.get()
+                if logger:
+                    logger.error(f"Error revoking API key: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+
+        @self.app.get("/api/apikeys/usage")
+        async def get_api_key_usage(request: Request):
+            """Get API key usage statistics for the authenticated user."""
+            try:
+                user_email = self.get_user_email(request)
+
+                # Get keys for the specific user
+                user_keys = self.api_key_repository.list_keys_for_user(user_email)
+
+                # Calculate statistics
+                total_keys = len(user_keys)
+                total_usage = sum(info["usage_count"] for info in user_keys.values())
+
+                # Find most recent usage
+                most_recent_usage = None
+                for info in user_keys.values():
+                    if info["last_used"]:
+                        if (
+                            not most_recent_usage
+                            or info["last_used"] > most_recent_usage
+                        ):
+                            most_recent_usage = info["last_used"]
+
+                return JSONResponse(
+                    {
+                        "total_keys": total_keys,
+                        "total_usage": total_usage,
+                        "most_recent_usage": most_recent_usage,
+                        "user_email": user_email,
+                    }
+                )
+
+            except Exception as e:
+                logger = HaivenLogger.get()
+                if logger:
+                    logger.error(f"Error getting API key usage: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
