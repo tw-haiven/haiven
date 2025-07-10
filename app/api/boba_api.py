@@ -7,7 +7,6 @@ from api.api_creative_matrix import ApiCreativeMatrix
 from api.api_company_research import ApiCompanyResearch
 from api.api_features import ApiFeatures
 from api.api_key_management import ApiKeyManagementAPI
-from auth.api_key_auth import get_api_key_repository
 from llms.chats import (
     ChatManager,
 )
@@ -17,6 +16,7 @@ from prompts.prompts_factory import PromptsFactory
 from config_service import ConfigService
 from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
 from prompts.inspirations import InspirationsManager
+from auth.api_key_repository import ApiKeyRepository
 
 
 class BobaApi:
@@ -28,12 +28,13 @@ class BobaApi:
         config_service: ConfigService,
         image_service: ImageDescriptionService,
         disclaimer_and_guidelines: DisclaimerAndGuidelinesService,
+        api_key_repository: ApiKeyRepository,
     ):
         self.knowledge_manager = knowledge_manager
         self.chat_manager = chat_manager
         self.config_service = config_service
         self.inspirations_manager = InspirationsManager()
-
+        self.api_key_repository = api_key_repository
         self.prompts_chat = prompts_factory.create_chat_prompt_list(
             self.knowledge_manager.knowledge_base_markdown, self.knowledge_manager
         )
@@ -41,12 +42,9 @@ class BobaApi:
         self.prompts_guided = prompts_factory_guided.create_guided_prompt_list(
             self.knowledge_manager.knowledge_base_markdown, self.knowledge_manager
         )
-
         self.model_config = self.config_service.get_chat_model()
-
         self.image_service = image_service
         self.disclaimer_and_guidelines = disclaimer_and_guidelines
-
         print(f"Model used for guided mode: {self.model_config.id}")
 
     def add_endpoints(self, app: FastAPI):
@@ -68,7 +66,6 @@ class BobaApi:
             self.model_config,
             self.prompts_chat,
         )
-
         ApiScenarios(
             app,
             self.chat_manager,
@@ -81,13 +78,11 @@ class BobaApi:
             self.model_config,
             self.prompts_guided,
         )
-
         ApiCompanyResearch(
             app,
             self.chat_manager,
             self.model_config,
             self.prompts_chat,
         )
-
         ApiFeatures(app)
-        ApiKeyManagementAPI(app, get_api_key_repository())
+        ApiKeyManagementAPI(app, self.api_key_repository, self.config_service)

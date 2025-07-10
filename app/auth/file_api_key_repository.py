@@ -15,11 +15,12 @@ from config_service import ConfigService
 class FileApiKeyRepository(ApiKeyRepository):
     """File-based implementation of API key management."""
 
-    def __init__(self, config: str | ConfigService = "app/config/api_keys.json"):
-        if isinstance(config, ConfigService):
-            self.config_path = config.load_api_key_repository_file_path()
-        else:
-            self.config_path = config
+    def __init__(self, config: ConfigService):
+        if not hasattr(config, "load_api_key_repository_file_path"):
+            raise ValueError(
+                "FileApiKeyRepository requires a ConfigService (or compatible) object."
+            )
+        self.config_path = config.load_api_key_repository_file_path()
         self._load_keys()
 
     def _load_keys(self):
@@ -50,18 +51,16 @@ class FileApiKeyRepository(ApiKeyRepository):
             if logger:
                 logger.error(f"Failed to save API keys: {e}")
 
-    def generate_api_key(
-        self, name: str, user_email: str, expires_days: int = 365
-    ) -> str:
+    def generate_api_key(self, name: str, user_id: str, expires_days: int = 365) -> str:
         """Generate a new API key."""
         # Generate a secure random key
         key = secrets.token_urlsafe(32)
         key_hash = hashlib.sha256(key.encode()).hexdigest()
 
-        # Store key metadata
+        # Store key metadata (user_id is already pseudonymized)
         self.keys[key_hash] = {
             "name": name,
-            "user_email": user_email,
+            "user_id": user_id,
             "created_at": datetime.utcnow().isoformat(),
             "expires_at": (
                 datetime.utcnow() + timedelta(days=expires_days)
@@ -73,7 +72,7 @@ class FileApiKeyRepository(ApiKeyRepository):
         self._save_keys()
         logger = HaivenLogger.get()
         if logger:
-            logger.info(f"Generated API key '{name}' for user {user_email}")
+            logger.info(f"Generated API key '{name}' for user (hash) {user_id}")
         return key
 
     def validate_key(self, key: str) -> Optional[Dict[str, Any]]:
@@ -102,7 +101,7 @@ class FileApiKeyRepository(ApiKeyRepository):
 
         return {
             "name": key_info["name"],
-            "user_email": key_info["user_email"],
+            "user_id": key_info["user_id"],
             "key_hash": key_hash,
         }
 
@@ -119,7 +118,7 @@ class FileApiKeyRepository(ApiKeyRepository):
         return {
             key_hash: {
                 "name": info["name"],
-                "user_email": info["user_email"],
+                "user_id": info["user_id"],
                 "created_at": info["created_at"],
                 "expires_at": info["expires_at"],
                 "last_used": info["last_used"],
@@ -128,11 +127,12 @@ class FileApiKeyRepository(ApiKeyRepository):
             for key_hash, info in self.keys.items()
         }
 
-    def list_keys_for_user(self, user_email: str) -> Dict[str, Any]:
-        """List API keys for a specific user."""
+    def list_keys_for_user(self, user_id: str) -> Dict[str, Any]:
+        """List API keys for a specific user (by pseudonymized hash)."""
+        # user_id is already pseudonymized
         all_keys = self.list_keys()
         return {
             key_hash: info
             for key_hash, info in all_keys.items()
-            if info["user_email"] == user_email
+            if info["user_id"] == user_id
         }

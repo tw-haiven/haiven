@@ -514,10 +514,17 @@ class ApiBasics(HaivenBaseApi):
         def download_prompt(
             request: Request, prompt_id: str = None, category: str = None
         ):
+            import re
+
             user_id = self.get_hashed_user_id(request)
 
+            def is_valid_param(val):
+                return bool(val) and re.match(r"^[a-zA-Z0-9_-]{1,100}$", val)
+
             try:
-                if prompt_id:
+                if prompt_id is not None:
+                    if not is_valid_param(prompt_id):
+                        raise HTTPException(status_code=400, detail="Invalid prompt_id")
                     prompt = prompts_chat.get_a_prompt_with_follow_ups(
                         prompt_id, download_prompt=True
                     )
@@ -535,7 +542,9 @@ class ApiBasics(HaivenBaseApi):
                     )
 
                     return JSONResponse([prompt])
-                elif category:
+                elif category is not None:
+                    if not is_valid_param(category):
+                        raise HTTPException(status_code=400, detail="Invalid category")
                     prompts = prompts_chat.get_prompts_with_follow_ups(
                         download_prompt=True, category=category
                     )
@@ -566,6 +575,8 @@ class ApiBasics(HaivenBaseApi):
                         )
 
                     return JSONResponse(prompts)
+            except HTTPException:
+                raise
             except Exception as error:
                 HaivenLogger.get().error(
                     str(error),

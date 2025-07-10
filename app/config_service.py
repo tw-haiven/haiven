@@ -217,22 +217,33 @@ class ConfigService:
         return default_chat_model
 
     def load_api_key_repository_type(self) -> str:
-        """
-        Load the API key repository type from the config file.
-        Returns:
-            str: The repository type (e.g., 'file').
-        """
         repo_config = self.data.get("api_key_repository", {})
-        return repo_config.get("type", "file")
+        repo_type = repo_config.get("type")
+        if not repo_type:
+            raise ValueError("api_key_repository.type is required in config.")
+        return repo_type
 
     def load_api_key_repository_file_path(self) -> str:
-        """
-        Load the file path for the file-based API key repository from the config file.
-        Returns:
-            str: The file path for the file-based repository.
-        """
         repo_config = self.data.get("api_key_repository", {})
-        return repo_config.get("file_path", "app/config/api_keys.json")
+        repo_type = repo_config.get("type")
+        if repo_type != "file":
+            raise ValueError("File path is only required for file-based repositories.")
+        file_cfg = repo_config.get("file", {})
+        file_path = file_cfg.get("file_path")
+        if not file_path:
+            raise ValueError(
+                "api_key_repository.file.file_path is required when type is 'file'."
+            )
+        return file_path
+
+    def load_api_key_pseudonymization_salt(self) -> str:
+        repo_config = self.data.get("api_key_repository", {})
+        salt = repo_config.get("pseudonymization_salt")
+        if not salt:
+            raise ValueError(
+                "api_key_repository.pseudonymization_salt is required in config or environment variable."
+            )
+        return salt
 
     def _load_yaml(self, path: str) -> dict:
         """

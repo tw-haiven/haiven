@@ -7,6 +7,8 @@ import hashlib
 
 from auth.api_key_repository import ApiKeyRepository
 from logger import HaivenLogger
+from auth.api_key_auth_service import pseudonymize
+from config_service import ConfigService
 
 
 class GenerateApiKeyRequest(BaseModel):
@@ -18,9 +20,15 @@ class RevokeApiKeyRequest(BaseModel):
 
 
 class ApiKeyManagementAPI:
-    def __init__(self, app: FastAPI, api_key_repository: ApiKeyRepository):
+    def __init__(
+        self,
+        app: FastAPI,
+        api_key_repository: ApiKeyRepository,
+        config_service: ConfigService,
+    ):
         self.app = app
         self.api_key_repository = api_key_repository
+        self.config_service = config_service
         self.register_endpoints()
 
     def get_user_email(self, request: Request) -> str:
@@ -36,9 +44,11 @@ class ApiKeyManagementAPI:
             """List all API keys for the authenticated user."""
             try:
                 user_email = self.get_user_email(request)
-
-                # Get keys for the specific user
-                user_keys = self.api_key_repository.list_keys_for_user(user_email)
+                salt = self.config_service.load_api_key_pseudonymization_salt()
+                pseudonymized_user_id = pseudonymize(user_email, salt)
+                user_keys = self.api_key_repository.list_keys_for_user(
+                    pseudonymized_user_id
+                )
 
                 # Format for frontend
                 formatted_keys = []
@@ -71,12 +81,12 @@ class ApiKeyManagementAPI:
         async def generate_api_key(request: Request, body: GenerateApiKeyRequest):
             """Generate a new API key for the authenticated user."""
             try:
-                user_email = self.get_user_email(request)
-
-                # Generate the key (24 hours validity)
+                user_id = self.get_user_email(request)
+                salt = self.config_service.load_api_key_pseudonymization_salt()
+                pseudonymized_user_id = pseudonymize(user_id, salt)
                 api_key = self.api_key_repository.generate_api_key(
                     name=body.name,
-                    user_email=user_email,
+                    user_id=pseudonymized_user_id,
                     expires_days=1,  # Fixed 24-hour validity
                 )
 
@@ -85,7 +95,7 @@ class ApiKeyManagementAPI:
 
                 logger = HaivenLogger.get()
                 if logger:
-                    logger.info(f"API key generated via web UI for user {user_email}")
+                    logger.info("API key generated via web UI.")
 
                 return JSONResponse(
                     {
@@ -109,9 +119,12 @@ class ApiKeyManagementAPI:
             """Revoke an API key."""
             try:
                 user_email = self.get_user_email(request)
-
+                salt = self.config_service.load_api_key_pseudonymization_salt()
+                pseudonymized_user_id = pseudonymize(user_email, salt)
                 # First verify the key belongs to the current user
-                user_keys = self.api_key_repository.list_keys_for_user(user_email)
+                user_keys = self.api_key_repository.list_keys_for_user(
+                    pseudonymized_user_id
+                )
                 key_info = user_keys.get(body.key_hash)
 
                 if not key_info:
@@ -123,7 +136,7 @@ class ApiKeyManagementAPI:
                 if success:
                     logger = HaivenLogger.get()
                     if logger:
-                        logger.info(f"API key revoked via web UI for user {user_email}")
+                        logger.info("API key revoked via web UI for user")
                     return JSONResponse(
                         {"success": True, "message": "API key revoked successfully"}
                     )
@@ -143,9 +156,12 @@ class ApiKeyManagementAPI:
             """Get API key usage statistics for the authenticated user."""
             try:
                 user_email = self.get_user_email(request)
-
+                salt = self.config_service.load_api_key_pseudonymization_salt()
+                pseudonymized_user_id = pseudonymize(user_email, salt)
                 # Get keys for the specific user
-                user_keys = self.api_key_repository.list_keys_for_user(user_email)
+                user_keys = self.api_key_repository.list_keys_for_user(
+                    pseudonymized_user_id
+                )
 
                 # Calculate statistics
                 total_keys = len(user_keys)
@@ -166,7 +182,6 @@ class ApiKeyManagementAPI:
                         "total_keys": total_keys,
                         "total_usage": total_usage,
                         "most_recent_usage": most_recent_usage,
-                        "user_email": user_email,
                     }
                 )
 

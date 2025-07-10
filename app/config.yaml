@@ -194,6 +194,16 @@ embeddings:
 
 # --- API Key Repository Configuration ---
 api_key_repository:
-  type: file  # options: file (default), <future: db, cloud, etc.>
-  file_path: app/config/api_keys.json  # used if type is file
+  type: file  # options: file (default), db, cloud, etc.
+  pseudonymization_salt: ${API_KEY_PSEUDONYMIZATION_SALT}  # always required
+  file:
+    file_path: app/config/api_keys.json  # only required if type == file
+  db:
+    # host: ...
+    # port: ...
+    # user: ...
+    # password: ...
+    # database: ...
+  cloud:
+    # cloud-specific options here
 

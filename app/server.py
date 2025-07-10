@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
 
 from api.boba_api import BobaApi
+from auth.api_key_repository import ApiKeyRepository
 from config_service import ConfigService
 from llms.chats import ChatManager
 from logger import HaivenLogger
@@ -18,10 +19,10 @@ from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.base_client import OAuthError
 from ui.url import HaivenUrl
-from auth.api_key_auth import authenticate_with_api_key_for_mcp_only
 import hashlib
 import time
 import os
+from auth.api_key_auth_service import ApiKeyAuthService
 
 
 class Server:
@@ -31,12 +32,16 @@ class Server:
         self,
         chat_manager: ChatManager,
         config_service: ConfigService,
+        api_key_repository: ApiKeyRepository,
         boba_api: BobaApi = None,
     ):
         self.url = HaivenUrl()
         self.chat_manager = chat_manager
         self.config_service = config_service
         self.boba_api = boba_api
+        self.api_key_auth_service = ApiKeyAuthService(
+            config_service, api_key_repository
+        )
         # Initialize Jinja2Templates with autoescape=True for XSS protection
         self.templates = Jinja2Templates(directory="./resources/html_templates")
         self.templates.env.autoescape = True
@@ -148,7 +153,9 @@ class Server:
             if request.url.path not in allowlist:
                 try:
                     # First try API key authentication (only for MCP endpoints)
-                    api_user = await authenticate_with_api_key_for_mcp_only(request)
+                    api_user = await self.api_key_auth_service.authenticate_with_api_key_for_mcp_only(
+                        request
+                    )
                     if api_user:
                         # Store API user in session for this request only
                         request.session["user"] = api_user
