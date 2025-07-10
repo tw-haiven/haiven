@@ -3,10 +3,13 @@
 import tempfile
 import os
 from unittest.mock import MagicMock
+import pytest
+from tests.utils import get_test_data_path
 
 from auth.api_key_repository import ApiKeyRepository
 from auth.file_api_key_repository import FileApiKeyRepository
 from auth.api_key_auth import get_api_key_repository, set_api_key_repository
+from config_service import ConfigService
 
 
 class TestApiKeyRepository:
@@ -56,11 +59,38 @@ class TestApiKeyRepository:
 
     def test_get_api_key_repository_singleton(self):
         """Test that get_api_key_repository returns the same instance."""
-        repo1 = get_api_key_repository()
-        repo2 = get_api_key_repository()
+        config_service = ConfigService("config.yaml")
+        repo1 = get_api_key_repository(config_service)
+        repo2 = get_api_key_repository(config_service)
 
         assert repo1 is repo2
         assert isinstance(repo1, FileApiKeyRepository)
+
+    def test_get_api_key_repository_file_path_from_config(self):
+        """Test that get_api_key_repository uses the file path from configService."""
+        set_api_key_repository(None)
+        import tempfile
+        import yaml
+
+        # Create a temp config file with all required sections
+        with tempfile.NamedTemporaryFile(delete=False, mode="w+") as tmp_file:
+            config_data = {
+                "api_key_repository": {"type": "file", "file_path": tmp_file.name},
+                "default_models": {"chat": "", "vision": "", "embeddings": ""},
+                "models": [],
+                "embeddings": [],
+                "knowledge_pack_path": "./",
+                "enabled_providers": [],
+            }
+            yaml.dump(config_data, tmp_file)
+            tmp_file.flush()
+            config_path = tmp_file.name
+        # File is now closed, safe to use
+        config_service = ConfigService(config_path)
+        repo = get_api_key_repository(config_service)
+        assert isinstance(repo, FileApiKeyRepository)
+        assert repo.config_path == config_path
+        os.unlink(config_path)
 
     def test_set_api_key_repository_injection(self):
         """Test that we can inject a custom repository implementation."""
@@ -88,7 +118,7 @@ class TestApiKeyRepository:
         assert user_info["user_email"] == "test@example.com"
 
         # Reset to default by creating a new instance
-        set_api_key_repository(FileApiKeyRepository())
+        set_api_key_repository(None, ConfigService("config.yaml"))
 
     def test_repository_separation_of_concerns(self):
         """Test that the repository only handles persistence, not business logic."""
@@ -156,3 +186,44 @@ class TestApiKeyRepository:
 
             finally:
                 os.unlink(tmp_file.name)
+
+
+@pytest.fixture(scope="class")
+def setup_api_key_config(request):
+    import tempfile
+    import yaml
+
+    config_dir = get_test_data_path()
+    with tempfile.NamedTemporaryFile(
+        delete=False, mode="w+", dir=config_dir
+    ) as tmp_file:
+        config_data = {
+            "api_key_repository": {"type": "file", "file_path": tmp_file.name},
+            "default_models": {"chat": "", "vision": "", "embeddings": ""},
+            "models": [],
+            "embeddings": [],
+            "knowledge_pack_path": "./",
+            "enabled_providers": [],
+        }
+        yaml.dump(config_data, tmp_file)
+        tmp_file.flush()
+        # Set as class variable for the test class
+        TestApiKeyRepositoryConfig.config_path = tmp_file.name
+
+    def teardown():
+        os.unlink(TestApiKeyRepositoryConfig.config_path)
+
+    request.addfinalizer(teardown)
+
+
+@pytest.mark.usefixtures("setup_api_key_config")
+class TestApiKeyRepositoryConfig:
+    config_path = ""
+
+    def test_get_api_key_repository_file_path_from_config(self):
+        set_api_key_repository(None)
+        assert self.config_path
+        config_service = ConfigService(self.config_path)
+        repo = get_api_key_repository(config_service)
+        assert isinstance(repo, FileApiKeyRepository)
+        assert repo.config_path == self.config_path

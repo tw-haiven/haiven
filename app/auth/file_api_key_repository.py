@@ -9,13 +9,17 @@ import json
 
 from auth.api_key_repository import ApiKeyRepository
 from logger import HaivenLogger
+from config_service import ConfigService
 
 
 class FileApiKeyRepository(ApiKeyRepository):
     """File-based implementation of API key management."""
 
-    def __init__(self, config_path: str = "app/config/api_keys.json"):
-        self.config_path = config_path
+    def __init__(self, config: str | ConfigService = "app/config/api_keys.json"):
+        if isinstance(config, ConfigService):
+            self.config_path = config.load_api_key_repository_file_path()
+        else:
+            self.config_path = config
         self._load_keys()
 
     def _load_keys(self):

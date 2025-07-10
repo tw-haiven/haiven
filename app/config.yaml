@@ -192,3 +192,8 @@ embeddings:
       base_url: ${OLLAMA_HOST}
       model: nomic-embed-text
 
+# --- API Key Repository Configuration ---
+api_key_repository:
+  type: file  # options: file (default), <future: db, cloud, etc.>
+  file_path: app/config/api_keys.json  # used if type is file
+

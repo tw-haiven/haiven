@@ -149,6 +149,6 @@ def create_cli_readme(
             f"cli docs start key {cli_docs_start_key} not found in README.md"
         )
 
-    new_readme_content = f"{readme_content[: start_index]}{docs_content}"
+    new_readme_content = f"{readme_content[:start_index]}{docs_content}"
     with open(readme_path, "w") as f:
         f.write(new_readme_content)

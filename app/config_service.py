@@ -216,6 +216,24 @@ class ConfigService:
                     default_chat_model = "ollama-local-llama3"
         return default_chat_model
 
+    def load_api_key_repository_type(self) -> str:
+        """
+        Load the API key repository type from the config file.
+        Returns:
+            str: The repository type (e.g., 'file').
+        """
+        repo_config = self.data.get("api_key_repository", {})
+        return repo_config.get("type", "file")
+
+    def load_api_key_repository_file_path(self) -> str:
+        """
+        Load the file path for the file-based API key repository from the config file.
+        Returns:
+            str: The file path for the file-based repository.
+        """
+        repo_config = self.data.get("api_key_repository", {})
+        return repo_config.get("file_path", "app/config/api_keys.json")
+
     def _load_yaml(self, path: str) -> dict:
         """
         Load YAML data from a config file.

@@ -77,7 +77,7 @@ class MockModelClient:
                 ' "title": ',
                 ' "Mock scenario 1"',
                 ', "summary": ',
-                ' "scenario description" ' " }, { ",
+                ' "scenario description"  }, { ',
                 ' "title": ',
                 ' "Hello scenario 2" }',
                 json.dumps(full_test_scenario),

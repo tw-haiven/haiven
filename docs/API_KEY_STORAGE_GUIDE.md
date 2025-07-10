@@ -9,7 +9,7 @@ Haiven uses a secure file-based storage system via the `ApiKeyManager` class in 
 ### 🛡️ **Security Features:**
 - **SHA-256 hashing** - Never stores actual API keys, only hashes
 - **Usage tracking** - Monitors when keys are used
-- **Expiration** - Keys expire after 365 days by default
+- **Expiration** - Keys expire after max 30 days by default
 - **Revocation** - Keys can be revoked instantly
 - **Audit logging** - All operations are logged
 

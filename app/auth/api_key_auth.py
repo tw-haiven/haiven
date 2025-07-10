@@ -5,24 +5,47 @@ from typing import Optional, Dict, Any
 from fastapi import Request
 from auth.api_key_repository import ApiKeyRepository
 from auth.file_api_key_repository import FileApiKeyRepository
+from config_service import ConfigService
 
 
 # Global repository instance
 _api_key_repository: Optional[ApiKeyRepository] = None
+_api_key_repository_type: Optional[str] = None
 
 
-def get_api_key_repository() -> ApiKeyRepository:
-    """Get the global API key repository instance."""
-    global _api_key_repository
-    if _api_key_repository is None:
+def get_api_key_repository(
+    config_service: Optional[ConfigService] = None,
+) -> ApiKeyRepository:
+    """Get the global API key repository instance, instantiating based on config if needed."""
+    global _api_key_repository, _api_key_repository_type
+    if _api_key_repository is not None:
+        return _api_key_repository
+    if config_service is None:
+        # fallback for legacy usage, default to file
         _api_key_repository = FileApiKeyRepository()
+        _api_key_repository_type = "file"
+        return _api_key_repository
+    repo_type = config_service.load_api_key_repository_type()
+    if repo_type == "file":
+        _api_key_repository = FileApiKeyRepository(config_service)
+        _api_key_repository_type = "file"
+    else:
+        raise NotImplementedError(
+            f"API key repository type '{repo_type}' is not implemented."
+        )
     return _api_key_repository
 
 
-def set_api_key_repository(repository: Optional[ApiKeyRepository]) -> None:
+def set_api_key_repository(
+    repository: Optional[ApiKeyRepository],
+    config_service: Optional[ConfigService] = None,
+) -> None:
     """Set the global API key repository instance (for testing or different implementations)."""
-    global _api_key_repository
+    global _api_key_repository, _api_key_repository_type
     _api_key_repository = repository
+    if repository is None and config_service is not None:
+        # Reset to config-based default
+        get_api_key_repository(config_service)
 
 
 # Legacy compatibility - keep the old class name for backward compatibility
