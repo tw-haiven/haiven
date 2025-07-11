@@ -23,13 +23,14 @@ import {
   getSortedUserContexts,
   getSummaryForTheUserContext,
 } from "../app/_local_store";
+import LLMTokenUsage from "../app/_llm_token_usage";
 import PromptPreview from "../app/_prompt_preview";
 import MarkdownRenderer from "../app/_markdown_renderer";
 import { scenarioToText } from "../app/_dynamic_data_renderer";
 import EnrichCard from "../app/_enrich_card";
 import Citations from "../pages/_citations";
 import DownloadPrompt from "../app/_download_prompt";
-import { FEATURES } from "../app/feature_toggle";
+import { formattedUsage } from "../app/utils/tokenUtils";
 
 const CardsChat = ({
   promptId,
@@ -69,6 +70,7 @@ const CardsChat = ({
   const [usePromptId, setUsePromptId] = useState(true);
   const [chatSessionIdCardBuilding, setChatSessionIdCardBuilding] = useState();
   const [allContexts, setAllContexts] = useState([]);
+  const [tokenUsage, setTokenUsage] = useState(null);
 
   function combineAllContexts(contexts) {
     const userContexts = getSortedUserContexts();
@@ -231,6 +233,7 @@ const CardsChat = ({
 
   const sendCardBuildingPrompt = (requestData, shouldReset = false) => {
     setIsInputCollapsed(true);
+    setTokenUsage(null);
 
     if (shouldReset) {
       resetChatSession();
@@ -270,6 +273,11 @@ const CardsChat = ({
             : scenarios.map((scenario) => ({
                 ...scenario,
               }));
+
+          if (data.type === "token_usage") {
+            setTokenUsage(formattedUsage(data.data));
+            return;
+          }
 
           if (data.data) {
             ms += data.data;
@@ -354,6 +362,7 @@ const CardsChat = ({
     sendFollowUpPrompt(
       "/api/prompt/follow-up",
       (result) => {
+        console.log("Ji", result);
         setFollowUpResults((prevResults) => ({
           ...prevResults,
           [followUpId]: result,
@@ -574,6 +583,10 @@ const CardsChat = ({
         />
       </h3>
       <DownloadPrompt prompt={selectedPromptConfiguration} />
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 

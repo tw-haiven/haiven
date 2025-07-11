@@ -168,7 +168,10 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_streaming_chat,
     ):
-        mock_streaming_chat.run.return_value = "some response from the model"
+        mock_streaming_chat.run.return_value = iter([
+            "some response from the model",
+            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
+        ])
         mock_chat_manager.streaming_chat.return_value = (
             "some_key",
             mock_streaming_chat,
@@ -201,7 +204,8 @@ class TestApi(unittest.TestCase):
         # Assert the response
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
-        assert streamed_content == "some response from the model"
+        assert "some response from the model" in streamed_content
+        assert "token_usage" in streamed_content
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="some-prompt-id",
             user_input="some user input",
@@ -216,7 +220,10 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_json_chat,
     ):
-        mock_json_chat.run.return_value = "some response from the model"
+        mock_json_chat.run.return_value = iter([
+            '{"data": "some response from the model"}',
+            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
+        ])
         mock_chat_manager.json_chat.return_value = (
             "some_key",
             mock_json_chat,
@@ -251,7 +258,8 @@ class TestApi(unittest.TestCase):
         # Assert the response
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
-        assert streamed_content == "some response from the model"
+        assert "some response from the model" in streamed_content
+        assert "token_usage" in streamed_content
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="guided-requirements",
             user_input=user_input,
@@ -266,7 +274,10 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_json_chat,
     ):
-        mock_json_chat.run.return_value = "some response from the model"
+        mock_json_chat.run.return_value = iter([
+            '{"data": "some response from the model"}',
+            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
+        ])
         mock_chat_manager.json_chat.return_value = (
             "some_key",
             mock_json_chat,
@@ -287,7 +298,8 @@ class TestApi(unittest.TestCase):
         # Assert the response
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
-        assert streamed_content == "some response from the model"
+        assert "some response from the model" in streamed_content
+        assert "token_usage" in streamed_content
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="guided-scenarios-detailed",
             user_input=ANY,
@@ -309,7 +321,10 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_streaming_chat,
     ):
-        mock_streaming_chat.run.return_value = "some response from the model"
+        mock_streaming_chat.run.return_value = iter([
+            "some response from the model",
+            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
+        ])
 
         mock_chat_manager.streaming_chat.return_value = (
             "some_key",
@@ -336,7 +351,8 @@ class TestApi(unittest.TestCase):
         # Assert the response
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
-        assert streamed_content == "some response from the model"
+        assert "some response from the model" in streamed_content
+        assert "token_usage" in streamed_content
 
         args, kwargs = mock_streaming_chat.run.call_args
         actual_composed_prompt = args[0]
@@ -357,7 +373,10 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_streaming_chat,
     ):
-        mock_streaming_chat.run.return_value = "some response from the model"
+        mock_streaming_chat.run.return_value = iter([
+            "some response from the model",
+            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
+        ])
 
         mock_chat_manager.streaming_chat.return_value = (
             "some_key",
@@ -385,7 +404,9 @@ class TestApi(unittest.TestCase):
         # Assert the response
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
-        assert streamed_content == "some response from the model"
+        # The response now includes both the model response and token usage data
+        assert "some response from the model" in streamed_content
+        assert "token_usage" in streamed_content
 
         args, kwargs = mock_streaming_chat.run.call_args
         actual_composed_prompt = args[0]
@@ -403,7 +424,10 @@ class TestApi(unittest.TestCase):
         mock_streaming_chat,
         mock_chat_manager,
     ):
-        mock_streaming_chat.run.return_value = "some response from the model"
+        mock_streaming_chat.run.return_value = iter([
+            "some response from the model",
+            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
+        ])
         mock_chat_manager.streaming_chat.return_value = (
             "some_session_key",
             mock_streaming_chat,
@@ -439,7 +463,8 @@ class TestApi(unittest.TestCase):
         # Assert the response
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
-        assert streamed_content == "some response from the model"
+        assert "some response from the model" in streamed_content
+        assert "token_usage" in streamed_content
 
         assert mock_streaming_chat.run.call_count == 1
         args, kwargs = mock_streaming_chat.run.call_args
@@ -461,7 +486,10 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_json_chat,
     ):
-        mock_json_chat.run.return_value = "some response from the model"
+        mock_json_chat.run.return_value = iter([
+            '{"data": "some response from the model"}',
+            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
+        ])
         mock_chat_manager.json_chat.return_value = (
             "some_key",
             mock_json_chat,
@@ -484,7 +512,9 @@ class TestApi(unittest.TestCase):
         # Assert the response
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
-        assert streamed_content == "some response from the model"
+        # The response now includes both the model response and token usage data
+        assert "some response from the model" in streamed_content
+        assert "token_usage" in streamed_content
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="guided-creative-matrix",
             user_input=ANY,
@@ -812,7 +842,10 @@ class TestApi(unittest.TestCase):
         mock_streaming_chat,
     ):
         # Setup mocks
-        mock_streaming_chat.run.return_value = "some response from the model"
+        mock_streaming_chat.run.return_value = iter([
+            "some response from the model",
+            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
+        ])
         mock_chat_manager.streaming_chat.return_value = (
             "some_key",
             mock_streaming_chat,
@@ -858,7 +891,8 @@ class TestApi(unittest.TestCase):
         # Assert the response
         self.assertEqual(response.status_code, 200)
         streamed_content = response.content.decode("utf-8")
-        self.assertEqual(streamed_content, "some response from the model")
+        self.assertIn("some response from the model", streamed_content)
+        self.assertIn("token_usage", streamed_content)
 
         expected_model_config = ModelConfig("perplexity", "perplexity", "Perplexity")
 

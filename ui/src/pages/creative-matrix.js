@@ -13,8 +13,10 @@ import { parse } from "best-effort-json-parser";
 import { fetchSSE } from "../app/_fetch_sse";
 import ChatHeader from "./_chat_header";
 import useLoader from "../hooks/useLoader";
+import LLMTokenUsage from "../app/_llm_token_usage";
+import { formattedUsage } from "../app/utils/tokenUtils";
 
-const CreativeMatrix = ({ models }) => {
+const CreativeMatrix = ({ models, featureToggleConfig }) => {
   const [promptInput, setPromptInput] = useState("");
   const [rowsCSV, setRowsCSV] = useState("For Customers, For Employees");
   const [columnsCSV, setColumnsCSV] = useState(
@@ -22,6 +24,7 @@ const CreativeMatrix = ({ models }) => {
   );
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(true);
+  const [tokenUsage, setTokenUsage] = useState(null);
   const [disableChatInput, setDisableChatInput] = useState(false);
   const [prompt, setPrompt] = useState(
     "Inspire me with generative AI use cases for Nike",
@@ -132,6 +135,7 @@ const CreativeMatrix = ({ models }) => {
     setDisableChatInput(true);
     setPrompt("");
     setPromptOptionsMenuExpanded(false);
+    setTokenUsage(null);
 
     const uri =
       "/api/creative-matrix?rows=" +
@@ -165,6 +169,11 @@ const CreativeMatrix = ({ models }) => {
             abortLoad();
           },
           onMessageHandle: (data) => {
+            if (data.type === "token_usage") {
+              setTokenUsage(formattedUsage(data.data));
+              return;
+            }
+
             if (data.data) {
               ms += data.data;
               ms = ms.trim().replace(/^[^[]+/, "");
@@ -198,6 +207,10 @@ const CreativeMatrix = ({ models }) => {
   const title = (
     <div className="title">
       <h3>Creative Matrix</h3>
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 

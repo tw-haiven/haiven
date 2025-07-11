@@ -148,13 +148,23 @@ class StreamingChat(HaivenBaseChat):
                     if user_query:
                         self.memory[-1].content = user_query
                     self.memory.append(HaivenAIMessage(content=""))
-                self.memory[-1].content += chunk.get("content", "")
-                yield chunk.get("content", "")
+                
+                if "content" in chunk:
+                    content = chunk.get("content", "")
+                    self.memory[-1].content += content
+                    yield content
+                elif "usage" in chunk:
+                    # Pass through usage data to API level
+                    yield chunk
+                elif "metadata" in chunk:
+                    # Pass through metadata as well
+                    yield chunk
 
         except Exception as error:
             if not str(error).strip():
                 error = "Error while the model was processing the input"
             print(f"[ERROR]: {str(error)}")
+            # For streaming chat, keep raw error format for compatibility
             yield f"[ERROR]: {str(error)}"
 
     def run_with_document(
@@ -214,12 +224,19 @@ class JSONChat(HaivenBaseChat):
                     yield chunk.get("content", "")
                 elif "metadata" in chunk:
                     yield chunk
+                elif self._is_token_usage_chunk(chunk):
+                    # Usage data is now normalized at the source and JSON-serializable
+                    yield chunk
 
         except Exception as error:
             if not str(error).strip():
                 error = "Error while the model was processing the input"
             print(f"[ERROR]: {str(error)}")
-            yield f"[ERROR]: {str(error)}"
+            # Wrap error message in JSON format for fetchSSE compatibility
+            error_response = {
+                "data": f"[ERROR]: {str(error)}"
+            }
+            yield json.dumps(error_response)
 
     def run(self, message: str):
         def create_data_chunk(chunk):
@@ -229,20 +246,55 @@ class JSONChat(HaivenBaseChat):
         try:
             data = enumerate(self.stream_from_model(message))
             for i, chunk in data:
-                if "metadata" in chunk:
-                    yield json.dumps(chunk)
+                if isinstance(chunk, dict):
+                    # Handle metadata and usage data - yield as dict so API can detect it
+                    if "metadata" in chunk or self._is_token_usage_chunk(chunk):
+                        yield chunk
+                    else:
+                        # Other dict content - convert to data format
+                        yield create_data_chunk(str(chunk))
                 else:
+                    # Handle string content
+                    chunk_str = str(chunk)
+                    
+                    # Skip empty chunks
+                    if not chunk_str.strip():
+                        continue
+                    
                     if i == 0:
                         self.memory.append(HaivenAIMessage(content=""))
 
-                    self.memory[-1].content += chunk
-                    yield create_data_chunk(chunk)
+                    self.memory[-1].content += chunk_str
+                    yield create_data_chunk(chunk_str)
 
         except Exception as error:
             if not str(error).strip():
                 error = "Error while the model was processing the input"
             print(f"[ERROR]: {str(error)}")
-            yield f"[ERROR]: {str(error)}"
+            # Wrap error message in JSON format for fetchSSE compatibility
+            error_response = {
+                "data": f"[ERROR]: {str(error)}"
+            }
+            yield json.dumps(error_response)
+
+    def _is_token_usage_chunk(self, chunk):
+        """Check if a chunk is specifically token usage data, not just any content containing 'usage'"""
+        if not isinstance(chunk, dict):
+            return False
+        
+        # Must have "usage" as a top-level key
+        if "usage" not in chunk:
+            return False
+        
+        usage_data = chunk["usage"]
+        
+        # The usage data should be a dict with expected token fields
+        if not isinstance(usage_data, dict):
+            return False
+        
+        # Check for at least one of the expected token usage fields
+        expected_fields = ["prompt_tokens", "completion_tokens", "total_tokens"]
+        return any(field in usage_data for field in expected_fields)
 
 
 class ServerChatSessionMemory:

@@ -1,5 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 class ModelConfig:
@@ -8,8 +8,8 @@ class ModelConfig:
         id: str,
         provider: str,
         name: str,
-        features: List[str] = None,
-        config: Dict[str, str] = None,
+        features: Optional[List[str]] = None,
+        config: Optional[Dict[str, str]] = None,
     ):
         """
         Initialize a Model object.
@@ -30,8 +30,9 @@ class ModelConfig:
 
         self.lite_id = provider.lower() + "/" + self.id
         if self.provider.lower() == "azure":
+            azure_deployment = self.config.get("azure_deployment", "") or ""
             self.lite_id = (
-                provider.lower() + "/" + self.config.get("azure_deployment", "")
+                provider.lower() + "/" + azure_deployment
             )
         elif self.provider.lower() == "aws":
             self.lite_id = "bedrock/" + self.config["model_id"]

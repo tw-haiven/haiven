@@ -20,8 +20,10 @@ import useLoader from "../hooks/useLoader";
 import ChatExploration from "./_chat_exploration";
 import CardsList from "../app/_cards-list";
 import HelpTooltip from "../app/_help_tooltip";
+import LLMTokenUsage from "../app/_llm_token_usage";
+import { formattedUsage } from "../app/utils/tokenUtils";
 
-const Home = ({ models }) => {
+const Home = ({ models, featureToggleConfig }) => {
   const [numOfScenarios, setNumOfScenarios] = useState("6");
   const [scenarios, setScenarios] = useState([]);
   const [disableChatInput, setDisableChatInput] = useState(false);
@@ -36,6 +38,7 @@ const Home = ({ models }) => {
   const [chatContext, setChatContext] = useState({});
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(true);
+  const [tokenUsage, setTokenUsage] = useState(null);
 
   const onClickAdvancedPromptOptions = (e) => {
     setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
@@ -81,6 +84,7 @@ const Home = ({ models }) => {
   const onSubmitPrompt = async (prompt) => {
     setPrompt(prompt);
     setDisableChatInput(true);
+    setTokenUsage(null);
 
     const uri =
       "/api/make-scenario" +
@@ -118,6 +122,11 @@ const Home = ({ models }) => {
         },
         onMessageHandle: (data) => {
           try {
+            if (data.type === "token_usage") {
+              setTokenUsage(formattedUsage(data.data));
+              return;
+            }
+
             if (data.data) {
               ms += data.data;
               ms = ms.trim().replace(/^[^[]+/, "");
@@ -155,6 +164,10 @@ const Home = ({ models }) => {
         criteria like time horizon, realism, and optimism."
         />
       </h3>
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 
