@@ -168,10 +168,18 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_streaming_chat,
     ):
-        mock_streaming_chat.run.return_value = iter([
-            "some response from the model",
-            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
-        ])
+        mock_streaming_chat.run.return_value = iter(
+            [
+                "some response from the model",
+                {
+                    "usage": {
+                        "prompt_tokens": 100,
+                        "completion_tokens": 200,
+                        "total_tokens": 300,
+                    }
+                },
+            ]
+        )
         mock_chat_manager.streaming_chat.return_value = (
             "some_key",
             mock_streaming_chat,
@@ -220,10 +228,18 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_json_chat,
     ):
-        mock_json_chat.run.return_value = iter([
-            '{"data": "some response from the model"}',
-            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
-        ])
+        mock_json_chat.run.return_value = iter(
+            [
+                '{"data": "some response from the model"}',
+                {
+                    "usage": {
+                        "prompt_tokens": 100,
+                        "completion_tokens": 200,
+                        "total_tokens": 300,
+                    }
+                },
+            ]
+        )
         mock_chat_manager.json_chat.return_value = (
             "some_key",
             mock_json_chat,
@@ -274,10 +290,18 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_json_chat,
     ):
-        mock_json_chat.run.return_value = iter([
-            '{"data": "some response from the model"}',
-            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
-        ])
+        mock_json_chat.run.return_value = iter(
+            [
+                '{"data": "some response from the model"}',
+                {
+                    "usage": {
+                        "prompt_tokens": 100,
+                        "completion_tokens": 200,
+                        "total_tokens": 300,
+                    }
+                },
+            ]
+        )
         mock_chat_manager.json_chat.return_value = (
             "some_key",
             mock_json_chat,
@@ -321,10 +345,18 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_streaming_chat,
     ):
-        mock_streaming_chat.run.return_value = iter([
-            "some response from the model",
-            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
-        ])
+        mock_streaming_chat.run.return_value = iter(
+            [
+                "some response from the model",
+                {
+                    "usage": {
+                        "prompt_tokens": 100,
+                        "completion_tokens": 200,
+                        "total_tokens": 300,
+                    }
+                },
+            ]
+        )
 
         mock_chat_manager.streaming_chat.return_value = (
             "some_key",
@@ -373,10 +405,18 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_streaming_chat,
     ):
-        mock_streaming_chat.run.return_value = iter([
-            "some response from the model",
-            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
-        ])
+        mock_streaming_chat.run.return_value = iter(
+            [
+                "some response from the model",
+                {
+                    "usage": {
+                        "prompt_tokens": 100,
+                        "completion_tokens": 200,
+                        "total_tokens": 300,
+                    }
+                },
+            ]
+        )
 
         mock_chat_manager.streaming_chat.return_value = (
             "some_key",
@@ -424,10 +464,18 @@ class TestApi(unittest.TestCase):
         mock_streaming_chat,
         mock_chat_manager,
     ):
-        mock_streaming_chat.run.return_value = iter([
-            "some response from the model",
-            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
-        ])
+        mock_streaming_chat.run.return_value = iter(
+            [
+                "some response from the model",
+                {
+                    "usage": {
+                        "prompt_tokens": 100,
+                        "completion_tokens": 200,
+                        "total_tokens": 300,
+                    }
+                },
+            ]
+        )
         mock_chat_manager.streaming_chat.return_value = (
             "some_session_key",
             mock_streaming_chat,
@@ -486,10 +534,18 @@ class TestApi(unittest.TestCase):
         mock_chat_manager,
         mock_json_chat,
     ):
-        mock_json_chat.run.return_value = iter([
-            '{"data": "some response from the model"}',
-            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
-        ])
+        mock_json_chat.run.return_value = iter(
+            [
+                '{"data": "some response from the model"}',
+                {
+                    "usage": {
+                        "prompt_tokens": 100,
+                        "completion_tokens": 200,
+                        "total_tokens": 300,
+                    }
+                },
+            ]
+        )
         mock_chat_manager.json_chat.return_value = (
             "some_key",
             mock_json_chat,
@@ -842,10 +898,18 @@ class TestApi(unittest.TestCase):
         mock_streaming_chat,
     ):
         # Setup mocks
-        mock_streaming_chat.run.return_value = iter([
-            "some response from the model",
-            {"usage": {"prompt_tokens": 100, "completion_tokens": 200, "total_tokens": 300}}
-        ])
+        mock_streaming_chat.run.return_value = iter(
+            [
+                "some response from the model",
+                {
+                    "usage": {
+                        "prompt_tokens": 100,
+                        "completion_tokens": 200,
+                        "total_tokens": 300,
+                    }
+                },
+            ]
+        )
         mock_chat_manager.streaming_chat.return_value = (
             "some_key",
             mock_streaming_chat,

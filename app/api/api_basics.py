@@ -92,40 +92,55 @@ class HaivenBaseApi:
 
             def stream_with_token_usage(chat_session, prompt):
                 try:
-                    usage_sent = False
                     for chunk in chat_session.run(prompt):
-                        if isinstance(chunk, dict) and self._is_token_usage_chunk(chunk):
+                        if isinstance(chunk, dict) and self._is_token_usage_chunk(
+                            chunk
+                        ):
                             # Send token usage as proper SSE event
                             usage_data = chunk["usage"]
                             if isinstance(usage_data, dict):
-                                model_name = model_config.lite_id if model_config else "unknown"
+                                model_name = (
+                                    model_config.lite_id if model_config else "unknown"
+                                )
                                 token_usage_data = {
                                     "prompt_tokens": usage_data.get("prompt_tokens", 0),
-                                    "completion_tokens": usage_data.get("completion_tokens", 0),
+                                    "completion_tokens": usage_data.get(
+                                        "completion_tokens", 0
+                                    ),
                                     "total_tokens": usage_data.get("total_tokens", 0),
-                                    "model": model_name
+                                    "model": model_name,
                                 }
                                 yield f"event: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
-                                usage_sent = True
                             # Don't yield the raw usage object
                         elif isinstance(chunk, str):
                             # Handle string chunks (including JSON strings)
                             try:
                                 # Try to parse as JSON to check for nested data structure
                                 parsed = json.loads(chunk)
-                                if isinstance(parsed, dict) and self._is_token_usage_chunk(parsed):
+                                if isinstance(
+                                    parsed, dict
+                                ) and self._is_token_usage_chunk(parsed):
                                     # Handle JSON string containing usage
                                     usage_data = parsed["usage"]
                                     if isinstance(usage_data, dict):
-                                        model_name = model_config.lite_id if model_config else "unknown"
+                                        model_name = (
+                                            model_config.lite_id
+                                            if model_config
+                                            else "unknown"
+                                        )
                                         token_usage_data = {
-                                            "prompt_tokens": usage_data.get("prompt_tokens", 0),
-                                            "completion_tokens": usage_data.get("completion_tokens", 0),
-                                            "total_tokens": usage_data.get("total_tokens", 0),
-                                            "model": model_name
+                                            "prompt_tokens": usage_data.get(
+                                                "prompt_tokens", 0
+                                            ),
+                                            "completion_tokens": usage_data.get(
+                                                "completion_tokens", 0
+                                            ),
+                                            "total_tokens": usage_data.get(
+                                                "total_tokens", 0
+                                            ),
+                                            "model": model_name,
                                         }
                                         yield f"event: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
-                                        usage_sent = True
                                 else:
                                     # Regular JSON string content - keep original format for creative-matrix compatibility
                                     yield chunk
@@ -210,55 +225,79 @@ class HaivenBaseApi:
             def stream(chat_session: StreamingChat, prompt):
                 try:
                     token_usage_data = None
-                    
+
                     if document_keys:
                         sources = ""
                         for chunk, sources in chat_session.run_with_document(
                             document_keys, prompt
                         ):
                             sources = sources
-                            if isinstance(chunk, dict) and self._is_token_usage_chunk(chunk):
+                            if isinstance(chunk, dict) and self._is_token_usage_chunk(
+                                chunk
+                            ):
                                 # Store token usage data for later
                                 usage_data = chunk["usage"]
                                 if isinstance(usage_data, dict):
-                                    model_name = model_config.lite_id if model_config else "unknown"
+                                    model_name = (
+                                        model_config.lite_id
+                                        if model_config
+                                        else "unknown"
+                                    )
                                     token_usage_data = {
-                                        "prompt_tokens": usage_data.get("prompt_tokens", 0),
-                                        "completion_tokens": usage_data.get("completion_tokens", 0),
-                                        "total_tokens": usage_data.get("total_tokens", 0),
-                                        "model": model_name
+                                        "prompt_tokens": usage_data.get(
+                                            "prompt_tokens", 0
+                                        ),
+                                        "completion_tokens": usage_data.get(
+                                            "completion_tokens", 0
+                                        ),
+                                        "total_tokens": usage_data.get(
+                                            "total_tokens", 0
+                                        ),
+                                        "model": model_name,
                                     }
                             else:
                                 # Stream raw content chunks for ProChat compatibility
                                 yield chunk
-                        
+
                         if sources:
                             yield "\n\n" + sources
-                        
+
                         # Send token usage as SSE event at the end
                         if token_usage_data:
                             yield f"event: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
                     else:
                         for chunk in chat_session.run(prompt):
-                            if isinstance(chunk, dict) and self._is_token_usage_chunk(chunk):
+                            if isinstance(chunk, dict) and self._is_token_usage_chunk(
+                                chunk
+                            ):
                                 # Store token usage data for later
                                 usage_data = chunk["usage"]
                                 if isinstance(usage_data, dict):
-                                    model_name = model_config.lite_id if model_config else "unknown"
+                                    model_name = (
+                                        model_config.lite_id
+                                        if model_config
+                                        else "unknown"
+                                    )
                                     token_usage_data = {
-                                        "prompt_tokens": usage_data.get("prompt_tokens", 0),
-                                        "completion_tokens": usage_data.get("completion_tokens", 0),
-                                        "total_tokens": usage_data.get("total_tokens", 0),
-                                        "model": model_name
+                                        "prompt_tokens": usage_data.get(
+                                            "prompt_tokens", 0
+                                        ),
+                                        "completion_tokens": usage_data.get(
+                                            "completion_tokens", 0
+                                        ),
+                                        "total_tokens": usage_data.get(
+                                            "total_tokens", 0
+                                        ),
+                                        "model": model_name,
                                     }
                             else:
                                 # Stream raw content chunks for ProChat compatibility
                                 yield chunk
-                        
+
                         # Send token usage as SSE event at the end
                         if token_usage_data:
                             yield f"event: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
-                    
+
                 except Exception as error:
                     if not str(error).strip():
                         error = "Error while the model was processing the input"
@@ -296,17 +335,17 @@ class HaivenBaseApi:
         """Check if a chunk is specifically token usage data, not just any content containing 'usage'"""
         if not isinstance(chunk, dict):
             return False
-        
+
         # Must have "usage" as a top-level key
         if "usage" not in chunk:
             return False
-        
+
         usage_data = chunk["usage"]
-        
+
         # The usage data should be a dict with expected token fields
         if not isinstance(usage_data, dict):
             return False
-        
+
         # Check for at least one of the expected token usage fields
         expected_fields = ["prompt_tokens", "completion_tokens", "total_tokens"]
         return any(field in usage_data for field in expected_fields)

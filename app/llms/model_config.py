@@ -31,9 +31,7 @@ class ModelConfig:
         self.lite_id = provider.lower() + "/" + self.id
         if self.provider.lower() == "azure":
             azure_deployment = self.config.get("azure_deployment", "") or ""
-            self.lite_id = (
-                provider.lower() + "/" + azure_deployment
-            )
+            self.lite_id = provider.lower() + "/" + azure_deployment
         elif self.provider.lower() == "aws":
             self.lite_id = "bedrock/" + self.config["model_id"]
         elif self.provider.lower() == "anthropic":

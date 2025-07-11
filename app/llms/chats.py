@@ -148,7 +148,7 @@ class StreamingChat(HaivenBaseChat):
                     if user_query:
                         self.memory[-1].content = user_query
                     self.memory.append(HaivenAIMessage(content=""))
-                
+
                 if "content" in chunk:
                     content = chunk.get("content", "")
                     self.memory[-1].content += content
@@ -233,9 +233,7 @@ class JSONChat(HaivenBaseChat):
                 error = "Error while the model was processing the input"
             print(f"[ERROR]: {str(error)}")
             # Wrap error message in JSON format for fetchSSE compatibility
-            error_response = {
-                "data": f"[ERROR]: {str(error)}"
-            }
+            error_response = {"data": f"[ERROR]: {str(error)}"}
             yield json.dumps(error_response)
 
     def run(self, message: str):
@@ -256,11 +254,11 @@ class JSONChat(HaivenBaseChat):
                 else:
                     # Handle string content
                     chunk_str = str(chunk)
-                    
+
                     # Skip empty chunks
                     if not chunk_str.strip():
                         continue
-                    
+
                     if i == 0:
                         self.memory.append(HaivenAIMessage(content=""))
 
@@ -272,26 +270,24 @@ class JSONChat(HaivenBaseChat):
                 error = "Error while the model was processing the input"
             print(f"[ERROR]: {str(error)}")
             # Wrap error message in JSON format for fetchSSE compatibility
-            error_response = {
-                "data": f"[ERROR]: {str(error)}"
-            }
+            error_response = {"data": f"[ERROR]: {str(error)}"}
             yield json.dumps(error_response)
 
     def _is_token_usage_chunk(self, chunk):
         """Check if a chunk is specifically token usage data, not just any content containing 'usage'"""
         if not isinstance(chunk, dict):
             return False
-        
+
         # Must have "usage" as a top-level key
         if "usage" not in chunk:
             return False
-        
+
         usage_data = chunk["usage"]
-        
+
         # The usage data should be a dict with expected token fields
         if not isinstance(usage_data, dict):
             return False
-        
+
         # Check for at least one of the expected token usage fields
         expected_fields = ["prompt_tokens", "completion_tokens", "total_tokens"]
         return any(field in usage_data for field in expected_fields)

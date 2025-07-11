@@ -148,9 +148,8 @@ class TestChats(unittest.TestCase):
         response_generator = json_chat.run(question)
 
         # Collect all response chunks
-        actual_streamed_response = ""
         response_chunks = list(response_generator)
-        
+
         # Process chunks - separate string chunks from dict chunks
         string_chunks = []
         dict_chunks = []
@@ -159,20 +158,20 @@ class TestChats(unittest.TestCase):
                 string_chunks.append(chunk)
             elif isinstance(chunk, dict):
                 dict_chunks.append(chunk)
-        
+
         # Verify string chunks are formatted correctly
         expected_string_chunks = [
             '{"data": "{\\"key\\":\\"v"}',
             '{"data": "alue\\"}"}',
         ]
-        
+
         # Check that we have the expected string chunks (allowing for extra newlines)
         for i, expected_chunk in enumerate(expected_string_chunks):
             if i < len(string_chunks):
                 # Remove newlines for comparison
-                actual_chunk_clean = string_chunks[i].replace('\n', '')
+                actual_chunk_clean = string_chunks[i].replace("\n", "")
                 assert expected_chunk in actual_chunk_clean
-        
+
         # Verify metadata chunks are passed through correctly
         metadata_chunks = [chunk for chunk in dict_chunks if "metadata" in chunk]
         assert len(metadata_chunks) == 1
