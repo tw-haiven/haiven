@@ -72,10 +72,10 @@ export const fetchSSE = async (uri, fetchOptions, options) => {
     while (!done) {
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
-      
+
       // Skip if no value to decode
       if (!value) continue;
-      
+
       const chunkValue = decoder.decode(value, { stream: !doneReading });
 
       // console.log("reading", chunkValue);
@@ -99,32 +99,39 @@ export const fetchSSE = async (uri, fetchOptions, options) => {
           chunks.forEach((value) => {
             // Skip empty chunks
             if (!value || !value.trim()) return;
-            
+
             // Check if this is an SSE event (starts with "event:")
-            if (value.trim().startsWith('event:')) {
+            if (value.trim().startsWith("event:")) {
               // Handle SSE events
-              const lines = value.trim().split('\n');
+              const lines = value.trim().split("\n");
               let eventType = null;
               let eventData = null;
-              
+
               for (const line of lines) {
-                if (line.startsWith('event:')) {
+                if (line.startsWith("event:")) {
                   eventType = line.substring(6).trim();
-                } else if (line.startsWith('data:')) {
+                } else if (line.startsWith("data:")) {
                   eventData = line.substring(5).trim();
                 }
               }
-              
-              if (eventType === 'token_usage' && eventData) {
+
+              if (eventType === "token_usage" && eventData) {
                 try {
                   const tokenUsageData = JSON.parse(eventData);
                   // Call onMessageHandle with a structured token usage object
-                  options.onMessageHandle?.({
-                    type: 'token_usage',
-                    data: tokenUsageData
-                  }, response);
+                  options.onMessageHandle?.(
+                    {
+                      type: "token_usage",
+                      data: tokenUsageData,
+                    },
+                    response,
+                  );
                 } catch (parseError) {
-                  console.log("Failed to parse token usage data:", eventData, parseError);
+                  console.log(
+                    "Failed to parse token usage data:",
+                    eventData,
+                    parseError,
+                  );
                 }
               }
             } else {
@@ -132,7 +139,7 @@ export const fetchSSE = async (uri, fetchOptions, options) => {
               try {
                 const data = JSON.parse(value);
                 // Only check for error messages on string data, not objects
-                if (typeof data.data === 'string') {
+                if (typeof data.data === "string") {
                   checkIsErrorMessage(data.data || "");
                 }
                 options.onMessageHandle?.(data, response);
@@ -145,37 +152,41 @@ export const fetchSSE = async (uri, fetchOptions, options) => {
       } else if (options.text === true) {
         // Handle SSE format for text streams
         if (chunkValue !== "") {
-          const lines = chunkValue.split('\n');
-          let eventType = 'message';
-          
+          const lines = chunkValue.split("\n");
+          let eventType = "message";
+
           for (const line of lines) {
-            if (line.startsWith('event: ')) {
+            if (line.startsWith("event: ")) {
               eventType = line.substring(7).trim();
-            } else if (line.startsWith('data: ')) {
+            } else if (line.startsWith("data: ")) {
               const data = line.substring(6);
-              
-              if (eventType === 'token_usage') {
+
+              if (eventType === "token_usage") {
                 try {
                   const tokenUsageData = JSON.parse(data);
                   options.onTokenUsage?.(tokenUsageData);
                 } catch (parseError) {
-                  console.log("Failed to parse token usage data:", data, parseError);
+                  console.log(
+                    "Failed to parse token usage data:",
+                    data,
+                    parseError,
+                  );
                 }
-                eventType = 'message'; // Reset for next event
+                eventType = "message"; // Reset for next event
               } else {
                 // Regular text content - check for errors and pass through
                 checkIsErrorMessage(data);
                 options.onMessageHandle?.(data, response);
               }
-            } else if (line === '') {
+            } else if (line === "") {
               // End of event, reset type
-              eventType = 'message';
+              eventType = "message";
             }
           }
         }
       } else {
         // Ensure chunkValue is a string before checking for error messages
-        if (typeof chunkValue === 'string') {
+        if (typeof chunkValue === "string") {
           checkIsErrorMessage(chunkValue);
         }
         options.onMessageHandle?.(chunkValue, response);

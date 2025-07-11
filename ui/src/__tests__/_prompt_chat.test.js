@@ -325,13 +325,18 @@ describe("PromptChat Component", () => {
     });
 
     // Check if the response appears in the ProChat component
-    await waitFor(() => {
-      // ProChat renders messages in its own structure, so we need to find the text within the chat content
-      const chatContainer = document.querySelector('.ant-pro-chat-container');
-      expect(chatContainer).toBeInTheDocument();
-      // Use queryByText to find the text within the chat structure
-      expect(screen.queryByText(mockResponse, { exact: false })).toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        // ProChat renders messages in its own structure, so we need to find the text within the chat content
+        const chatContainer = document.querySelector(".ant-pro-chat-container");
+        expect(chatContainer).toBeInTheDocument();
+        // Use queryByText to find the text within the chat structure
+        expect(
+          screen.queryByText(mockResponse, { exact: false }),
+        ).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
   });
 
   it("should fetch chat response for multiple contexts which includes knowledge pack contexts and user contexts", async () => {
@@ -385,13 +390,18 @@ describe("PromptChat Component", () => {
     });
 
     // Check if the response appears in the ProChat component
-    await waitFor(() => {
-      // ProChat renders messages in its own structure, so we need to find the text within the chat content
-      const chatContainer = document.querySelector('.ant-pro-chat-container');
-      expect(chatContainer).toBeInTheDocument();
-      // Use queryByText to find the text within the chat structure
-      expect(screen.queryByText(mockResponse, { exact: false })).toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        // ProChat renders messages in its own structure, so we need to find the text within the chat content
+        const chatContainer = document.querySelector(".ant-pro-chat-container");
+        expect(chatContainer).toBeInTheDocument();
+        // Use queryByText to find the text within the chat structure
+        expect(
+          screen.queryByText(mockResponse, { exact: false }),
+        ).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
   });
 
   //TODO:
