@@ -3,10 +3,14 @@ import { useState, useRef, useEffect } from "react";
 import { ProChatProvider } from "@ant-design/pro-chat";
 import ChatWidget from "../app/_chat";
 import VerticalPossibilityPanel from "./_vertical-possibility-panel";
-import { saveTokenUsage } from "../app/_local_store";
 import LLMTokenUsage from "../app/_llm_token_usage";
+import { formattedUsage } from "../app/utils/tokenUtils";
 
-export default function ChatExploration({ context, scenarioQueries = [] }) {
+export default function ChatExploration({
+  context,
+  scenarioQueries = [],
+  featureToggleConfig = {},
+}) {
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
   const [previousContext, setPreviousContext] = useState(context);
@@ -34,7 +38,7 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
         start(controller) {
           const reader = response.body.getReader();
           const decoder = new TextDecoder();
-          let buffer = '';
+          let buffer = "";
 
           function pump() {
             return reader.read().then(({ done, value }) => {
@@ -46,11 +50,11 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
               const chunk = decoder.decode(value, { stream: true });
               buffer += chunk;
               // Check if this chunk contains SSE token usage event
-              if (buffer.includes('event: token_usage')) {
+              if (buffer.includes("event: token_usage")) {
                 // Split at the SSE event boundary
-                const parts = buffer.split('event: token_usage');
+                const parts = buffer.split("event: token_usage");
                 const contentPart = parts[0];
-                const sseEventPart = 'event: token_usage' + parts[1];
+                const sseEventPart = "event: token_usage" + parts[1];
 
                 // Send content part to ProChat
                 if (contentPart) {
@@ -58,29 +62,32 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
                 }
 
                 // Parse token usage from SSE event
-                const lines = sseEventPart.split('\n');
+                const lines = sseEventPart.split("\n");
                 for (const line of lines) {
-                  if (line.startsWith('data: ')) {
+                  if (line.startsWith("data: ")) {
                     const data = line.substring(6);
 
                     // Process complete SSE events
 
                     try {
                       const tokenUsageData = JSON.parse(data);
-                      setTokenUsage(tokenUsageData);
-                      saveTokenUsage(tokenUsageData);
+                      setTokenUsage(formattedUsage(tokenUsageData));
                     } catch (parseError) {
-                      console.log("Failed to parse token usage data:", data, parseError);
-                    } break;
+                      console.log(
+                        "Failed to parse token usage data:",
+                        data,
+                        parseError,
+                      );
+                    }
+                    break;
                   }
                 }
 
-                buffer = '';
+                buffer = "";
               } else {
                 // Regular content - stream directly to ProChat
                 controller.enqueue(new TextEncoder().encode(chunk));
-                buffer = '';
-
+                buffer = "";
               }
 
               return pump();
@@ -88,7 +95,7 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
           }
 
           return pump();
-        }
+        },
       });
 
       // Create new response with filtered stream
@@ -166,7 +173,10 @@ export default function ChatExploration({ context, scenarioQueries = [] }) {
               : "Chat with me! Type your question below."
           }
         />
-        <LLMTokenUsage />
+        <LLMTokenUsage
+          tokenUsage={tokenUsage}
+          featureToggleConfig={featureToggleConfig}
+        />
       </ProChatProvider>
     </div>
   );

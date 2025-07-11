@@ -24,10 +24,10 @@ import useLoader from "../hooks/useLoader";
 import ChatExploration from "./_chat_exploration";
 import CardsList from "../app/_cards-list";
 import HelpTooltip from "../app/_help_tooltip";
-import { saveTokenUsage } from "../app/_local_store";
 import LLMTokenUsage from "../app/_llm_token_usage";
+import { formattedUsage } from "../app/utils/tokenUtils";
 
-const Home = ({ models }) => {
+const Home = ({ models, featureToggleConfig }) => {
   const [numOfScenarios, setNumOfScenarios] = useState("6");
   const [scenarios, setScenarios] = useState([]);
   const [disableChatInput, setDisableChatInput] = useState(false);
@@ -127,11 +127,10 @@ const Home = ({ models }) => {
         onMessageHandle: (data) => {
           try {
             if (data.type === "token_usage") {
-              setTokenUsage(data.data);
-              saveTokenUsage(data.data);
+              setTokenUsage(formattedUsage(data.data));
               return;
             }
-            
+
             if (data.data) {
               ms += data.data;
               ms = ms.trim().replace(/^[^[]+/, "");
@@ -169,6 +168,10 @@ const Home = ({ models }) => {
         criteria like time horizon, realism, and optimism."
         />
       </h3>
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 
@@ -383,15 +386,15 @@ const Home = ({ models }) => {
           scenarioQueries={[
             {
               name: "What are the key drivers for this scenario?",
-              description: "What are the key drivers for this scenario?"
+              description: "What are the key drivers for this scenario?",
             },
             {
               name: "What are the key uncertainties?",
-              description: "What are the key uncertainties?"
+              description: "What are the key uncertainties?",
             },
             {
               name: "What business opportunities could this trigger?",
-              description: "What business opportunities could this trigger?"
+              description: "What business opportunities could this trigger?",
             },
           ]}
         />
@@ -407,7 +410,6 @@ const Home = ({ models }) => {
                 stopLoadComponent={<StopLoad />}
               />
               {inputAreaRender()}
-              <LLMTokenUsage />
             </div>
           </div>
         </div>

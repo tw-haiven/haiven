@@ -13,10 +13,10 @@ import { parse } from "best-effort-json-parser";
 import { fetchSSE } from "../app/_fetch_sse";
 import ChatHeader from "./_chat_header";
 import useLoader from "../hooks/useLoader";
-import { saveTokenUsage } from "../app/_local_store";
 import LLMTokenUsage from "../app/_llm_token_usage";
+import { formattedUsage } from "../app/utils/tokenUtils";
 
-const CreativeMatrix = ({ models }) => {
+const CreativeMatrix = ({ models, featureToggleConfig }) => {
   const [promptInput, setPromptInput] = useState("");
   const [rowsCSV, setRowsCSV] = useState("For Customers, For Employees");
   const [columnsCSV, setColumnsCSV] = useState(
@@ -170,11 +170,10 @@ const CreativeMatrix = ({ models }) => {
           },
           onMessageHandle: (data) => {
             if (data.type === "token_usage") {
-              setTokenUsage(data.data);
-              saveTokenUsage(data.data);
+              setTokenUsage(formattedUsage(data.data));
               return;
             }
-            
+
             if (data.data) {
               ms += data.data;
               ms = ms.trim().replace(/^[^[]+/, "");
@@ -208,6 +207,10 @@ const CreativeMatrix = ({ models }) => {
   const title = (
     <div className="title">
       <h3>Creative Matrix</h3>
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 
@@ -450,7 +453,6 @@ const CreativeMatrix = ({ models }) => {
                 </table>
               </div>
               {inputAreaRender()}
-              <LLMTokenUsage />
             </div>
           </div>
         </div>

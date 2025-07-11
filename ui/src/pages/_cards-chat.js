@@ -22,7 +22,6 @@ import {
   addToPinboard,
   getSortedUserContexts,
   getSummaryForTheUserContext,
-  saveTokenUsage,
 } from "../app/_local_store";
 import LLMTokenUsage from "../app/_llm_token_usage";
 import PromptPreview from "../app/_prompt_preview";
@@ -31,7 +30,7 @@ import { scenarioToText } from "../app/_dynamic_data_renderer";
 import EnrichCard from "../app/_enrich_card";
 import Citations from "../pages/_citations";
 import DownloadPrompt from "../app/_download_prompt";
-import { FEATURES } from "../app/feature_toggle";
+import { formattedUsage } from "../app/utils/tokenUtils";
 
 const CardsChat = ({
   promptId,
@@ -276,8 +275,7 @@ const CardsChat = ({
               }));
 
           if (data.type === "token_usage") {
-            setTokenUsage(data.data);
-            saveTokenUsage(data.data);
+            setTokenUsage(formattedUsage(data.data));
             return;
           }
 
@@ -364,6 +362,7 @@ const CardsChat = ({
     sendFollowUpPrompt(
       "/api/prompt/follow-up",
       (result) => {
+        console.log("Ji", result);
         setFollowUpResults((prevResults) => ({
           ...prevResults,
           [followUpId]: result,
@@ -584,6 +583,10 @@ const CardsChat = ({
         />
       </h3>
       <DownloadPrompt prompt={selectedPromptConfiguration} />
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 
@@ -692,7 +695,6 @@ const CardsChat = ({
                   />
                 </div>
               )}
-              <LLMTokenUsage />
             </div>
           </div>
         </div>

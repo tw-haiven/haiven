@@ -16,11 +16,10 @@ import PromptPreview from "./_prompt_preview";
 import {
   getSortedUserContexts,
   getSummaryForTheUserContext,
-  saveTokenUsage,
 } from "./_local_store";
 import DownloadPrompt from "./_download_prompt";
-import { FEATURES } from "../app/feature_toggle";
 import LLMTokenUsage from "./_llm_token_usage";
+import { formattedUsage } from "../app/utils/tokenUtils";
 
 const PromptChat = ({
   promptId,
@@ -165,7 +164,8 @@ const PromptChat = ({
 
       if (!response.ok) {
         const errorBody = await response.json();
-        const detailedErrorMessage = errorBody.detail || "An unknown error occurred.";
+        const detailedErrorMessage =
+          errorBody.detail || "An unknown error occurred.";
         throw new Error(`ERROR: ${detailedErrorMessage}`);
       }
 
@@ -182,7 +182,7 @@ const PromptChat = ({
         start(controller) {
           const reader = response.body.getReader();
           const decoder = new TextDecoder();
-          let buffer = '';
+          let buffer = "";
 
           function pump() {
             return reader.read().then(({ done, value }) => {
@@ -195,11 +195,11 @@ const PromptChat = ({
               buffer += chunk;
 
               // Check if this chunk contains SSE token usage event
-              if (buffer.includes('event: token_usage')) {
+              if (buffer.includes("event: token_usage")) {
                 // Split at the SSE event boundary
-                const parts = buffer.split('event: token_usage');
+                const parts = buffer.split("event: token_usage");
                 const contentPart = parts[0];
-                const sseEventPart = 'event: token_usage' + parts[1];
+                const sseEventPart = "event: token_usage" + parts[1];
 
                 // Send content part to ProChat
                 if (contentPart) {
@@ -207,29 +207,31 @@ const PromptChat = ({
                 }
 
                 // Parse token usage from SSE event
-                const lines = sseEventPart.split('\n');
+                const lines = sseEventPart.split("\n");
                 for (const line of lines) {
-                  if (line.startsWith('data: ')) {
+                  if (line.startsWith("data: ")) {
                     const data = line.substring(6);
 
                     // Handle token usage
                     try {
                       const tokenUsageData = JSON.parse(data);
-                      setTokenUsage(tokenUsageData);
-                      saveTokenUsage(tokenUsageData);
+                      setTokenUsage(formattedUsage(tokenUsageData));
                     } catch (parseError) {
-                      console.log("Failed to parse token usage data:", data, parseError);
+                      console.log(
+                        "Failed to parse token usage data:",
+                        data,
+                        parseError,
+                      );
                     }
                     break;
                   }
                 }
-                
-                buffer = '';
+
+                buffer = "";
               } else {
                 // Regular content - stream directly to ProChat
                 controller.enqueue(new TextEncoder().encode(chunk));
-                buffer = '';
-          
+                buffer = "";
               }
 
               return pump();
@@ -237,7 +239,7 @@ const PromptChat = ({
           }
 
           return pump();
-        }
+        },
       });
 
       // Return new response with filtered stream
@@ -356,6 +358,10 @@ const PromptChat = ({
         />
       </h3>
       {selectedPrompt && <DownloadPrompt prompt={selectedPrompt} />}
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 
@@ -393,7 +399,6 @@ const PromptChat = ({
                   advancedPromptingMenu={advancedPromptingMenu}
                   conversationStarted={conversationStarted}
                 />
-                <LLMTokenUsage />
               </ProChatProvider>
             </div>
           </div>

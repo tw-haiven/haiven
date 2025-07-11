@@ -106,28 +106,3 @@ export const getSummaryForTheUserContext = (contextTitle) => {
   );
   return context ? context.summary : "";
 };
-
-export const saveTokenUsage = (tokenUsage) => {
-  try {
-    // Map the token usage format to the expected format
-    const formattedUsage = {
-      input_tokens: tokenUsage.prompt_tokens || 0,
-      output_tokens: tokenUsage.completion_tokens || 0,
-      total_tokens: tokenUsage.total_tokens || 0,
-      model: tokenUsage.model || "",
-    };
-    localStorage.setItem("tokenUsage", JSON.stringify(formattedUsage));
-  } catch (error) {
-    console.log("Failed to save token usage:", error.message);
-  }
-};
-
-export const getTokenUsage = () => {
-  try {
-    const tokenUsage = localStorage.getItem("tokenUsage");
-    return tokenUsage ? JSON.parse(tokenUsage) : {};
-  } catch (error) {
-    console.log("Failed to get token usage:", error.message);
-    return {};
-  }
-};
