@@ -1,7 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
-import LLMTokenUsage from "../app/_LLM_token_usage";
+import LLMTokenUsage from "../app/_llm_token_usage";
 import { FEATURES } from "../app/feature_toggle";
 
 // Mock the formatTokens utility
