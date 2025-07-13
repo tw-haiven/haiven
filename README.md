@@ -169,6 +169,10 @@ Run Python backend:
 poetry run init
 poetry run app
 ```
+To test the tests for the Python backend, run:
+```
+poetry run test
+```
 
 Run UI code in hot reload mode:
 ```

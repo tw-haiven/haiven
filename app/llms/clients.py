@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import json
 import os
-from typing import List
+from typing import List, Dict, Any, Optional
 from config_service import ConfigService
 from llms.model_config import ModelConfig
 from pydantic import BaseModel
@@ -12,6 +12,10 @@ from llms.litellm_wrapper import llmCompletion
 
 class HaivenMessage(BaseModel):
     content: str
+
+    def to_json(self) -> dict:
+        # Default implementation - subclasses should override with proper role
+        return {"content": self.content, "role": "user"}
 
 
 class HaivenAIMessage(HaivenMessage):
@@ -49,6 +53,7 @@ class MockChoice(BaseModel):
 
 class MockResult(BaseModel):
     choices: List[MockChoice]
+    usage: Optional[Dict[str, Any]] = None
 
 
 class MockModelClient:
@@ -83,8 +88,16 @@ class MockModelClient:
                 json.dumps(full_test_scenario),
                 "]",
             ]
-        for chunk in test_data:
-            yield MockResult(choices=[MockChoice(delta=MockDelta(content=chunk))])
+
+        # Mock token usage for testing
+        mock_usage = {"prompt_tokens": 25, "completion_tokens": 15, "total_tokens": 40}
+
+        for i, chunk in enumerate(test_data):
+            result = MockResult(choices=[MockChoice(delta=MockDelta(content=chunk))])
+            # Add usage data only on the last chunk
+            if i == len(test_data) - 1:
+                result.usage = mock_usage
+            yield result
 
 
 class ChatClient:
@@ -105,18 +118,91 @@ class ChatClient:
             completion_fn = llmCompletion
 
         citations = None
+        usage_data = None
         for result in completion_fn(
             model=self.model_config.lite_id,
             messages=json_messages,
             stream=True,
+            stream_options={"include_usage": True},
             **self._get_kwargs(),
         ):
-            citations = citations or result.get("citations", None)
-            if result.choices[0].delta.content is not None:
-                yield {"content": result.choices[0].delta.content}
+            # Handle different response types safely
+            try:
+                if isinstance(result, dict):
+                    citations = citations or result.get("citations", None)
+                    if self._is_token_usage_result(result):
+                        usage_data = result.get("usage")
+                else:
+                    # Handle object-like responses
+                    if hasattr(result, "usage") and getattr(result, "usage", None):
+                        usage_data = getattr(result, "usage")
+                    if hasattr(result, "get"):
+                        citations = citations or getattr(result, "get")(
+                            "citations", None
+                        )
+
+                # Extract content from streaming response
+                if hasattr(result, "choices") and getattr(result, "choices", None):
+                    choices = getattr(result, "choices")
+                    if choices and len(choices) > 0 and hasattr(choices[0], "delta"):
+                        delta = getattr(choices[0], "delta")
+                        if (
+                            hasattr(delta, "content")
+                            and getattr(delta, "content") is not None
+                        ):
+                            yield {"content": getattr(delta, "content")}
+            except (AttributeError, TypeError, IndexError):
+                # Skip malformed responses
+                continue
 
         if citations is not None:
             yield {"metadata": {"citations": citations}}
+
+        # Yield usage data if available - simplified
+        if usage_data is not None:
+            # Simple normalization - just extract basic fields
+            try:
+                normalized_usage = {
+                    "prompt_tokens": getattr(usage_data, "prompt_tokens", 0),
+                    "completion_tokens": getattr(usage_data, "completion_tokens", 0),
+                    "total_tokens": getattr(usage_data, "total_tokens", 0),
+                }
+                yield {"usage": normalized_usage}
+            except Exception:
+                # If we can't extract, just provide zeros
+                yield {
+                    "usage": {
+                        "prompt_tokens": 0,
+                        "completion_tokens": 0,
+                        "total_tokens": 0,
+                    }
+                }
+
+    def _is_token_usage_result(self, result):
+        """Check if a result contains token usage data, not just any content containing 'usage'"""
+        if not isinstance(result, dict):
+            return False
+
+        # Must have "usage" as a top-level key
+        if "usage" not in result:
+            return False
+
+        usage_data = result["usage"]
+
+        # For dict usage data, check for expected token fields
+        if isinstance(usage_data, dict):
+            expected_fields = ["prompt_tokens", "completion_tokens", "total_tokens"]
+            return any(field in usage_data for field in expected_fields)
+
+        # For object usage data, check for expected token attributes
+        if (
+            hasattr(usage_data, "prompt_tokens")
+            or hasattr(usage_data, "completion_tokens")
+            or hasattr(usage_data, "total_tokens")
+        ):
+            return True
+
+        return False
 
 
 class ChatClientFactory:

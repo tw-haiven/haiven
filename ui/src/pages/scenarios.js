@@ -1,11 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import React, { useState } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import {
-  RiSendPlane2Line,
-  RiStopCircleFill,
-  RiAttachment2,
-} from "react-icons/ri";
+import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
 import { Button, Drawer, Checkbox, Input, Select, Form, Collapse } from "antd";
 import { toast } from "react-toastify";
@@ -19,13 +15,15 @@ import {
   RiAliensLine,
 } from "react-icons/ri";
 import ChatHeader from "./_chat_header";
-import { scenarioToText } from "../app/_card_actions";
+import { scenarioToText } from "../app/_dynamic_data_renderer";
 import useLoader from "../hooks/useLoader";
 import ChatExploration from "./_chat_exploration";
 import CardsList from "../app/_cards-list";
 import HelpTooltip from "../app/_help_tooltip";
+import LLMTokenUsage from "../app/_llm_token_usage";
+import { formattedUsage } from "../app/utils/tokenUtils";
 
-const Home = ({ models }) => {
+const Home = ({ models, featureToggleConfig }) => {
   const [numOfScenarios, setNumOfScenarios] = useState("6");
   const [scenarios, setScenarios] = useState([]);
   const [disableChatInput, setDisableChatInput] = useState(false);
@@ -40,6 +38,7 @@ const Home = ({ models }) => {
   const [chatContext, setChatContext] = useState({});
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(true);
+  const [tokenUsage, setTokenUsage] = useState(null);
 
   const onClickAdvancedPromptOptions = (e) => {
     setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
@@ -85,6 +84,7 @@ const Home = ({ models }) => {
   const onSubmitPrompt = async (prompt) => {
     setPrompt(prompt);
     setDisableChatInput(true);
+    setTokenUsage(null);
 
     const uri =
       "/api/make-scenario" +
@@ -122,6 +122,11 @@ const Home = ({ models }) => {
         },
         onMessageHandle: (data) => {
           try {
+            if (data.type === "token_usage") {
+              setTokenUsage(formattedUsage(data.data));
+              return;
+            }
+
             if (data.data) {
               ms += data.data;
               ms = ms.trim().replace(/^[^[]+/, "");
@@ -159,6 +164,10 @@ const Home = ({ models }) => {
         criteria like time horizon, realism, and optimism."
         />
       </h3>
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 
@@ -371,9 +380,18 @@ const Home = ({ models }) => {
             avatar: "/boba/user-5-fill-dark-blue.svg",
           }}
           scenarioQueries={[
-            "What are the key drivers for this scenario?",
-            "What are the key uncertainties?",
-            "What business opportunities could this trigger?",
+            {
+              name: "What are the key drivers for this scenario?",
+              description: "What are the key drivers for this scenario?",
+            },
+            {
+              name: "What are the key uncertainties?",
+              description: "What are the key uncertainties?",
+            },
+            {
+              name: "What business opportunities could this trigger?",
+              description: "What business opportunities could this trigger?",
+            },
           ]}
         />
       </Drawer>

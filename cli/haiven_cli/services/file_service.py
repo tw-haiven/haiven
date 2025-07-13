@@ -90,37 +90,6 @@ class FileService:
         with open(output_path, "w") as f:
             f.write(str(metadata_file_content))
 
-    def write_architecture_file(
-        self, arch_file_path: str, architecture_description: str = ""
-    ):
-        file_content = f"""---
-key: architecture
-title: Architecture
-{architecture_description}
----
-"""
-        with open(arch_file_path, "w") as f:
-            f.write(file_content)
-
-    def write_business_context_file(
-        self, business_context_file_path: str, business_context_description: str = ""
-    ):
-        file_content = f"""---
-key: business
-title: Context
-{business_context_description}
----
-"""
-        with open(business_context_file_path, "w") as f:
-            f.write(file_content)
-
-    def create_context_structure(self, context_name: str, kp_root_dir: str):
-        if not os.path.exists(kp_root_dir):
-            raise FileNotFoundError(
-                f"Knowledge package dir {kp_root_dir} was not found"
-            )
-        os.makedirs(f"{kp_root_dir}/contexts/{context_name}/embeddings", exist_ok=True)
-
 
 def _get_pdf_title(pdf_reader, source):
     if not pdf_reader.metadata or not pdf_reader.metadata.title:

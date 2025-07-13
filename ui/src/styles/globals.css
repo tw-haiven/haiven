@@ -2236,6 +2236,23 @@ a.feedback:hover {
   }
 }
 
+.download-prompt-button, .token-usage-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-flamingo);
+  transition: all 0.3s ease;
+  gap: 0.5rem;
+  font-size: 1.3em;
+}
+
+.download-prompt-button:hover, .token-usage-icon:hover {
+  color: var(--color-dark-blue);
+}
 /* Print layout for the company overviews */
 @media print {
 
