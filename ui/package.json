@@ -12,9 +12,6 @@
     "test:run": "vitest run",
     "update": "node update_packages.js"
   },
-  "engines": {
-    "node": "22.6"
-  },
   "dependencies": {
     "@ant-design/pro-chat": "^1.15.3",
     "@tailwindcss/postcss": "^4.1.4",
