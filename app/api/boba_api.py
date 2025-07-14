@@ -16,7 +16,7 @@ from prompts.prompts_factory import PromptsFactory
 from config_service import ConfigService
 from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
 from prompts.inspirations import InspirationsManager
-from auth.api_key_repository import ApiKeyRepository
+from auth.api_key_auth_service import ApiKeyAuthService
 
 
 class BobaApi:
@@ -28,13 +28,13 @@ class BobaApi:
         config_service: ConfigService,
         image_service: ImageDescriptionService,
         disclaimer_and_guidelines: DisclaimerAndGuidelinesService,
-        api_key_repository: ApiKeyRepository,
+        api_key_auth_service: ApiKeyAuthService,
     ):
         self.knowledge_manager = knowledge_manager
         self.chat_manager = chat_manager
         self.config_service = config_service
         self.inspirations_manager = InspirationsManager()
-        self.api_key_repository = api_key_repository
+        self.api_key_auth_service = api_key_auth_service
         self.prompts_chat = prompts_factory.create_chat_prompt_list(
             self.knowledge_manager.knowledge_base_markdown, self.knowledge_manager
         )
@@ -85,4 +85,4 @@ class BobaApi:
             self.prompts_chat,
         )
         ApiFeatures(app)
-        ApiKeyManagementAPI(app, self.api_key_repository, self.config_service)
+        ApiKeyManagementAPI(app, self.api_key_auth_service, self.config_service)

@@ -5,9 +5,8 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import hashlib
 
-from auth.api_key_repository import ApiKeyRepository
+from auth.api_key_auth_service import ApiKeyAuthService
 from logger import HaivenLogger
-from auth.api_key_auth_service import pseudonymize
 from config_service import ConfigService
 
 
@@ -23,11 +22,11 @@ class ApiKeyManagementAPI:
     def __init__(
         self,
         app: FastAPI,
-        api_key_repository: ApiKeyRepository,
+        api_key_service: ApiKeyAuthService,
         config_service: ConfigService,
     ):
         self.app = app
-        self.api_key_repository = api_key_repository
+        self.api_key_service = api_key_service
         self.config_service = config_service
         self.register_endpoints()
 
@@ -44,11 +43,7 @@ class ApiKeyManagementAPI:
             """List all API keys for the authenticated user."""
             try:
                 user_email = self.get_user_email(request)
-                salt = self.config_service.load_api_key_pseudonymization_salt()
-                pseudonymized_user_id = pseudonymize(user_email, salt)
-                user_keys = self.api_key_repository.list_keys_for_user(
-                    pseudonymized_user_id
-                )
+                user_keys = self.api_key_service.list_keys_for_user(user_email)
 
                 # Format for frontend
                 formatted_keys = []
@@ -82,11 +77,9 @@ class ApiKeyManagementAPI:
             """Generate a new API key for the authenticated user."""
             try:
                 user_id = self.get_user_email(request)
-                salt = self.config_service.load_api_key_pseudonymization_salt()
-                pseudonymized_user_id = pseudonymize(user_id, salt)
-                api_key = self.api_key_repository.generate_api_key(
+                api_key = self.api_key_service.generate_api_key(
                     name=body.name,
-                    user_id=pseudonymized_user_id,
+                    user_id=user_id,
                     expires_days=1,  # Fixed 24-hour validity
                 )
 
@@ -119,19 +112,15 @@ class ApiKeyManagementAPI:
             """Revoke an API key."""
             try:
                 user_email = self.get_user_email(request)
-                salt = self.config_service.load_api_key_pseudonymization_salt()
-                pseudonymized_user_id = pseudonymize(user_email, salt)
                 # First verify the key belongs to the current user
-                user_keys = self.api_key_repository.list_keys_for_user(
-                    pseudonymized_user_id
-                )
+                user_keys = self.api_key_service.list_keys_for_user(user_email)
                 key_info = user_keys.get(body.key_hash)
 
                 if not key_info:
                     raise HTTPException(status_code=404, detail="API key not found")
 
                 # Revoke the key
-                success = self.api_key_repository.revoke_key(body.key_hash)
+                success = self.api_key_service.revoke_key(body.key_hash)
 
                 if success:
                     logger = HaivenLogger.get()
@@ -156,12 +145,8 @@ class ApiKeyManagementAPI:
             """Get API key usage statistics for the authenticated user."""
             try:
                 user_email = self.get_user_email(request)
-                salt = self.config_service.load_api_key_pseudonymization_salt()
-                pseudonymized_user_id = pseudonymize(user_email, salt)
                 # Get keys for the specific user
-                user_keys = self.api_key_repository.list_keys_for_user(
-                    pseudonymized_user_id
-                )
+                user_keys = self.api_key_service.list_keys_for_user(user_email)
 
                 # Calculate statistics
                 total_keys = len(user_keys)

@@ -5,7 +5,6 @@ from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
 
 from api.boba_api import BobaApi
-from auth.api_key_repository import ApiKeyRepository
 from config_service import ConfigService
 from llms.chats import ChatManager
 from logger import HaivenLogger
@@ -32,16 +31,14 @@ class Server:
         self,
         chat_manager: ChatManager,
         config_service: ConfigService,
-        api_key_repository: ApiKeyRepository,
+        api_key_auth_service: ApiKeyAuthService,
         boba_api: BobaApi = None,
     ):
         self.url = HaivenUrl()
         self.chat_manager = chat_manager
         self.config_service = config_service
         self.boba_api = boba_api
-        self.api_key_auth_service = ApiKeyAuthService(
-            config_service, api_key_repository
-        )
+        self.api_key_auth_service = api_key_auth_service
         # Initialize Jinja2Templates with autoescape=True for XSS protection
         self.templates = Jinja2Templates(directory="./resources/html_templates")
         self.templates.env.autoescape = True

@@ -9,7 +9,8 @@ from prompts.prompts_factory import PromptsFactory
 from server import Server
 from config_service import ConfigService
 from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
-from auth.api_key_repository import ApiKeyRepository
+from auth.api_key_repository_factory import ApiKeyRepositoryFactory
+from auth.api_key_auth_service import ApiKeyAuthService
 
 
 class App:
@@ -18,18 +19,8 @@ class App:
 
         return ImageDescriptionService(model)
 
-    def _create_api_key_repository(self, config_service) -> ApiKeyRepository:
-        repo_type = config_service.load_api_key_repository_type()
-        if repo_type == "file":
-            from auth.file_api_key_repository import FileApiKeyRepository
-
-            return FileApiKeyRepository(config_service)
-        # elif repo_type == "db":
-        #     return DbApiKeyRepository(config_service)
-        else:
-            raise NotImplementedError(
-                f"API key repository type '{repo_type}' is not implemented."
-            )
+    def _create_api_key_repository(self, config_service):
+        return ApiKeyRepositoryFactory.get_repository(config_service)
 
     def __init__(self, config_path: str):
         config_service = ConfigService(config_path)
@@ -47,10 +38,12 @@ class App:
 
         image_service = self.create_image_service(config_service)
         api_key_repository = self._create_api_key_repository(config_service)
+        api_key_auth_service = ApiKeyAuthService(config_service, api_key_repository)
+
         self.server = Server(
             chat_manager,
             config_service,
-            api_key_repository,
+            api_key_auth_service,
             BobaApi(
                 prompts_factory,
                 knowledge_manager,
@@ -58,7 +51,7 @@ class App:
                 config_service,
                 image_service,
                 disclaimer_and_guidelines,
-                api_key_repository,
+                api_key_auth_service,
             ),
         ).create()
 

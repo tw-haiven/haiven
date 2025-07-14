@@ -1,10 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 
-import hashlib
 import os
 from typing import Optional, Dict, Any
-from datetime import datetime, timedelta
-import secrets
 import json
 
 from auth.api_key_repository import ApiKeyRepository
@@ -13,7 +10,7 @@ from config_service import ConfigService
 
 
 class FileApiKeyRepository(ApiKeyRepository):
-    """File-based implementation of API key management."""
+    """File-based implementation of API key storage."""
 
     def __init__(self, config: ConfigService):
         if not hasattr(config, "load_api_key_repository_file_path"):
@@ -51,88 +48,44 @@ class FileApiKeyRepository(ApiKeyRepository):
             if logger:
                 logger.error(f"Failed to save API keys: {e}")
 
-    def generate_api_key(self, name: str, user_id: str, expires_days: int = 365) -> str:
-        """Generate a new API key."""
-        # Generate a secure random key
-        key = secrets.token_urlsafe(32)
-        key_hash = hashlib.sha256(key.encode()).hexdigest()
-
-        # Store key metadata (user_id is already pseudonymized)
-        self.keys[key_hash] = {
-            "name": name,
-            "user_id": user_id,
-            "created_at": datetime.utcnow().isoformat(),
-            "expires_at": (
-                datetime.utcnow() + timedelta(days=expires_days)
-            ).isoformat(),
-            "last_used": None,
-            "usage_count": 0,
-        }
-
+    def save_key(self, key_hash: str, key_data: Dict[str, Any]) -> None:
+        """Save an API key with its metadata."""
+        self.keys[key_hash] = key_data
         self._save_keys()
         logger = HaivenLogger.get()
         if logger:
-            logger.info(f"Generated API key '{name}' for user (hash) {user_id}")
-        return key
+            logger.info(
+                f"Saved API key '{key_data.get('name', 'unnamed')}' for user (hash) {key_data.get('user_id', 'unknown')}"
+            )
 
-    def validate_key(self, key: str) -> Optional[Dict[str, Any]]:
-        """Validate an API key and return user information."""
-        if not key:
-            return None
+    def find_by_hash(self, key_hash: str) -> Optional[Dict[str, Any]]:
+        """Find an API key by its hash."""
+        return self.keys.get(key_hash)
 
-        key_hash = hashlib.sha256(key.encode()).hexdigest()
-        key_info = self.keys.get(key_hash)
+    def update_key(self, key_hash: str, key_data: Dict[str, Any]) -> bool:
+        """Update an API key's metadata."""
+        if key_hash in self.keys:
+            self.keys[key_hash] = key_data
+            self._save_keys()
+            return True
+        return False
 
-        if not key_info:
-            return None
-
-        # Check if key is expired
-        expires_at = datetime.fromisoformat(key_info["expires_at"])
-        if datetime.utcnow() > expires_at:
-            logger = HaivenLogger.get()
-            if logger:
-                logger.warn(f"Expired API key used: {key_info['name']}")
-            return None
-
-        # Update last used timestamp and usage count
-        key_info["last_used"] = datetime.utcnow().isoformat()
-        key_info["usage_count"] += 1
-        self._save_keys()
-
-        return {
-            "name": key_info["name"],
-            "user_id": key_info["user_id"],
-            "key_hash": key_hash,
-        }
-
-    def revoke_key(self, key_hash: str) -> bool:
-        """Revoke an API key."""
+    def delete_key(self, key_hash: str) -> bool:
+        """Delete an API key by its hash."""
         if key_hash in self.keys:
             del self.keys[key_hash]
             self._save_keys()
             return True
         return False
 
-    def list_keys(self) -> Dict[str, Any]:
-        """List all API keys (without the actual key values)."""
-        return {
-            key_hash: {
-                "name": info["name"],
-                "user_id": info["user_id"],
-                "created_at": info["created_at"],
-                "expires_at": info["expires_at"],
-                "last_used": info["last_used"],
-                "usage_count": info["usage_count"],
-            }
-            for key_hash, info in self.keys.items()
-        }
+    def find_all(self) -> Dict[str, Dict[str, Any]]:
+        """Find all API keys with their metadata."""
+        return self.keys.copy()
 
-    def list_keys_for_user(self, user_id: str) -> Dict[str, Any]:
-        """List API keys for a specific user (by pseudonymized hash)."""
-        # user_id is already pseudonymized
-        all_keys = self.list_keys()
+    def find_by_user_id(self, user_id: str) -> Dict[str, Dict[str, Any]]:
+        """Find all API keys for a specific user."""
         return {
             key_hash: info
-            for key_hash, info in all_keys.items()
+            for key_hash, info in self.keys.items()
             if info["user_id"] == user_id
         }

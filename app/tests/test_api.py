@@ -24,21 +24,17 @@ class TestApi(unittest.TestCase):
         # Clean up code to run after each test
         pass
 
-    def test_apikey_endpoints_use_pseudonymized_user_id(self):
+    def test_apikey_endpoints_use_service(self):
         # Arrange
-        from auth.api_key_auth_service import pseudonymize
-
-        TEST_SALT = "test_salt_123"
         user_email = "testuser@example.com"
-        expected_pseudonym = pseudonymize(user_email, TEST_SALT)
 
-        # Mock repository to capture calls
-        mock_repository = MagicMock()
+        # Mock service
+        mock_service = MagicMock()
         # For list_keys_for_user, return a dummy key
-        mock_repository.list_keys_for_user.return_value = {
+        mock_service.list_keys_for_user.return_value = {
             "dummy_key_hash": {
                 "name": "dummy",
-                "user_id": expected_pseudonym,
+                "user_id": "pseudonymized_user_id",  # Service handles pseudonymization
                 "created_at": "2024-01-01T00:00:00",
                 "expires_at": "2024-01-02T00:00:00",
                 "last_used": None,
@@ -46,11 +42,10 @@ class TestApi(unittest.TestCase):
             }
         }
         # For generate_api_key, return a dummy key
-        mock_repository.generate_api_key.return_value = "dummy_api_key_value"
+        mock_service.generate_api_key.return_value = "dummy_api_key_value"
 
-        # Mock config to provide the salt
+        # Mock config
         mock_config = MagicMock()
-        mock_config.load_api_key_pseudonymization_salt.return_value = TEST_SALT
 
         # Patch get_user_email to return our test email
         from api.api_key_management import ApiKeyManagementAPI
@@ -60,42 +55,37 @@ class TestApi(unittest.TestCase):
                 return user_email
 
         # Register endpoints with our test APIKeyManagementAPI
-        TestApiKeyManagementAPI(self.app, mock_repository, mock_config)
+        TestApiKeyManagementAPI(self.app, mock_service, mock_config)
 
         # Act: Generate API key
         response = self.client.post(
             "/api/apikeys/generate",
             json={"name": "dummy"},
         )
-        # Assert: The repository should be called with pseudonymized user_id
-        mock_repository.generate_api_key.assert_called_with(
-            name="dummy", user_id=expected_pseudonym, expires_days=1
+        # Assert: The service should be called with the original user_id
+        mock_service.generate_api_key.assert_called_with(
+            name="dummy", user_id=user_email, expires_days=1
         )
         assert response.status_code == 200
 
         # Act: List API keys
         response = self.client.get("/api/apikeys")
-        mock_repository.list_keys_for_user.assert_called_with(expected_pseudonym)
+        mock_service.list_keys_for_user.assert_called_with(user_email)
         assert response.status_code == 200
 
-    def test_apikey_revoke_uses_pseudonymized_user_id(self):
-        from auth.api_key_auth_service import pseudonymize
-
-        TEST_SALT = "test_salt_123"
+    def test_apikey_revoke_uses_service(self):
         user_email = "testuser@example.com"
-        expected_pseudonym = pseudonymize(user_email, TEST_SALT)
         key_hash = "dummy_key_hash"
 
-        # Mock repository
-        mock_repository = MagicMock()
-        mock_repository.list_keys_for_user.return_value = {
-            key_hash: {"name": "dummy", "user_id": expected_pseudonym}
+        # Mock service
+        mock_service = MagicMock()
+        mock_service.list_keys_for_user.return_value = {
+            key_hash: {"name": "dummy", "user_id": "pseudonymized_user_id"}
         }
-        mock_repository.revoke_key.return_value = True
+        mock_service.revoke_key.return_value = True
 
         # Mock config
         mock_config = MagicMock()
-        mock_config.load_api_key_pseudonymization_salt.return_value = TEST_SALT
 
         # Patch get_user_email
         from api.api_key_management import ApiKeyManagementAPI
@@ -104,7 +94,7 @@ class TestApi(unittest.TestCase):
             def get_user_email(self, request):
                 return user_email
 
-        TestApiKeyManagementAPI(self.app, mock_repository, mock_config)
+        TestApiKeyManagementAPI(self.app, mock_service, mock_config)
 
         # Act: Revoke API key
         response = self.client.post(
@@ -112,23 +102,19 @@ class TestApi(unittest.TestCase):
             json={"key_hash": key_hash},
         )
         # Assert: list_keys_for_user and revoke_key called with correct args
-        mock_repository.list_keys_for_user.assert_called_with(expected_pseudonym)
-        mock_repository.revoke_key.assert_called_with(key_hash)
+        mock_service.list_keys_for_user.assert_called_with(user_email)
+        mock_service.revoke_key.assert_called_with(key_hash)
         assert response.status_code == 200
 
-    def test_apikey_usage_uses_pseudonymized_user_id(self):
-        from auth.api_key_auth_service import pseudonymize
-
-        TEST_SALT = "test_salt_123"
+    def test_apikey_usage_uses_service(self):
         user_email = "testuser@example.com"
-        expected_pseudonym = pseudonymize(user_email, TEST_SALT)
 
-        # Mock repository
-        mock_repository = MagicMock()
-        mock_repository.list_keys_for_user.return_value = {
+        # Mock service
+        mock_service = MagicMock()
+        mock_service.list_keys_for_user.return_value = {
             "dummy_key_hash": {
                 "name": "dummy",
-                "user_id": expected_pseudonym,
+                "user_id": "pseudonymized_user_id",  # Service handles pseudonymization
                 "created_at": "2024-01-01T00:00:00",
                 "expires_at": "2024-01-02T00:00:00",
                 "last_used": "2024-01-01T12:00:00",
@@ -138,7 +124,6 @@ class TestApi(unittest.TestCase):
 
         # Mock config
         mock_config = MagicMock()
-        mock_config.load_api_key_pseudonymization_salt.return_value = TEST_SALT
 
         # Patch get_user_email
         from api.api_key_management import ApiKeyManagementAPI
@@ -147,12 +132,12 @@ class TestApi(unittest.TestCase):
             def get_user_email(self, request):
                 return user_email
 
-        TestApiKeyManagementAPI(self.app, mock_repository, mock_config)
+        TestApiKeyManagementAPI(self.app, mock_service, mock_config)
 
         # Act: Get API key usage
         response = self.client.get("/api/apikeys/usage")
-        # Assert: list_keys_for_user called with correct pseudonym
-        mock_repository.list_keys_for_user.assert_called_with(expected_pseudonym)
+        # Assert: list_keys_for_user called with correct user_id
+        mock_service.list_keys_for_user.assert_called_with(user_email)
         assert response.status_code == 200
 
     def test_get_prompts(self):

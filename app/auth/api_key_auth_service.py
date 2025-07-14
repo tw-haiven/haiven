@@ -1,35 +1,101 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import hashlib
+import secrets
 from typing import Optional, Dict, Any
+from datetime import datetime, timedelta
 from fastapi import Request
 
 from auth.api_key_repository import ApiKeyRepository
 from config_service import ConfigService
-
-
-def pseudonymize(data: str, salt: str) -> str:
-    normalized = data.strip().lower()
-    return hashlib.sha256((salt + normalized).encode()).hexdigest()
-
-
-def generate_api_key_with_pseudonymization(
-    repository: ApiKeyRepository, name: str, user_id: str, expires_days: int, salt: str
-) -> str:
-    pseudonymized = pseudonymize(user_id, salt)
-    return repository.generate_api_key(name, pseudonymized, expires_days)
-
-
-def list_keys_for_user_with_pseudonymization(
-    repository: ApiKeyRepository, user_id: str, salt: str
-) -> Dict[str, Any]:
-    pseudonymized = pseudonymize(user_id, salt)
-    return repository.list_keys_for_user(pseudonymized)
+from logger import HaivenLogger
 
 
 class ApiKeyAuthService:
     def __init__(self, config_service: ConfigService, repository: ApiKeyRepository):
         self.config_service = config_service
         self.repository = repository
+        self.salt = config_service.load_api_key_pseudonymization_salt()
+
+    def pseudonymize(self, data: str) -> str:
+        """Pseudonymize data using a salt."""
+        normalized = data.strip().lower()
+        return hashlib.sha256((self.salt + normalized).encode()).hexdigest()
+
+    def generate_api_key(self, name: str, user_id: str, expires_days: int = 365) -> str:
+        """Generate a new API key and return the key string."""
+        # Generate a secure random key
+        key = secrets.token_urlsafe(32)
+        key_hash = hashlib.sha256(key.encode()).hexdigest()
+
+        # Pseudonymize the user ID
+        pseudonymized_user_id = self.pseudonymize(user_id)
+
+        # Create key metadata
+        key_data = {
+            "name": name,
+            "user_id": pseudonymized_user_id,
+            "created_at": datetime.utcnow().isoformat(),
+            "expires_at": (
+                datetime.utcnow() + timedelta(days=expires_days)
+            ).isoformat(),
+            "last_used": None,
+            "usage_count": 0,
+        }
+
+        # Save the key to the repository
+        self.repository.save_key(key_hash, key_data)
+
+        logger = HaivenLogger.get()
+        if logger:
+            logger.info(
+                f"Generated API key '{name}' for user (hash) {pseudonymized_user_id}"
+            )
+
+        return key
+
+    def validate_key(self, key: str) -> Optional[Dict[str, Any]]:
+        """Validate an API key and return user information if valid."""
+        if not key:
+            return None
+
+        # Hash the key to find it in the repository
+        key_hash = hashlib.sha256(key.encode()).hexdigest()
+        key_info = self.repository.find_by_hash(key_hash)
+
+        if not key_info:
+            return None
+
+        # Check if key is expired
+        expires_at = datetime.fromisoformat(key_info["expires_at"])
+        if datetime.utcnow() > expires_at:
+            logger = HaivenLogger.get()
+            if logger:
+                logger.warn(f"Expired API key used: {key_info['name']}")
+            return None
+
+        # Update last used timestamp and usage count
+        key_info["last_used"] = datetime.utcnow().isoformat()
+        key_info["usage_count"] += 1
+        self.repository.update_key(key_hash, key_info)
+
+        return {
+            "name": key_info["name"],
+            "user_id": key_info["user_id"],
+            "key_hash": key_hash,
+        }
+
+    def revoke_key(self, key_hash: str) -> bool:
+        """Revoke an API key by its hash."""
+        return self.repository.delete_key(key_hash)
+
+    def list_keys(self) -> Dict[str, Dict[str, Any]]:
+        """List all API keys (without the actual key values)."""
+        return self.repository.find_all()
+
+    def list_keys_for_user(self, user_id: str) -> Dict[str, Dict[str, Any]]:
+        """List API keys for a specific user."""
+        pseudonymized_user_id = self.pseudonymize(user_id)
+        return self.repository.find_by_user_id(pseudonymized_user_id)
 
     @staticmethod
     def extract_api_key_from_request(request: Request) -> Optional[str]:
@@ -44,6 +110,7 @@ class ApiKeyAuthService:
 
     @staticmethod
     def create_api_user_session(user_info: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a user session from API key user information."""
         return {
             "user_id": user_info["user_id"],
             "name": user_info["name"],
@@ -53,6 +120,7 @@ class ApiKeyAuthService:
 
     @staticmethod
     def is_mcp_endpoint(request_path: str) -> bool:
+        """Check if a request path is an MCP endpoint."""
         if request_path == "/api/prompts":
             return True
         if request_path.startswith("/api/download-prompt"):
@@ -62,10 +130,11 @@ class ApiKeyAuthService:
     async def authenticate_with_api_key(
         self, request: Request
     ) -> Optional[Dict[str, Any]]:
+        """Authenticate a request using an API key."""
         api_key = self.extract_api_key_from_request(request)
         if not api_key:
             return None
-        user_info = self.repository.validate_key(api_key)
+        user_info = self.validate_key(api_key)
         if user_info:
             return self.create_api_user_session(user_info)
         return None
@@ -73,6 +142,7 @@ class ApiKeyAuthService:
     async def authenticate_with_api_key_for_mcp_only(
         self, request: Request
     ) -> Optional[Dict[str, Any]]:
+        """Authenticate a request using an API key, but only for MCP endpoints."""
         if not self.is_mcp_endpoint(request.url.path):
             return None
         return await self.authenticate_with_api_key(request)

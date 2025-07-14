@@ -69,11 +69,17 @@ class HaivenBaseApi:
 
     def get_hashed_user_id(self, request):
         if request.session and request.session.get("user"):
-            user_id = request.session.get("user").get("email")
-            hashed_user_id = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
-            return hashed_user_id
-        else:
-            return None
+            user = request.session.get("user")
+            # Check if auth_type is api_key, if so use user_id directly from the session
+            if user.get("auth_type") == "api_key":
+                user_id = user.get("user_id")
+            else:
+                user_id = user.get("email")
+
+            if user_id is not None:
+                hashed_user_id = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
+                return hashed_user_id
+        return None
 
     def stream_json_chat(
         self,
@@ -402,7 +408,7 @@ class ApiBasics(HaivenBaseApi):
 
                 rendered_prompt = (
                     f"""
-                    
+
                     My new request:
                     {prompt_data.userinput}
                     """
@@ -516,11 +522,10 @@ class ApiBasics(HaivenBaseApi):
         ):
             import re
 
-            user_id = self.get_hashed_user_id(request)
-
             def is_valid_param(val):
                 return bool(val) and re.match(r"^[a-zA-Z0-9_-]{1,100}$", val)
 
+            user_id = self.get_hashed_user_id(request)
             try:
                 if prompt_id is not None:
                     if not is_valid_param(prompt_id):

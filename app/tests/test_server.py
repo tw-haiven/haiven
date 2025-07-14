@@ -3,7 +3,7 @@ import pytest
 from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 from server import Server
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock
 import os
 import time
 from starlette.responses import RedirectResponse
@@ -14,9 +14,11 @@ def minimal_server_app():
     # Minimal mocks for dependencies
     chat_manager = MagicMock()
     config_service = MagicMock()
-    api_key_repository = MagicMock()
+    api_key_auth_service = AsyncMock()
+    # Configure the AsyncMock to return None for authenticate_with_api_key_for_mcp_only
+    api_key_auth_service.authenticate_with_api_key_for_mcp_only.return_value = None
     boba_api = MagicMock()
-    server = Server(chat_manager, config_service, api_key_repository, boba_api)
+    server = Server(chat_manager, config_service, api_key_auth_service, boba_api)
     app = FastAPI()
     server.user_endpoints(app)
 

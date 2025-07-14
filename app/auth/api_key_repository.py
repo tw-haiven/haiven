@@ -5,29 +5,34 @@ from typing import Dict, Any, Optional
 
 
 class ApiKeyRepository(ABC):
-    """Abstract interface for API key management operations."""
+    """Abstract interface for API key storage operations."""
 
     @abstractmethod
-    def generate_api_key(self, name: str, user_id: str, expires_days: int = 365) -> str:
-        """Generate a new API key and return the key string. user_id is a unique user identifier (e.g., pseudonymized email)."""
+    def save_key(self, key_hash: str, key_data: Dict[str, Any]) -> None:
+        """Save an API key with its metadata."""
         pass
 
     @abstractmethod
-    def validate_key(self, key: str) -> Optional[Dict[str, Any]]:
-        """Validate an API key and return user information if valid."""
+    def find_by_hash(self, key_hash: str) -> Optional[Dict[str, Any]]:
+        """Find an API key by its hash."""
         pass
 
     @abstractmethod
-    def revoke_key(self, key_hash: str) -> bool:
-        """Revoke an API key by its hash. Returns True if successful."""
+    def update_key(self, key_hash: str, key_data: Dict[str, Any]) -> bool:
+        """Update an API key's metadata. Returns True if successful."""
         pass
 
     @abstractmethod
-    def list_keys(self) -> Dict[str, Any]:
-        """List all API keys (without the actual key values)."""
+    def delete_key(self, key_hash: str) -> bool:
+        """Delete an API key by its hash. Returns True if successful."""
         pass
 
     @abstractmethod
-    def list_keys_for_user(self, user_id: str) -> Dict[str, Any]:
-        """List API keys for a specific user (by unique user identifier)."""
+    def find_all(self) -> Dict[str, Dict[str, Any]]:
+        """Find all API keys with their metadata."""
+        pass
+
+    @abstractmethod
+    def find_by_user_id(self, user_id: str) -> Dict[str, Dict[str, Any]]:
+        """Find all API keys for a specific user."""
         pass

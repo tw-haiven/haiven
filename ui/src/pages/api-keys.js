@@ -445,11 +445,11 @@ export default function ApiKeys() {
 
               <div>
                 <Title level={5}>Usage Examples:</Title>
-                <Text code>export HAIVEN_API_KEY="{generatedKey.api_key}"</Text>
+                <Text code>export HAIVEN_API_KEY="YOUR_API_KEY_HERE"</Text>
                 <br />
-                <Text code>Authorization: Bearer {generatedKey.api_key}</Text>
+                <Text code>Authorization: Bearer YOUR_API_KEY_HERE</Text>
                 <br />
-                <Text code>X-API-Key: {generatedKey.api_key}</Text>
+                <Text code>X-API-Key: YOUR_API_KEY_HERE</Text>
               </div>
 
               <Alert
