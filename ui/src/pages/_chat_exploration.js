@@ -5,16 +5,23 @@ import ChatWidget from "../app/_chat";
 import VerticalPossibilityPanel from "./_vertical-possibility-panel";
 import LLMTokenUsage from "../app/_llm_token_usage";
 import { formattedUsage } from "../app/utils/tokenUtils";
+import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
 
 export default function ChatExploration({
   context,
   scenarioQueries = [],
   featureToggleConfig = {},
+  setTokenUsage: parentSetTokenUsage,
+  tokenUsage: parentTokenUsage,
 }) {
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
   const [previousContext, setPreviousContext] = useState(context);
-  const [tokenUsage, setTokenUsage] = useState(null);
+  // Use parent token usage state if provided, else local
+  const [tokenUsage, setTokenUsage] =
+    parentTokenUsage !== undefined && parentSetTokenUsage !== undefined
+      ? [parentTokenUsage, parentSetTokenUsage]
+      : useState({ input_tokens: 0, output_tokens: 0 });
 
   const chatRef = useRef();
 
@@ -22,7 +29,8 @@ export default function ChatExploration({
     if (previousContext !== context) {
       setPreviousContext(context);
       setPromptStarted(false);
-      setTokenUsage(null);
+      // Reset token usage aggregation on context/page change
+      setTokenUsage({ input_tokens: 0, output_tokens: 0 });
       chatRef.current.startNewConversation();
     }
   }, [context, previousContext]);
@@ -30,8 +38,7 @@ export default function ChatExploration({
   const submitPromptToBackend = async (messages) => {
     const exploreUri = "/api/prompt/explore";
 
-    // Reset token usage
-    setTokenUsage(null);
+    // Do not reset token usage here; we want to aggregate per page
 
     const processSSEResponse = (response) => {
       const sseStream = new ReadableStream({
@@ -71,7 +78,8 @@ export default function ChatExploration({
 
                     try {
                       const tokenUsageData = JSON.parse(data);
-                      setTokenUsage(formattedUsage(tokenUsageData));
+                      const usage = formattedUsage(tokenUsageData);
+                      setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
                     } catch (parseError) {
                       console.log(
                         "Failed to parse token usage data:",

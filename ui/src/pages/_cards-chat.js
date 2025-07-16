@@ -31,6 +31,8 @@ import EnrichCard from "../app/_enrich_card";
 import Citations from "../pages/_citations";
 import DownloadPrompt from "../app/_download_prompt";
 import { formattedUsage } from "../app/utils/tokenUtils";
+import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
+import { filterSSEEvents } from "../app/utils/_sse_event_filter";
 
 const CardsChat = ({
   promptId,
@@ -70,7 +72,11 @@ const CardsChat = ({
   const [usePromptId, setUsePromptId] = useState(true);
   const [chatSessionIdCardBuilding, setChatSessionIdCardBuilding] = useState();
   const [allContexts, setAllContexts] = useState([]);
-  const [tokenUsage, setTokenUsage] = useState(null);
+  // Aggregate token usage per page
+  const [tokenUsage, setTokenUsage] = useState({
+    input_tokens: 0,
+    output_tokens: 0,
+  });
 
   function combineAllContexts(contexts) {
     const userContexts = getSortedUserContexts();
@@ -113,6 +119,9 @@ const CardsChat = ({
       combineAllContexts(contexts);
     }
     setUsePromptId(true);
+
+    // Reset token usage aggregation on mount (page load)
+    setTokenUsage({ input_tokens: 0, output_tokens: 0 });
 
     const handleStorageChange = () => {
       combineAllContexts(contexts);
@@ -233,7 +242,7 @@ const CardsChat = ({
 
   const sendCardBuildingPrompt = (requestData, shouldReset = false) => {
     setIsInputCollapsed(true);
-    setTokenUsage(null);
+    // Do not reset token usage here; we want to aggregate per page
 
     if (shouldReset) {
       resetChatSession();
@@ -274,38 +283,48 @@ const CardsChat = ({
                 ...scenario,
               }));
 
-          if (data.type === "token_usage") {
-            setTokenUsage(formattedUsage(data.data));
+          // --- NEW: Use filterSSEEvents for all string chunks ---
+          if (typeof data === "string") {
+            const { text, events } = filterSSEEvents(data);
+            events.forEach((event) => {
+              if (event.type === "token_usage") {
+                const usage = formattedUsage(event.data);
+                setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+              }
+            });
+            ms += text;
+            // Continue to parse ms as before
+          } else if (typeof data === "object" && data.type === "token_usage") {
+            const usage = formattedUsage(data.data);
+            setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
             return;
-          }
-
-          if (data.data) {
+          } else if (data.data) {
             ms += data.data;
-            ms = ms.trim().replace(/^[^[]+/, "");
-            if (ms.startsWith("[")) {
-              try {
-                output = parse(ms || "[]");
-              } catch (error) {
-                console.log("error", error);
-              }
-              if (Array.isArray(output)) {
-                setScenarios([...existingScenarios, ...output]);
-              } else {
-                abortLoad();
-                if (ms.includes("Error code:")) {
-                  toast.error(ms);
-                } else {
-                  toast.warning(
-                    "Model failed to respond rightly, please rewrite your message and try again",
-                  );
-                }
-                console.log("response is not parseable into an array");
-              }
-            }
           } else if (data.metadata) {
             // Safely handle citations if they exist in metadata
             if (data.metadata.citations) {
               setCitations(data.metadata.citations);
+            }
+          }
+          ms = ms.trim().replace(/^[^[]+/, "");
+          if (ms.startsWith("[")) {
+            try {
+              output = parse(ms || "[]");
+            } catch (error) {
+              console.log("error", error);
+            }
+            if (Array.isArray(output)) {
+              setScenarios([...existingScenarios, ...output]);
+            } else {
+              abortLoad();
+              if (ms.includes("Error code:")) {
+                toast.error(ms);
+              } else {
+                toast.warning(
+                  "Model failed to respond rightly, please rewrite your message and try again",
+                );
+              }
+              console.log("response is not parseable into an array");
             }
           }
         },
@@ -344,8 +363,27 @@ const CardsChat = ({
         },
         onMessageHandle: (data) => {
           try {
+            // If this is a string chunk, filter out SSE events
+            if (typeof data === "string") {
+              const { text, events } = filterSSEEvents(data);
+              // Handle token usage events if present
+              events.forEach((event) => {
+                if (event.type === "token_usage") {
+                  const usage = formattedUsage(event.data);
+                  setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+                }
+              });
+              ms += text;
+              onData(ms);
+              return;
+            }
+            // If this is a structured token usage event (for future-proofing)
+            if (typeof data === "object" && data.type === "token_usage") {
+              const usage = formattedUsage(data.data);
+              setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+              return;
+            }
             ms += data;
-
             onData(ms);
           } catch (error) {
             console.log("error", error, "data received", "'" + data + "'");
@@ -628,6 +666,9 @@ const CardsChat = ({
             avatar: "/boba/user-5-fill-dark-blue.svg",
           }}
           scenarioQueries={selectedPromptConfiguration.scenario_queries || []}
+          featureToggleConfig={featureToggleConfig}
+          setTokenUsage={setTokenUsage}
+          tokenUsage={tokenUsage}
         />
       </Drawer>
       <div id="canvas">
@@ -677,6 +718,8 @@ const CardsChat = ({
                   setProgress={setProgress}
                   scenarioToJson={scenarioToJson}
                   attachContextsToRequestBody={attachContextsToRequestBody}
+                  setTokenUsage={setTokenUsage}
+                  tokenUsage={tokenUsage}
                 />
               )}
               <div style={{ paddingLeft: "2em" }}>

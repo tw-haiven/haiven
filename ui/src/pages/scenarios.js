@@ -1,5 +1,5 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
 import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
@@ -22,6 +22,7 @@ import CardsList from "../app/_cards-list";
 import HelpTooltip from "../app/_help_tooltip";
 import LLMTokenUsage from "../app/_llm_token_usage";
 import { formattedUsage } from "../app/utils/tokenUtils";
+import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
 
 const Home = ({ models, featureToggleConfig }) => {
   const [numOfScenarios, setNumOfScenarios] = useState("6");
@@ -38,7 +39,16 @@ const Home = ({ models, featureToggleConfig }) => {
   const [chatContext, setChatContext] = useState({});
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(true);
-  const [tokenUsage, setTokenUsage] = useState(null);
+  // Aggregate token usage per page
+  const [tokenUsage, setTokenUsage] = useState({
+    input_tokens: 0,
+    output_tokens: 0,
+  });
+
+  useEffect(() => {
+    // Reset token usage aggregation on mount (page load)
+    setTokenUsage({ input_tokens: 0, output_tokens: 0 });
+  }, []);
 
   const onClickAdvancedPromptOptions = (e) => {
     setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
@@ -84,7 +94,7 @@ const Home = ({ models, featureToggleConfig }) => {
   const onSubmitPrompt = async (prompt) => {
     setPrompt(prompt);
     setDisableChatInput(true);
-    setTokenUsage(null);
+    // Do not reset token usage here; we want to aggregate per page
 
     const uri =
       "/api/make-scenario" +
@@ -123,7 +133,8 @@ const Home = ({ models, featureToggleConfig }) => {
         onMessageHandle: (data) => {
           try {
             if (data.type === "token_usage") {
-              setTokenUsage(formattedUsage(data.data));
+              const usage = formattedUsage(data.data);
+              setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
               return;
             }
 

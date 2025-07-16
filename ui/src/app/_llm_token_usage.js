@@ -7,27 +7,27 @@ import { FEATURES } from "../app/feature_toggle";
 
 const LLMTokenUsage = ({ tokenUsage, featureToggleConfig = {} }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-  const [hasTokenUsage, setHasTokenUsage] = useState(false);
 
+  // Determine if either value is missing/invalid
+  const inputTokensValid =
+    typeof tokenUsage?.input_tokens === "number" &&
+    !isNaN(tokenUsage.input_tokens);
+  const outputTokensValid =
+    typeof tokenUsage?.output_tokens === "number" &&
+    !isNaN(tokenUsage.output_tokens);
+
+  // Log error if either value is missing/invalid
   useEffect(() => {
-    setHasTokenUsage(
-      (tokenUsage?.input_tokens || 0) > 0 ||
-        (tokenUsage?.output_tokens || 0) > 0,
-    );
-  }, [tokenUsage?.input_tokens, tokenUsage?.output_tokens]);
+    if (!inputTokensValid || !outputTokensValid) {
+      console.error(
+        "Token usage calculation failed: input_tokens or output_tokens missing or invalid",
+        tokenUsage,
+      );
+    }
+  }, [inputTokensValid, outputTokensValid, tokenUsage]);
 
-  // Don't render if no token usage data
-  if (
-    !hasTokenUsage ||
-    !(featureToggleConfig[FEATURES.LLM_TOKEN_USAGE] === true)
-  ) {
-    console.log("!hasTokenUsage", !hasTokenUsage);
-    console.log("featureToggleConfig", featureToggleConfig);
-    console.log("FEATURES.LLM_TOKEN_USAGE", FEATURES.LLM_TOKEN_USAGE);
-    console.log(
-      "featureToggleConfig[FEATURES.LLM_TOKEN_USAGE] === true",
-      featureToggleConfig[FEATURES.LLM_TOKEN_USAGE] === true,
-    );
+  // Only show if feature toggle is enabled
+  if (!(featureToggleConfig[FEATURES.LLM_TOKEN_USAGE] === true)) {
     return null;
   }
 
@@ -36,6 +36,9 @@ const LLMTokenUsage = ({ tokenUsage, featureToggleConfig = {} }) => {
       open={showTooltip}
       title={
         <div>
+          <p>
+            <b>Aggregated Token Usage (this page):</b>
+          </p>
           <p>Input Tokens: {formatTokens(tokenUsage?.input_tokens)}</p>
           <p>Output Tokens: {formatTokens(tokenUsage?.output_tokens)}</p>
         </div>

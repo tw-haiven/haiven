@@ -20,6 +20,8 @@ import {
 import DownloadPrompt from "./_download_prompt";
 import LLMTokenUsage from "./_llm_token_usage";
 import { formattedUsage } from "../app/utils/tokenUtils";
+import { aggregateTokenUsage } from "./utils/_aggregate_token_usage";
+import { filterSSEEvents } from "./utils/_sse_event_filter";
 
 const PromptChat = ({
   promptId,
@@ -50,7 +52,11 @@ const PromptChat = ({
   const [usePromptId, setUsePromptId] = useState(true);
   const [placeholder, setPlaceholder] = useState("");
   const [allContexts, setAllContexts] = useState([]);
-  const [tokenUsage, setTokenUsage] = useState(null);
+  // Aggregate token usage per page
+  const [tokenUsage, setTokenUsage] = useState({
+    input_tokens: 0,
+    output_tokens: 0,
+  });
 
   const MAX_COUNT = 3;
   function combineAllContexts(contexts) {
@@ -72,6 +78,9 @@ const PromptChat = ({
       chatRef.current.setPromptValue(initialInput);
     }
     combineAllContexts(contexts);
+
+    // Reset token usage aggregation on mount (page load)
+    setTokenUsage({ input_tokens: 0, output_tokens: 0 });
 
     const handleStorageChange = () => {
       combineAllContexts(contexts);
@@ -138,9 +147,6 @@ const PromptChat = ({
   const submitPromptToBackend = async (messages) => {
     const lastMessage = messages[messages.length - 1];
 
-    // Reset token usage when starting new request
-    setTokenUsage(null);
-
     let requestBody;
     if (!conversationStarted) {
       requestBody = buildFirstChatRequestBody(lastMessage?.content);
@@ -194,45 +200,20 @@ const PromptChat = ({
               const chunk = decoder.decode(value, { stream: true });
               buffer += chunk;
 
-              // Check if this chunk contains SSE token usage event
-              if (buffer.includes("event: token_usage")) {
-                // Split at the SSE event boundary
-                const parts = buffer.split("event: token_usage");
-                const contentPart = parts[0];
-                const sseEventPart = "event: token_usage" + parts[1];
-
-                // Send content part to ProChat
-                if (contentPart) {
-                  controller.enqueue(new TextEncoder().encode(contentPart));
-                }
-
-                // Parse token usage from SSE event
-                const lines = sseEventPart.split("\n");
-                for (const line of lines) {
-                  if (line.startsWith("data: ")) {
-                    const data = line.substring(6);
-
-                    // Handle token usage
-                    try {
-                      const tokenUsageData = JSON.parse(data);
-                      setTokenUsage(formattedUsage(tokenUsageData));
-                    } catch (parseError) {
-                      console.log(
-                        "Failed to parse token usage data:",
-                        data,
-                        parseError,
-                      );
-                    }
-                    break;
-                  }
-                }
-
-                buffer = "";
-              } else {
-                // Regular content - stream directly to ProChat
-                controller.enqueue(new TextEncoder().encode(chunk));
-                buffer = "";
+              // Use the reusable filterSSEEvents utility
+              const { text, events } = filterSSEEvents(buffer);
+              // Send clean text to ProChat
+              if (text) {
+                controller.enqueue(new TextEncoder().encode(text));
               }
+              // Handle token usage events
+              events.forEach((event) => {
+                if (event.type === "token_usage") {
+                  const usage = formattedUsage(event.data);
+                  setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+                }
+              });
+              buffer = "";
 
               return pump();
             });

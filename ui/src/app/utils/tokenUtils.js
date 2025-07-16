@@ -8,10 +8,9 @@ const MIN_TOKENS_FOR_K_FORMAT = 1500;
  * @returns {string} Formatted token count (e.g., "1k", "5k")
  */
 export function formatTokens(num) {
-  // if (typeof num !== "number" || isNaN(num)) return "-";
-  // if (num < MIN_TOKENS_FOR_K_FORMAT) return "1k";
-  // return `${Math.round(num / 1000)}k`;
-  return num;
+  if (typeof num !== "number" || isNaN(num) || num <= 0) return "N/A";
+  if (num < MIN_TOKENS_FOR_K_FORMAT) return "1k";
+  return `${Math.round(num / 1000)}k`;
 }
 
 export function formattedUsage(tokenUsage) {

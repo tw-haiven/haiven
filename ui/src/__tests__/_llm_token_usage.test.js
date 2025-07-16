@@ -49,34 +49,34 @@ describe("LLMTokenUsage Component", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("should not render when no token usage data", () => {
-    const props = {
-      tokenUsage: { input_tokens: 0, output_tokens: 0 },
-      featureToggleConfig: { [FEATURES.LLM_TOKEN_USAGE]: true },
-    };
-
-    const { container } = render(<LLMTokenUsage {...props} />);
-    expect(container.firstChild).toBeNull();
+  it("should render and show 'N/A' when no token usage data", () => {
+    render(
+      <LLMTokenUsage
+        tokenUsage={{ input_tokens: 0, output_tokens: 0 }}
+        featureToggleConfig={{ [FEATURES.LLM_TOKEN_USAGE]: true }}
+      />,
+    );
+    expect(screen.getByTestId("llm-token-usage")).toBeInTheDocument();
   });
 
-  it("should not render when token usage is null", () => {
-    const props = {
-      tokenUsage: null,
-      featureToggleConfig: { [FEATURES.LLM_TOKEN_USAGE]: true },
-    };
-
-    const { container } = render(<LLMTokenUsage {...props} />);
-    expect(container.firstChild).toBeNull();
+  it("should render and show 'N/A' when token usage is null", () => {
+    render(
+      <LLMTokenUsage
+        tokenUsage={null}
+        featureToggleConfig={{ [FEATURES.LLM_TOKEN_USAGE]: true }}
+      />,
+    );
+    expect(screen.getByTestId("llm-token-usage")).toBeInTheDocument();
   });
 
-  it("should not render when token usage is undefined", () => {
-    const props = {
-      tokenUsage: undefined,
-      featureToggleConfig: { [FEATURES.LLM_TOKEN_USAGE]: true },
-    };
-
-    const { container } = render(<LLMTokenUsage {...props} />);
-    expect(container.firstChild).toBeNull();
+  it("should render and show 'N/A' when token usage is undefined", () => {
+    render(
+      <LLMTokenUsage
+        tokenUsage={undefined}
+        featureToggleConfig={{ [FEATURES.LLM_TOKEN_USAGE]: true }}
+      />,
+    );
+    expect(screen.getByTestId("llm-token-usage")).toBeInTheDocument();
   });
 
   it("should render when only input tokens are present", () => {
