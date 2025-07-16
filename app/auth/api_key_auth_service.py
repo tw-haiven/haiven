@@ -21,8 +21,18 @@ class ApiKeyAuthService:
         normalized = data.strip().lower()
         return hashlib.sha256((self.salt + normalized).encode()).hexdigest()
 
-    def generate_api_key(self, name: str, user_id: str, expires_days: int = 365) -> str:
+    def generate_api_key(
+        self, name: str, user_id: str, expires_days: int = None
+    ) -> str:
         """Generate a new API key and return the key string."""
+        # Enforce max 30 days expiry
+        if expires_days is None:
+            expires_days = 30
+        if expires_days > 30:
+            raise ValueError("API key maximum expiry is 30 days")
+        if expires_days < 1:
+            raise ValueError("API key expiry must be at least 1 day")
+
         # Generate a secure random key
         key = secrets.token_urlsafe(32)
         key_hash = hashlib.sha256(key.encode()).hexdigest()

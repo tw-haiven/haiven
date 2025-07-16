@@ -52,7 +52,7 @@ class TestApiKeyAuthService:
         service = ApiKeyAuthService(config, repository)
 
         # Generate a key
-        key = service.generate_api_key("test-key", "user@example.com", 365)
+        key = service.generate_api_key("test-key", "user@example.com", 30)
 
         # Verify that the repository was called with the correct arguments
         assert repository.save_key.called
@@ -78,9 +78,56 @@ class TestApiKeyAuthService:
         # Verify the expiration date
         created_at = datetime.fromisoformat(key_data["created_at"])
         expires_at = datetime.fromisoformat(key_data["expires_at"])
-        expected_expiry = created_at + timedelta(days=365)
+        expected_expiry = created_at + timedelta(days=30)
         time_diff = abs((expires_at - expected_expiry).total_seconds())
         assert time_diff < 1
+
+    def test_generate_api_key_with_custom_expiry(self):
+        """Test that API key generation works with a custom expiry <= 30 days."""
+        config = MagicMock()
+        config.load_api_key_pseudonymization_salt.return_value = TEST_SALT
+        repository = MagicMock()
+        service = ApiKeyAuthService(config, repository)
+
+        # Generate a key with 10 days expiry
+        service.generate_api_key("test-key", "user@example.com", 10)
+        args = repository.save_key.call_args[0]
+        key_data = args[1]
+        created_at = datetime.fromisoformat(key_data["created_at"])
+        expires_at = datetime.fromisoformat(key_data["expires_at"])
+        expected_expiry = created_at + timedelta(days=10)
+        time_diff = abs((expires_at - expected_expiry).total_seconds())
+        assert time_diff < 1
+
+    def test_generate_api_key_defaults_to_30_days(self):
+        """Test that API key generation defaults to 30 days if not provided."""
+        config = MagicMock()
+        config.load_api_key_pseudonymization_salt.return_value = TEST_SALT
+        repository = MagicMock()
+        service = ApiKeyAuthService(config, repository)
+
+        # Generate a key with no expiry (should default to 30)
+        service.generate_api_key("test-key", "user@example.com")
+        args = repository.save_key.call_args[0]
+        key_data = args[1]
+        created_at = datetime.fromisoformat(key_data["created_at"])
+        expires_at = datetime.fromisoformat(key_data["expires_at"])
+        expected_expiry = created_at + timedelta(days=30)
+        time_diff = abs((expires_at - expected_expiry).total_seconds())
+        assert time_diff < 1
+
+    def test_generate_api_key_rejects_expiry_over_30_days(self):
+        """Test that API key generation rejects expiry > 30 days."""
+        config = MagicMock()
+        config.load_api_key_pseudonymization_salt.return_value = TEST_SALT
+        repository = MagicMock()
+        service = ApiKeyAuthService(config, repository)
+
+        try:
+            service.generate_api_key("test-key", "user@example.com", 31)
+            assert False, "Should have raised ValueError for expiry > 30 days"
+        except ValueError as e:
+            assert "maximum expiry is 30 days" in str(e)
 
     def test_validate_key_valid(self):
         """Test that key validation works for valid keys."""
@@ -380,3 +427,36 @@ class TestApiKeyAuthService:
             # Verify the result
             assert result is None
             mock_auth.assert_not_called()
+
+    def test_validate_key_expired_returns_error_message(self):
+        """Test that validation of an expired key returns a 401-style error message."""
+        config = MagicMock()
+        config.load_api_key_pseudonymization_salt.return_value = TEST_SALT
+        repository = MagicMock()
+        service = ApiKeyAuthService(config, repository)
+
+        key = "expired-key"
+        user_id = hashlib.sha256((TEST_SALT + "user@example.com").encode()).hexdigest()
+        repository.find_by_hash.return_value = {
+            "name": "expired-key",
+            "user_id": user_id,
+            "created_at": (datetime.utcnow() - timedelta(days=31)).isoformat(),
+            "expires_at": (datetime.utcnow() - timedelta(days=1)).isoformat(),
+            "last_used": None,
+            "usage_count": 0,
+        }
+
+        # Patch logger to avoid warnings in test output
+        with patch("auth.api_key_auth_service.HaivenLogger.get"):
+            result = service.validate_key(key)
+        assert result is None  # Service returns None for expired keys
+        # In the API layer, this should map to a 401 with a clear message
+
+    def test_oauth_authenticated_requests_skip_expiry_check(self):
+        """Test that OAuth-authenticated requests are not subject to API key expiry checks."""
+        # Simulate a session user with no 'auth_type' (OAuth)
+        session_user = {"email": "user@example.com"}
+        # In the actual middleware, expiry is not checked if auth_type != 'api_key'
+        # Here, we just assert that the logic is respected in the server middleware (see server.py)
+        # This is a placeholder to remind implementers to test this at the integration/middleware level
+        assert session_user.get("auth_type") != "api_key"

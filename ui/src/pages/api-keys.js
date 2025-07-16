@@ -44,6 +44,8 @@ export default function ApiKeys() {
   const [keyVisible, setKeyVisible] = useState(false);
   const [usage, setUsage] = useState(null);
   const [form] = Form.useForm();
+  const [expiryDays, setExpiryDays] = useState(30);
+  const [generateError, setGenerateError] = useState(null);
 
   useEffect(() => {
     loadApiKeys();
@@ -77,6 +79,7 @@ export default function ApiKeys() {
   };
 
   const handleGenerateKey = async (values) => {
+    setGenerateError(null); // reset error on new attempt
     try {
       generateApiKey(
         values.name,
@@ -85,18 +88,22 @@ export default function ApiKeys() {
           setKeyModalVisible(true);
           setGenerateModalVisible(false);
           form.resetFields();
+          setExpiryDays(30); // reset to default
+          setGenerateError(null);
           loadApiKeys();
           loadUsage();
           message.success("API key generated successfully!");
         },
         (error) => {
           console.error("Error generating API key:", error);
-          message.error(`Failed to generate API key: ${error.message}`);
+          setGenerateError(error.message || "Failed to generate API key");
+          // Do not close modal
         },
+        expiryDays,
       );
     } catch (error) {
       console.error("Error generating API key:", error);
-      message.error("Failed to generate API key");
+      setGenerateError("Failed to generate API key");
     }
   };
 
@@ -315,28 +322,63 @@ export default function ApiKeys() {
         open={generateModalVisible}
         onCancel={() => {
           setGenerateModalVisible(false);
+          setGenerateError(null);
           form.resetFields();
         }}
         footer={null}
         width={600}
+        destroyOnClose
       >
+        {generateError && (
+          <Alert
+            message="Error"
+            description={generateError}
+            type="error"
+            showIcon
+            style={{ marginBottom: 16 }}
+          />
+        )}
         <Form form={form} layout="vertical" onFinish={handleGenerateKey}>
           <Form.Item
-            label="Name"
+            label="API Key Name"
             name="name"
             rules={[
               {
                 required: true,
-                message: "Please enter a name for this API key",
+                message: "Please enter a name for the API key",
               },
-              { min: 3, message: "Name must be at least 3 characters" },
-              { max: 100, message: "Name must not exceed 100 characters" },
             ]}
           >
+            <Input placeholder="e.g. My Integration Key" maxLength={64} />
+          </Form.Item>
+          <Form.Item
+            label={
+              <span>
+                Expiry (days)
+                <Tooltip title="API keys can be valid for 1 to 30 days. Default is 30.">
+                  <RiInformationLine style={{ marginLeft: 6 }} />
+                </Tooltip>
+              </span>
+            }
+            required
+            validateStatus={expiryDays < 1 || expiryDays > 30 ? "error" : ""}
+            help={
+              expiryDays < 1 || expiryDays > 30
+                ? "Expiry must be between 1 and 30 days"
+                : ""
+            }
+          >
             <Input
-              placeholder="e.g., MCP Client, CLI Tool, Personal Integration"
-              showCount
-              maxLength={100}
+              type="number"
+              min={1}
+              max={30}
+              value={expiryDays}
+              onChange={(e) => {
+                let val = parseInt(e.target.value, 10);
+                if (isNaN(val)) val = 30;
+                setExpiryDays(val);
+              }}
+              style={{ width: 120 }}
             />
           </Form.Item>
 
@@ -364,6 +406,7 @@ export default function ApiKeys() {
               <Button
                 onClick={() => {
                   setGenerateModalVisible(false);
+                  setGenerateError(null);
                   form.resetFields();
                 }}
               >

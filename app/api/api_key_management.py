@@ -12,6 +12,7 @@ from config_service import ConfigService
 
 class GenerateApiKeyRequest(BaseModel):
     name: str
+    expires_days: int | None = None
 
 
 class RevokeApiKeyRequest(BaseModel):
@@ -34,7 +35,10 @@ class ApiKeyManagementAPI:
         """Get the authenticated user's email from session."""
         user = request.session.get("user")
         if not user:
-            raise HTTPException(status_code=401, detail="User not authenticated")
+            raise HTTPException(
+                status_code=401,
+                detail="User not authenticated. You must be logged in to generate or manage API keys, even in developer mode.",
+            )
         return user.get("email")
 
     def register_endpoints(self):
@@ -77,10 +81,21 @@ class ApiKeyManagementAPI:
             """Generate a new API key for the authenticated user."""
             try:
                 user_id = self.get_user_email(request)
+                expires_days = (
+                    body.expires_days if body.expires_days is not None else 30
+                )
+                if expires_days > 30:
+                    raise HTTPException(
+                        status_code=400, detail="API key maximum expiry is 30 days"
+                    )
+                if expires_days < 1:
+                    raise HTTPException(
+                        status_code=400, detail="API key expiry must be at least 1 day"
+                    )
                 api_key = self.api_key_service.generate_api_key(
                     name=body.name,
                     user_id=user_id,
-                    expires_days=1,  # Fixed 24-hour validity
+                    expires_days=expires_days,
                 )
 
                 # Calculate key hash for response
@@ -96,11 +111,18 @@ class ApiKeyManagementAPI:
                         "api_key": api_key,
                         "key_hash": key_hash,
                         "name": body.name,
-                        "expires_days": 1,  # Fixed 24-hour validity
-                        "message": "API key generated successfully",
+                        "expires_days": expires_days,
+                        "message": f"API key generated successfully (expires in {expires_days} days)",
                     }
                 )
 
+            except HTTPException:
+                raise
+            except ValueError as ve:
+                logger = HaivenLogger.get()
+                if logger:
+                    logger.error(f"Error generating API key: {str(ve)}")
+                raise HTTPException(status_code=400, detail=str(ve))
             except Exception as e:
                 logger = HaivenLogger.get()
                 if logger:

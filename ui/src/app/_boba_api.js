@@ -160,7 +160,12 @@ export const getApiKeys = async (onSuccess, onError) => {
   }
 };
 
-export const generateApiKey = async (name, onSuccess, onError) => {
+export const generateApiKey = async (
+  name,
+  onSuccess,
+  onError,
+  expiresDays = 30,
+) => {
   try {
     const response = await fetch("/api/apikeys/generate", {
       method: "POST",
@@ -170,6 +175,7 @@ export const generateApiKey = async (name, onSuccess, onError) => {
       },
       body: JSON.stringify({
         name: name,
+        expires_days: expiresDays,
       }),
     });
 

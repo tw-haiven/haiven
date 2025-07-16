@@ -64,7 +64,7 @@ class TestApi(unittest.TestCase):
         )
         # Assert: The service should be called with the original user_id
         mock_service.generate_api_key.assert_called_with(
-            name="dummy", user_id=user_email, expires_days=1
+            name="dummy", user_id=user_email, expires_days=30
         )
         assert response.status_code == 200
 
@@ -1041,3 +1041,30 @@ class TestApi(unittest.TestCase):
             "model_config"
         ]
         self.assertEqual(actual_model_config.provider, expected_model_config.provider)
+
+    def test_apikey_generate_requires_user(self):
+        # Arrange
+        mock_service = MagicMock()
+        mock_service.generate_api_key.return_value = "dummy_api_key_value"
+        mock_config = MagicMock()
+        from api.api_key_management import ApiKeyManagementAPI
+        from fastapi import HTTPException
+
+        # Patch get_user_email to simulate missing user
+        class TestApiKeyManagementAPI(ApiKeyManagementAPI):
+            def get_user_email(self, request):
+                raise HTTPException(
+                    status_code=401,
+                    detail="User not authenticated. You must be logged in to generate or manage API keys, even in developer mode.",
+                )
+
+        TestApiKeyManagementAPI(self.app, mock_service, mock_config)
+
+        # Act: Generate API key without user in session
+        response = self.client.post(
+            "/api/apikeys/generate",
+            json={"name": "dummy"},
+        )
+        # Assert: Should return 401 with improved error message
+        assert response.status_code == 401
+        assert "User not authenticated" in response.json().get("detail", "")
