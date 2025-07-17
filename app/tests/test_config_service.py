@@ -234,3 +234,53 @@ knowledge_pack_path: /non/existent/path
         assert exception_raised
 
         os.remove(get_test_data_path() + "/" + config_path)
+
+    def test_api_key_repository_config_validation(self):
+        import yaml
+
+        # Missing pseudonymization_salt
+        config_missing_salt = {
+            "api_key_repository": {
+                "type": "file",
+                "file": {"file_path": "somepath.json"},
+            }
+        }
+        with tempfile.NamedTemporaryFile(delete=False, mode="w+") as tmp_file:
+            yaml.dump(config_missing_salt, tmp_file)
+            tmp_file.flush()
+            with pytest.raises(ValueError) as e:
+                ConfigService(tmp_file.name).load_api_key_pseudonymization_salt()
+            assert "pseudonymization_salt" in str(e.value)
+            os.unlink(tmp_file.name)
+
+        # Missing file_path for file type
+        config_missing_file_path = {
+            "api_key_repository": {
+                "type": "file",
+                "pseudonymization_salt": "somesalt",
+                "file": {},
+            }
+        }
+        with tempfile.NamedTemporaryFile(delete=False, mode="w+") as tmp_file:
+            yaml.dump(config_missing_file_path, tmp_file)
+            tmp_file.flush()
+            with pytest.raises(ValueError) as e:
+                ConfigService(tmp_file.name).load_api_key_repository_file_path()
+            assert "file_path" in str(e.value)
+            os.unlink(tmp_file.name)
+
+        # Valid config
+        config_valid = {
+            "api_key_repository": {
+                "type": "file",
+                "pseudonymization_salt": "somesalt",
+                "file": {"file_path": "somepath.json"},
+            }
+        }
+        with tempfile.NamedTemporaryFile(delete=False, mode="w+") as tmp_file:
+            yaml.dump(config_valid, tmp_file)
+            tmp_file.flush()
+            cs = ConfigService(tmp_file.name)
+            assert cs.load_api_key_pseudonymization_salt() == "somesalt"
+            assert cs.load_api_key_repository_file_path() == "somepath.json"
+            os.unlink(tmp_file.name)

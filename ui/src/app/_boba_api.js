@@ -133,3 +133,122 @@ export const getInspirationById = async (inspirationId, onSuccess) => {
     });
   });
 };
+
+// API Key Management Functions
+export const getApiKeys = async (onSuccess, onError) => {
+  try {
+    const response = await fetch("/api/apikeys", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    onSuccess(data);
+  } catch (error) {
+    if (onError) {
+      onError(error);
+    } else {
+      console.error("Error fetching API keys:", error);
+    }
+  }
+};
+
+export const generateApiKey = async (
+  name,
+  onSuccess,
+  onError,
+  expiresDays = 30,
+) => {
+  try {
+    const response = await fetch("/api/apikeys/generate", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        expires_days: expiresDays,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.detail || `HTTP error! status: ${response.status}`,
+      );
+    }
+
+    const data = await response.json();
+    onSuccess(data);
+  } catch (error) {
+    if (onError) {
+      onError(error);
+    } else {
+      console.error("Error generating API key:", error);
+    }
+  }
+};
+
+export const revokeApiKey = async (keyHash, onSuccess, onError) => {
+  try {
+    const response = await fetch("/api/apikeys/revoke", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        key_hash: keyHash,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.detail || `HTTP error! status: ${response.status}`,
+      );
+    }
+
+    const data = await response.json();
+    onSuccess(data);
+  } catch (error) {
+    if (onError) {
+      onError(error);
+    } else {
+      console.error("Error revoking API key:", error);
+    }
+  }
+};
+
+export const getApiKeyUsage = async (onSuccess, onError) => {
+  try {
+    const response = await fetch("/api/apikeys/usage", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    onSuccess(data);
+  } catch (error) {
+    if (onError) {
+      onError(error);
+    } else {
+      console.error("Error fetching API key usage:", error);
+    }
+  }
+};

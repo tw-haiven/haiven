@@ -69,11 +69,17 @@ class HaivenBaseApi:
 
     def get_hashed_user_id(self, request):
         if request.session and request.session.get("user"):
-            user_id = request.session.get("user").get("email")
-            hashed_user_id = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
-            return hashed_user_id
-        else:
-            return None
+            user = request.session.get("user")
+            # Check if auth_type is api_key, if so use user_id directly from the session
+            if user.get("auth_type") == "api_key":
+                user_id = user.get("user_id")
+            else:
+                user_id = user.get("email")
+
+            if user_id is not None:
+                hashed_user_id = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
+                return hashed_user_id
+        return None
 
     def stream_json_chat(
         self,
@@ -554,7 +560,7 @@ class ApiBasics(HaivenBaseApi):
 
                 rendered_prompt = (
                     f"""
-                    
+
                     My new request:
                     {prompt_data.userinput}
                     """
@@ -666,10 +672,16 @@ class ApiBasics(HaivenBaseApi):
         def download_prompt(
             request: Request, prompt_id: str = None, category: str = None
         ):
-            user_id = self.get_hashed_user_id(request)
+            import re
 
+            def is_valid_param(val):
+                return bool(val) and re.match(r"^[a-zA-Z0-9_-]{1,100}$", val)
+
+            user_id = self.get_hashed_user_id(request)
             try:
-                if prompt_id:
+                if prompt_id is not None:
+                    if not is_valid_param(prompt_id):
+                        raise HTTPException(status_code=400, detail="Invalid prompt_id")
                     prompt = prompts_chat.get_a_prompt_with_follow_ups(
                         prompt_id, download_prompt=True
                     )
@@ -687,7 +699,9 @@ class ApiBasics(HaivenBaseApi):
                     )
 
                     return JSONResponse([prompt])
-                elif category:
+                elif category is not None:
+                    if not is_valid_param(category):
+                        raise HTTPException(status_code=400, detail="Invalid category")
                     prompts = prompts_chat.get_prompts_with_follow_ups(
                         download_prompt=True, category=category
                     )
@@ -718,6 +732,8 @@ class ApiBasics(HaivenBaseApi):
                         )
 
                     return JSONResponse(prompts)
+            except HTTPException:
+                raise
             except Exception as error:
                 HaivenLogger.get().error(
                     str(error),
