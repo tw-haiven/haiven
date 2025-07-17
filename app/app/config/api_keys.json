@@ -1,0 +1,36 @@
+{
+  "keys": {
+    "89a116cd5418cf3dedadd345be552ff1f1a973b16a1fc03ffd375883ae6546b8": {
+      "name": "ABC",
+      "user_id": "b71ddfda9b4076ab018244b4e941aedab0f1f5d2a9f295d715613f826b807282",
+      "created_at": "2025-07-14T05:45:07.597664",
+      "expires_at": "2025-07-15T05:53:07.597676",
+      "last_used": "2025-07-14T07:07:01.624176",
+      "usage_count": 8
+    },
+    "89a116c18cf3dedadd345be552ff1f1a973b16a1fc03ffd375883ae6546b8": {
+      "name": "ABC",
+      "user_id": "b71db4076ab018244b4e941aedab0f1f5d2a9f295d715613f826b807282",
+      "created_at": "2025-07-14T05:45:07.597664",
+      "expires_at": "2025-07-15T05:53:07.597676",
+      "last_used": "2025-07-14T06:01:52.661403",
+      "usage_count": 6
+    },
+    "de7e2ae182596fdc3be84f8905f23b64253085b581545dc5309bb93a0a5e8d23": {
+      "name": "new",
+      "user_id": "b71ddfda9b4076ab018244b4e941aedab0f1f5d2a9f295d715613f826b807282",
+      "created_at": "2025-07-15T05:36:06.227740",
+      "expires_at": "2025-07-16T05:36:06.227747",
+      "last_used": "2025-07-15T13:14:13.257280",
+      "usage_count": 14
+    },
+    "6d6dd9606ca6943e56b9c64b5ab06d26a587e327223763604b2d7099476e096d": {
+      "name": "ABC-test",
+      "user_id": "b71ddfda9b4076ab018244b4e941aedab0f1f5d2a9f295d715613f826b807282",
+      "created_at": "2025-07-15T07:36:43.099888",
+      "expires_at": "2025-07-16T07:36:43.099905",
+      "last_used": null,
+      "usage_count": 0
+    }
+  }
+}
