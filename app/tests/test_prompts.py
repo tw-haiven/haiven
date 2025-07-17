@@ -163,7 +163,7 @@ def test_create_markdown_summary():
     markdown_summary = prompt_list.render_prompts_summary_markdown()
 
     expected_summary = (
-        "- **Test4**: Prompt description 4\n" "- **Test5**: Prompt description 5\n"
+        "- **Test4**: Prompt description 4\n- **Test5**: Prompt description 5\n"
     )
 
     assert expected_summary in markdown_summary

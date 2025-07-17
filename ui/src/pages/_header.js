@@ -63,6 +63,9 @@ export default function Header({ featureToggleConfig }) {
               <span type="link">
                 <Link href="/knowledge">Knowledge Overview</Link>
               </span>
+              <span type="link">
+                <Link href="/api-keys">API Keys</Link>
+              </span>
             </div>
             <div className="separator"></div>
             <div className="pinboard">

@@ -21,6 +21,7 @@ from ui.url import HaivenUrl
 import hashlib
 import time
 import os
+from auth.api_key_auth_service import ApiKeyAuthService
 
 
 class Server:
@@ -30,12 +31,14 @@ class Server:
         self,
         chat_manager: ChatManager,
         config_service: ConfigService,
+        api_key_auth_service: ApiKeyAuthService,
         boba_api: BobaApi = None,
     ):
         self.url = HaivenUrl()
         self.chat_manager = chat_manager
         self.config_service = config_service
         self.boba_api = boba_api
+        self.api_key_auth_service = api_key_auth_service
         # Initialize Jinja2Templates with autoescape=True for XSS protection
         self.templates = Jinja2Templates(directory="./resources/html_templates")
         self.templates.env.autoescape = True
@@ -119,6 +122,7 @@ class Server:
                 "creative-matrix",
                 "about",
                 "company-research",
+                "api-keys",
             ]
             paths = request.url.path.split("/")
             if (
@@ -145,10 +149,22 @@ class Server:
 
             if request.url.path not in allowlist:
                 try:
+                    # First try API key authentication (only for MCP endpoints)
+                    api_user = await self.api_key_auth_service.authenticate_with_api_key_for_mcp_only(
+                        request
+                    )
+                    if api_user:
+                        # Store API user in session for this request only
+                        request.session["user"] = api_user
+                        return await call_next(request)
+
+                    # If no API key, check session authentication
                     user = request.session.get("user")
-                    if not user:
-                        return RedirectResponse(url=self.url.login())
-                    return await call_next(request)
+                    if user and user.get("auth_type") != "api_key":
+                        return await call_next(request)
+
+                    # No authentication found
+                    return RedirectResponse(url=self.url.login())
                 except AssertionError as error:
                     print(f"AssertionError {error}")
                     return auth_error_response(request, error)
@@ -171,6 +187,11 @@ class Server:
             session = request.session
             current_time = int(time.time())
             if session:
+                user = session.get("user")
+                # Skip session expiry check for API key authentication
+                if user and user.get("auth_type") == "api_key":
+                    return await call_next(request)
+
                 if "created_at" in session:
                     created_at = session["created_at"]
                     if current_time - created_at > session_expiry_seconds:

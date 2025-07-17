@@ -52,6 +52,122 @@ class TestApi(unittest.TestCase):
         # Clean up code to run after each test
         pass
 
+    def test_apikey_endpoints_use_service(self):
+        # Arrange
+        user_email = "testuser@example.com"
+
+        # Mock service
+        mock_service = MagicMock()
+        # For list_keys_for_user, return a dummy key
+        mock_service.list_keys_for_user.return_value = {
+            "dummy_key_hash": {
+                "name": "dummy",
+                "user_id": "pseudonymized_user_id",  # Service handles pseudonymization
+                "created_at": "2024-01-01T00:00:00",
+                "expires_at": "2024-01-02T00:00:00",
+                "last_used": None,
+                "usage_count": 0,
+            }
+        }
+        # For generate_api_key, return a dummy key
+        mock_service.generate_api_key.return_value = "dummy_api_key_value"
+
+        # Mock config
+        mock_config = MagicMock()
+
+        # Patch get_user_email to return our test email
+        from api.api_key_management import ApiKeyManagementAPI
+
+        class TestApiKeyManagementAPI(ApiKeyManagementAPI):
+            def get_user_email(self, request):
+                return user_email
+
+        # Register endpoints with our test APIKeyManagementAPI
+        TestApiKeyManagementAPI(self.app, mock_service, mock_config)
+
+        # Act: Generate API key
+        response = self.client.post(
+            "/api/apikeys/generate",
+            json={"name": "dummy"},
+        )
+        # Assert: The service should be called with the original user_id
+        mock_service.generate_api_key.assert_called_with(
+            name="dummy", user_id=user_email, expires_days=30
+        )
+        assert response.status_code == 200
+
+        # Act: List API keys
+        response = self.client.get("/api/apikeys")
+        mock_service.list_keys_for_user.assert_called_with(user_email)
+        assert response.status_code == 200
+
+    def test_apikey_revoke_uses_service(self):
+        user_email = "testuser@example.com"
+        key_hash = "dummy_key_hash"
+
+        # Mock service
+        mock_service = MagicMock()
+        mock_service.list_keys_for_user.return_value = {
+            key_hash: {"name": "dummy", "user_id": "pseudonymized_user_id"}
+        }
+        mock_service.revoke_key.return_value = True
+
+        # Mock config
+        mock_config = MagicMock()
+
+        # Patch get_user_email
+        from api.api_key_management import ApiKeyManagementAPI
+
+        class TestApiKeyManagementAPI(ApiKeyManagementAPI):
+            def get_user_email(self, request):
+                return user_email
+
+        TestApiKeyManagementAPI(self.app, mock_service, mock_config)
+
+        # Act: Revoke API key
+        response = self.client.post(
+            "/api/apikeys/revoke",
+            json={"key_hash": key_hash},
+        )
+        # Assert: list_keys_for_user and revoke_key called with correct args
+        mock_service.list_keys_for_user.assert_called_with(user_email)
+        mock_service.revoke_key.assert_called_with(key_hash)
+        assert response.status_code == 200
+
+    def test_apikey_usage_uses_service(self):
+        user_email = "testuser@example.com"
+
+        # Mock service
+        mock_service = MagicMock()
+        mock_service.list_keys_for_user.return_value = {
+            "dummy_key_hash": {
+                "name": "dummy",
+                "user_id": "pseudonymized_user_id",  # Service handles pseudonymization
+                "created_at": "2024-01-01T00:00:00",
+                "expires_at": "2024-01-02T00:00:00",
+                "last_used": "2024-01-01T12:00:00",
+                "usage_count": 5,
+            }
+        }
+
+        # Mock config
+        mock_config = MagicMock()
+
+        # Patch get_user_email
+        from api.api_key_management import ApiKeyManagementAPI
+
+        class TestApiKeyManagementAPI(ApiKeyManagementAPI):
+            def get_user_email(self, request):
+                return user_email
+
+        TestApiKeyManagementAPI(self.app, mock_service, mock_config)
+
+        # Act: Get API key usage
+        response = self.client.get("/api/apikeys/usage")
+        # Assert: list_keys_for_user called with correct user_id
+        mock_service.list_keys_for_user.assert_called_with(user_email)
+        assert response.status_code == 200
+
     def test_get_prompts(self):
         mock_prompts = MagicMock()
         some_prompts = [{"identifier": "some-identifier", "title": "Some title"}]
@@ -798,6 +914,62 @@ class TestApi(unittest.TestCase):
             "non-existent-id", download_prompt=True
         )
 
+    def test_download_prompt_invalid_prompt_id(self):
+        mock_prompts_chat = MagicMock()
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            image_service=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+        # Invalid characters
+        response = self.client.get("/api/download-prompt?prompt_id=bad!id")
+        assert response.status_code == 400
+        assert b"Invalid prompt_id" in response.content
+        # Too long
+        long_id = "a" * 101
+        response = self.client.get(f"/api/download-prompt?prompt_id={long_id}")
+        assert response.status_code == 400
+        assert b"Invalid prompt_id" in response.content
+        # Empty
+        response = self.client.get("/api/download-prompt?prompt_id=")
+        assert response.status_code == 400
+        assert b"Invalid prompt_id" in response.content
+
+    def test_download_prompt_invalid_category(self):
+        mock_prompts_chat = MagicMock()
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            image_service=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+        # Invalid characters
+        response = self.client.get("/api/download-prompt?category=bad!cat")
+        assert response.status_code == 400
+        assert b"Invalid category" in response.content
+        # Too long
+        long_cat = "a" * 101
+        response = self.client.get(f"/api/download-prompt?category={long_cat}")
+        assert response.status_code == 400
+        assert b"Invalid category" in response.content
+        # Empty
+        response = self.client.get("/api/download-prompt?category=")
+        assert response.status_code == 400
+        assert b"Invalid category" in response.content
+
     def test_get_prompts_with_category(self):
         mock_prompts = MagicMock()
         category_prompts = [
@@ -1175,3 +1347,30 @@ class TestApi(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0]["identifier"], "prompt-1")
         self.assertEqual(result[1]["identifier"], "prompt-3")
+
+    def test_apikey_generate_requires_user(self):
+        # Arrange
+        mock_service = MagicMock()
+        mock_service.generate_api_key.return_value = "dummy_api_key_value"
+        mock_config = MagicMock()
+        from api.api_key_management import ApiKeyManagementAPI
+        from fastapi import HTTPException
+
+        # Patch get_user_email to simulate missing user
+        class TestApiKeyManagementAPI(ApiKeyManagementAPI):
+            def get_user_email(self, request):
+                raise HTTPException(
+                    status_code=401,
+                    detail="User not authenticated. You must be logged in to generate or manage API keys, even in developer mode.",
+                )
+
+        TestApiKeyManagementAPI(self.app, mock_service, mock_config)
+
+        # Act: Generate API key without user in session
+        response = self.client.post(
+            "/api/apikeys/generate",
+            json={"name": "dummy"},
+        )
+        # Assert: Should return 401 with improved error message
+        assert response.status_code == 401
+        assert "User not authenticated" in response.json().get("detail", "")
