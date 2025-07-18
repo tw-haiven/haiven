@@ -245,6 +245,34 @@ class ConfigService:
             )
         return salt
 
+    def load_firestore_project_id(self) -> str:
+        """Load the Firestore project ID from configuration."""
+        repo_config = self.data.get("api_key_repository", {})
+        if repo_config.get("type") != "firestore":
+            raise ValueError(
+                "Firestore configuration is only required when type is 'firestore'."
+            )
+
+        firestore_config = repo_config.get("firestore", {})
+        project_id = firestore_config.get("project_id")
+        if not project_id:
+            raise ValueError(
+                "api_key_repository.firestore.project_id is required when type is 'firestore'."
+            )
+        return project_id
+
+    def load_firestore_collection_name(self) -> str:
+        """Load the Firestore collection name from configuration."""
+        repo_config = self.data.get("api_key_repository", {})
+        if repo_config.get("type") != "firestore":
+            raise ValueError(
+                "Firestore configuration is only required when type is 'firestore'."
+            )
+
+        firestore_config = repo_config.get("firestore", {})
+        collection_name = firestore_config.get("collection_name", "api_keys")
+        return collection_name
+
     def _load_yaml(self, path: str) -> dict:
         """
         Load YAML data from a config file.

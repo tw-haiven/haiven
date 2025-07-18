@@ -39,6 +39,10 @@ class ApiKeyRepositoryFactory:
             from auth.file_api_key_repository import FileApiKeyRepository
 
             repository = FileApiKeyRepository(config_service)
+        elif repo_type == "firestore":
+            from auth.firestore_api_key_repository import FirestoreApiKeyRepository
+
+            repository = FirestoreApiKeyRepository(config_service)
         # TODO: Uncomment and implement other repository types as needed
         # elif repo_type == "db":
         #     return DbApiKeyRepository(config_service)

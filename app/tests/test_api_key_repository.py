@@ -6,7 +6,7 @@ import json
 from unittest.mock import MagicMock
 import pytest
 from tests.utils import get_test_data_path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from auth.api_key_repository import ApiKeyRepository
 from auth.file_api_key_repository import FileApiKeyRepository
@@ -126,8 +126,8 @@ class TestApiKeyRepository:
         mock_repository.find_by_hash.return_value = {
             "user_id": get_expected_hash("test@example.com"),
             "name": "test",
-            "created_at": datetime.utcnow().isoformat(),
-            "expires_at": (datetime.utcnow() + timedelta(days=30)).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "expires_at": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat(),
             "last_used": None,
             "usage_count": 0,
         }
@@ -243,9 +243,9 @@ class TestApiKeyRepository:
                         "test_key_hash": {
                             "name": "test-key",
                             "user_id": "test-user-id",
-                            "created_at": datetime.utcnow().isoformat(),
+                            "created_at": datetime.now(timezone.utc).isoformat(),
                             "expires_at": (
-                                datetime.utcnow() + timedelta(days=365)
+                                datetime.now(timezone.utc) + timedelta(days=365)
                             ).isoformat(),
                             "last_used": None,
                             "usage_count": 0,
@@ -269,9 +269,9 @@ class TestApiKeyRepository:
                         "test_key_hash": {
                             "name": "modified-key",
                             "user_id": "test-user-id",
-                            "created_at": datetime.utcnow().isoformat(),
+                            "created_at": datetime.now(timezone.utc).isoformat(),
                             "expires_at": (
-                                datetime.utcnow() + timedelta(days=365)
+                                datetime.now(timezone.utc) + timedelta(days=365)
                             ).isoformat(),
                             "last_used": None,
                             "usage_count": 0,

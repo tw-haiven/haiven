@@ -52,13 +52,26 @@ class ApiKeyManagementAPI:
                 # Format for frontend
                 formatted_keys = []
                 for key_hash, info in user_keys.items():
+                    # Convert datetime objects to ISO format strings for JSON serialization
+                    created_at = info["created_at"]
+                    expires_at = info["expires_at"]
+                    last_used = info["last_used"]
+
+                    # Convert to string if datetime object
+                    if hasattr(created_at, "isoformat"):
+                        created_at = created_at.isoformat()
+                    if hasattr(expires_at, "isoformat"):
+                        expires_at = expires_at.isoformat()
+                    if last_used and hasattr(last_used, "isoformat"):
+                        last_used = last_used.isoformat()
+
                     formatted_keys.append(
                         {
                             "key_hash": key_hash,
                             "name": info["name"],
-                            "created_at": info["created_at"],
-                            "expires_at": info["expires_at"],
-                            "last_used": info["last_used"],
+                            "created_at": created_at,
+                            "expires_at": expires_at,
+                            "last_used": last_used,
                             "usage_count": info["usage_count"],
                         }
                     )
@@ -178,11 +191,16 @@ class ApiKeyManagementAPI:
                 most_recent_usage = None
                 for info in user_keys.values():
                     if info["last_used"]:
+                        last_used = info["last_used"]
+                        # Convert to string if datetime object for JSON serialization
+                        if hasattr(last_used, "isoformat"):
+                            last_used = last_used.isoformat()
+
                         if (
                             not most_recent_usage
                             or info["last_used"] > most_recent_usage
                         ):
-                            most_recent_usage = info["last_used"]
+                            most_recent_usage = last_used
 
                 return JSONResponse(
                     {
