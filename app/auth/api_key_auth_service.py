@@ -164,3 +164,9 @@ class ApiKeyAuthService:
         if not self.is_mcp_endpoint(request.url.path):
             return None
         return await self.authenticate_with_api_key(request)
+
+    async def authenticate_with_api_key_optimized(
+        self, request: Request
+    ) -> Optional[Dict[str, Any]]:
+        """Authenticate a request using an API key (optimized version without redundant MCP check)."""
+        return await self.authenticate_with_api_key(request)
