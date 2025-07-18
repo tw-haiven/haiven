@@ -157,8 +157,8 @@ class StreamingChat(HaivenBaseChat):
                     # Pass through usage data to API level
                     yield chunk
                 elif "metadata" in chunk:
-                    # Pass through metadata as well
-                    yield chunk
+                    # Pass through metadata as JSON string
+                    yield json.dumps(chunk)
 
         except Exception as error:
             if not str(error).strip():
@@ -247,7 +247,7 @@ class JSONChat(HaivenBaseChat):
                 if isinstance(chunk, dict):
                     # Handle metadata and usage data - yield as dict so API can detect it
                     if "metadata" in chunk or self._is_token_usage_chunk(chunk):
-                        yield chunk
+                        yield json.dumps(chunk)
                     else:
                         # Other dict content - convert to data format
                         yield create_data_chunk(str(chunk))

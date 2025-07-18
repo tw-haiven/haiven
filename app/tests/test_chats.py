@@ -172,10 +172,10 @@ class TestChats(unittest.TestCase):
                 actual_chunk_clean = string_chunks[i].replace("\n", "")
                 assert expected_chunk in actual_chunk_clean
 
-        # Verify metadata chunks are passed through correctly
-        metadata_chunks = [chunk for chunk in dict_chunks if "metadata" in chunk]
+        # Verify metadata chunks are passed through as JSON strings
+        metadata_chunks = [chunk for chunk in string_chunks if "metadata" in chunk]
         assert len(metadata_chunks) == 1
-        assert metadata_chunks[0] == {"metadata": {"citations": ["test.url"]}}
+        assert metadata_chunks[0] == '{"metadata": {"citations": ["test.url"]}}'
 
         # Verify the memory was updated correctly
         assert len(json_chat.memory) == 3

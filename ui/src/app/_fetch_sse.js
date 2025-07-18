@@ -142,7 +142,12 @@ export const fetchSSE = async (uri, fetchOptions, options) => {
                 if (typeof data.data === "string") {
                   checkIsErrorMessage(data.data || "");
                 }
-                options.onMessageHandle?.(data, response);
+                // Handle metadata objects that don't have a data property
+                if (data.metadata && !data.data) {
+                  options.onMessageHandle?.(data, response);
+                } else if (data.data) {
+                  options.onMessageHandle?.(data, response);
+                }
               } catch (parseError) {
                 console.log("Failed to parse JSON chunk:", value, parseError);
               }
