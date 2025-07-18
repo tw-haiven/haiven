@@ -78,7 +78,12 @@ class ApiKeyAuthService:
             return None
 
         # Check if key is expired
-        expires_at = datetime.fromisoformat(key_info["expires_at"])
+        expires_at = key_info["expires_at"]
+        if isinstance(expires_at, str):
+            expires_at = datetime.fromisoformat(expires_at)
+            # Ensure timezone awareness - if the parsed datetime is naive, assume UTC
+            if expires_at.tzinfo is None:
+                expires_at = expires_at.replace(tzinfo=timezone.utc)
         if datetime.now(timezone.utc) > expires_at:
             logger = HaivenLogger.get()
             if logger:
