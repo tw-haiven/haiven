@@ -63,3 +63,6 @@ api_keys.json
 *.pkl
 !app/tests/test_data/**/*.faiss
 !app/tests/test_data/**/*.pkl
+
+#Ignore Custom Folder
+.aicustom/
