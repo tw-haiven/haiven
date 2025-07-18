@@ -37,8 +37,12 @@ class App:
         )
 
         image_service = self.create_image_service(config_service)
-        api_key_repository = self._create_api_key_repository(config_service)
-        api_key_auth_service = ApiKeyAuthService(config_service, api_key_repository)
+
+        # Conditionally initialize API key authentication based on feature toggle
+        api_key_auth_service = None
+        if config_service.is_api_key_auth_enabled():
+            api_key_repository = self._create_api_key_repository(config_service)
+            api_key_auth_service = ApiKeyAuthService(config_service, api_key_repository)
 
         self.server = Server(
             chat_manager,

@@ -28,7 +28,7 @@ class BobaApi:
         config_service: ConfigService,
         image_service: ImageDescriptionService,
         disclaimer_and_guidelines: DisclaimerAndGuidelinesService,
-        api_key_auth_service: ApiKeyAuthService,
+        api_key_auth_service: ApiKeyAuthService = None,
     ):
         self.knowledge_manager = knowledge_manager
         self.chat_manager = chat_manager
@@ -85,4 +85,6 @@ class BobaApi:
             self.prompts_chat,
         )
         ApiFeatures(app)
-        ApiKeyManagementAPI(app, self.api_key_auth_service, self.config_service)
+        # Only register API key management endpoints if API key auth is enabled
+        if self.api_key_auth_service and self.config_service.is_api_key_auth_enabled():
+            ApiKeyManagementAPI(app, self.api_key_auth_service, self.config_service)

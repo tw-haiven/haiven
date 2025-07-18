@@ -31,7 +31,7 @@ class Server:
         self,
         chat_manager: ChatManager,
         config_service: ConfigService,
-        api_key_auth_service: ApiKeyAuthService,
+        api_key_auth_service: ApiKeyAuthService = None,
         boba_api: BobaApi = None,
     ):
         self.url = HaivenUrl()
@@ -149,18 +149,34 @@ class Server:
 
             if request.url.path not in allowlist:
                 try:
-                    # First try API key authentication (only for MCP endpoints)
-                    api_user = await self.api_key_auth_service.authenticate_with_api_key_for_mcp_only(
-                        request
-                    )
-                    if api_user:
-                        # Store API user in session for this request only
-                        request.session["user"] = api_user
-                        return await call_next(request)
+                    # Check if this is an MCP endpoint first to avoid unnecessary API key checks
+                    is_mcp_endpoint = False
+                    if (
+                        self.api_key_auth_service
+                        and self.config_service.is_api_key_auth_enabled()
+                    ):
+                        is_mcp_endpoint = self.api_key_auth_service.is_mcp_endpoint(
+                            request.url.path
+                        )
 
-                    # If no API key, check session authentication
+                    if is_mcp_endpoint:
+                        api_user = await self.api_key_auth_service.authenticate_with_api_key_optimized(
+                            request
+                        )
+                        if api_user:
+                            # Store API user in session for this request only
+                            request.session["user"] = api_user
+                            return await call_next(request)
+                        # If API key auth fails for MCP endpoint, fall back to session authentication
+                        user = request.session.get("user")
+                        if user:  # If there's any user in session, allow access
+                            return await call_next(request)
+                        # No authentication found for MCP endpoint
+                        return RedirectResponse(url=self.url.login())
+
+                    # Check session authentication for non-MCP endpoints
                     user = request.session.get("user")
-                    if user and user.get("auth_type") != "api_key":
+                    if user:  # If there's any user in session, allow access
                         return await call_next(request)
 
                     # No authentication found

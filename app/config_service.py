@@ -273,6 +273,10 @@ class ConfigService:
         collection_name = firestore_config.get("collection_name", "api_keys")
         return collection_name
 
+    def is_api_key_auth_enabled(self) -> bool:
+        """Check if API key authentication is enabled via feature toggle."""
+        return os.getenv("API_KEY_AUTH_ENABLED", "false").lower() == "true"
+
     def _load_yaml(self, path: str) -> dict:
         """
         Load YAML data from a config file.

@@ -32,10 +32,11 @@ import {
   revokeApiKey,
   getApiKeyUsage,
 } from "../app/_boba_api";
+import { FEATURES } from "../app/feature_toggle";
 
 const { Title, Text, Paragraph } = Typography;
 
-export default function ApiKeys() {
+export default function ApiKeys({ featureToggleConfig = {} }) {
   const [apiKeys, setApiKeys] = useState([]);
   const [loading, setLoading] = useState(true);
   const [generateModalVisible, setGenerateModalVisible] = useState(false);
@@ -47,10 +48,18 @@ export default function ApiKeys() {
   const [expiryDays, setExpiryDays] = useState(30);
   const [generateError, setGenerateError] = useState(null);
 
+  // Check if API key auth feature is enabled
+  const isApiKeyAuthEnabled =
+    featureToggleConfig[FEATURES.API_KEY_AUTH] === true;
+
   useEffect(() => {
-    loadApiKeys();
-    loadUsage();
-  }, []);
+    if (isApiKeyAuthEnabled) {
+      loadApiKeys();
+      loadUsage();
+    } else {
+      setLoading(false);
+    }
+  }, [isApiKeyAuthEnabled]);
 
   const loadApiKeys = () => {
     setLoading(true);
@@ -216,6 +225,27 @@ export default function ApiKeys() {
       ),
     },
   ];
+
+  // Show disabled message if feature is not enabled
+  if (!isApiKeyAuthEnabled) {
+    return (
+      <div style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
+        <div style={{ marginBottom: "24px" }}>
+          <Title level={2}>
+            <RiKeyLine style={{ marginRight: "8px" }} />
+            API Key Management
+          </Title>
+          <Alert
+            message="Feature Disabled"
+            description="API key authentication is currently disabled. This feature is not available in this environment."
+            type="info"
+            showIcon
+            style={{ marginBottom: "16px" }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
