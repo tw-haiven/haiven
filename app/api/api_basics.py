@@ -110,7 +110,7 @@ class HaivenBaseApi:
                                     "total_tokens": usage_data.get("total_tokens", 0),
                                     "model": model_name,
                                 }
-                                yield f"event: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
+                                yield f"\nevent: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
                             # Don't yield the raw usage object
                         elif isinstance(chunk, str):
                             # Handle string chunks (including JSON strings)
@@ -140,7 +140,7 @@ class HaivenBaseApi:
                                             ),
                                             "model": model_name,
                                         }
-                                        yield f"event: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
+                                        yield f"\nevent: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
                                 else:
                                     # Regular JSON string content - keep original format for creative-matrix compatibility
                                     yield chunk
@@ -149,7 +149,11 @@ class HaivenBaseApi:
                                 yield chunk
                         else:
                             # Other types of chunks - keep as is
-                            yield chunk
+                            # If it's a dict with metadata, convert to JSON string
+                            if isinstance(chunk, dict) and "metadata" in chunk:
+                                yield json.dumps(chunk)
+                            else:
+                                yield chunk
 
                 except Exception as error:
                     if not str(error).strip():
@@ -264,7 +268,7 @@ class HaivenBaseApi:
 
                         # Send token usage as SSE event at the end
                         if token_usage_data:
-                            yield f"event: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
+                            yield f"\nevent: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
                     else:
                         for chunk in chat_session.run(prompt):
                             if isinstance(chunk, dict) and self._is_token_usage_chunk(
@@ -296,7 +300,7 @@ class HaivenBaseApi:
 
                         # Send token usage as SSE event at the end
                         if token_usage_data:
-                            yield f"event: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
+                            yield f"\nevent: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
 
                 except Exception as error:
                     if not str(error).strip():
