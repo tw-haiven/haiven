@@ -17,6 +17,9 @@ vi.mock("../app/_fetch_sse");
 import { getRenderedPrompt } from "../app/_boba_api";
 import { saveContext } from "../app/_local_store";
 
+// Import real response data
+import cardsResponseData from "./test_data/cards_response_with_citations.json";
+
 const localStorageMock = (() => {
   let store = {};
   return {
@@ -804,6 +807,74 @@ describe("CardsChat special prompt logic (grounded research)", () => {
     expect(
       screen.getByPlaceholderText(
         /Provide an overview of the account's product/i,
+      ),
+    ).toBeInTheDocument();
+  });
+});
+
+describe("Real API Response Tests", () => {
+  it("should display citations when response contains metadata", async () => {
+    // Mock fetchSSE to return response with citations
+    fetchSSE.mockImplementation((url, options, handlers) => {
+      const mockResponse = {
+        headers: {
+          get: (header) => {
+            if (header === "X-Chat-ID") return "test-chat-id";
+            return null;
+          },
+        },
+      };
+
+      setTimeout(() => {
+        // Send the data chunks
+        cardsResponseData.forEach((chunk, index) => {
+          if (chunk.metadata) {
+            handlers.onMessageHandle(chunk, mockResponse);
+          } else if (chunk.data) {
+            handlers.onMessageHandle(chunk, mockResponse);
+          }
+        });
+
+        handlers.onFinish();
+      }, 100);
+    });
+
+    await act(async () => {
+      render(
+        <CardsChat
+          promptId="test-prompt"
+          prompts={[mockPrompts[0]]}
+          contexts={mockContexts}
+          models={mockModels}
+          featureToggleConfig={mockFeatureToggleConfig}
+        />,
+      );
+    });
+
+    // Wait for the input field to be available
+    const inputField = await screen.findByTestId("user-input-text-area");
+    expect(inputField).toBeVisible();
+
+    fireEvent.change(inputField, {
+      target: { value: "Test company research" },
+    });
+
+    const sendButton = screen.getByText("SEND");
+    fireEvent.click(sendButton);
+
+    // Verify citations are displayed
+    await waitFor(() => {
+      expect(screen.getByText("Sources")).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getByText(
+        "https://doc.irasia.com/listco/hk/lenovo/annual/2025/res.pdf",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "https://investor.lenovo.com/en/financial/results/press_2425_q4.pdf",
       ),
     ).toBeInTheDocument();
   });

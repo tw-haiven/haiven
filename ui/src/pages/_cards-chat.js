@@ -298,13 +298,14 @@ const CardsChat = ({
             const usage = formattedUsage(data.data);
             setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
             return;
-          } else if (data.data) {
-            ms += data.data;
           } else if (data.metadata) {
-            // Safely handle citations if they exist in metadata
+            // Handle metadata that comes as a separate object
             if (data.metadata.citations) {
               setCitations(data.metadata.citations);
             }
+            return; // Prevent metadata from being added to JSON parsing stream (ms variable)
+          } else if (data.data) {
+            ms += data.data;
           }
           ms = ms.trim().replace(/^[^[]+/, "");
           if (ms.startsWith("[")) {
