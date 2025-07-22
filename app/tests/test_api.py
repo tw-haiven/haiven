@@ -967,3 +967,181 @@ class TestApi(unittest.TestCase):
             "model_config"
         ]
         self.assertEqual(actual_model_config.provider, expected_model_config.provider)
+
+    def test_download_restricted_prompt_returns_403(self):
+        """Test that downloading a restricted prompt returns 403 Forbidden"""
+        # Mock the prompt with download_restricted=True
+        mock_prompt = {
+            "identifier": "restricted-prompt",
+            "title": "Restricted Prompt",
+            "download_restricted": True,
+            "content": "Restricted content",
+        }
+
+        # Create mock prompts_chat
+        mock_prompts_chat = MagicMock()
+        mock_prompts_chat.get_a_prompt_with_follow_ups.return_value = mock_prompt
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            image_service=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+
+        response = self.client.get("/api/download-prompt?prompt_id=restricted-prompt")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json()["detail"], "This prompt is not available for download"
+        )
+
+    def test_download_restricted_prompts_filtered_from_category(self):
+        """Test that restricted prompts are filtered out when downloading by category"""
+        # Mock prompts with some restricted
+        mock_prompts = [
+            {
+                "identifier": "prompt-1",
+                "download_restricted": False,
+                "title": "Downloadable Prompt 1",
+            },
+            {
+                "identifier": "prompt-2",
+                "download_restricted": True,
+                "title": "Restricted Prompt",
+            },
+            {
+                "identifier": "prompt-3",
+                "download_restricted": False,
+                "title": "Downloadable Prompt 2",
+            },
+        ]
+
+        # Create mock prompts_chat
+        mock_prompts_chat = MagicMock()
+        mock_prompts_chat.get_prompts_with_follow_ups.return_value = mock_prompts
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            image_service=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+
+        response = self.client.get("/api/download-prompt?category=test-category")
+
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+
+        # Should only return non-restricted prompts
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0]["identifier"], "prompt-1")
+        self.assertEqual(result[1]["identifier"], "prompt-3")
+
+    def test_download_restricted_prompts_filtered_from_all_prompts(self):
+        """Test that restricted prompts are filtered out when downloading all prompts"""
+        # Mock prompts with some restricted
+        mock_prompts = [
+            {
+                "identifier": "prompt-1",
+                "download_restricted": False,
+                "title": "Downloadable Prompt 1",
+            },
+            {
+                "identifier": "prompt-2",
+                "download_restricted": True,
+                "title": "Restricted Prompt",
+            },
+            {
+                "identifier": "prompt-3",
+                "download_restricted": False,
+                "title": "Downloadable Prompt 2",
+            },
+        ]
+
+        # Create mock prompts_chat
+        mock_prompts_chat = MagicMock()
+        mock_prompts_chat.get_prompts_with_follow_ups.return_value = mock_prompts
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            image_service=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+
+        response = self.client.get("/api/download-prompt")
+
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+
+        # Should only return non-restricted prompts
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0]["identifier"], "prompt-1")
+        self.assertEqual(result[1]["identifier"], "prompt-3")
+
+    def test_download_all_prompts_with_empty_category(self):
+        """Test that empty category parameter correctly triggers 'download all prompts' logic"""
+        # Mock prompts with some restricted
+        mock_prompts = [
+            {
+                "identifier": "prompt-1",
+                "download_restricted": False,
+                "title": "Downloadable Prompt 1",
+            },
+            {
+                "identifier": "prompt-2",
+                "download_restricted": True,
+                "title": "Restricted Prompt",
+            },
+            {
+                "identifier": "prompt-3",
+                "download_restricted": False,
+                "title": "Downloadable Prompt 2",
+            },
+        ]
+
+        # Create mock prompts_chat
+        mock_prompts_chat = MagicMock()
+        mock_prompts_chat.get_prompts_with_follow_ups.return_value = mock_prompts
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            image_service=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+
+        response = self.client.get("/api/download-prompt?category=")
+
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+
+        # Should only return non-restricted prompts
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0]["identifier"], "prompt-1")
+        self.assertEqual(result[1]["identifier"], "prompt-3")

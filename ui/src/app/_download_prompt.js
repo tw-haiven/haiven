@@ -29,6 +29,11 @@ const DownloadPrompt = ({ prompt }) => {
     }
   };
 
+  // Don't render the download button if the prompt is null or download restricted
+  if (!prompt || prompt.download_restricted) {
+    return null;
+  }
+
   return (
     <Tooltip title="Download Prompt" placement="bottom">
       <button

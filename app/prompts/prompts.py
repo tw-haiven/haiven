@@ -9,6 +9,13 @@ from knowledge.markdown import KnowledgeBaseMarkdown
 from knowledge_manager import KnowledgeManager
 
 
+def filter_downloadable_prompts(prompts):
+    """Filter out prompts that have download_restricted=True"""
+    return [
+        prompt for prompt in prompts if not prompt.get("download_restricted", False)
+    ]
+
+
 class PromptList:
     def __init__(
         self,
@@ -64,6 +71,8 @@ class PromptList:
                 prompt.metadata["show"] = True
             if "grounded" not in prompt.metadata:
                 prompt.metadata["grounded"] = False
+            if "download_restricted" not in prompt.metadata:
+                prompt.metadata["download_restricted"] = False
 
         self.prompt_flows = self.load_prompt_flows(
             os.path.join(directory, "prompt_flows.yaml")
@@ -234,6 +243,7 @@ class PromptList:
             "show": prompt.metadata.get("show"),
             "filename": prompt.metadata.get("filename"),
             "grounded": prompt.metadata.get("grounded", False),
+            "download_restricted": prompt.metadata.get("download_restricted", False),
             **(
                 {"content": self.prompt_content_for_download(prompt)}
                 if download_prompt and prompt.content

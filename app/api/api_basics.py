@@ -681,6 +681,21 @@ class ApiBasics(HaivenBaseApi):
                     if not prompt:
                         raise Exception("Prompt not found")
 
+                    # Check if prompt is download restricted
+                    if prompt.get("download_restricted", False):
+                        HaivenLogger.get().analytics(
+                            "Download restricted prompt attempted",
+                            {
+                                "user_id": user_id,
+                                "prompt_id": prompt_id,
+                                "category": "Individual Prompt",
+                            },
+                        )
+                        raise HTTPException(
+                            status_code=403,
+                            detail="This prompt is not available for download",
+                        )
+
                     HaivenLogger.get().analytics(
                         "Download prompt",
                         {
@@ -691,11 +706,17 @@ class ApiBasics(HaivenBaseApi):
                     )
 
                     return JSONResponse([prompt])
-                elif category:
+                elif category and category.strip():
                     prompts = prompts_chat.get_prompts_with_follow_ups(
                         download_prompt=True, category=category
                     )
-                    for prompt in prompts:
+
+                    # Filter out restricted prompts
+                    from prompts.prompts import filter_downloadable_prompts
+
+                    downloadable_prompts = filter_downloadable_prompts(prompts)
+
+                    for prompt in downloadable_prompts:
                         HaivenLogger.get().analytics(
                             "Download prompt",
                             {
@@ -705,13 +726,19 @@ class ApiBasics(HaivenBaseApi):
                             },
                         )
 
-                    return JSONResponse(prompts)
+                    return JSONResponse(downloadable_prompts)
                 else:
-                    # Return all prompts if no prompt_id and no category provided
+                    # Return all prompts if no prompt_id and no category provided (or empty category)
                     prompts = prompts_chat.get_prompts_with_follow_ups(
                         download_prompt=True
                     )
-                    for prompt in prompts:
+
+                    # Filter out restricted prompts
+                    from prompts.prompts import filter_downloadable_prompts
+
+                    downloadable_prompts = filter_downloadable_prompts(prompts)
+
+                    for prompt in downloadable_prompts:
                         HaivenLogger.get().analytics(
                             "Download prompt",
                             {
@@ -721,7 +748,9 @@ class ApiBasics(HaivenBaseApi):
                             },
                         )
 
-                    return JSONResponse(prompts)
+                    return JSONResponse(downloadable_prompts)
+            except HTTPException:
+                raise
             except Exception as error:
                 HaivenLogger.get().error(
                     str(error),
