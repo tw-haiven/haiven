@@ -194,7 +194,7 @@ embeddings:
 
 # --- API Key Repository Configuration ---
 api_key_repository:
-  type: file  # options: file (default), firestore, db, etc.
+  type: ${API_KEY_REPOSITORY_TYPE}  # options: file (default), firestore, db, etc.
   pseudonymization_salt: ${API_KEY_PSEUDONYMIZATION_SALT}  # always required
   file:
     file_path: ${STORAGE_FILE_PATH}  # only required if type == file
