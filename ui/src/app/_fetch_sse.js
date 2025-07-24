@@ -81,29 +81,21 @@ export const fetchSSE = async (uri, fetchOptions, options) => {
       // console.log("reading", chunkValue);
 
       if (options.json === true) {
-        // - expectation from backend: '{ "data": "some partial token of a JSON string" }'
-        // - chunkValue is sometimes multiple messages
-        // - make an assumption about API endpoints' message delimiters (\n\n)
-        // - Split into multiple "messages" with JSON data tokens
+        // Handle the new backend format that mixes JSON objects and SSE events
         if (chunkValue !== "") {
-          // LEARNING: Sending on just the JSON chunk directly, without {data: ...} wrapper, doesn't work, messes up character escaping
-          // LEARNING: Using "data: " in front of the {data: ...} wrapper also breaks things, "Unexpected non-whitespace character" for the trailing line breaks?
-          // LEARNING: Removing the trailing double line break from the API response a) doesn't seem to be the standard, EventStream tab doesn't show anything, and b) again seems to break the JSON.parse
+          // Split by double newlines to separate different messages
+          const messages = chunkValue.split(/\n\n+/);
 
-          const SPLIT_DELIMITER = "|SPLIT|";
-          const chunkable = chunkValue.replace(
-            /}\n\n{/g,
-            "}" + SPLIT_DELIMITER + "{",
-          );
-          const chunks = chunkable.split(SPLIT_DELIMITER);
-          chunks.forEach((value) => {
-            // Skip empty chunks
-            if (!value || !value.trim()) return;
+          messages.forEach((message) => {
+            // Skip empty messages
+            if (!message || !message.trim()) return;
+
+            const trimmedMessage = message.trim();
 
             // Check if this is an SSE event (starts with "event:")
-            if (value.trim().startsWith("event:")) {
+            if (trimmedMessage.startsWith("event:")) {
               // Handle SSE events
-              const lines = value.trim().split("\n");
+              const lines = trimmedMessage.split("\n");
               let eventType = null;
               let eventData = null;
 
@@ -137,7 +129,7 @@ export const fetchSSE = async (uri, fetchOptions, options) => {
             } else {
               // Handle regular JSON chunks
               try {
-                const data = JSON.parse(value);
+                const data = JSON.parse(trimmedMessage);
                 // Only check for error messages on string data, not objects
                 if (typeof data.data === "string") {
                   checkIsErrorMessage(data.data || "");
@@ -149,45 +141,74 @@ export const fetchSSE = async (uri, fetchOptions, options) => {
                   options.onMessageHandle?.(data, response);
                 }
               } catch (parseError) {
-                console.log("Failed to parse JSON chunk:", value, parseError);
+                console.log(
+                  "Failed to parse JSON chunk:",
+                  trimmedMessage,
+                  parseError,
+                );
               }
             }
           });
         }
       } else if (options.text === true) {
-        // Handle SSE format for text streams
+        // Handle SSE format for text streams with mixed JSON and SSE events
         if (chunkValue !== "") {
-          const lines = chunkValue.split("\n");
-          let eventType = "message";
+          // Split by double newlines to separate different messages
+          const messages = chunkValue.split(/\n\n+/);
 
-          for (const line of lines) {
-            if (line.startsWith("event: ")) {
-              eventType = line.substring(7).trim();
-            } else if (line.startsWith("data: ")) {
-              const data = line.substring(6);
+          messages.forEach((message) => {
+            // Skip empty messages
+            if (!message || !message.trim()) return;
 
-              if (eventType === "token_usage") {
+            const trimmedMessage = message.trim();
+
+            // Check if this is an SSE event (starts with "event:")
+            if (trimmedMessage.startsWith("event:")) {
+              // Handle SSE events
+              const lines = trimmedMessage.split("\n");
+              let eventType = null;
+              let eventData = null;
+
+              for (const line of lines) {
+                if (line.startsWith("event:")) {
+                  eventType = line.substring(6).trim();
+                } else if (line.startsWith("data:")) {
+                  eventData = line.substring(5).trim();
+                }
+              }
+
+              if (eventType === "token_usage" && eventData) {
                 try {
-                  const tokenUsageData = JSON.parse(data);
+                  const tokenUsageData = JSON.parse(eventData);
                   options.onTokenUsage?.(tokenUsageData);
                 } catch (parseError) {
                   console.log(
                     "Failed to parse token usage data:",
-                    data,
+                    eventData,
                     parseError,
                   );
                 }
-                eventType = "message"; // Reset for next event
-              } else {
-                // Regular text content - check for errors and pass through
-                checkIsErrorMessage(data);
-                options.onMessageHandle?.(data, response);
               }
-            } else if (line === "") {
-              // End of event, reset type
-              eventType = "message";
+            } else {
+              // Handle regular text content or JSON objects
+              try {
+                // Try to parse as JSON first
+                const jsonData = JSON.parse(trimmedMessage);
+                // If it's a JSON object with data property, extract the text
+                if (jsonData.data && typeof jsonData.data === "string") {
+                  checkIsErrorMessage(jsonData.data);
+                  options.onMessageHandle?.(jsonData.data, response);
+                } else if (jsonData.metadata) {
+                  // Handle metadata objects
+                  options.onMessageHandle?.(jsonData, response);
+                }
+              } catch (parseError) {
+                // Not JSON, treat as plain text
+                checkIsErrorMessage(trimmedMessage);
+                options.onMessageHandle?.(trimmedMessage, response);
+              }
             }
-          }
+          });
         }
       } else {
         // Ensure chunkValue is a string before checking for error messages
