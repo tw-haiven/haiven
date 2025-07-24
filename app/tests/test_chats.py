@@ -175,7 +175,9 @@ class TestChats(unittest.TestCase):
         # Verify metadata chunks are passed through as JSON strings
         metadata_chunks = [chunk for chunk in string_chunks if "metadata" in chunk]
         assert len(metadata_chunks) == 1
-        assert metadata_chunks[0] == '{"metadata": {"citations": ["test.url"]}}'
+        assert metadata_chunks[0] == (
+            '{"metadata": {"citations": [' '"test.url"]}}\n\n'
+        )
 
         # Verify the memory was updated correctly
         assert len(json_chat.memory) == 3
