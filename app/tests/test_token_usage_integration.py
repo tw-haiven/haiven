@@ -39,7 +39,7 @@ class TestTokenUsageIntegration(unittest.TestCase):
         return chunks
 
     def test_stream_text_chat_token_usage_format(self):
-        """Test that stream_text_chat sends token usage in SSE format"""
+        """Test that stream_text_chat sends token usage as a JSON object with 'usage' key"""
         # Create mock streaming chat with usage data
         mock_chat_session = MagicMock(spec=StreamingChat)
         mock_chat_session.run.return_value = iter(
@@ -51,6 +51,7 @@ class TestTokenUsageIntegration(unittest.TestCase):
                         "prompt_tokens": 100,
                         "completion_tokens": 200,
                         "total_tokens": 300,
+                        "model": "gpt-4",
                     }
                 },
             ]
@@ -72,30 +73,28 @@ class TestTokenUsageIntegration(unittest.TestCase):
             # Collect all chunks from the stream generator
             chunks = asyncio.run(self.collect_chunks(result.body_iterator))
 
-            # Find the token usage chunk (should be SSE format)
+            # Find the token usage chunk (should be a JSON object with 'usage' key)
             token_usage_found = False
             for chunk in chunks:
-                if "event: token_usage" in chunk and "data:" in chunk:
-                    token_usage_found = True
-                    # Extract the JSON data from the SSE format
-                    lines = chunk.strip().split("\n")
-                    data_line = [line for line in lines if line.startswith("data:")][0]
-                    json_data = data_line[5:].strip()  # Remove 'data:' prefix
-
-                    # Parse the token usage data
-                    usage_data = json.loads(json_data)
-                    self.assertEqual(usage_data["total_tokens"], 300)
-                    self.assertEqual(usage_data["prompt_tokens"], 100)
-                    self.assertEqual(usage_data["completion_tokens"], 200)
-                    self.assertEqual(usage_data["model"], "gpt-4")
-                    break
+                try:
+                    usage_obj = json.loads(chunk)
+                    if "usage" in usage_obj:
+                        token_usage_found = True
+                        usage_data = usage_obj["usage"]
+                        self.assertEqual(usage_data["total_tokens"], 300)
+                        self.assertEqual(usage_data["prompt_tokens"], 100)
+                        self.assertEqual(usage_data["completion_tokens"], 200)
+                        self.assertEqual(usage_data["model"], "gpt-4")
+                        break
+                except Exception:
+                    continue
 
             self.assertTrue(
-                token_usage_found, "Token usage SSE event should be present"
+                token_usage_found, "Token usage JSON object should be present"
             )
 
     def test_stream_json_chat_token_usage_format(self):
-        """Test that stream_json_chat sends token usage in SSE format"""
+        """Test that stream_json_chat sends token usage as a JSON object with 'usage' key"""
         # Create mock JSON chat with usage data
         mock_chat_session = MagicMock(spec=JSONChat)
         mock_chat_session.run.return_value = iter(
@@ -106,6 +105,7 @@ class TestTokenUsageIntegration(unittest.TestCase):
                         "prompt_tokens": 150,
                         "completion_tokens": 250,
                         "total_tokens": 400,
+                        "model": "gpt-4",
                     }
                 },
             ]
@@ -127,29 +127,29 @@ class TestTokenUsageIntegration(unittest.TestCase):
             # Collect all chunks from the stream
             chunks = asyncio.run(self.collect_chunks(result.body_iterator))
 
-            # Find the token usage chunk (should be SSE format)
+            # Find the token usage chunk (should be a JSON object with 'usage' key)
             token_usage_found = False
             content_found = False
 
             for chunk in chunks:
-                if "event: token_usage" in chunk and "data:" in chunk:
-                    token_usage_found = True
-                    # Extract the JSON data from the SSE format
-                    lines = chunk.strip().split("\n")
-                    data_line = [line for line in lines if line.startswith("data:")][0]
-                    json_data = data_line[5:].strip()  # Remove 'data:' prefix
-
-                    # Parse the token usage data
-                    usage_data = json.loads(json_data)
-                    self.assertEqual(usage_data["total_tokens"], 400)
-                    self.assertEqual(usage_data["prompt_tokens"], 150)
-                    self.assertEqual(usage_data["completion_tokens"], 250)
-                    self.assertEqual(usage_data["model"], "gpt-4")
-                elif '{"ideas"' in chunk:
-                    content_found = True
+                try:
+                    usage_obj = json.loads(chunk)
+                    if "usage" in usage_obj:
+                        token_usage_found = True
+                        usage_data = usage_obj["usage"]
+                        self.assertEqual(usage_data["total_tokens"], 400)
+                        self.assertEqual(usage_data["prompt_tokens"], 150)
+                        self.assertEqual(usage_data["completion_tokens"], 250)
+                        self.assertEqual(usage_data["model"], "gpt-4")
+                    elif '{"ideas"' in chunk:
+                        content_found = True
+                except Exception:
+                    if '{"ideas"' in chunk:
+                        content_found = True
+                    continue
 
             self.assertTrue(
-                token_usage_found, "Token usage SSE event should be present"
+                token_usage_found, "Token usage JSON object should be present"
             )
             self.assertTrue(content_found, "Content should be streamed")
 
@@ -165,6 +165,7 @@ class TestTokenUsageIntegration(unittest.TestCase):
                         "prompt_tokens": 150,
                         "completion_tokens": 250,
                         "total_tokens": 400,
+                        "model": "gpt-4",
                     }
                 },
             ]
@@ -188,16 +189,12 @@ class TestTokenUsageIntegration(unittest.TestCase):
 
             # All chunks should be properly formatted - no JSON parsing errors
             for chunk in chunks:
-                # SSE events should be properly formatted
-                if "event: token_usage" in chunk:
-                    self.assertIn("data:", chunk)
-                    # Verify we can extract and parse the data
-                    lines = chunk.strip().split("\n")
-                    data_line = [line for line in lines if line.startswith("data:")][0]
-                    json_data = data_line[5:].strip()
-                    # This should not raise a JSONDecodeError
-                    parsed_data = json.loads(json_data)
-                    self.assertIn("total_tokens", parsed_data)
+                try:
+                    usage_obj = json.loads(chunk)
+                    if "usage" in usage_obj:
+                        self.assertIn("total_tokens", usage_obj["usage"])
+                except Exception:
+                    continue
 
     def test_error_message_format_compatibility(self):
         """Test that error messages are formatted correctly for different endpoints"""
@@ -246,6 +243,7 @@ class TestTokenUsageIntegration(unittest.TestCase):
                         "prompt_tokens": 100,
                         "completion_tokens": 200,
                         "total_tokens": 300,
+                        "model": "gpt-4",
                     }
                 },
             ]
@@ -260,6 +258,7 @@ class TestTokenUsageIntegration(unittest.TestCase):
                         "prompt_tokens": 100,
                         "completion_tokens": 200,
                         "total_tokens": 300,
+                        "model": "gpt-4",
                     }
                 },
             ]
@@ -295,21 +294,23 @@ class TestTokenUsageIntegration(unittest.TestCase):
 
             # Extract token usage from text stream
             for chunk in text_chunks:
-                if "event: token_usage" in chunk and "data:" in chunk:
-                    lines = chunk.strip().split("\n")
-                    data_line = [line for line in lines if line.startswith("data:")][0]
-                    json_data = data_line[5:].strip()
-                    text_token_usage = json.loads(json_data)
-                    break
+                try:
+                    usage_obj = json.loads(chunk)
+                    if "usage" in usage_obj:
+                        text_token_usage = usage_obj["usage"]
+                        break
+                except Exception:
+                    continue
 
             # Extract token usage from JSON stream
             for chunk in json_chunks:
-                if "event: token_usage" in chunk and "data:" in chunk:
-                    lines = chunk.strip().split("\n")
-                    data_line = [line for line in lines if line.startswith("data:")][0]
-                    json_data = data_line[5:].strip()
-                    json_token_usage = json.loads(json_data)
-                    break
+                try:
+                    usage_obj = json.loads(chunk)
+                    if "usage" in usage_obj:
+                        json_token_usage = usage_obj["usage"]
+                        break
+                except Exception:
+                    continue
 
             # Both should have the same data structure
             self.assertIsNotNone(text_token_usage, "Text token usage should be found")

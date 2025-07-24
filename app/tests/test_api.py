@@ -15,6 +15,34 @@ from starlette.middleware.sessions import SessionMiddleware
 
 
 class TestApi(unittest.TestCase):
+    def check_token_usage_in_streamed_content(self, streamed_content):
+        """Helper function to check for token usage in the new format"""
+        import json
+
+        # Try to find the usage JSON object in the streamed content
+        usage_found = False
+
+        # Look for the usage pattern in the content
+        if '"usage"' in streamed_content:
+            # Find the start of the usage object
+            usage_start = streamed_content.find('{"usage"')
+            if usage_start != -1:
+                # Extract from the start of the usage object to the end
+                usage_part = streamed_content[usage_start:]
+                try:
+                    data = json.loads(usage_part)
+                    if "usage" in data:
+                        usage_found = True
+                        assert "prompt_tokens" in data["usage"]
+                        assert "completion_tokens" in data["usage"]
+                        assert "total_tokens" in data["usage"]
+                except json.JSONDecodeError:
+                    pass
+
+        assert (
+            usage_found
+        ), f"Token usage not found in streamed content: {streamed_content}"
+
     def setUp(self):
         self.app = FastAPI()
         self.app.add_middleware(SessionMiddleware, secret_key="some-random-string")
@@ -213,7 +241,8 @@ class TestApi(unittest.TestCase):
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+
+        self.check_token_usage_in_streamed_content(streamed_content)
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="some-prompt-id",
             user_input="some user input",
@@ -230,7 +259,7 @@ class TestApi(unittest.TestCase):
     ):
         mock_json_chat.run.return_value = iter(
             [
-                '{"data": "some response from the model"}',
+                "some response from the model",
                 {
                     "usage": {
                         "prompt_tokens": 100,
@@ -275,7 +304,8 @@ class TestApi(unittest.TestCase):
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+
+        self.check_token_usage_in_streamed_content(streamed_content)
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="guided-requirements",
             user_input=user_input,
@@ -292,7 +322,7 @@ class TestApi(unittest.TestCase):
     ):
         mock_json_chat.run.return_value = iter(
             [
-                '{"data": "some response from the model"}',
+                "some response from the model",
                 {
                     "usage": {
                         "prompt_tokens": 100,
@@ -323,7 +353,7 @@ class TestApi(unittest.TestCase):
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+        self.check_token_usage_in_streamed_content(streamed_content)
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="guided-scenarios-detailed",
             user_input=ANY,
@@ -384,7 +414,7 @@ class TestApi(unittest.TestCase):
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+        self.check_token_usage_in_streamed_content(streamed_content)
 
         args, kwargs = mock_streaming_chat.run.call_args
         actual_composed_prompt = args[0]
@@ -446,7 +476,7 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         # The response now includes both the model response and token usage data
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+        self.check_token_usage_in_streamed_content(streamed_content)
 
         args, kwargs = mock_streaming_chat.run.call_args
         actual_composed_prompt = args[0]
@@ -512,7 +542,7 @@ class TestApi(unittest.TestCase):
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+        self.check_token_usage_in_streamed_content(streamed_content)
 
         assert mock_streaming_chat.run.call_count == 1
         args, kwargs = mock_streaming_chat.run.call_args
@@ -536,7 +566,7 @@ class TestApi(unittest.TestCase):
     ):
         mock_json_chat.run.return_value = iter(
             [
-                '{"data": "some response from the model"}',
+                "some response from the model",
                 {
                     "usage": {
                         "prompt_tokens": 100,
@@ -570,7 +600,7 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         # The response now includes both the model response and token usage data
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+        self.check_token_usage_in_streamed_content(streamed_content)
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="guided-creative-matrix",
             user_input=ANY,
@@ -956,7 +986,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         streamed_content = response.content.decode("utf-8")
         self.assertIn("some response from the model", streamed_content)
-        self.assertIn("token_usage", streamed_content)
+        self.check_token_usage_in_streamed_content(streamed_content)
 
         expected_model_config = ModelConfig("perplexity", "perplexity", "Perplexity")
 
