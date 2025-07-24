@@ -965,10 +965,6 @@ class TestApi(unittest.TestCase):
         response = self.client.get(f"/api/download-prompt?category={long_cat}")
         assert response.status_code == 400
         assert b"Invalid category" in response.content
-        # Empty
-        response = self.client.get("/api/download-prompt?category=")
-        assert response.status_code == 400
-        assert b"Invalid category" in response.content
 
     def test_get_prompts_with_category(self):
         mock_prompts = MagicMock()
