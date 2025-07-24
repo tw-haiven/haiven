@@ -3,9 +3,8 @@ import { useEffect, useState } from "react";
 import { Tooltip } from "antd";
 import { GiToken } from "react-icons/gi";
 import { formatTokens } from "./utils/tokenUtils";
-import { FEATURES } from "../app/feature_toggle";
 
-const LLMTokenUsage = ({ tokenUsage, featureToggleConfig = {} }) => {
+const LLMTokenUsage = ({ tokenUsage }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   // Determine if either value is missing/invalid
@@ -25,11 +24,6 @@ const LLMTokenUsage = ({ tokenUsage, featureToggleConfig = {} }) => {
       );
     }
   }, [inputTokensValid, outputTokensValid, tokenUsage]);
-
-  // Only show if feature toggle is enabled
-  if (!(featureToggleConfig[FEATURES.LLM_TOKEN_USAGE] === true)) {
-    return null;
-  }
 
   return (
     <Tooltip
