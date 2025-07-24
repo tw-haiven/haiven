@@ -110,17 +110,17 @@ class ChatEventFormatter:
             content = event.content
             if content.startswith('{"data":') and content.endswith("}"):
                 # Content is already formatted, return as-is (preserve original formatting)
-                return content
+                return content + "\n\n"
             else:
                 # Content is plain text, wrap in data format with proper JSON escaping
                 data_dict = {"data": content}
-                return json.dumps(data_dict)
+                return json.dumps(data_dict) + "\n\n"
         elif isinstance(event, MetadataEvent):
             # Metadata as JSON string for JSON chat (matching test expectations)
             metadata_dict = {"metadata": {"citations": event.citations or []}}
             if event.metadata:
                 metadata_dict["metadata"].update(event.metadata)
-            return f"{json.dumps(metadata_dict)}"
+            return f"{json.dumps(metadata_dict)}\n\n"
         elif isinstance(event, TokenUsageEvent):
             return event.to_sse_format()
         elif isinstance(event, ErrorEvent):

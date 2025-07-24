@@ -293,14 +293,9 @@ class JSONChat(HaivenBaseChat):
                         self._first_chunk = True
                     self.memory[-1].content += event.content
 
-                # Format event for JSON chat with proper SSE formatting
+                # Format event for JSON chat - all formatting handled by ChatEventFormatter
                 formatted_event = ChatEventFormatter.format_for_json(event)
-                if formatted_event.startswith('{"data":'):
-                    # Add SSE formatting for data chunks
-                    yield formatted_event + "\n\n"
-                else:
-                    # Other events (metadata, usage) don't need extra formatting
-                    yield formatted_event
+                yield formatted_event
 
         except Exception as error:
             error_msg = (
