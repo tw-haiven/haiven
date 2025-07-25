@@ -8,8 +8,14 @@ from unittest.mock import patch, MagicMock
 @patch("tiktoken.get_encoding", return_value=MagicMock())
 @patch("os.listdir", return_value=["prompt1.md", "prompt2.md"])
 @patch("os.path.exists", return_value=True)
+@patch("embeddings.client.EmbeddingsClient")
 def test_create_server_returns_fastapi(
-    mock_exists, mock_listdir, mock_get_encoding, mock_frontmatter, mock_disclaimer
+    mock_embeddings_client,
+    mock_exists,
+    mock_listdir,
+    mock_get_encoding,
+    mock_frontmatter,
+    mock_disclaimer,
 ):
     with patch("config_service.ConfigService") as MockConfig:
         mock_config = MockConfig.return_value
