@@ -12,7 +12,11 @@ class TestApiKeyAuthRestriction:
     """Test that API key authentication is restricted to MCP endpoints only."""
 
     def setup_method(self):
-        self.config_service = ConfigService("config.yaml")
+        # Mock the config service instead of using the real one
+        self.config_service = MagicMock(spec=ConfigService)
+        self.config_service.load_api_key_pseudonymization_salt.return_value = (
+            "test_salt"
+        )
         self.repository = MagicMock()
         self.auth_service = ApiKeyAuthService(self.config_service, self.repository)
 

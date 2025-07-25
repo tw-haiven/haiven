@@ -27,6 +27,7 @@ def test_create_server_returns_fastapi(
         mock_config.get_chat_model.return_value = MagicMock()
         mock_config.load_api_key_repository_type.return_value = "file"
         mock_config.load_api_key_pseudonymization_salt.return_value = "dummy"
+        mock_config.is_api_key_auth_enabled.return_value = False
         from main import create_server
 
         app = create_server()
