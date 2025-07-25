@@ -39,7 +39,7 @@ def app_run():
 def app_test():
     command = """
     cd app && \
-    poetry run pytest -m 'not integration'
+    poetry run pytest -m 'not integration and not slow_integration'
     """
     subprocess.run(command, shell=True)
 
@@ -47,7 +47,7 @@ def app_test():
 def app_coverage():
     command = """
     cd app && \
-    poetry run pytest --cov=. --cov-report=term  -m 'not integration'
+    poetry run pytest --cov=. --cov-report=term  -m 'not integration and not slow_integration'
     """
     subprocess.run(command, shell=True)
 

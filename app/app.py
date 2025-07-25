@@ -9,6 +9,8 @@ from prompts.prompts_factory import PromptsFactory
 from server import Server
 from config_service import ConfigService
 from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
+from auth.api_key_repository_factory import ApiKeyRepositoryFactory
+from auth.api_key_auth_service import ApiKeyAuthService
 
 
 class App:
@@ -16,6 +18,9 @@ class App:
         model: ModelConfig = config_service.get_image_model()
 
         return ImageDescriptionService(model)
+
+    def _create_api_key_repository(self, config_service):
+        return ApiKeyRepositoryFactory.get_repository(config_service)
 
     def __init__(self, config_path: str):
         config_service = ConfigService(config_path)
@@ -33,9 +38,16 @@ class App:
 
         image_service = self.create_image_service(config_service)
 
+        # Conditionally initialize API key authentication based on feature toggle
+        api_key_auth_service = None
+        if config_service.is_api_key_auth_enabled():
+            api_key_repository = self._create_api_key_repository(config_service)
+            api_key_auth_service = ApiKeyAuthService(config_service, api_key_repository)
+
         self.server = Server(
             chat_manager,
             config_service,
+            api_key_auth_service,
             BobaApi(
                 prompts_factory,
                 knowledge_manager,
@@ -43,6 +55,7 @@ class App:
                 config_service,
                 image_service,
                 disclaimer_and_guidelines,
+                api_key_auth_service,
             ),
         ).create()
 

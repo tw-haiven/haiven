@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "antd";
 import { RiPushpinLine } from "react-icons/ri";
 import Pinboard from "./pinboard";
+import { FEATURES } from "../app/feature_toggle";
 
 export default function Header({ featureToggleConfig }) {
   const [isPinboardVisible, setIsPinboardVisible] = useState(false);
@@ -63,6 +64,11 @@ export default function Header({ featureToggleConfig }) {
               <span type="link">
                 <Link href="/knowledge">Knowledge Overview</Link>
               </span>
+              {featureToggleConfig[FEATURES.API_KEY_AUTH] === true && (
+                <span type="link">
+                  <Link href="/api-keys">API Keys</Link>
+                </span>
+              )}
             </div>
             <div className="separator"></div>
             <div className="pinboard">

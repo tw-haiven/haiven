@@ -1,5 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import io
+import os
 from typing import List, Optional
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -67,13 +68,39 @@ class HaivenBaseApi:
         self.model_config = model_config
         self.prompt_list = prompt_list
 
+    def _is_api_key_auth(self, request):
+        """Check if the request is using API key authentication."""
+        if request.session and request.session.get("user"):
+            user = request.session.get("user")
+            return user.get("auth_type") == "api_key"
+        return False
+
+    def _get_request_source(self, request):
+        """Get the source of the request (mcp, ui, or unknown)."""
+        # Check if auth is switched off
+        if os.environ.get("AUTH_SWITCHED_OFF") == "true":
+            return "unknown"
+
+        # Check if it's an API key auth (MCP)
+        if self._is_api_key_auth(request):
+            return "mcp"
+
+        # Default to UI
+        return "ui"
+
     def get_hashed_user_id(self, request):
         if request.session and request.session.get("user"):
-            user_id = request.session.get("user").get("email")
-            hashed_user_id = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
-            return hashed_user_id
-        else:
-            return None
+            user = request.session.get("user")
+            # Check if auth_type is api_key, if so use user_id directly from the session
+            if user.get("auth_type") == "api_key":
+                user_id = user.get("user_id")
+            else:
+                user_id = user.get("email")
+
+            if user_id is not None:
+                hashed_user_id = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
+                return hashed_user_id
+        return None
 
     def stream_json_chat(
         self,
@@ -441,7 +468,7 @@ class ApiBasics(HaivenBaseApi):
 
                 rendered_prompt = (
                     f"""
-                    
+
                     My new request:
                     {prompt_data.userinput}
                     """
@@ -553,10 +580,18 @@ class ApiBasics(HaivenBaseApi):
         def download_prompt(
             request: Request, prompt_id: str = None, category: str = None
         ):
+            import re
+
+            def is_valid_param(val):
+                return bool(val) and re.match(r"^[a-zA-Z0-9_-]{1,100}$", val)
+
             user_id = self.get_hashed_user_id(request)
+            source = self._get_request_source(request)
 
             try:
-                if prompt_id:
+                if prompt_id is not None:
+                    if not is_valid_param(prompt_id):
+                        raise HTTPException(status_code=400, detail="Invalid prompt_id")
                     prompt = prompts_chat.get_a_prompt_with_follow_ups(
                         prompt_id, download_prompt=True
                     )
@@ -572,6 +607,7 @@ class ApiBasics(HaivenBaseApi):
                                 "user_id": user_id,
                                 "prompt_id": prompt_id,
                                 "category": "Individual Prompt",
+                                "source": source,
                             },
                         )
                         raise HTTPException(
@@ -585,11 +621,15 @@ class ApiBasics(HaivenBaseApi):
                             "user_id": user_id,
                             "prompt_id": prompt_id,
                             "category": "Individual Prompt",
+                            "source": source,
                         },
                     )
 
                     return JSONResponse([prompt])
                 elif category and category.strip():
+                    if not is_valid_param(category):
+                        raise HTTPException(status_code=400, detail="Invalid category")
+
                     prompts = prompts_chat.get_prompts_with_follow_ups(
                         download_prompt=True, category=category
                     )
@@ -606,6 +646,7 @@ class ApiBasics(HaivenBaseApi):
                                 "user_id": user_id,
                                 "prompt_id": prompt.get("identifier"),
                                 "category": category,
+                                "source": source,
                             },
                         )
 
@@ -628,6 +669,7 @@ class ApiBasics(HaivenBaseApi):
                                 "user_id": user_id,
                                 "prompt_id": prompt.get("identifier"),
                                 "category": "all",
+                                "source": source,
                             },
                         )
 
@@ -642,6 +684,7 @@ class ApiBasics(HaivenBaseApi):
                         "user_id": user_id,
                         "prompt_id": prompt_id,
                         "category": category,
+                        "source": source,
                     },
                 )
                 raise HTTPException(
