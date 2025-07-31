@@ -50,7 +50,7 @@ export default function ApiKeys({ featureToggleConfig = {} }) {
 
   // Check if API key auth feature is enabled
   const isApiKeyAuthEnabled =
-    featureToggleConfig[FEATURES.API_KEY_AUTH] === true;
+    featureToggleConfig[FEATURES.API_KEY_AUTH_UI] === true;
 
   useEffect(() => {
     if (isApiKeyAuthEnabled) {

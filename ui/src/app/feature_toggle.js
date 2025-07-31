@@ -3,6 +3,7 @@
 export const FEATURES = {
   THOUGHTWORKS: "THOUGHTWORKS",
   API_KEY_AUTH: "API_KEY_AUTH",
+  API_KEY_AUTH_UI: "API_KEY_AUTH_UI",
 };
 
 const fetchServerToggles = async () => {
