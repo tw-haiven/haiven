@@ -100,6 +100,7 @@ const EnrichCard = ({
         body: JSON.stringify(buildRequestDataIterate(prompt)),
       },
       {
+        json: true,
         onErrorHandle: () => {
           abortLoad();
           clearInterval(interval);
@@ -124,7 +125,14 @@ const EnrichCard = ({
           }, 1000);
         },
         onMessageHandle: (data) => {
-          // Use the SSE event filter utility to extract token usage events
+          // Handle token usage events (new format)
+          if (data.type === "token_usage") {
+            const usage = formattedUsage(data.data);
+            setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+            return;
+          }
+
+          // Use the SSE event filter utility to extract token usage events (old format)
           if (typeof data === "string") {
             const { text, events } = filterSSEEvents(data);
             events.forEach((event) => {
@@ -136,29 +144,25 @@ const EnrichCard = ({
             ms += text;
           } else if (data.data) {
             ms += data.data;
-          }
-          ms = ms.trim().replace(/^[^[]+/, "");
-          if (ms.startsWith("[")) {
-            try {
-              output = parse(ms || "[]");
-              console.log("------> output ->", output);
-            } catch (error) {
-              console.log("error", error);
-            }
-            if (Array.isArray(output)) {
-              console.log("------> it's an array: ->", output);
-              iterateScenarios(output);
-            } else {
-              console.log("------> error: ->", output);
-              abortLoad();
-              if (ms.includes("Error code:")) {
-                toast.error(ms);
-              } else {
-                toast.warning(
-                  "Model failed to respond rightly, please rewrite your message and try again",
-                );
+            ms = ms.trim().replace(/^[^[]+/, "");
+            if (ms.startsWith("[")) {
+              try {
+                output = parse(ms || "[]");
+              } catch (error) {
+                console.log("error", error);
               }
-              console.log("response is not parseable into an array");
+              if (Array.isArray(output)) {
+                iterateScenarios(output);
+              } else {
+                abortLoad();
+                if (ms.includes("Error code:")) {
+                  toast.error(ms);
+                } else {
+                  toast.warning(
+                    "Model failed to respond rightly, please rewrite your message and try again",
+                  );
+                }
+              }
             }
           }
         },

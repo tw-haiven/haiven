@@ -211,13 +211,19 @@ class Server:
                 if "created_at" in session:
                     created_at = session["created_at"]
                     if current_time - created_at > session_expiry_seconds:
-                        user_id = session.get("user").get("email")
-                        hashed_user_id = hashlib.sha256(
-                            user_id.encode("utf-8")
-                        ).hexdigest()
-                        HaivenLogger.get().logger.info(
-                            f"Session for {hashed_user_id} expired due to inactivity of {current_time - created_at} seconds."
-                        )
+                        user = session.get("user")
+                        if user and user.get("email"):
+                            user_id = user.get("email")
+                            hashed_user_id = hashlib.sha256(
+                                user_id.encode("utf-8")
+                            ).hexdigest()
+                            HaivenLogger.get().logger.info(
+                                f"Session for {hashed_user_id} expired due to inactivity of {current_time - created_at} seconds."
+                            )
+                        else:
+                            HaivenLogger.get().logger.info(
+                                f"Session expired due to inactivity of {current_time - created_at} seconds (no user email found)."
+                            )
                         request.session.clear()
                         return RedirectResponse(url="/")
                     else:
