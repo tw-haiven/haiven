@@ -67,3 +67,14 @@ poetry.toml
 
 #Ignore Custom Folder
 .aicustom/
+
+# Playwright test artifacts
+/tests/tests-results/
+/tests/test-results/
+/tests/playwright-report/
+/tests/blob-report/
+/tests/playwright/.cache/
+/tests/node_modules
+
+.mcp.json
+*/.mcp.json

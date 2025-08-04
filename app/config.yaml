@@ -35,6 +35,19 @@ models:
       azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4o}
       api_key: ${AZURE_OPENAI_API_KEY}
 
+  - id: azure-gpt-4.1
+    name: GPT-4.1 on Azure
+    provider: Azure
+    features:
+      - image-to-text
+      - text-generation
+      - stop-sequence
+    config:
+      azure_endpoint: ${AZURE_OPENAI_API_BASE}
+      api_version: ${AZURE_OPENAI_API_VERSION_GPT4.1}
+      azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4.1}
+      api_key: ${AZURE_OPENAI_API_KEY}
+
   - id: gemini-2.0-flash
     name: Gemini 2.0 Flash
     provider: GCP
@@ -202,9 +215,9 @@ api_key_repository:
     project_id: ${FIRESTORE_PROJECT_ID}  # only required if type == firestore
     collection_name: api_keys  # optional, defaults to "api_keys"
   db:
-    # host: ...
-    # port: ...
-    # user: ...
-    # password: ...
-    # database: ...
+  # host: ...
+  # port: ...
+  # user: ...
+  # password: ...
+  # database: ...
 

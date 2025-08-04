@@ -1,0 +1,36 @@
+{
+  "name": "haiven-e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end Playwright tests for Haiven application",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+    "test:install": "playwright install",
+    "test:codegen": "playwright codegen http://localhost:8080",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:setup": "cd ../ui && yarn install && cd ../tests && npm install && npm run test:install"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "e2e",
+    "haiven",
+    "cards",
+    "exploration"
+  ],
+  "author": "Haiven Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.19.9",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
