@@ -41,7 +41,7 @@ pytest = "^8.4.1"
 pytest-mock = "^3.14.1"
 pytest-cov = "^6.2.1"
 ragas = "^0.3.0"
-langchain-aws="^0.2.29"
+langchain-aws="^0.2.30"
 
 [build-system]
 requires = ["poetry-core"]
