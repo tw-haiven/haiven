@@ -13,6 +13,20 @@ from prompts.prompts_factory import PromptsFactory
 from llms.model_config import ModelConfig
 from tests.utils import get_test_data_path
 from starlette.middleware.sessions import SessionMiddleware
+import pytest
+from unittest.mock import Mock, patch
+from fastapi.testclient import TestClient
+from fastapi import FastAPI
+from api.api_basics import ApiBasics
+from knowledge.markdown import KnowledgeMarkdown
+from knowledge_manager import KnowledgeManager
+from config_service import ConfigService
+from llms.chats import ChatManager
+from llms.model_config import ModelConfig
+from prompts.prompts import PromptList
+from llms.image_description_service import ImageDescriptionService
+from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
+from inspirations import InspirationsManager
 
 
 class TestApi(unittest.TestCase):
@@ -1262,6 +1276,92 @@ class TestApi(unittest.TestCase):
         ]
         self.assertEqual(actual_model_config.provider, expected_model_config.provider)
 
+
+
+class TestApiBasics:
+    def test_get_knowledge_snippets_with_missing_title_metadata(self):
+        """Test that get_knowledge_snippets handles contexts without title metadata gracefully"""
+        # Create a mock app
+        app = FastAPI()
+        
+        # Create mock dependencies
+        mock_chat_manager = Mock(spec=ChatManager)
+        mock_model_config = Mock(spec=ModelConfig)
+        mock_prompts_guided = Mock(spec=PromptList)
+        mock_prompts_chat = Mock(spec=PromptList)
+        mock_image_service = Mock(spec=ImageDescriptionService)
+        mock_config_service = Mock(spec=ConfigService)
+        mock_disclaimer_service = Mock(spec=DisclaimerAndGuidelinesService)
+        mock_inspirations_manager = Mock(spec=InspirationsManager)
+        
+        # Create a mock knowledge manager with contexts that have missing title metadata
+        mock_knowledge_manager = Mock(spec=KnowledgeManager)
+        
+        # Create a context with missing title metadata
+        context_without_title = KnowledgeMarkdown(
+            content="Some content without title",
+            metadata={}  # Empty metadata, no title
+        )
+        
+        # Create a context with title metadata
+        context_with_title = KnowledgeMarkdown(
+            content="Some content with title",
+            metadata={"title": "Context With Title"}
+        )
+        
+        # Mock the get_all_contexts method to return our test contexts
+        mock_knowledge_manager.knowledge_base_markdown.get_all_contexts.return_value = {
+            "context_without_title": context_without_title,
+            "context_with_title": context_with_title
+        }
+        
+        # Create the API instance
+        api = ApiBasics(
+            app=app,
+            chat_manager=mock_chat_manager,
+            model_config=mock_model_config,
+            prompts_guided=mock_prompts_guided,
+            knowledge_manager=mock_knowledge_manager,
+            prompts_chat=mock_prompts_chat,
+            image_service=mock_image_service,
+            config_service=mock_config_service,
+            disclaimer_and_guidelines=mock_disclaimer_service,
+            inspirations_manager=mock_inspirations_manager
+        )
+        
+        # Create a test client
+        client = TestClient(app)
+        
+        # Make the request
+        response = client.get("/api/knowledge/snippets")
+        
+        # The response should be successful and handle missing titles gracefully
+        assert response.status_code == 200
+        
+        # Parse the response
+        data = response.json()
+        
+        # Should have both contexts
+        assert len(data) == 2
+        
+        # Find the context without title
+        context_without_title_data = next(
+            (item for item in data if item["context"] == "context_without_title"), 
+            None
+        )
+        assert context_without_title_data is not None
+        # Should use the context name as fallback title
+        assert context_without_title_data["title"] == "context_without_title"
+        
+        # Find the context with title
+        context_with_title_data = next(
+            (item for item in data if item["context"] == "context_with_title"), 
+            None
+        )
+        assert context_with_title_data is not None
+        # Should use the metadata title
+        assert context_with_title_data["title"] == "Context With Title"
+
     def test_download_restricted_prompt_returns_403(self):
         """Test that downloading a restricted prompt returns 403 Forbidden"""
         # Mock the prompt with download_restricted=True
@@ -1466,3 +1566,4 @@ class TestApi(unittest.TestCase):
         # Assert: Should return 401 with improved error message
         assert response.status_code == 401
         assert "User not authenticated" in response.json().get("detail", "")
+

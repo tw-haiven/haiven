@@ -356,7 +356,7 @@ class ApiBasics(HaivenBaseApi):
                     response_data.append(
                         {
                             "context": key,
-                            "title": context_info.metadata["title"],
+                            "title": context_info.metadata.get("title", key),
                             "snippets": {"context": context_info.content},
                         }
                     )

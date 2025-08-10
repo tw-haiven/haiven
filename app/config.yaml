@@ -1,5 +1,13 @@
 application_name: ${TEAMAI_APPLICATION_NAME}
 
+embeddings_db:
+  type: ${EMBEDDINGS_DB_TYPE}
+  skip_import: ${SKIP_EMBEDDINGS_IMPORT}
+  config:
+    url: ${QDRANT_URL}
+    api_key: ${QDRANT_API_KEY}
+    collection_name: ${QDRANT_COLLECTION}
+
 knowledge_pack_path: ${KNOWLEDGE_PACK_PATH}
 
 enabled_providers: ${ENABLED_PROVIDERS}
@@ -34,7 +42,6 @@ models:
       api_version: ${AZURE_OPENAI_API_VERSION}
       azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4o}
       api_key: ${AZURE_OPENAI_API_KEY}
-
   - id: azure-gpt-4.1
     name: GPT-4.1 on Azure
     provider: Azure
@@ -48,38 +55,50 @@ models:
       azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4.1}
       api_key: ${AZURE_OPENAI_API_KEY}
 
-  - id: gemini-2.0-flash
-    name: Gemini 2.0 Flash
+  - id: google-gemini
+    name: Gemini on Google
     provider: GCP
     features:
       - text-generation
       - image-to-text
     config:
-      model: gemini-2.0-flash
+      model: gemini-1.5-flash
 
-  - id: aws-claude-sonnet-3.5
-    name: Claude-Sonnet-3.5 on AWS Bedrock
+  - id: aws-claude-v2
+    name: Claude v2 on AWS
+    provider: AWS
+    features:
+      - text-generation
+      - stop-sequence
+    config:
+      model_id: anthropic.claude-v2
+      aws_region_name: ${AWS_BEDROCK_REGION}
+      aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+      aws_access_key_id: ${AWS_ACCESS_KEY_ID}
+
+  - id: aws-claude-v3
+    name: Claude v3 on AWS
     provider: AWS
     features:
       - text-generation
       - stop-sequence
       - image-to-text
     config:
-      model_id: us.anthropic.claude-3-5-sonnet-20241022-v2:0
+      model_id: anthropic.claude-3-sonnet-20240229-v1:0
       anthropic_version: bedrock-2023-05-31
       aws_region_name: ${AWS_BEDROCK_REGION}
       aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
       aws_access_key_id: ${AWS_ACCESS_KEY_ID}
 
   - id: aws-claude-sonnet-3.7
-    name: Claude-Sonnet-3.7 on AWS Bedrock
+    name: Claude-Sonnet-3.7 on AWS
     provider: AWS
     features:
       - text-generation
       - stop-sequence
       - image-to-text
     config:
-      model_id: us.anthropic.claude-3-7-sonnet-20250219-v1:0
+      model_id: ${AWS_BEDROCK_REGION}.anthropic.claude-3-7-sonnet-20250219-v1:0
       aws_region_name: ${AWS_BEDROCK_REGION}
       aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
       aws_access_key_id: ${AWS_ACCESS_KEY_ID}
@@ -152,13 +171,43 @@ models:
       base_url: ${OLLAMA_HOST}
       model: llava:7b
 
-  - id: perplexity
-    name: Perplexity AI
-    provider: perplexity
+  - id: cohere-command
+    name: Command on Cohere
+    provider: Cohere
+    features:
+      - text-generation
+    config:
+      model: command
+      api_key: ${COHERE_API_KEY}
+
+  - id: cohere-embed-english
+    name: Embed English on Cohere
+    provider: Cohere
+    features:
+      - embeddings
+    config:
+      model: embed-english-v3.0
+      api_key: ${COHERE_API_KEY}
+
+  - id: xai-grok-2
+    name: Grok-2 on xAI
+    provider: XAI
     features:
       - text-generation
       - image-to-text
+      - stop-sequence
     config:
+      model: grok-2-latest
+      api_key: ${XAI_API_KEY}
+
+  - id: perplexity-sonar-pro
+    name: Sonar Pro on Perplexity
+    provider: Perplexity
+    features:
+      - text-generation
+      - stop-sequence
+    config:
+      model: sonar-pro
       api_key: ${PERPLEXITY_API_KEY}
 
 embeddings:
@@ -204,6 +253,7 @@ embeddings:
     config:
       base_url: ${OLLAMA_HOST}
       model: nomic-embed-text
+=======
 
 # --- API Key Repository Configuration. To use the api-key feature, set env var API_KEY_AUTH_ENABLED=true first ---
 api_key_repository:
@@ -220,4 +270,3 @@ api_key_repository:
   # user: ...
   # password: ...
   # database: ...
-
