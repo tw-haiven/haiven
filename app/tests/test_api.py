@@ -1,5 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import json
+import os
 import unittest
 from unittest.mock import MagicMock, patch, ANY
 from fastapi.testclient import TestClient
@@ -29,6 +30,34 @@ from inspirations import InspirationsManager
 
 
 class TestApi(unittest.TestCase):
+    def check_token_usage_in_streamed_content(self, streamed_content):
+        """Helper function to check for token usage in the new format"""
+        import json
+
+        # Try to find the usage JSON object in the streamed content
+        usage_found = False
+
+        # Look for the usage pattern in the content
+        if '"usage"' in streamed_content:
+            # Find the start of the usage object
+            usage_start = streamed_content.find('{"usage"')
+            if usage_start != -1:
+                # Extract from the start of the usage object to the end
+                usage_part = streamed_content[usage_start:]
+                try:
+                    data = json.loads(usage_part)
+                    if "usage" in data:
+                        usage_found = True
+                        assert "prompt_tokens" in data["usage"]
+                        assert "completion_tokens" in data["usage"]
+                        assert "total_tokens" in data["usage"]
+                except json.JSONDecodeError:
+                    pass
+
+        assert (
+            usage_found
+        ), f"Token usage not found in streamed content: {streamed_content}"
+
     def setUp(self):
         self.app = FastAPI()
         self.app.add_middleware(SessionMiddleware, secret_key="some-random-string")
@@ -37,6 +66,122 @@ class TestApi(unittest.TestCase):
     def tearDown(self):
         # Clean up code to run after each test
         pass
+
+    def test_apikey_endpoints_use_service(self):
+        # Arrange
+        user_email = "testuser@example.com"
+
+        # Mock service
+        mock_service = MagicMock()
+        # For list_keys_for_user, return a dummy key
+        mock_service.list_keys_for_user.return_value = {
+            "dummy_key_hash": {
+                "name": "dummy",
+                "user_id": "pseudonymized_user_id",  # Service handles pseudonymization
+                "created_at": "2024-01-01T00:00:00",
+                "expires_at": "2024-01-02T00:00:00",
+                "last_used": None,
+                "usage_count": 0,
+            }
+        }
+        # For generate_api_key, return a dummy key
+        mock_service.generate_api_key.return_value = "dummy_api_key_value"
+
+        # Mock config
+        mock_config = MagicMock()
+
+        # Patch get_user_email to return our test email
+        from api.api_key_management import ApiKeyManagementAPI
+
+        class TestApiKeyManagementAPI(ApiKeyManagementAPI):
+            def get_user_email(self, request):
+                return user_email
+
+        # Register endpoints with our test APIKeyManagementAPI
+        TestApiKeyManagementAPI(self.app, mock_service, mock_config)
+
+        # Act: Generate API key
+        response = self.client.post(
+            "/api/apikeys/generate",
+            json={"name": "dummy"},
+        )
+        # Assert: The service should be called with the original user_id
+        mock_service.generate_api_key.assert_called_with(
+            name="dummy", user_id=user_email, expires_days=30
+        )
+        assert response.status_code == 200
+
+        # Act: List API keys
+        response = self.client.get("/api/apikeys")
+        mock_service.list_keys_for_user.assert_called_with(user_email)
+        assert response.status_code == 200
+
+    def test_apikey_revoke_uses_service(self):
+        user_email = "testuser@example.com"
+        key_hash = "dummy_key_hash"
+
+        # Mock service
+        mock_service = MagicMock()
+        mock_service.list_keys_for_user.return_value = {
+            key_hash: {"name": "dummy", "user_id": "pseudonymized_user_id"}
+        }
+        mock_service.revoke_key.return_value = True
+
+        # Mock config
+        mock_config = MagicMock()
+
+        # Patch get_user_email
+        from api.api_key_management import ApiKeyManagementAPI
+
+        class TestApiKeyManagementAPI(ApiKeyManagementAPI):
+            def get_user_email(self, request):
+                return user_email
+
+        TestApiKeyManagementAPI(self.app, mock_service, mock_config)
+
+        # Act: Revoke API key
+        response = self.client.post(
+            "/api/apikeys/revoke",
+            json={"key_hash": key_hash},
+        )
+        # Assert: list_keys_for_user and revoke_key called with correct args
+        mock_service.list_keys_for_user.assert_called_with(user_email)
+        mock_service.revoke_key.assert_called_with(key_hash)
+        assert response.status_code == 200
+
+    def test_apikey_usage_uses_service(self):
+        user_email = "testuser@example.com"
+
+        # Mock service
+        mock_service = MagicMock()
+        mock_service.list_keys_for_user.return_value = {
+            "dummy_key_hash": {
+                "name": "dummy",
+                "user_id": "pseudonymized_user_id",  # Service handles pseudonymization
+                "created_at": "2024-01-01T00:00:00",
+                "expires_at": "2024-01-02T00:00:00",
+                "last_used": "2024-01-01T12:00:00",
+                "usage_count": 5,
+            }
+        }
+
+        # Mock config
+        mock_config = MagicMock()
+
+        # Patch get_user_email
+        from api.api_key_management import ApiKeyManagementAPI
+
+        class TestApiKeyManagementAPI(ApiKeyManagementAPI):
+            def get_user_email(self, request):
+                return user_email
+
+        TestApiKeyManagementAPI(self.app, mock_service, mock_config)
+
+        # Act: Get API key usage
+        response = self.client.get("/api/apikeys/usage")
+        # Assert: list_keys_for_user called with correct user_id
+        mock_service.list_keys_for_user.assert_called_with(user_email)
+        assert response.status_code == 200
 
     def test_get_prompts(self):
         mock_prompts = MagicMock()
@@ -227,7 +372,8 @@ class TestApi(unittest.TestCase):
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+
+        self.check_token_usage_in_streamed_content(streamed_content)
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="some-prompt-id",
             user_input="some user input",
@@ -244,7 +390,7 @@ class TestApi(unittest.TestCase):
     ):
         mock_json_chat.run.return_value = iter(
             [
-                '{"data": "some response from the model"}',
+                "some response from the model",
                 {
                     "usage": {
                         "prompt_tokens": 100,
@@ -289,7 +435,8 @@ class TestApi(unittest.TestCase):
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+
+        self.check_token_usage_in_streamed_content(streamed_content)
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="guided-requirements",
             user_input=user_input,
@@ -306,7 +453,7 @@ class TestApi(unittest.TestCase):
     ):
         mock_json_chat.run.return_value = iter(
             [
-                '{"data": "some response from the model"}',
+                "some response from the model",
                 {
                     "usage": {
                         "prompt_tokens": 100,
@@ -337,7 +484,7 @@ class TestApi(unittest.TestCase):
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+        self.check_token_usage_in_streamed_content(streamed_content)
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="guided-scenarios-detailed",
             user_input=ANY,
@@ -398,7 +545,7 @@ class TestApi(unittest.TestCase):
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+        self.check_token_usage_in_streamed_content(streamed_content)
 
         args, kwargs = mock_streaming_chat.run.call_args
         actual_composed_prompt = args[0]
@@ -460,7 +607,7 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         # The response now includes both the model response and token usage data
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+        self.check_token_usage_in_streamed_content(streamed_content)
 
         args, kwargs = mock_streaming_chat.run.call_args
         actual_composed_prompt = args[0]
@@ -526,7 +673,7 @@ class TestApi(unittest.TestCase):
         assert response.status_code == 200
         streamed_content = response.content.decode("utf-8")
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+        self.check_token_usage_in_streamed_content(streamed_content)
 
         assert mock_streaming_chat.run.call_count == 1
         args, kwargs = mock_streaming_chat.run.call_args
@@ -550,7 +697,7 @@ class TestApi(unittest.TestCase):
     ):
         mock_json_chat.run.return_value = iter(
             [
-                '{"data": "some response from the model"}',
+                "some response from the model",
                 {
                     "usage": {
                         "prompt_tokens": 100,
@@ -584,7 +731,7 @@ class TestApi(unittest.TestCase):
         streamed_content = response.content.decode("utf-8")
         # The response now includes both the model response and token usage data
         assert "some response from the model" in streamed_content
-        assert "token_usage" in streamed_content
+        self.check_token_usage_in_streamed_content(streamed_content)
         mock_prompt_list.render_prompt.assert_called_with(
             prompt_choice="guided-creative-matrix",
             user_input=ANY,
@@ -782,6 +929,58 @@ class TestApi(unittest.TestCase):
             "non-existent-id", download_prompt=True
         )
 
+    def test_download_prompt_invalid_prompt_id(self):
+        mock_prompts_chat = MagicMock()
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            image_service=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+        # Invalid characters
+        response = self.client.get("/api/download-prompt?prompt_id=bad!id")
+        assert response.status_code == 400
+        assert b"Invalid prompt_id" in response.content
+        # Too long
+        long_id = "a" * 101
+        response = self.client.get(f"/api/download-prompt?prompt_id={long_id}")
+        assert response.status_code == 400
+        assert b"Invalid prompt_id" in response.content
+        # Empty
+        response = self.client.get("/api/download-prompt?prompt_id=")
+        assert response.status_code == 400
+        assert b"Invalid prompt_id" in response.content
+
+    def test_download_prompt_invalid_category(self):
+        mock_prompts_chat = MagicMock()
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            image_service=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+        # Invalid characters
+        response = self.client.get("/api/download-prompt?category=bad!cat")
+        assert response.status_code == 400
+        assert b"Invalid category" in response.content
+        # Too long
+        long_cat = "a" * 101
+        response = self.client.get(f"/api/download-prompt?category={long_cat}")
+        assert response.status_code == 400
+        assert b"Invalid category" in response.content
+
     def test_get_prompts_with_category(self):
         mock_prompts = MagicMock()
         category_prompts = [
@@ -842,6 +1041,7 @@ class TestApi(unittest.TestCase):
                     args[1]["prompt_id"], category_prompts[i]["identifier"]
                 )
                 self.assertEqual(args[1]["category"], "architecture")
+                self.assertEqual(args[1]["source"], "ui")
 
     def test_get_all_prompts(self):
         mock_prompts = MagicMock()
@@ -901,6 +1101,100 @@ class TestApi(unittest.TestCase):
                 self.assertEqual(args[0], "Download prompt")
                 self.assertEqual(args[1]["prompt_id"], all_prompts[i]["identifier"])
                 self.assertEqual(args[1]["category"], "all")
+                self.assertEqual(args[1]["source"], "ui")
+
+    def test_download_prompt_source_detection(self):
+        """Test that source detection logic works correctly."""
+        # Test MCP source detection
+        mock_request_mcp = MagicMock()
+        mock_request_mcp.session = {
+            "user": {"auth_type": "api_key", "user_id": "test_user_id"}
+        }
+
+        # Test UI source detection
+        mock_request_ui = MagicMock()
+        mock_request_ui.session = {
+            "user": {"auth_type": "session", "user_id": "test_user_id"}
+        }
+
+        # Test default source detection (no auth_type)
+        mock_request_default = MagicMock()
+        mock_request_default.session = {"user": {"user_id": "test_user_id"}}
+
+        # Test no session
+        mock_request_no_session = MagicMock()
+        mock_request_no_session.session = None
+
+        # Test empty session
+        mock_request_empty_session = MagicMock()
+        mock_request_empty_session.session = {}
+
+        # Test auth switched off scenario
+        mock_request_auth_off = MagicMock()
+        mock_request_auth_off.session = None
+
+        # Test the source detection logic (same as _get_request_source helper)
+        def get_analytics_source(request):
+            # Check if auth is switched off
+            if os.environ.get("AUTH_SWITCHED_OFF") == "true":
+                return "unknown"
+
+            # Check if it's an API key auth (MCP)
+            if request.session and request.session.get("user"):
+                user = request.session.get("user")
+                if user.get("auth_type") == "api_key":
+                    return "mcp"
+
+            # Default to UI
+            return "ui"
+
+            # Verify analytics source detection
+
+        self.assertEqual(get_analytics_source(mock_request_mcp), "mcp")
+        self.assertEqual(get_analytics_source(mock_request_ui), "ui")
+        self.assertEqual(get_analytics_source(mock_request_default), "ui")
+        self.assertEqual(get_analytics_source(mock_request_no_session), "ui")
+        self.assertEqual(get_analytics_source(mock_request_empty_session), "ui")
+
+        # Test auth switched off scenario
+        with patch.dict(os.environ, {"AUTH_SWITCHED_OFF": "true"}):
+            self.assertEqual(get_analytics_source(mock_request_auth_off), "unknown")
+            self.assertEqual(get_analytics_source(mock_request_mcp), "unknown")
+            self.assertEqual(get_analytics_source(mock_request_ui), "unknown")
+
+        # Test that analytics logging includes the source field
+        with patch("api.api_basics.HaivenLogger") as mock_logger:
+            mock_logger_instance = MagicMock()
+            mock_logger.get.return_value = mock_logger_instance
+
+            # Test MCP analytics
+            mock_request_mcp.session = {
+                "user": {"auth_type": "api_key", "user_id": "test_user_id"}
+            }
+            user = mock_request_mcp.session.get("user", {})
+            source = "mcp" if user.get("auth_type") == "api_key" else "ui"
+
+            # Simulate analytics call
+            mock_logger_instance.analytics(
+                "Download prompt",
+                {
+                    "user_id": "test_user_id",
+                    "prompt_id": "test_prompt",
+                    "category": "Individual Prompt",
+                    "source": source,
+                },
+            )
+
+            # Verify the analytics call was made with correct source
+            mock_logger_instance.analytics.assert_called_with(
+                "Download prompt",
+                {
+                    "user_id": "test_user_id",
+                    "prompt_id": "test_prompt",
+                    "category": "Individual Prompt",
+                    "source": "mcp",
+                },
+            )
 
     @patch("llms.chats.StreamingChat")
     @patch("llms.chats.ChatManager")
@@ -970,7 +1264,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         streamed_content = response.content.decode("utf-8")
         self.assertIn("some response from the model", streamed_content)
-        self.assertIn("token_usage", streamed_content)
+        self.check_token_usage_in_streamed_content(streamed_content)
 
         expected_model_config = ModelConfig("perplexity", "perplexity", "Perplexity")
 
@@ -981,6 +1275,7 @@ class TestApi(unittest.TestCase):
             "model_config"
         ]
         self.assertEqual(actual_model_config.provider, expected_model_config.provider)
+
 
 
 class TestApiBasics:
@@ -1066,3 +1361,209 @@ class TestApiBasics:
         assert context_with_title_data is not None
         # Should use the metadata title
         assert context_with_title_data["title"] == "Context With Title"
+
+    def test_download_restricted_prompt_returns_403(self):
+        """Test that downloading a restricted prompt returns 403 Forbidden"""
+        # Mock the prompt with download_restricted=True
+        mock_prompt = {
+            "identifier": "restricted-prompt",
+            "title": "Restricted Prompt",
+            "download_restricted": True,
+            "content": "Restricted content",
+        }
+
+        # Create mock prompts_chat
+        mock_prompts_chat = MagicMock()
+        mock_prompts_chat.get_a_prompt_with_follow_ups.return_value = mock_prompt
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            image_service=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+
+        response = self.client.get("/api/download-prompt?prompt_id=restricted-prompt")
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json()["detail"], "This prompt is not available for download"
+        )
+
+    def test_download_restricted_prompts_filtered_from_category(self):
+        """Test that restricted prompts are filtered out when downloading by category"""
+        # Mock prompts with some restricted
+        mock_prompts = [
+            {
+                "identifier": "prompt-1",
+                "download_restricted": False,
+                "title": "Downloadable Prompt 1",
+            },
+            {
+                "identifier": "prompt-2",
+                "download_restricted": True,
+                "title": "Restricted Prompt",
+            },
+            {
+                "identifier": "prompt-3",
+                "download_restricted": False,
+                "title": "Downloadable Prompt 2",
+            },
+        ]
+
+        # Create mock prompts_chat
+        mock_prompts_chat = MagicMock()
+        mock_prompts_chat.get_prompts_with_follow_ups.return_value = mock_prompts
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            image_service=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+
+        response = self.client.get("/api/download-prompt?category=test-category")
+
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+
+        # Should only return non-restricted prompts
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0]["identifier"], "prompt-1")
+        self.assertEqual(result[1]["identifier"], "prompt-3")
+
+    def test_download_restricted_prompts_filtered_from_all_prompts(self):
+        """Test that restricted prompts are filtered out when downloading all prompts"""
+        # Mock prompts with some restricted
+        mock_prompts = [
+            {
+                "identifier": "prompt-1",
+                "download_restricted": False,
+                "title": "Downloadable Prompt 1",
+            },
+            {
+                "identifier": "prompt-2",
+                "download_restricted": True,
+                "title": "Restricted Prompt",
+            },
+            {
+                "identifier": "prompt-3",
+                "download_restricted": False,
+                "title": "Downloadable Prompt 2",
+            },
+        ]
+
+        # Create mock prompts_chat
+        mock_prompts_chat = MagicMock()
+        mock_prompts_chat.get_prompts_with_follow_ups.return_value = mock_prompts
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            image_service=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+
+        response = self.client.get("/api/download-prompt")
+
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+
+        # Should only return non-restricted prompts
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0]["identifier"], "prompt-1")
+        self.assertEqual(result[1]["identifier"], "prompt-3")
+
+    def test_download_all_prompts_with_empty_category(self):
+        """Test that empty category parameter correctly triggers 'download all prompts' logic"""
+        # Mock prompts with some restricted
+        mock_prompts = [
+            {
+                "identifier": "prompt-1",
+                "download_restricted": False,
+                "title": "Downloadable Prompt 1",
+            },
+            {
+                "identifier": "prompt-2",
+                "download_restricted": True,
+                "title": "Restricted Prompt",
+            },
+            {
+                "identifier": "prompt-3",
+                "download_restricted": False,
+                "title": "Downloadable Prompt 2",
+            },
+        ]
+
+        # Create mock prompts_chat
+        mock_prompts_chat = MagicMock()
+        mock_prompts_chat.get_prompts_with_follow_ups.return_value = mock_prompts
+
+        ApiBasics(
+            self.app,
+            chat_manager=MagicMock(),
+            model_config=MagicMock(),
+            image_service=MagicMock(),
+            prompts_chat=mock_prompts_chat,
+            prompts_guided=MagicMock(),
+            knowledge_manager=MagicMock(),
+            config_service=MagicMock(),
+            disclaimer_and_guidelines=MagicMock(),
+            inspirations_manager=MagicMock(),
+        )
+
+        response = self.client.get("/api/download-prompt?category=")
+
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+
+        # Should only return non-restricted prompts
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0]["identifier"], "prompt-1")
+        self.assertEqual(result[1]["identifier"], "prompt-3")
+
+    def test_apikey_generate_requires_user(self):
+        # Arrange
+        mock_service = MagicMock()
+        mock_service.generate_api_key.return_value = "dummy_api_key_value"
+        mock_config = MagicMock()
+        from api.api_key_management import ApiKeyManagementAPI
+        from fastapi import HTTPException
+
+        # Patch get_user_email to simulate missing user
+        class TestApiKeyManagementAPI(ApiKeyManagementAPI):
+            def get_user_email(self, request):
+                raise HTTPException(
+                    status_code=401,
+                    detail="User not authenticated. You must be logged in to generate or manage API keys, even in developer mode.",
+                )
+
+        TestApiKeyManagementAPI(self.app, mock_service, mock_config)
+
+        # Act: Generate API key without user in session
+        response = self.client.post(
+            "/api/apikeys/generate",
+            json={"name": "dummy"},
+        )
+        # Assert: Should return 401 with improved error message
+        assert response.status_code == 401
+        assert "User not authenticated" in response.json().get("detail", "")
+

@@ -5,16 +5,24 @@ import ChatWidget from "../app/_chat";
 import VerticalPossibilityPanel from "./_vertical-possibility-panel";
 import LLMTokenUsage from "../app/_llm_token_usage";
 import { formattedUsage } from "../app/utils/tokenUtils";
+import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
+import { filterSSEEvents } from "../app/utils/_sse_event_filter";
 
 export default function ChatExploration({
   context,
   scenarioQueries = [],
   featureToggleConfig = {},
+  setTokenUsage: parentSetTokenUsage,
+  tokenUsage: parentTokenUsage,
 }) {
   const [promptStarted, setPromptStarted] = useState(false);
   const [chatSessionId, setChatSessionId] = useState();
   const [previousContext, setPreviousContext] = useState(context);
-  const [tokenUsage, setTokenUsage] = useState(null);
+  // Use parent token usage state if provided, else local
+  const [tokenUsage, setTokenUsage] =
+    parentTokenUsage !== undefined && parentSetTokenUsage !== undefined
+      ? [parentTokenUsage, parentSetTokenUsage]
+      : useState({ input_tokens: 0, output_tokens: 0 });
 
   const chatRef = useRef();
 
@@ -22,7 +30,8 @@ export default function ChatExploration({
     if (previousContext !== context) {
       setPreviousContext(context);
       setPromptStarted(false);
-      setTokenUsage(null);
+      // Reset token usage aggregation on context/page change
+      setTokenUsage({ input_tokens: 0, output_tokens: 0 });
       chatRef.current.startNewConversation();
     }
   }, [context, previousContext]);
@@ -30,8 +39,7 @@ export default function ChatExploration({
   const submitPromptToBackend = async (messages) => {
     const exploreUri = "/api/prompt/explore";
 
-    // Reset token usage
-    setTokenUsage(null);
+    // Do not reset token usage here; we want to aggregate per page
 
     const processSSEResponse = (response) => {
       const sseStream = new ReadableStream({
@@ -49,46 +57,24 @@ export default function ChatExploration({
 
               const chunk = decoder.decode(value, { stream: true });
               buffer += chunk;
-              // Check if this chunk contains SSE token usage event
-              if (buffer.includes("event: token_usage")) {
-                // Split at the SSE event boundary
-                const parts = buffer.split("event: token_usage");
-                const contentPart = parts[0];
-                const sseEventPart = "event: token_usage" + parts[1];
 
-                // Send content part to ProChat
-                if (contentPart) {
-                  controller.enqueue(new TextEncoder().encode(contentPart));
-                }
+              // Use the reusable filterSSEEvents utility
+              const { text, events } = filterSSEEvents(buffer);
 
-                // Parse token usage from SSE event
-                const lines = sseEventPart.split("\n");
-                for (const line of lines) {
-                  if (line.startsWith("data: ")) {
-                    const data = line.substring(6);
-
-                    // Process complete SSE events
-
-                    try {
-                      const tokenUsageData = JSON.parse(data);
-                      setTokenUsage(formattedUsage(tokenUsageData));
-                    } catch (parseError) {
-                      console.log(
-                        "Failed to parse token usage data:",
-                        data,
-                        parseError,
-                      );
-                    }
-                    break;
-                  }
-                }
-
-                buffer = "";
-              } else {
-                // Regular content - stream directly to ProChat
-                controller.enqueue(new TextEncoder().encode(chunk));
-                buffer = "";
+              // Send clean text to ProChat
+              if (text) {
+                controller.enqueue(new TextEncoder().encode(text));
               }
+
+              // Handle token usage events
+              events.forEach((event) => {
+                if (event.type === "token_usage") {
+                  const usage = formattedUsage(event.data);
+                  setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+                }
+              });
+
+              buffer = "";
 
               return pump();
             });

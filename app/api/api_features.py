@@ -15,6 +15,11 @@ class ApiFeatures:
             # Server-side feature toggles
             features = {
                 "THOUGHTWORKS": os.getenv("THOUGHTWORKS_INSTANCE", "false").lower()
-                == "true"
+                == "true",
+                "API_KEY_AUTH": os.getenv("API_KEY_AUTH_ENABLED", "false").lower()
+                == "true",
+                "API_KEY_AUTH_UI": os.getenv("API_KEY_AUTH_UI", "false").lower()
+                == "true",
             }
+
             return JSONResponse(content=features)

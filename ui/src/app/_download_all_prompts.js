@@ -41,8 +41,16 @@ const DownloadAllPrompts = ({ prompts }) => {
   const getCategoryItems = () => {
     if (!prompts) return [];
 
+    // Filter out restricted prompts
+    const downloadablePrompts = prompts.filter(
+      (prompt) => !prompt.download_restricted,
+    );
+
+    // Get categories that have at least one downloadable prompt
     const categories = [
-      ...new Set(prompts.flatMap((prompt) => prompt.categories || [])),
+      ...new Set(
+        downloadablePrompts.flatMap((prompt) => prompt.categories || []),
+      ),
     ];
     return categories.map((category) => ({
       key: category,

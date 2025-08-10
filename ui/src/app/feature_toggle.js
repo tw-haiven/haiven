@@ -2,7 +2,8 @@
 
 export const FEATURES = {
   THOUGHTWORKS: "THOUGHTWORKS",
-  LLM_TOKEN_USAGE: "LLM_TOKEN_USAGE",
+  API_KEY_AUTH: "API_KEY_AUTH",
+  API_KEY_AUTH_UI: "API_KEY_AUTH_UI",
 };
 
 const fetchServerToggles = async () => {

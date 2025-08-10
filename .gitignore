@@ -54,8 +54,27 @@ db
 app/config.local.yaml
 tmp
 
+# API Keys (sensitive data)
+**/api_keys.json
+api_keys.json
+
 .coverage
 *.faiss
 *.pkl
 !app/tests/test_data/**/*.faiss
 !app/tests/test_data/**/*.pkl
+poetry.toml
+
+#Ignore Custom Folder
+.aicustom/
+
+# Playwright test artifacts
+/tests/tests-results/
+/tests/test-results/
+/tests/playwright-report/
+/tests/blob-report/
+/tests/playwright/.cache/
+/tests/node_modules
+
+.mcp.json
+*/.mcp.json

@@ -21,6 +21,7 @@ from ui.url import HaivenUrl
 import hashlib
 import time
 import os
+from auth.api_key_auth_service import ApiKeyAuthService
 
 
 class Server:
@@ -30,12 +31,14 @@ class Server:
         self,
         chat_manager: ChatManager,
         config_service: ConfigService,
+        api_key_auth_service: ApiKeyAuthService = None,
         boba_api: BobaApi = None,
     ):
         self.url = HaivenUrl()
         self.chat_manager = chat_manager
         self.config_service = config_service
         self.boba_api = boba_api
+        self.api_key_auth_service = api_key_auth_service
         # Initialize Jinja2Templates with autoescape=True for XSS protection
         self.templates = Jinja2Templates(directory="./resources/html_templates")
         self.templates.env.autoescape = True
@@ -119,6 +122,7 @@ class Server:
                 "creative-matrix",
                 "about",
                 "company-research",
+                "api-keys",
             ]
             paths = request.url.path.split("/")
             if (
@@ -145,10 +149,38 @@ class Server:
 
             if request.url.path not in allowlist:
                 try:
-                    user = request.session.get("user")
-                    if not user:
+                    # Check if this is an MCP endpoint first to avoid unnecessary API key checks
+                    is_mcp_endpoint = False
+                    if (
+                        self.api_key_auth_service
+                        and self.config_service.is_api_key_auth_enabled()
+                    ):
+                        is_mcp_endpoint = self.api_key_auth_service.is_mcp_endpoint(
+                            request.url.path
+                        )
+
+                    if is_mcp_endpoint:
+                        api_user = await self.api_key_auth_service.authenticate_with_api_key_optimized(
+                            request
+                        )
+                        if api_user:
+                            # Store API user in session for this request only
+                            request.session["user"] = api_user
+                            return await call_next(request)
+                        # If API key auth fails for MCP endpoint, fall back to session authentication
+                        user = request.session.get("user")
+                        if user:  # If there's any user in session, allow access
+                            return await call_next(request)
+                        # No authentication found for MCP endpoint
                         return RedirectResponse(url=self.url.login())
-                    return await call_next(request)
+
+                    # Check session authentication for non-MCP endpoints
+                    user = request.session.get("user")
+                    if user:  # If there's any user in session, allow access
+                        return await call_next(request)
+
+                    # No authentication found
+                    return RedirectResponse(url=self.url.login())
                 except AssertionError as error:
                     print(f"AssertionError {error}")
                     return auth_error_response(request, error)
@@ -171,16 +203,27 @@ class Server:
             session = request.session
             current_time = int(time.time())
             if session:
+                user = session.get("user")
+                # Skip session expiry check for API key authentication
+                if user and user.get("auth_type") == "api_key":
+                    return await call_next(request)
+
                 if "created_at" in session:
                     created_at = session["created_at"]
                     if current_time - created_at > session_expiry_seconds:
-                        user_id = session.get("user").get("email")
-                        hashed_user_id = hashlib.sha256(
-                            user_id.encode("utf-8")
-                        ).hexdigest()
-                        HaivenLogger.get().logger.info(
-                            f"Session for {hashed_user_id} expired due to inactivity of {current_time - created_at} seconds."
-                        )
+                        user = session.get("user")
+                        if user and user.get("email"):
+                            user_id = user.get("email")
+                            hashed_user_id = hashlib.sha256(
+                                user_id.encode("utf-8")
+                            ).hexdigest()
+                            HaivenLogger.get().logger.info(
+                                f"Session for {hashed_user_id} expired due to inactivity of {current_time - created_at} seconds."
+                            )
+                        else:
+                            HaivenLogger.get().logger.info(
+                                f"Session expired due to inactivity of {current_time - created_at} seconds (no user email found)."
+                            )
                         request.session.clear()
                         return RedirectResponse(url="/")
                     else:

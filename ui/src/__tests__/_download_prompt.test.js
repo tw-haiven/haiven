@@ -4,14 +4,12 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import DownloadPrompt from "../app/_download_prompt";
 import "@testing-library/jest-dom";
 
-// Set up a test environment with a DOM
-const setup = () => {
-  const container = document.createElement("div");
-  document.body.appendChild(container);
-  return container;
-};
+// Mock the fetchPromptContent function
+vi.mock("../app/utils/promptDownloadUtils", () => ({
+  fetchPromptContent: vi.fn(),
+}));
 
-describe.skip("DownloadPrompt", () => {
+describe("DownloadPrompt", () => {
   const mockPrompt = {
     identifier: "test-prompt",
     title: "Test Prompt Title",
@@ -20,171 +18,62 @@ describe.skip("DownloadPrompt", () => {
   };
 
   beforeEach(() => {
-    // Clear all mocks before each test
     vi.clearAllMocks();
+  });
 
-    // Mock fetch
-    global.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            help_prompt_description: "Test description",
-            content: "Test prompt content",
-            help_sample_input: "Test sample input",
-            follow_ups: [
-              {
-                title: "Follow Up 1",
-                help_prompt_description: "Follow up description 1",
-              },
-            ],
-          }),
-      }),
-    );
-
-    // Mock URL and Blob
-    global.URL.createObjectURL = vi.fn(() => "mock-url");
-    global.URL.revokeObjectURL = vi.fn();
-    global.Blob = vi.fn();
-
-    // Mock document methods
-    const mockLink = {
-      href: "",
-      download: "",
-      click: vi.fn(),
+  it("renders download button when prompt is not download restricted", () => {
+    const unrestrictedPrompt = {
+      ...mockPrompt,
+      download_restricted: false,
     };
-    document.createElement = vi.fn(() => mockLink);
-    document.body.appendChild = vi.fn();
-    document.body.removeChild = vi.fn();
+
+    render(<DownloadPrompt prompt={unrestrictedPrompt} />);
+
+    expect(screen.getByTestId("download-prompt-button")).toBeInTheDocument();
   });
 
-  it("renders download button with tooltip", () => {
-    const { container } = render(<DownloadPrompt prompt={mockPrompt} />);
-    expect(
-      container.querySelector('[data-testid="download-prompt-button"]'),
-    ).toBeTruthy();
+  it("hides download button when prompt is download restricted", () => {
+    const restrictedPrompt = {
+      ...mockPrompt,
+      download_restricted: true,
+    };
+
+    const { container } = render(<DownloadPrompt prompt={restrictedPrompt} />);
+
+    expect(container.firstChild).toBeNull();
   });
 
-  it("handles download with all prompt data", async () => {
-    const { container } = render(<DownloadPrompt prompt={mockPrompt} />);
+  it("shows download button when download_restricted field is not present", () => {
+    const promptWithoutRestrictionField = {
+      ...mockPrompt,
+      // No download_restricted field
+    };
 
-    const downloadButton = container.querySelector(
-      '[data-testid="download-prompt-button"]',
-    );
-    await fireEvent.click(downloadButton);
+    render(<DownloadPrompt prompt={promptWithoutRestrictionField} />);
 
-    // Wait for all promises to resolve
-    await vi.waitFor(() => {
-      // Verify fetch was called with correct parameters
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/prompt/test-prompt",
-        expect.objectContaining({
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }),
-      );
-    });
-
-    // Wait for blob creation and download
-    await vi.waitFor(
-      () => {
-        // Verify blob creation with correct content
-        expect(global.Blob).toHaveBeenCalledWith(
-          [expect.stringContaining("Test description")],
-          { type: "text/plain" },
-        );
-
-        // Verify URL creation and cleanup
-        expect(global.URL.createObjectURL).toHaveBeenCalled();
-        expect(document.createElement).toHaveBeenCalledWith("a");
-        expect(document.body.appendChild).toHaveBeenCalled();
-        expect(document.body.removeChild).toHaveBeenCalled();
-        expect(global.URL.revokeObjectURL).toHaveBeenCalledWith("mock-url");
-      },
-      { timeout: 1000 },
-    );
+    expect(screen.getByTestId("download-prompt-button")).toBeInTheDocument();
   });
 
-  it("handles download with sample input", async () => {
-    const { container } = render(<DownloadPrompt prompt={mockPrompt} />);
-
-    const downloadButton = container.querySelector(
-      '[data-testid="download-prompt-button"]',
-    );
-    await fireEvent.click(downloadButton);
-
-    // Verify blob content includes sample input
-    await vi.waitFor(() => {
-      expect(global.Blob).toHaveBeenCalledWith(
-        [expect.stringContaining("Sample Input: Test sample input")],
-        { type: "text/plain" },
-      );
-    });
-  });
-
-  it("handles download with follow-up prompts", async () => {
-    const { container } = render(<DownloadPrompt prompt={mockPrompt} />);
-
-    const downloadButton = container.querySelector(
-      '[data-testid="download-prompt-button"]',
-    );
-    await fireEvent.click(downloadButton);
-
-    // Verify blob content includes follow-up prompts
-    await vi.waitFor(() => {
-      expect(global.Blob).toHaveBeenCalledWith(
-        [expect.stringContaining("Follow-up Prompts")],
-        { type: "text/plain" },
-      );
-      expect(global.Blob).toHaveBeenCalledWith(
-        [expect.stringContaining("1. Follow Up 1")],
-        { type: "text/plain" },
-      );
-    });
-  });
-
-  it("handles fetch error gracefully", async () => {
-    // Mock fetch to fail
-    global.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: false,
-      }),
-    );
-
-    // Mock console.error
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
-    const { container } = render(<DownloadPrompt prompt={mockPrompt} />);
-
-    const downloadButton = container.querySelector(
-      '[data-testid="download-prompt-button"]',
-    );
-    await fireEvent.click(downloadButton);
-
-    await vi.waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Error downloading prompt:",
-        expect.any(Error),
-      );
-    });
-
-    consoleSpy.mockRestore();
-  });
-
-  it("does nothing when prompt is not provided", async () => {
+  it("returns null when prompt is null", () => {
     const { container } = render(<DownloadPrompt prompt={null} />);
 
-    const downloadButton = container.querySelector(
-      '[data-testid="download-prompt-button"]',
-    );
-    await fireEvent.click(downloadButton);
+    expect(container.firstChild).toBeNull();
+  });
 
-    await vi.waitFor(() => {
-      expect(global.fetch).not.toHaveBeenCalled();
-      expect(global.Blob).not.toHaveBeenCalled();
-    });
+  // Test that the download button is clickable (basic functionality test)
+  it("download button is clickable", () => {
+    const unrestrictedPrompt = {
+      ...mockPrompt,
+      download_restricted: false,
+    };
+
+    render(<DownloadPrompt prompt={unrestrictedPrompt} />);
+
+    const downloadButton = screen.getByTestId("download-prompt-button");
+    expect(downloadButton).toBeInTheDocument();
+
+    // Verify the button is clickable
+    fireEvent.click(downloadButton);
+    // If we get here without errors, the button is clickable
   });
 });

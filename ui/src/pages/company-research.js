@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 
 import CompanyCanvas from "./_company_canvas";
 
-export default function CompanyResearchPage() {
+export default function CompanyResearchPage({ featureToggleConfig = {} }) {
   const [researchConfig, setResearchConfig] = useState({});
 
   const searchParams = useSearchParams();
@@ -57,6 +57,10 @@ export default function CompanyResearchPage() {
   }, [searchParams]);
 
   return (
-    <CompanyCanvas key={researchConfig.key} researchConfig={researchConfig} />
+    <CompanyCanvas
+      key={researchConfig.key}
+      researchConfig={researchConfig}
+      featureToggleConfig={featureToggleConfig}
+    />
   );
 }

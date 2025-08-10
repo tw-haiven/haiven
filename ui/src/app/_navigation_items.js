@@ -69,7 +69,7 @@ export const initialiseMenuCategoriesForSidebar = (isThoughtworksInstance) => {
     };
     categories.deliveryManagement = {
       key: "deliveryManagement",
-      label: "Delivery Management",
+      label: "Delivery",
       icon: <RiDashboardHorizontalLine style={{ fontSize: "large" }} />,
       children: [],
     };

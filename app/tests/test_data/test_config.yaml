@@ -1,1 +1,11 @@
 application_name: Test Application
+
+# API Key Repository Configuration for Testing
+api_key_repository:
+  type: file
+  pseudonymization_salt: test_salt_for_testing_only
+  file:
+    file_path: app/tests/test_data/test_api_keys.json
+  firestore:
+    project_id: test-project-id
+    collection_name: test_api_keys

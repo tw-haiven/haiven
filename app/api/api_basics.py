@@ -1,5 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import io
+import os
 from typing import List, Optional
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -67,13 +68,39 @@ class HaivenBaseApi:
         self.model_config = model_config
         self.prompt_list = prompt_list
 
+    def _is_api_key_auth(self, request):
+        """Check if the request is using API key authentication."""
+        if request.session and request.session.get("user"):
+            user = request.session.get("user")
+            return user.get("auth_type") == "api_key"
+        return False
+
+    def _get_request_source(self, request):
+        """Get the source of the request (mcp, ui, or unknown)."""
+        # Check if auth is switched off
+        if os.environ.get("AUTH_SWITCHED_OFF") == "true":
+            return "unknown"
+
+        # Check if it's an API key auth (MCP)
+        if self._is_api_key_auth(request):
+            return "mcp"
+
+        # Default to UI
+        return "ui"
+
     def get_hashed_user_id(self, request):
         if request.session and request.session.get("user"):
-            user_id = request.session.get("user").get("email")
-            hashed_user_id = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
-            return hashed_user_id
-        else:
-            return None
+            user = request.session.get("user")
+            # Check if auth_type is api_key, if so use user_id directly from the session
+            if user.get("auth_type") == "api_key":
+                user_id = user.get("user_id")
+            else:
+                user_id = user.get("email")
+
+            if user_id is not None:
+                hashed_user_id = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
+                return hashed_user_id
+        return None
 
     def stream_json_chat(
         self,
@@ -88,75 +115,27 @@ class HaivenBaseApi:
         model_config=None,
         userContext=None,
     ):
+        """Stream JSON chat with simplified event handling"""
         try:
 
-            def stream_with_token_usage(chat_session, prompt):
+            def stream_with_events(chat_session, prompt):
                 try:
-                    for chunk in chat_session.run(prompt):
-                        if isinstance(chunk, dict) and self._is_token_usage_chunk(
-                            chunk
-                        ):
-                            # Send token usage as proper SSE event
-                            usage_data = chunk["usage"]
-                            if isinstance(usage_data, dict):
-                                model_name = (
-                                    model_config.lite_id if model_config else "unknown"
-                                )
-                                token_usage_data = {
-                                    "prompt_tokens": usage_data.get("prompt_tokens", 0),
-                                    "completion_tokens": usage_data.get(
-                                        "completion_tokens", 0
-                                    ),
-                                    "total_tokens": usage_data.get("total_tokens", 0),
-                                    "model": model_name,
-                                }
-                                yield f"event: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
-                            # Don't yield the raw usage object
-                        elif isinstance(chunk, str):
-                            # Handle string chunks (including JSON strings)
-                            try:
-                                # Try to parse as JSON to check for nested data structure
-                                parsed = json.loads(chunk)
-                                if isinstance(
-                                    parsed, dict
-                                ) and self._is_token_usage_chunk(parsed):
-                                    # Handle JSON string containing usage
-                                    usage_data = parsed["usage"]
-                                    if isinstance(usage_data, dict):
-                                        model_name = (
-                                            model_config.lite_id
-                                            if model_config
-                                            else "unknown"
-                                        )
-                                        token_usage_data = {
-                                            "prompt_tokens": usage_data.get(
-                                                "prompt_tokens", 0
-                                            ),
-                                            "completion_tokens": usage_data.get(
-                                                "completion_tokens", 0
-                                            ),
-                                            "total_tokens": usage_data.get(
-                                                "total_tokens", 0
-                                            ),
-                                            "model": model_name,
-                                        }
-                                        yield f"event: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
-                                else:
-                                    # Regular JSON string content - keep original format for creative-matrix compatibility
-                                    yield chunk
-                            except json.JSONDecodeError:
-                                # Regular string content - keep as is
-                                yield chunk
+                    # Pass through the formatted events from the chat session (original behavior)
+                    for event_str in chat_session.run(prompt):
+                        # Ensure we're yielding strings, not dicts
+                        if isinstance(event_str, dict):
+                            yield json.dumps(event_str)
                         else:
-                            # Other types of chunks - keep as is
-                            yield chunk
+                            yield str(event_str)
 
                 except Exception as error:
-                    if not str(error).strip():
-                        error = "Error while the model was processing the input"
-                    print(f"[ERROR]: {str(error)}")
-                    # Send error in original format
-                    error_response = {"data": f"[ERROR]: {str(error)}"}
+                    error_msg = (
+                        str(error).strip()
+                        or "Error while the model was processing the input"
+                    )
+                    print(f"[ERROR]: {error_msg}")
+                    # Send error in JSON format for JSON chat
+                    error_response = {"data": f"[ERROR]: {error_msg}"}
                     yield json.dumps(error_response)
 
             chat_session_key_value, chat_session = self.chat_manager.json_chat(
@@ -178,7 +157,7 @@ class HaivenBaseApi:
             )
 
             return StreamingResponse(
-                stream_with_token_usage(chat_session, prompt),
+                stream_with_events(chat_session, prompt),
                 media_type=streaming_media_type(),
                 headers=streaming_headers(chat_session_key_value),
             )
@@ -220,89 +199,38 @@ class HaivenBaseApi:
         userContext=None,
         model_config=None,
     ):
+        """Stream text chat with simplified event handling"""
         try:
 
-            def stream(chat_session: StreamingChat, prompt):
+            def stream_with_events(chat_session: StreamingChat, prompt):
                 try:
-                    token_usage_data = None
-
                     if document_keys:
-                        sources = ""
-                        for chunk, sources in chat_session.run_with_document(
-                            document_keys, prompt
-                        ):
-                            sources = sources
-                            if isinstance(chunk, dict) and self._is_token_usage_chunk(
-                                chunk
-                            ):
-                                # Store token usage data for later
-                                usage_data = chunk["usage"]
-                                if isinstance(usage_data, dict):
-                                    model_name = (
-                                        model_config.lite_id
-                                        if model_config
-                                        else "unknown"
-                                    )
-                                    token_usage_data = {
-                                        "prompt_tokens": usage_data.get(
-                                            "prompt_tokens", 0
-                                        ),
-                                        "completion_tokens": usage_data.get(
-                                            "completion_tokens", 0
-                                        ),
-                                        "total_tokens": usage_data.get(
-                                            "total_tokens", 0
-                                        ),
-                                        "model": model_name,
-                                    }
+                        # Handle document-based streaming
+                        for (
+                            event_str,
+                            sources_markdown,
+                        ) in chat_session.run_with_document(document_keys, prompt):
+                            # Ensure we're yielding strings, not dicts
+                            if isinstance(event_str, dict):
+                                yield json.dumps(event_str)
                             else:
-                                # Stream raw content chunks for ProChat compatibility
-                                yield chunk
-
-                        if sources:
-                            yield "\n\n" + sources
-
-                        # Send token usage as SSE event at the end
-                        if token_usage_data:
-                            yield f"event: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
+                                yield str(event_str)
                     else:
-                        for chunk in chat_session.run(prompt):
-                            if isinstance(chunk, dict) and self._is_token_usage_chunk(
-                                chunk
-                            ):
-                                # Store token usage data for later
-                                usage_data = chunk["usage"]
-                                if isinstance(usage_data, dict):
-                                    model_name = (
-                                        model_config.lite_id
-                                        if model_config
-                                        else "unknown"
-                                    )
-                                    token_usage_data = {
-                                        "prompt_tokens": usage_data.get(
-                                            "prompt_tokens", 0
-                                        ),
-                                        "completion_tokens": usage_data.get(
-                                            "completion_tokens", 0
-                                        ),
-                                        "total_tokens": usage_data.get(
-                                            "total_tokens", 0
-                                        ),
-                                        "model": model_name,
-                                    }
+                        # Handle regular streaming
+                        for event_str in chat_session.run(prompt):
+                            # Ensure we're yielding strings, not dicts
+                            if isinstance(event_str, dict):
+                                yield json.dumps(event_str)
                             else:
-                                # Stream raw content chunks for ProChat compatibility
-                                yield chunk
-
-                        # Send token usage as SSE event at the end
-                        if token_usage_data:
-                            yield f"event: token_usage\ndata: {json.dumps(token_usage_data)}\n\n"
+                                yield str(event_str)
 
                 except Exception as error:
-                    if not str(error).strip():
-                        error = "Error while the model was processing the input"
-                    print(f"[ERROR]: {str(error)}")
-                    yield f"[ERROR]: {str(error)}"
+                    error_msg = (
+                        str(error).strip()
+                        or "Error while the model was processing the input"
+                    )
+                    print(f"[ERROR]: {error_msg}")
+                    yield f"[ERROR]: {error_msg}"
 
             chat_session_key_value, chat_session = self.chat_manager.streaming_chat(
                 model_config=model_config or self.model_config,
@@ -323,32 +251,13 @@ class HaivenBaseApi:
             )
 
             return StreamingResponse(
-                stream(chat_session, prompt),
+                stream_with_events(chat_session, prompt),
                 media_type=streaming_media_type(),
                 headers=streaming_headers(chat_session_key_value),
             )
 
         except Exception as error:
             raise Exception(error)
-
-    def _is_token_usage_chunk(self, chunk):
-        """Check if a chunk is specifically token usage data, not just any content containing 'usage'"""
-        if not isinstance(chunk, dict):
-            return False
-
-        # Must have "usage" as a top-level key
-        if "usage" not in chunk:
-            return False
-
-        usage_data = chunk["usage"]
-
-        # The usage data should be a dict with expected token fields
-        if not isinstance(usage_data, dict):
-            return False
-
-        # Check for at least one of the expected token usage fields
-        expected_fields = ["prompt_tokens", "completion_tokens", "total_tokens"]
-        return any(field in usage_data for field in expected_fields)
 
 
 class ApiBasics(HaivenBaseApi):
@@ -366,6 +275,11 @@ class ApiBasics(HaivenBaseApi):
         inspirations_manager: InspirationsManager,
     ):
         super().__init__(app, chat_manager, model_config, prompts_guided)
+        self.knowledge_manager = knowledge_manager
+        self.prompts_chat = prompts_chat
+        self.image_service = image_service
+        self.config_service = config_service
+        self.disclaimer_and_guidelines = disclaimer_and_guidelines
         self.inspirations_manager = inspirations_manager
 
         @app.get("/api/models")
@@ -554,7 +468,7 @@ class ApiBasics(HaivenBaseApi):
 
                 rendered_prompt = (
                     f"""
-                    
+
                     My new request:
                     {prompt_data.userinput}
                     """
@@ -666,10 +580,18 @@ class ApiBasics(HaivenBaseApi):
         def download_prompt(
             request: Request, prompt_id: str = None, category: str = None
         ):
+            import re
+
+            def is_valid_param(val):
+                return bool(val) and re.match(r"^[a-zA-Z0-9_-]{1,100}$", val)
+
             user_id = self.get_hashed_user_id(request)
+            source = self._get_request_source(request)
 
             try:
-                if prompt_id:
+                if prompt_id is not None:
+                    if not is_valid_param(prompt_id):
+                        raise HTTPException(status_code=400, detail="Invalid prompt_id")
                     prompt = prompts_chat.get_a_prompt_with_follow_ups(
                         prompt_id, download_prompt=True
                     )
@@ -677,47 +599,83 @@ class ApiBasics(HaivenBaseApi):
                     if not prompt:
                         raise Exception("Prompt not found")
 
+                    # Check if prompt is download restricted
+                    if prompt.get("download_restricted", False):
+                        HaivenLogger.get().analytics(
+                            "Download restricted prompt attempted",
+                            {
+                                "user_id": user_id,
+                                "prompt_id": prompt_id,
+                                "category": "Individual Prompt",
+                                "source": source,
+                            },
+                        )
+                        raise HTTPException(
+                            status_code=403,
+                            detail="This prompt is not available for download",
+                        )
+
                     HaivenLogger.get().analytics(
                         "Download prompt",
                         {
                             "user_id": user_id,
                             "prompt_id": prompt_id,
                             "category": "Individual Prompt",
+                            "source": source,
                         },
                     )
 
                     return JSONResponse([prompt])
-                elif category:
+                elif category and category.strip():
+                    if not is_valid_param(category):
+                        raise HTTPException(status_code=400, detail="Invalid category")
+
                     prompts = prompts_chat.get_prompts_with_follow_ups(
                         download_prompt=True, category=category
                     )
-                    for prompt in prompts:
+
+                    # Filter out restricted prompts
+                    from prompts.prompts import filter_downloadable_prompts
+
+                    downloadable_prompts = filter_downloadable_prompts(prompts)
+
+                    for prompt in downloadable_prompts:
                         HaivenLogger.get().analytics(
                             "Download prompt",
                             {
                                 "user_id": user_id,
                                 "prompt_id": prompt.get("identifier"),
                                 "category": category,
+                                "source": source,
                             },
                         )
 
-                    return JSONResponse(prompts)
+                    return JSONResponse(downloadable_prompts)
                 else:
-                    # Return all prompts if no prompt_id and no category provided
+                    # Return all prompts if no prompt_id and no category provided (or empty category)
                     prompts = prompts_chat.get_prompts_with_follow_ups(
                         download_prompt=True
                     )
-                    for prompt in prompts:
+
+                    # Filter out restricted prompts
+                    from prompts.prompts import filter_downloadable_prompts
+
+                    downloadable_prompts = filter_downloadable_prompts(prompts)
+
+                    for prompt in downloadable_prompts:
                         HaivenLogger.get().analytics(
                             "Download prompt",
                             {
                                 "user_id": user_id,
                                 "prompt_id": prompt.get("identifier"),
                                 "category": "all",
+                                "source": source,
                             },
                         )
 
-                    return JSONResponse(prompts)
+                    return JSONResponse(downloadable_prompts)
+            except HTTPException:
+                raise
             except Exception as error:
                 HaivenLogger.get().error(
                     str(error),
@@ -726,6 +684,7 @@ class ApiBasics(HaivenBaseApi):
                         "user_id": user_id,
                         "prompt_id": prompt_id,
                         "category": category,
+                        "source": source,
                     },
                 )
                 raise HTTPException(

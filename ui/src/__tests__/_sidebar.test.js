@@ -123,8 +123,8 @@ describe("Sidebar Component", () => {
         );
       });
 
-      expect(screen.getByText(/Delivery Management/i)).toBeInTheDocument();
-      const deliveryManagement = screen.getByText(/Delivery Management/i);
+      expect(screen.getByText(/^Delivery/i)).toBeInTheDocument();
+      const deliveryManagement = screen.getByText(/^Delivery/i);
       await act(async () => {
         deliveryManagement.click();
       });
@@ -147,9 +147,7 @@ describe("Sidebar Component", () => {
         );
       });
 
-      expect(
-        screen.queryByText(/Delivery Management/i),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Delivery/i)).not.toBeInTheDocument();
       expect(screen.queryByText(/AHM Process/i)).not.toBeInTheDocument();
     });
 
@@ -169,9 +167,7 @@ describe("Sidebar Component", () => {
         );
       });
 
-      expect(
-        screen.queryByText(/Delivery Management/i),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Delivery/i)).not.toBeInTheDocument();
       expect(screen.queryByText(/AHM Process/i)).not.toBeInTheDocument();
     });
 

@@ -42,6 +42,18 @@ models:
       api_version: ${AZURE_OPENAI_API_VERSION}
       azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4o}
       api_key: ${AZURE_OPENAI_API_KEY}
+  - id: azure-gpt-4.1
+    name: GPT-4.1 on Azure
+    provider: Azure
+    features:
+      - image-to-text
+      - text-generation
+      - stop-sequence
+    config:
+      azure_endpoint: ${AZURE_OPENAI_API_BASE}
+      api_version: ${AZURE_OPENAI_API_VERSION_GPT4.1}
+      azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4.1}
+      api_key: ${AZURE_OPENAI_API_KEY}
 
   - id: google-gemini
     name: Gemini on Google
@@ -241,3 +253,20 @@ embeddings:
     config:
       base_url: ${OLLAMA_HOST}
       model: nomic-embed-text
+=======
+
+# --- API Key Repository Configuration. To use the api-key feature, set env var API_KEY_AUTH_ENABLED=true first ---
+api_key_repository:
+  type: ${API_KEY_REPOSITORY_TYPE}  # options: file (default), firestore, db, etc.
+  pseudonymization_salt: ${API_KEY_PSEUDONYMIZATION_SALT}  # always required
+  file:
+    file_path: ${STORAGE_FILE_PATH}  # only required if type == file
+  firestore:
+    project_id: ${FIRESTORE_PROJECT_ID}  # only required if type == firestore
+    collection_name: api_keys  # optional, defaults to "api_keys"
+  db:
+  # host: ...
+  # port: ...
+  # user: ...
+  # password: ...
+  # database: ...

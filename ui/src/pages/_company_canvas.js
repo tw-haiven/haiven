@@ -19,16 +19,27 @@ import useLoader from "../hooks/useLoader";
 import HelpTooltip from "../app/_help_tooltip";
 import ChatHeader from "../pages/_chat_header";
 import { DynamicDataRenderer } from "../app/_dynamic_data_renderer";
+import LLMTokenUsage from "../app/_llm_token_usage";
+import { formattedUsage } from "../app/utils/tokenUtils";
+import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
+import { filterSSEEvents } from "../app/utils/_sse_event_filter";
 
 const { Title } = Typography;
 
-export default function CompanyCanvas({ researchConfig }) {
+export default function CompanyCanvas({
+  researchConfig,
+  featureToggleConfig = {},
+}) {
   const [companyName, setCompanyName] = useState("");
   const [companyData, setCompanyData] = useState(null);
   const [citations, setCitations] = useState([]);
   const [error, setError] = useState(null);
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [disableInput, setDisableInput] = useState(false);
+  const [tokenUsage, setTokenUsage] = useState({
+    input_tokens: 0,
+    output_tokens: 0,
+  });
 
   const handleSearch = async (input) => {
     if (!input.trim()) {
@@ -43,6 +54,7 @@ export default function CompanyCanvas({ researchConfig }) {
     setCompanyData(null);
     setCitations([]);
     setError(null);
+    setTokenUsage({ input_tokens: 0, output_tokens: 0 });
 
     const uri = `/api/research`;
 
@@ -75,6 +87,31 @@ export default function CompanyCanvas({ researchConfig }) {
         },
         onMessageHandle: (data) => {
           try {
+            // Handle token usage events first
+            if (typeof data === "string") {
+              const { text, events } = filterSSEEvents(data);
+              events.forEach((event) => {
+                if (event.type === "token_usage") {
+                  const usage = formattedUsage(event.data);
+                  setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+                }
+              });
+              // Continue with regular data processing only if there's text content
+              if (text) {
+                data = { data: text };
+              } else {
+                return; // No text content, just token usage events
+              }
+            } else if (
+              typeof data === "object" &&
+              data.type === "token_usage"
+            ) {
+              const usage = formattedUsage(data.data);
+              setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+              return; // Exit early for token usage events
+            }
+
+            // Only process data.data if it exists
             if (data.data) {
               if (data.data.startsWith("```")) {
                 data.data = data.data.substring(3);
@@ -128,6 +165,10 @@ export default function CompanyCanvas({ researchConfig }) {
         {researchConfig.title}
         <HelpTooltip text={researchConfig.description} />
       </h3>
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 

@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from tests.utils import get_test_data_path
 from knowledge.markdown import KnowledgeBaseMarkdown
-from prompts.prompts import PromptList
+from prompts.prompts import PromptList, filter_downloadable_prompts
 from unittest.mock import MagicMock
 
 TEST_KNOWLEDGE_PACK_PATH = get_test_data_path() + "/test_knowledge_pack"
@@ -163,7 +163,7 @@ def test_create_markdown_summary():
     markdown_summary = prompt_list.render_prompts_summary_markdown()
 
     expected_summary = (
-        "- **Test4**: Prompt description 4\n" "- **Test5**: Prompt description 5\n"
+        "- **Test4**: Prompt description 4\n- **Test5**: Prompt description 5\n"
     )
 
     assert expected_summary in markdown_summary
@@ -337,3 +337,114 @@ def test_attach_follow_ups_for_cards_prompt():
     expected_content = "Test cards content\n\n##OUTPUT INSTRUCTIONS: \n\nYou will respond in Markdown format. If it is an array, respond in tabular format."
     assert "content" in result_cards
     assert result_cards["content"] == expected_content
+
+
+class TestPromptList:
+    def test_attach_follow_ups_includes_download_restricted_field(self):
+        # Create a mock prompt with download_restricted field
+        mock_prompt = type(
+            "MockPrompt",
+            (),
+            {
+                "metadata": {
+                    "identifier": "test-prompt",
+                    "title": "Test Prompt",
+                    "categories": ["test"],
+                    "help_prompt_description": "Test description",
+                    "help_user_input": "Test input",
+                    "help_sample_input": "Test sample",
+                    "type": "chat",
+                    "scenario_queries": [],
+                    "editable": False,
+                    "show": True,
+                    "filename": "test",
+                    "grounded": False,
+                    "download_restricted": True,
+                    "content": "Test content",
+                }
+            },
+        )()
+
+        # Create a minimal PromptList instance for testing
+        prompt_list = PromptList.__new__(PromptList)
+        prompt_list.prompt_flows = []  # Mock empty flows
+
+        # Test the attach_follow_ups method
+        result = prompt_list.attach_follow_ups(mock_prompt)
+
+        assert "download_restricted" in result
+        assert result["download_restricted"] is True
+
+    def test_attach_follow_ups_defaults_download_restricted_to_false(self):
+        # Create a mock prompt without download_restricted field
+        mock_prompt = type(
+            "MockPrompt",
+            (),
+            {
+                "metadata": {
+                    "identifier": "test-prompt",
+                    "title": "Test Prompt",
+                    "categories": ["test"],
+                    "help_prompt_description": "Test description",
+                    "help_user_input": "Test input",
+                    "help_sample_input": "Test sample",
+                    "type": "chat",
+                    "scenario_queries": [],
+                    "editable": False,
+                    "show": True,
+                    "filename": "test",
+                    "grounded": False,
+                    "content": "Test content",
+                    # No download_restricted field
+                }
+            },
+        )()
+
+        # Create a minimal PromptList instance for testing
+        prompt_list = PromptList.__new__(PromptList)
+        prompt_list.prompt_flows = []  # Mock empty flows
+
+        # Test the attach_follow_ups method
+        result = prompt_list.attach_follow_ups(mock_prompt)
+
+        assert "download_restricted" in result
+        assert result["download_restricted"] is False
+
+    def test_filter_downloadable_prompts(self):
+        # Create test prompts with different download_restricted values
+        test_prompts = [
+            {"identifier": "prompt-1", "download_restricted": False},
+            {"identifier": "prompt-2", "download_restricted": True},
+            {"identifier": "prompt-3", "download_restricted": False},
+            {"identifier": "prompt-4", "download_restricted": True},
+            {"identifier": "prompt-5", "download_restricted": False},
+        ]
+
+        # Test the filtering function
+        filtered_prompts = filter_downloadable_prompts(test_prompts)
+
+        assert len(filtered_prompts) == 3
+        assert filtered_prompts[0]["identifier"] == "prompt-1"
+        assert filtered_prompts[1]["identifier"] == "prompt-3"
+        assert filtered_prompts[2]["identifier"] == "prompt-5"
+
+    def test_filter_downloadable_prompts_with_missing_field(self):
+        # Create test prompts with missing download_restricted field
+        test_prompts = [
+            {"identifier": "prompt-1", "download_restricted": False},
+            {"identifier": "prompt-2"},  # Missing download_restricted field
+            {"identifier": "prompt-3", "download_restricted": True},
+            {"identifier": "prompt-4"},  # Missing download_restricted field
+        ]
+
+        # Test the filtering function
+        filtered_prompts = filter_downloadable_prompts(test_prompts)
+
+        assert len(filtered_prompts) == 3
+        assert filtered_prompts[0]["identifier"] == "prompt-1"
+        assert (
+            filtered_prompts[1]["identifier"] == "prompt-2"
+        )  # Should be included (defaults to False)
+        assert (
+            filtered_prompts[2]["identifier"] == "prompt-4"
+        )  # Should be included (defaults to False)

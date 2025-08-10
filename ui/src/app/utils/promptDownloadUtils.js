@@ -40,6 +40,9 @@ export const fetchPromptContent = async (prompt) => {
   );
 
   if (!response.ok) {
+    if (response.status === 403) {
+      throw new Error("This prompt is not available for download");
+    }
     throw new Error("Failed to fetch prompt data");
   }
 

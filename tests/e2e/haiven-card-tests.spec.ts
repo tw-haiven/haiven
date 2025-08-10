@@ -1,0 +1,221 @@
+import { test, expect } from '@playwright/test';
+import { dismissModalIfPresent, waitForStreamingComplete } from './test-utils';
+
+// Test configuration
+test.describe('Haiven Card Follow-up/Exploration Feature Tests', () => {
+  test.beforeEach(async ({ page }) => {
+    // Navigate to the main application
+    await page.goto('http://localhost:8080/boba/');
+    await dismissModalIfPresent(page);
+  });
+
+  test.describe('Requirements Breakdown Page', () => {
+    test('should navigate to Requirements Breakdown page', async ({ page }) => {
+      // Navigate to Requirements Breakdown using direct URL
+      await page.goto('http://localhost:8080/boba/cards?prompt=requirements-breakdown-3a845a85');
+      await page.waitForLoadState('networkidle');
+      
+      // Verify we're on the correct page
+      await expect(page.getByRole('heading', { name: 'Requirements Breakdown' })).toBeVisible();
+    });
+
+    test('should generate initial cards with valid input', async ({ page }) => {
+      // Navigate to Requirements Breakdown using direct URL
+      await page.goto('http://localhost:8080/boba/cards?prompt=requirements-breakdown-3a845a85');
+      await page.waitForLoadState('networkidle');
+
+      // Enter test input
+      const testInput = 'Create a mobile banking app for millennials that allows users to transfer money, pay bills, and track spending. The app should be secure, user-friendly, and integrate with existing banking systems.';
+      await page.fill('textarea, input[type="text"]', testInput);
+      
+      // Click send button
+      await page.click('button:has-text("SEND")');
+      
+      // Wait for streaming to complete
+      await waitForStreamingComplete(page);
+      
+      // Wait for any generated content to appear - more flexible approach
+      await page.waitForFunction(() => {
+        // Check for various card patterns or substantial generated content
+        const allText = document.body.textContent || '';
+        const hasUserStoryPattern = allText.includes('As a') || allText.includes('I want') || allText.includes('so that');
+        const hasCards = document.querySelectorAll('.ant-card, [data-testid="card"], .card').length > 0;
+        const hasSubstantialContent = allText.length > 500;
+        return hasUserStoryPattern || hasCards || hasSubstantialContent;
+      }, { timeout: 30000 });
+      
+      // Verify cards are displayed - use more robust selectors
+      const cards = await page.locator('.ant-card, [data-testid="card"], .card, div:has-text("As a"), div:has-text("I want"), div:has-text("so that")').count();
+      expect(cards).toBeGreaterThan(0);
+    });
+
+    test('should test individual card controls', async ({ page }) => {
+      // Navigate to Requirements Breakdown using direct URL
+      await page.goto('http://localhost:8080/boba/cards?prompt=requirements-breakdown-3a845a85');
+      await page.waitForLoadState('networkidle');
+
+      const testInput = 'Create a mobile banking app for millennials that allows users to transfer money, pay bills, and track spending.';
+      await page.fill('textarea, input[type="text"]', testInput);
+      await page.click('button:has-text("SEND")');
+      
+      // Wait for streaming to complete
+      await waitForStreamingComplete(page);
+      
+      // Test individual card controls - click the first icon button on the first card
+      const firstCardButton = page.locator('button').filter({ hasText: /Chat with Haiven|Explore scenario/ }).first();
+      if (await firstCardButton.isVisible()) {
+        await firstCardButton.click();
+        
+        // Wait for dialog to appear
+        await page.waitForSelector('div[role="dialog"]', { timeout: 5000 });
+        
+        // Verify dialog content exists
+        const dialogTitle = page.locator('div[role="dialog"] h2');
+        const dialogExists = await dialogTitle.count() > 0;
+        expect(dialogExists).toBeTruthy();
+        
+        // Close dialog if close button is visible (note: may be blocked by overlapping elements)
+        const closeButton = page.locator('div[role="dialog"] button:has-text("Close")');
+        if (await closeButton.isVisible()) {
+          await closeButton.click();
+        }
+      }
+    });
+
+    test('should test COPY ALL functionality', async ({ page }) => {
+      // Navigate to Requirements Breakdown using direct URL
+      await page.goto('http://localhost:8080/boba/cards?prompt=requirements-breakdown-3a845a85');
+      await page.waitForLoadState('networkidle');
+
+      const testInput = 'Create a mobile banking app for millennials that allows users to transfer money, pay bills, and track spending.';
+      await page.fill('textarea, input[type="text"]', testInput);
+      await page.click('button:has-text("SEND")');
+      
+      // Wait for streaming to complete
+      await waitForStreamingComplete(page);
+      
+      // Click "COPY ALL" button
+      await page.click('button:has-text("COPY ALL")');
+      
+      // Verify the button exists and is clickable
+      await expect(page.locator('button:has-text("COPY ALL")')).toBeVisible();
+    });
+
+    test('should enrich cards with BDD Scenario', async ({ page }) => {
+      // Navigate to Requirements Breakdown using direct URL
+      await page.goto('http://localhost:8080/boba/cards?prompt=requirements-breakdown-3a845a85');
+      await page.waitForLoadState('networkidle');
+
+      const testInput = 'Create a mobile banking app for millennials that allows users to transfer money, pay bills, and track spending.';
+      await page.fill('textarea, input[type="text"]', testInput);
+      await page.click('button:has-text("SEND")');
+      
+      // Wait for streaming to complete
+      await waitForStreamingComplete(page);
+      
+      // Click BDD Scenario suggestion
+      await page.click('button:has-text("BDD Scenario")');
+      
+      // Click ENRICH CARDS
+      await page.click('button:has-text("ENRICH CARDS")');
+      
+      // Wait for enrichment to complete
+      await page.waitForTimeout(10000);
+      
+      // Verify enriched cards have BDD scenarios
+      const enrichedCards = await page.locator('.ant-card, [data-testid="card"], .card, div:has-text("BDD Scenario:"), div:has-text("Given"), div:has-text("When"), div:has-text("Then")').count();
+      expect(enrichedCards).toBeGreaterThan(0);
+    });
+
+    test('should enrich cards with "What might fail"', async ({ page }) => {
+      // Navigate to Requirements Breakdown using direct URL
+      await page.goto('http://localhost:8080/boba/cards?prompt=requirements-breakdown-3a845a85');
+      await page.waitForLoadState('networkidle');
+
+      const testInput = 'Create a mobile banking app for millennials that allows users to transfer money, pay bills, and track spending.';
+      await page.fill('textarea, input[type="text"]', testInput);
+      await page.click('button:has-text("SEND")');
+      
+      // Wait for streaming to complete
+      await waitForStreamingComplete(page);
+      
+      // Click "What might fail" suggestion
+      await page.click('button:has-text("What might fail")');
+      await page.click('button:has-text("ENRICH CARDS")');
+      
+      // Wait for enrichment to complete
+      await page.waitForTimeout(10000);
+      
+      // Verify failure scenarios are added - use a simpler approach
+      const enrichedCards = await page.locator('.ant-card, [data-testid="card"], .card, div:has-text("fail"), div:has-text("error"), div:has-text("exception"), div:has-text("invalid"), div:has-text("timeout")').count();
+      expect(enrichedCards).toBeGreaterThan(0);
+    });
+
+    test('should enrich cards with custom input', async ({ page }) => {
+      // Navigate to Requirements Breakdown using direct URL
+      await page.goto('http://localhost:8080/boba/cards?prompt=requirements-breakdown-3a845a85');
+      await page.waitForLoadState('networkidle');
+
+      const testInput = 'Create a mobile banking app for millennials that allows users to transfer money, pay bills, and track spending.';
+      await page.fill('textarea, input[type="text"]', testInput);
+      await page.click('button:has-text("SEND")');
+      
+      // Wait for streaming to complete
+      await waitForStreamingComplete(page);
+      
+      // Enter custom enrichment text
+      await page.fill('input[type="text"]', 'Add acceptance criteria');
+      await page.click('button:has-text("ENRICH CARDS")');
+      
+      // Wait for enrichment to complete
+      await page.waitForTimeout(10000);
+      
+      // Verify custom enrichment is applied
+      const enrichedCards = await page.locator('.ant-card, [data-testid="card"], .card, div:has-text("acceptance criteria")').count();
+      expect(enrichedCards).toBeGreaterThan(0);
+    });
+
+    test('should disable "Generate More Cards" after enrichment', async ({ page }) => {
+      // Navigate to Requirements Breakdown using direct URL
+      await page.goto('http://localhost:8080/boba/cards?prompt=requirements-breakdown-3a845a85');
+      await page.waitForLoadState('networkidle');
+
+      const testInput = 'Create a mobile banking app for millennials that allows users to transfer money, pay bills, and track spending.';
+      await page.fill('textarea, input[type="text"]', testInput);
+      await page.click('button:has-text("SEND")');
+      
+      // Wait for streaming to complete
+      await waitForStreamingComplete(page);
+      
+      // Verify "Generate More Cards" button is visible
+      await expect(page.locator('button:has-text("GENERATE MORE CARDS")')).toBeVisible();
+      
+      // Perform enrichment
+      await page.click('button:has-text("BDD Scenario")');
+      await page.click('button:has-text("ENRICH CARDS")');
+      
+      // Wait for enrichment to complete
+      await page.waitForTimeout(10000);
+      
+      // Verify "Generate More Cards" is now disabled
+      await expect(page.locator('button:has-text("GENERATE MORE CARDS")')).toBeDisabled();
+    });
+
+    test('should show warning message about enrichment', async ({ page }) => {
+      // Navigate to Requirements Breakdown using direct URL
+      await page.goto('http://localhost:8080/boba/cards?prompt=requirements-breakdown-3a845a85');
+      await page.waitForLoadState('networkidle');
+
+      // Fill in test input and send to get to the enrichment section
+      const testInput = 'Create a mobile banking app for millennials that allows users to transfer money, pay bills, and track spending.';
+      await page.fill('textarea, input[type="text"]', testInput);
+      await page.click('button:has-text("SEND")');
+      
+      // Wait for streaming to complete
+      await waitForStreamingComplete(page);
+
+      // Verify warning message is displayed - use the exact text we saw in exploration
+      await expect(page.locator('text=Clicking \'Enrich Cards\' will disable the \'Generate More Cards\' button.')).toBeVisible();
+    });
+  });
+}); 
