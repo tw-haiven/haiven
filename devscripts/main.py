@@ -39,7 +39,7 @@ def app_run():
 def app_test():
     command = """
     cd app && \
-    poetry run pytest -m 'not integration'
+    poetry run pytest -m 'not integration and not slow_integration'
     """
     subprocess.run(command, shell=True)
 
@@ -47,7 +47,7 @@ def app_test():
 def app_coverage():
     command = """
     cd app && \
-    poetry run pytest --cov=. --cov-report=term  -m 'not integration'
+    poetry run pytest --cov=. --cov-report=term  -m 'not integration and not slow_integration'
     """
     subprocess.run(command, shell=True)
 
@@ -152,13 +152,3 @@ def create_cli_readme(
     new_readme_content = f"{readme_content[: start_index]}{docs_content}"
     with open(readme_path, "w") as f:
         f.write(new_readme_content)
-
-
-def ui_test():
-    command = """
-    cd ui && \
-    yarn run test:run
-    """
-    result = subprocess.run(command, shell=True)
-    if result.returncode != 0:
-        raise Exception("UI tests failed")

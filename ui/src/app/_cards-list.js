@@ -15,6 +15,7 @@ import MarkdownRenderer from "./_markdown_renderer";
 const { TextArea } = Input;
 
 const CardsList = ({
+  showBiggerCards = false,
   progress,
   isGenerating,
   scenarios,
@@ -122,7 +123,7 @@ const CardsList = ({
                       ? listIndex + "-" + scenarioIndex
                       : scenarioIndex
                   }
-                  className="scenario"
+                  className={showBiggerCards ? "scenario-big" : "scenario"}
                   extra={
                     onDelete && (
                       <Tooltip title="Remove" key="chat">

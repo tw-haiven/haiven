@@ -4,7 +4,12 @@ import { useSearchParams } from "next/navigation";
 import PromptChat from "../app/_prompt_chat";
 import { getInspirationById } from "../app/_boba_api";
 
-const KnowledgeChatPage = ({ prompts, documents, models }) => {
+const KnowledgeChatPage = ({
+  prompts,
+  documents,
+  models,
+  featureToggleConfig,
+}) => {
   const [promptId, setPromptId] = useState();
   const [initialInput, setInitialInput] = useState("");
   const searchParams = useSearchParams();
@@ -34,6 +39,7 @@ const KnowledgeChatPage = ({ prompts, documents, models }) => {
       pageIntro="Ask anything! You can also upload a document and ask questions about its content."
       headerTooltip={false}
       inputTooltip={false}
+      featureToggleConfig={featureToggleConfig}
     />
   );
 };

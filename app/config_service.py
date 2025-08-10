@@ -216,6 +216,67 @@ class ConfigService:
                     default_chat_model = "ollama-local-llama3"
         return default_chat_model
 
+    def load_api_key_repository_type(self) -> str:
+        repo_config = self.data.get("api_key_repository", {})
+        repo_type = repo_config.get("type")
+        if not repo_type:
+            raise ValueError("api_key_repository.type is required in config.")
+        return repo_type
+
+    def load_api_key_repository_file_path(self) -> str:
+        repo_config = self.data.get("api_key_repository", {})
+        repo_type = repo_config.get("type")
+        if repo_type != "file":
+            raise ValueError("File path is only required for file-based repositories.")
+        file_cfg = repo_config.get("file", {})
+        file_path = file_cfg.get("file_path")
+        if not file_path:
+            raise ValueError(
+                "api_key_repository.file.file_path is required when type is 'file'."
+            )
+        return file_path
+
+    def load_api_key_pseudonymization_salt(self) -> str:
+        repo_config = self.data.get("api_key_repository", {})
+        salt = repo_config.get("pseudonymization_salt")
+        if not salt:
+            raise ValueError(
+                "api_key_repository.pseudonymization_salt is required in config or environment variable."
+            )
+        return salt
+
+    def load_firestore_project_id(self) -> str:
+        """Load the Firestore project ID from configuration."""
+        repo_config = self.data.get("api_key_repository", {})
+        if repo_config.get("type") != "firestore":
+            raise ValueError(
+                "Firestore configuration is only required when type is 'firestore'."
+            )
+
+        firestore_config = repo_config.get("firestore", {})
+        project_id = firestore_config.get("project_id")
+        if not project_id:
+            raise ValueError(
+                "api_key_repository.firestore.project_id is required when type is 'firestore'."
+            )
+        return project_id
+
+    def load_firestore_collection_name(self) -> str:
+        """Load the Firestore collection name from configuration."""
+        repo_config = self.data.get("api_key_repository", {})
+        if repo_config.get("type") != "firestore":
+            raise ValueError(
+                "Firestore configuration is only required when type is 'firestore'."
+            )
+
+        firestore_config = repo_config.get("firestore", {})
+        collection_name = firestore_config.get("collection_name", "api_keys")
+        return collection_name
+
+    def is_api_key_auth_enabled(self) -> bool:
+        """Check if API key authentication is enabled via feature toggle."""
+        return os.getenv("API_KEY_AUTH_ENABLED", "false").lower() == "true"
+
     def _load_yaml(self, path: str) -> dict:
         """
         Load YAML data from a config file.

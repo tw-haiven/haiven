@@ -3,10 +3,14 @@ import { Menu } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { initialiseMenuCategoriesForSidebar } from "../app/_navigation_items";
-import { isFeatureEnabled, FEATURES } from "../app/feature_toggle";
+import { RiGlobalLine } from "react-icons/ri";
+import {
+  initialiseMenuCategoriesForSidebar,
+  THOUGHTWORKS_ONLY_CATEGORIES,
+} from "../app/_navigation_items";
+import { FEATURES } from "../app/feature_toggle";
 
-const Sidebar = ({ prompts }) => {
+const Sidebar = ({ prompts, featureToggleConfig }) => {
   const pathToKey = {
     "/scenarios": "scenarios",
     "/creative-matrix": "creative-matrix",
@@ -24,21 +28,40 @@ const Sidebar = ({ prompts }) => {
   };
 
   useEffect(() => {
-    const menuCategories = initialiseMenuCategoriesForSidebar();
+    const isThoughtworksInstance =
+      featureToggleConfig[FEATURES.THOUGHTWORKS] === true;
+    const menuCategories = initialiseMenuCategoriesForSidebar(
+      isThoughtworksInstance,
+    );
 
     prompts
       .filter((prompt) => prompt.show !== false)
       .filter((prompt) => {
-        if (prompt.categories.includes("deliveryManagement")) {
-          return isFeatureEnabled(FEATURES.FEATURE_DELIVERY_MANAGEMENT);
+        if (
+          prompt.categories.some((category) =>
+            THOUGHTWORKS_ONLY_CATEGORIES.includes(category),
+          )
+        ) {
+          return isThoughtworksInstance;
         }
         return true;
       })
       .forEach((prompt) => {
         const url = typeToUrlMap[prompt.type] || "/chat";
         prompt.categories.forEach((category) => {
+          // For categories that are Thoughtworks-only - if they are not available, do not add to "Other"
+          if (
+            THOUGHTWORKS_ONLY_CATEGORIES.includes(category) &&
+            !isThoughtworksInstance
+          ) {
+            return;
+          }
           const menuCategory =
             menuCategories[category] || menuCategories["other"];
+          // Skip if this is a group or divider type category
+          if (menuCategory.type === "divider" || menuCategory.type === "group")
+            return;
+
           menuCategory.children.push({
             key: category + "-" + prompt.identifier,
             label: (
@@ -46,6 +69,16 @@ const Sidebar = ({ prompts }) => {
                 href={`${url}?prompt=${prompt.identifier}`}
                 className="submenu-entry"
               >
+                {prompt.grounded && (
+                  <RiGlobalLine
+                    style={{
+                      marginTop: "-2px",
+                      marginRight: "4px",
+                      fontSize: "0.8rem",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                )}
                 {prompt.title}
               </Link>
             ),
@@ -55,11 +88,23 @@ const Sidebar = ({ prompts }) => {
 
     const finalMenuItems = [];
     Object.keys(menuCategories).forEach((key) => {
-      if (!menuCategories[key].children) {
+      // Handle divider or group type categories
+      if (
+        menuCategories[key].type === "divider" ||
+        menuCategories[key].type === "group"
+      ) {
+        finalMenuItems.push(menuCategories[key]);
+      } else if (!menuCategories[key].children) {
         finalMenuItems.push(menuCategories[key]);
       } else if (menuCategories[key].children.length > 0) {
         menuCategories[key].children.sort((a, b) => {
-          return a.label.props.children.localeCompare(b.label.props.children);
+          const aText = Array.isArray(a.label.props.children)
+            ? a.label.props.children[a.label.props.children.length - 1]
+            : a.label.props.children;
+          const bText = Array.isArray(b.label.props.children)
+            ? b.label.props.children[b.label.props.children.length - 1]
+            : b.label.props.children;
+          return aText.localeCompare(bText);
         });
         finalMenuItems.push(menuCategories[key]);
       }

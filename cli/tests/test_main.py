@@ -1,7 +1,6 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from unittest.mock import patch, MagicMock, PropertyMock
 from haiven_cli.main import (
-    create_context,
     index_file,
     index_all_files,
     init,
@@ -174,23 +173,3 @@ class TestMain:
         set_env_path(env_path)
 
         cli_config_service.set_env_path.assert_called_once_with(env_path)
-
-    @patch("haiven_cli.main.FileService")
-    def test_create_context(self, mock_file_service):
-        context_name = "context_name"
-        parent_dir = "parent_dir"
-
-        file_service = MagicMock()
-        mock_file_service.return_value = file_service
-
-        create_context(context_name, parent_dir)
-
-        file_service.create_context_structure.assert_called_once_with(
-            context_name, parent_dir
-        )
-        file_service.write_architecture_file.assert_called_once_with(
-            f"{parent_dir}/contexts/{context_name}/architecture.md"
-        )
-        file_service.write_business_context_file.assert_called_once_with(
-            f"{parent_dir}/contexts/{context_name}/business_context.md"
-        )

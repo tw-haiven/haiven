@@ -69,8 +69,6 @@ class ApiMultiStep(HaivenBaseApi):
                 rendered_prompt, _ = prompts.render_prompt(
                     prompt_choice=prompt_data.promptid,
                     user_input=user_input,
-                    additional_vars={},
-                    warnings=[],
                 )
 
                 return stream_fn(

@@ -17,6 +17,11 @@ import {
   getSortedUserContexts,
   getSummaryForTheUserContext,
 } from "./_local_store";
+import DownloadPrompt from "./_download_prompt";
+import LLMTokenUsage from "./_llm_token_usage";
+import { formattedUsage } from "../app/utils/tokenUtils";
+import { aggregateTokenUsage } from "./utils/_aggregate_token_usage";
+import { filterSSEEvents } from "./utils/_sse_event_filter";
 
 const PromptChat = ({
   promptId,
@@ -30,6 +35,7 @@ const PromptChat = ({
   pageTitle,
   pageIntro,
   initialInput = "",
+  featureToggleConfig = {},
 }) => {
   const chatRef = useRef();
 
@@ -46,6 +52,11 @@ const PromptChat = ({
   const [usePromptId, setUsePromptId] = useState(true);
   const [placeholder, setPlaceholder] = useState("");
   const [allContexts, setAllContexts] = useState([]);
+  // Aggregate token usage per page
+  const [tokenUsage, setTokenUsage] = useState({
+    input_tokens: 0,
+    output_tokens: 0,
+  });
 
   const MAX_COUNT = 3;
   function combineAllContexts(contexts) {
@@ -67,6 +78,9 @@ const PromptChat = ({
       chatRef.current.setPromptValue(initialInput);
     }
     combineAllContexts(contexts);
+
+    // Reset token usage aggregation on mount (page load)
+    setTokenUsage({ input_tokens: 0, output_tokens: 0 });
 
     const handleStorageChange = () => {
       combineAllContexts(contexts);
@@ -132,11 +146,12 @@ const PromptChat = ({
 
   const submitPromptToBackend = async (messages) => {
     const lastMessage = messages[messages.length - 1];
-    let requestData;
+
+    let requestBody;
     if (!conversationStarted) {
-      requestData = buildFirstChatRequestBody(lastMessage?.content);
+      requestBody = buildFirstChatRequestBody(lastMessage?.content);
     } else {
-      requestData = {
+      requestBody = {
         userinput: lastMessage?.content,
         chatSessionId: chatSessionId,
         ...(selectedDocuments !== "base" && { document: selectedDocuments }),
@@ -150,16 +165,14 @@ const PromptChat = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
         const errorBody = await response.json();
         const detailedErrorMessage =
           errorBody.detail || "An unknown error occurred.";
-        const errorMessage = `ERROR: ${detailedErrorMessage}`;
-
-        throw new Error(errorMessage);
+        throw new Error(`ERROR: ${detailedErrorMessage}`);
       }
 
       const chatId = response.headers.get("X-Chat-ID");
@@ -170,7 +183,52 @@ const PromptChat = ({
         setChatSessionId(chatId);
       }
 
-      return response;
+      // Create a stream that filters out token usage events and extracts clean content for ProChat
+      const sseStream = new ReadableStream({
+        start(controller) {
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = "";
+
+          function pump() {
+            return reader.read().then(({ done, value }) => {
+              if (done) {
+                controller.close();
+                return;
+              }
+
+              const chunk = decoder.decode(value, { stream: true });
+              buffer += chunk;
+
+              // Use the reusable filterSSEEvents utility
+              const { text, events } = filterSSEEvents(buffer);
+              // Send clean text to ProChat
+              if (text) {
+                controller.enqueue(new TextEncoder().encode(text));
+              }
+              // Handle token usage events
+              events.forEach((event) => {
+                if (event.type === "token_usage") {
+                  const usage = formattedUsage(event.data);
+                  setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+                }
+              });
+              buffer = "";
+
+              return pump();
+            });
+          }
+
+          return pump();
+        },
+      });
+
+      // Return new response with filtered stream
+      return new Response(sseStream, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+      });
     } catch (error) {
       toast.error(error.message);
     }
@@ -272,7 +330,6 @@ const PromptChat = ({
     <div className="title">
       <h3>
         {selectedPrompt?.title || pageTitle}
-
         <HelpTooltip
           text={
             selectedPrompt?.help_prompt_description ||
@@ -281,6 +338,11 @@ const PromptChat = ({
           testid="page-title-tooltip"
         />
       </h3>
+      {selectedPrompt && <DownloadPrompt prompt={selectedPrompt} />}
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 

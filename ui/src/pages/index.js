@@ -7,12 +7,16 @@ import {
   getDisclaimerAndGuidelines,
   getInspirations,
 } from "../app/_boba_api";
-import { staticFeaturesForDashboard } from "../app/_navigation_items";
+import {
+  initialiseMenuCategoriesForSidebar,
+  staticFeaturesForDashboard,
+} from "../app/_navigation_items";
 import DisclaimerPopup from "../app/_disclaimer_popup";
 import { RiBookShelfLine } from "react-icons/ri";
 import { MdLightbulb } from "react-icons/md";
-import { getFeatureToggleConfiguration } from "../app/_local_store";
 import ReactMarkdown from "react-markdown";
+import { initializeLocalStorage } from "../app/_local_store";
+import { FEATURES, getFeatureTogglesAsJson } from "../app/feature_toggle";
 
 export default function ChatDashboard() {
   const [prompts, setPrompts] = useState([]);
@@ -68,6 +72,14 @@ export default function ChatDashboard() {
   }
 
   useEffect(() => {
+    initializeLocalStorage();
+
+    getFeatureTogglesAsJson().then((data) => {
+      setFeatureToggleConfig(data || {});
+    });
+  }, []);
+
+  useEffect(() => {
     const typeToUrlMap = {
       chat: "/chat",
       cards: "/cards",
@@ -84,9 +96,21 @@ export default function ChatDashboard() {
       }
     });
 
+    const activeCategories = Object.keys(
+      initialiseMenuCategoriesForSidebar(
+        featureToggleConfig[FEATURES.THOUGHTWORKS] === true,
+      ),
+    );
+
     getPrompts((data) => {
       data = data
         .filter((prompt) => prompt.show !== false)
+        .filter((prompt) => {
+          const includePrompt = activeCategories.some((category) =>
+            prompt.categories.includes(category),
+          );
+          return includePrompt;
+        })
         .map((prompt) => {
           const url = typeToUrlMap[prompt.type] || "/chat";
           prompt.link = `${url}?prompt=${prompt.identifier}`;
@@ -127,13 +151,10 @@ export default function ChatDashboard() {
       setSelectedCategories(categories);
     });
 
-    const toggleConfig = getFeatureToggleConfiguration() || "{}";
-    setFeatureToggleConfig(JSON.parse(toggleConfig));
-
     getInspirations((data) => {
       setInspirations(data);
     });
-  }, []);
+  }, [featureToggleConfig]);
 
   useEffect(() => {
     if (selectedCategories.length === 0) {

@@ -18,14 +18,31 @@
         },
 
         {
-            "name": "App: Main",
+            "name": "App: Main (Thoughtworks)",
             "type": "debugpy",
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "cwd": "${workspaceFolder}/app",
-            "python": "${workspaceFolder}/app/.venv/bin/python"
+            "python": "${workspaceFolder}/app/.venv/bin/python",
+            "env": {
+                "THOUGHTWORKS_INSTANCE": "true"
+            }
+        },
+
+        {
+            "name": "App: Main (Plain)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}/app",
+            "python": "${workspaceFolder}/app/.venv/bin/python",
+            "env": {
+                "THOUGHTWORKS_INSTANCE": "false"
+            }
         },
 
         {

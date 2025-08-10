@@ -15,7 +15,7 @@ import {
   getDocuments,
   getModels,
 } from "../app/_boba_api";
-import { getFeatureToggleConfiguration } from "../app/_local_store";
+import { getFeatureTogglesAsJson } from "../app/feature_toggle";
 
 export default function App({
   Component,
@@ -59,8 +59,11 @@ export default function App({
     getModels(setModels);
     initializeLocalStorage();
 
-    const toggleConfig = getFeatureToggleConfiguration() || "{}";
-    setFeatureToggleConfig(JSON.parse(toggleConfig));
+    const fetchToggles = async () => {
+      const toggles = await getFeatureTogglesAsJson();
+      setFeatureToggleConfig(toggles || {});
+    };
+    fetchToggles();
   }, []);
 
   return (
@@ -146,7 +149,7 @@ export default function App({
               width: "100%",
             }}
           >
-            <Header />
+            <Header featureToggleConfig={featureToggleConfig} />
           </Layout.Header>
           <Layout style={{ marginTop: "64px", flex: 1, overflow: "hidden" }}>
             <Layout.Sider
@@ -160,6 +163,7 @@ export default function App({
                 selectedKey={selectedKey}
                 collapse={true}
                 prompts={prompts}
+                featureToggleConfig={featureToggleConfig}
               />
             </Layout.Sider>
             <Layout.Content style={{ overflow: "auto", background: "white" }}>

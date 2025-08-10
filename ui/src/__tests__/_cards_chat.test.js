@@ -17,6 +17,9 @@ vi.mock("../app/_fetch_sse");
 import { getRenderedPrompt } from "../app/_boba_api";
 import { saveContext } from "../app/_local_store";
 
+// Import real response data
+import cardsResponseData from "./test_data/cards_response_with_citations.json";
+
 const localStorageMock = (() => {
   let store = {};
   return {
@@ -71,13 +74,11 @@ const mockContexts = [
   { value: "context1", label: "Context 1" },
   { value: "context2", label: "Context 2" },
 ];
-const mockModels = [
-  {
-    chat: "Chat Model",
-    vision: "Vision Model ",
-    embeddings: "Embeddings Model",
-  },
-];
+const mockModels = {
+  chat: { name: "Chat Model" },
+  vision: { name: "Vision Model" },
+  embeddings: { name: "Embeddings Model" },
+};
 
 const mockFeatureToggleConfig = {
   cards_iteration: true,
@@ -249,7 +250,7 @@ describe("CardsChat Component", () => {
 
     const thenFollowUpPromptRequestHappens = (bodyString) => {
       const body = JSON.parse(bodyString);
-      expect(body.userinput).toBe(someUserInput);
+      expect(body.userinput).toBe("Here is my prompt input ");
       expect(body.promptid).toBe(mockPrompts[0].followUps[0].identifier);
       expect(body.scenarios.length).toBe(someScenarios.length);
       expect(body.scenarios[0].title).toBe(someScenarios[0].title);
@@ -706,5 +707,175 @@ describe("CardsChat Component", () => {
         );
       });
     });
+  });
+});
+
+describe("CardsChat special prompt logic (grounded research)", () => {
+  const groundedResearchPrompt = {
+    identifier: "grounded-research-123",
+    value: "grounded-research-123",
+    title: "Company Research",
+    label: "Company Research",
+    help_prompt_description: "Help description for company research",
+    help_user_input: "Help input for company research",
+    help_sample_input: "Sample input for company research",
+    grounded: true,
+    followUps: [
+      {
+        identifier: "followUp1",
+        title: "Follow Up 1",
+        help_prompt_description: "Follow Up 1 Description",
+      },
+    ],
+  };
+
+  const groundedResearchEvolutionPrompt = {
+    identifier: "company-research-product-evolution-456",
+    value: "company-research-product-evolution-456",
+    title: "Company Research Product Evolution",
+    label: "Company Research Product Evolution",
+    help_prompt_description: "Help description for company research evolution",
+    help_user_input: "Help input for company research evolution",
+    help_sample_input: "Sample input for company research evolution",
+    grounded: true,
+    followUps: [
+      {
+        identifier: "followUp2",
+        title: "Evolution Follow Up",
+        help_prompt_description: "Evolution Follow Up Description",
+      },
+    ],
+  };
+
+  it("should use Perplexity AI model name for grounded research prompts", async () => {
+    await act(async () => {
+      render(
+        <CardsChat
+          promptId={groundedResearchPrompt.identifier}
+          prompts={[groundedResearchPrompt]}
+          contexts={mockContexts}
+          models={mockModels}
+          featureToggleConfig={mockFeatureToggleConfig}
+        />,
+      );
+    });
+
+    const modelNameElement = screen.getByText("Perplexity AI");
+    expect(modelNameElement).toBeInTheDocument();
+  });
+
+  it("should use provided model name for non-grounded research prompts", async () => {
+    await act(async () => {
+      render(
+        <CardsChat
+          promptId="some-other-prompt"
+          prompts={[mockPrompts[0]]}
+          contexts={mockContexts}
+          models={mockModels}
+          featureToggleConfig={mockFeatureToggleConfig}
+        />,
+      );
+    });
+
+    const modelNameElement = screen.getByText("Chat Model");
+    expect(modelNameElement).toBeInTheDocument();
+  });
+
+  it("should show special follow-up input for product evolution prompts", async () => {
+    fetchSSE.mockImplementationOnce((url, options, { onMessageHandle }) => {
+      const scenarioString = JSON.stringify(someScenarios);
+      onMessageHandle({ data: scenarioString }, mockResponseHeadersWithChatId);
+    });
+    await act(async () => {
+      render(
+        <CardsChat
+          promptId={groundedResearchEvolutionPrompt.identifier}
+          prompts={[groundedResearchEvolutionPrompt]}
+          contexts={mockContexts}
+          models={mockModels}
+          featureToggleConfig={mockFeatureToggleConfig}
+        />,
+      );
+    });
+    givenUserInput(someUserInput);
+    await whenSendIsClicked();
+    // Expand follow-up
+    const followUpCollapse = await screen.findByTestId("follow-up-collapse");
+    const followUpTitle = groundedResearchEvolutionPrompt.followUps[0].title;
+    fireEvent.click(within(followUpCollapse).getByText(followUpTitle));
+    // Should see the special input placeholder for product evolution
+    expect(
+      screen.getByPlaceholderText(
+        /Provide an overview of the account's product/i,
+      ),
+    ).toBeInTheDocument();
+  });
+});
+
+describe("Real API Response Tests", () => {
+  it("should display citations when response contains metadata", async () => {
+    // Mock fetchSSE to return response with citations
+    fetchSSE.mockImplementation((url, options, handlers) => {
+      const mockResponse = {
+        headers: {
+          get: (header) => {
+            if (header === "X-Chat-ID") return "test-chat-id";
+            return null;
+          },
+        },
+      };
+
+      setTimeout(() => {
+        // Send the data chunks
+        cardsResponseData.forEach((chunk, index) => {
+          if (chunk.metadata) {
+            handlers.onMessageHandle(chunk, mockResponse);
+          } else if (chunk.data) {
+            handlers.onMessageHandle(chunk, mockResponse);
+          }
+        });
+
+        handlers.onFinish();
+      }, 100);
+    });
+
+    await act(async () => {
+      render(
+        <CardsChat
+          promptId="test-prompt"
+          prompts={[mockPrompts[0]]}
+          contexts={mockContexts}
+          models={mockModels}
+          featureToggleConfig={mockFeatureToggleConfig}
+        />,
+      );
+    });
+
+    // Wait for the input field to be available
+    const inputField = await screen.findByTestId("user-input-text-area");
+    expect(inputField).toBeVisible();
+
+    fireEvent.change(inputField, {
+      target: { value: "Test company research" },
+    });
+
+    const sendButton = screen.getByText("SEND");
+    fireEvent.click(sendButton);
+
+    // Verify citations are displayed
+    await waitFor(() => {
+      expect(screen.getByText("Sources")).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getByText(
+        "https://doc.irasia.com/listco/hk/lenovo/annual/2025/res.pdf",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "https://investor.lenovo.com/en/financial/results/press_2425_q4.pdf",
+      ),
+    ).toBeInTheDocument();
   });
 });

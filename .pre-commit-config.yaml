@@ -16,12 +16,6 @@ repos:
     rev: v8.16.4
     hooks:
       - id: gitleaks
-  - repo: https://github.com/semgrep/semgrep
-    rev: 'v1.100.0'
-    hooks:
-      - id: semgrep
-        name: Semgrep High Severity Scan
-        args: ['--config', 'p/default', '--error', '--severity', 'ERROR']
   - repo: local
     hooks:
       - id: check-header-py

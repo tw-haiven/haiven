@@ -9,6 +9,13 @@ from knowledge.markdown import KnowledgeBaseMarkdown
 from knowledge_manager import KnowledgeManager
 
 
+def filter_downloadable_prompts(prompts):
+    """Filter out prompts that have download_restricted=True"""
+    return [
+        prompt for prompt in prompts if not prompt.get("download_restricted", False)
+    ]
+
+
 class PromptList:
     def __init__(
         self,
@@ -41,7 +48,9 @@ class PromptList:
             [f for f in os.listdir(directory) if f.endswith(".md") and f != "README.md"]
         )
         self.prompts = [
-            frontmatter.load(os.path.join(directory, filename))
+            self.add_filename_to_metadata(
+                frontmatter.load(os.path.join(directory, filename)), filename
+            )
             for filename in prompt_files
         ]
 
@@ -60,6 +69,10 @@ class PromptList:
                 prompt.metadata["editable"] = False
             if "show" not in prompt.metadata:
                 prompt.metadata["show"] = True
+            if "grounded" not in prompt.metadata:
+                prompt.metadata["grounded"] = False
+            if "download_restricted" not in prompt.metadata:
+                prompt.metadata["download_restricted"] = False
 
         self.prompt_flows = self.load_prompt_flows(
             os.path.join(directory, "prompt_flows.yaml")
@@ -91,31 +104,30 @@ class PromptList:
         prompt_text = prompt_data.content
 
         variables = ["user_input"] + self.extra_variables
-
+        if prompt_data.metadata.get("type") == "cards":
+            prompt_text = (
+                prompt_text
+                + "\n\n##OUTPUT INSTRUCTIONS: \n\n"
+                + "Stricty, You will respond ONLY the above mentioned JSON format without any surrounding data or text or quotes. \n\n"
+                + "Strictly don't prefix or suffix the JSON format with explanation, comments, or Markdown formatting (such as triple backticks) or any text or anything.\n\n"
+                + 'Do not wrap the output JSON inside another object or field like "data" or "result".'
+            )
         return PromptTemplate(input_variables=variables, template=prompt_text)
 
     def create_and_render_template(
         self,
         identifier,
         variables,
-        warnings=None,
     ):
         knowledge_and_input = {**variables}
 
         template = self.create_template(identifier)
-        # template.get_input_schema()
-        # template.dict()
 
-        # make sure all input variables are present for template rendering (as it will otherwise fail)
         for key in template.input_variables:
             if key not in knowledge_and_input:
                 knowledge_and_input[str(key)] = (
                     "None provided, please try to help without this information."  # placeholder for the prompt
                 )
-                if key != "user_input":
-                    message = f"No context selected, no '{key}' added to the prompt."  # message shown to the user
-                    if warnings is not None:
-                        warnings.append(message)
 
         rendered = template.format(**knowledge_and_input)
         return rendered, template
@@ -140,7 +152,6 @@ class PromptList:
         prompt_choice: str,
         user_input: str,
         additional_vars: dict = {},
-        warnings=None,
     ) -> str:
         if prompt_choice is not None:
             vars = additional_vars
@@ -148,7 +159,6 @@ class PromptList:
             rendered, template = self.create_and_render_template(
                 prompt_choice,
                 vars,
-                warnings=warnings,
             )
             return rendered, template
         return "", None
@@ -185,27 +195,63 @@ class PromptList:
                         )
         return follow_ups
 
-    def get_prompts_with_follow_ups(self):
+    def get_prompts_with_follow_ups(self, download_prompt=False, category=None):
         prompts_with_follow_ups = []
-        for prompt in self.prompts:
-            follow_ups = self.get_follow_ups(prompt.metadata.get("identifier"))
-            prompt_data = {
-                "identifier": prompt.metadata.get("identifier"),
-                "title": prompt.metadata.get("title"),
-                "categories": prompt.metadata.get("categories"),
-                "help_prompt_description": prompt.metadata.get(
-                    "help_prompt_description"
-                ),
-                "help_user_input": prompt.metadata.get("help_user_input"),
-                "help_sample_input": prompt.metadata.get("help_sample_input"),
-                "follow_ups": follow_ups,
-                "type": prompt.metadata.get("type", "chat"),
-                "scenario_queries": prompt.metadata.get("scenario_queries"),
-                "editable": prompt.metadata.get("editable"),
-                "show": prompt.metadata.get("show"),
-            }
+        prompts = self.prompts
+
+        if category:
+            prompts = [
+                prompt
+                for prompt in self.prompts
+                if category in prompt.metadata.get("categories", [])
+            ]
+
+        for prompt in prompts:
+            prompt_data = self.attach_follow_ups(prompt, download_prompt)
             prompts_with_follow_ups.append(prompt_data)
         return prompts_with_follow_ups
+
+    def get_a_prompt_with_follow_ups(self, prompt_id, download_prompt=False):
+        prompt = self.get(prompt_id)
+        prompt_with_follow_ups = self.attach_follow_ups(prompt, download_prompt)
+
+        return prompt_with_follow_ups
+
+    def prompt_content_for_download(self, prompt):
+        if prompt.metadata.get("type") == "cards":
+            return (
+                prompt.content
+                + "\n\n##OUTPUT INSTRUCTIONS: \n\n"
+                + "You will respond in Markdown format. If it is an array, respond in tabular format."
+            )
+        else:
+            return prompt.content
+
+    def attach_follow_ups(self, prompt, download_prompt=False):
+        follow_ups = self.get_follow_ups(prompt.metadata.get("identifier"))
+        prompt_data = {
+            "identifier": prompt.metadata.get("identifier"),
+            "title": prompt.metadata.get("title"),
+            "categories": prompt.metadata.get("categories"),
+            "help_prompt_description": prompt.metadata.get("help_prompt_description"),
+            "help_user_input": prompt.metadata.get("help_user_input"),
+            "help_sample_input": prompt.metadata.get("help_sample_input"),
+            "follow_ups": follow_ups,
+            "type": prompt.metadata.get("type", "chat"),
+            "scenario_queries": prompt.metadata.get("scenario_queries"),
+            "editable": prompt.metadata.get("editable"),
+            "show": prompt.metadata.get("show"),
+            "filename": prompt.metadata.get("filename"),
+            "grounded": prompt.metadata.get("grounded", False),
+            "download_restricted": prompt.metadata.get("download_restricted", False),
+            **(
+                {"content": self.prompt_content_for_download(prompt)}
+                if download_prompt and prompt.content
+                else {}
+            ),
+        }
+
+        return prompt_data
 
     def produces_json_output(self, identifier):
         prompt = self.get(identifier)
@@ -213,3 +259,8 @@ class PromptList:
             prompt.metadata.get("identifier").startswith("guided-")
             or prompt.metadata.get("type") == "cards"
         )
+
+    def add_filename_to_metadata(self, prompt, filename):
+        file_name_without_extension = os.path.splitext(filename)[0]
+        prompt.metadata["filename"] = file_name_without_extension
+        return prompt

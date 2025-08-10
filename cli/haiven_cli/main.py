@@ -106,22 +106,6 @@ def index_txt_files(
 
 
 @cli.command(no_args_is_help=True)
-def create_context(
-    context_name: str = "",
-    kp_root: str = "",
-):
-    """Create a context package base structure."""
-    file_service = FileService()
-    file_service.create_context_structure(context_name, kp_root)
-    file_service.write_architecture_file(
-        f"{kp_root}/contexts/{context_name}/architecture.md"
-    )
-    file_service.write_business_context_file(
-        f"{kp_root}/contexts/{context_name}/business_context.md"
-    )
-
-
-@cli.command(no_args_is_help=True)
 def init(
     config_path: str = "",
     env_path: str = "",

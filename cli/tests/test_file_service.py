@@ -1,7 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
-import pytest
-import shutil
 
 from haiven_cli.services.file_service import FileService
 from unittest.mock import patch, MagicMock, PropertyMock
@@ -207,80 +205,3 @@ sample_question: {sample_question}
             assert metadata_file_content == expected_metadata_file_content
 
         os.remove(metadata_file_path)
-
-    def test_write_architecture_file(self):
-        arch_file_path = "test_architecture.md"
-        arch_description = "a description of the architecture"
-        file_service = FileService()
-        file_service.write_architecture_file(arch_file_path, arch_description)
-
-        expected_arch_file_content = """---
-key: architecture
-title: Architecture
-a description of the architecture
----
-"""
-
-        with open(arch_file_path, "r") as f:
-            arch_file_content = f.read()
-            assert arch_file_content == expected_arch_file_content
-
-        os.remove(arch_file_path)
-
-    def test_write_business_context_file(self):
-        business_context_file_path = "test_business_context.md"
-        business_context_description = "a description of the business context"
-        file_service = FileService()
-        file_service.write_business_context_file(
-            business_context_file_path, business_context_description
-        )
-
-        expected_business_context_file_content = """---
-key: business
-title: Context
-a description of the business context
----
-"""
-
-        with open(business_context_file_path, "r") as f:
-            business_context_file_content = f.read()
-            assert (
-                business_context_file_content == expected_business_context_file_content
-            )
-
-        os.remove(business_context_file_path)
-
-    def test_create_context_structure_fails_if_kp_root_does_not_exit(self):
-        context_name = "context_name"
-        kp_root_dir = "kp_root"
-        file_service = FileService()
-
-        with pytest.raises(FileNotFoundError) as e:
-            file_service.create_context_structure(context_name, kp_root_dir)
-        assert str(e.value) == f"Knowledge package dir {kp_root_dir} was not found"
-
-    def test_create_context_structure(self):
-        context_name = "context_name"
-        kp_root_dir = "kp_root"
-        file_service = FileService()
-        os.makedirs(kp_root_dir, exist_ok=True)
-
-        file_service.create_context_structure(context_name, kp_root_dir)
-
-        assert os.path.exists(f"{kp_root_dir}/contexts/{context_name}/embeddings")
-
-        shutil.rmtree(kp_root_dir)
-
-    def test_create_context_structure_when_contexts_dir_exist(self):
-        context_name = "context_name"
-        kp_root_dir = "kp_root"
-        existing_context_dir = f"{kp_root_dir}/contexts/existing_context"
-        file_service = FileService()
-        os.makedirs(existing_context_dir, exist_ok=True)
-
-        file_service.create_context_structure(context_name, kp_root_dir)
-
-        assert os.path.exists(existing_context_dir)
-        assert os.path.exists(f"{kp_root_dir}/contexts/{context_name}/embeddings")
-
-        shutil.rmtree(kp_root_dir)

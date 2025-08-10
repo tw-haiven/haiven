@@ -17,6 +17,15 @@ from llms.clients import (
     ModelConfig,
 )
 from logger import HaivenLogger
+from llms.chat_events import (
+    ChatEvent,
+    ContentEvent,
+    ChatEventFormatter,
+    create_content_event,
+    create_metadata_event,
+    create_token_usage_event,
+    create_error_event,
+)
 
 
 class HaivenBaseChat:
@@ -141,27 +150,61 @@ class StreamingChat(HaivenBaseChat):
         self.stream_in_chunks = stream_in_chunks
 
     def run(self, message: str, user_query: str = None):
+        """Run streaming chat with unified event system"""
         self.memory.append(HaivenHumanMessage(content=message))
+
         try:
             for i, chunk in enumerate(self.chat_client.stream(self.memory)):
                 if i == 0:
                     if user_query:
                         self.memory[-1].content = user_query
                     self.memory.append(HaivenAIMessage(content=""))
-                self.memory[-1].content += chunk.get("content", "")
-                yield chunk.get("content", "")
+
+                # Convert raw chunks to standardized events
+                event = self._convert_chunk_to_event(chunk)
+                if event:
+                    # Format event for streaming chat
+                    yield ChatEventFormatter.format_for_streaming(event)
+
+                    # Update memory for content events
+                    if isinstance(event, ContentEvent):
+                        self.memory[-1].content += event.content
 
         except Exception as error:
-            if not str(error).strip():
-                error = "Error while the model was processing the input"
-            print(f"[ERROR]: {str(error)}")
-            yield f"[ERROR]: {str(error)}"
+            error_msg = (
+                str(error).strip() or "Error while the model was processing the input"
+            )
+            print(f"[ERROR]: {error_msg}")
+            error_event = create_error_event(error_msg)
+            yield ChatEventFormatter.format_for_streaming(error_event)
+
+    def _convert_chunk_to_event(self, chunk) -> ChatEvent:
+        """Convert raw chunk from chat client to standardized event"""
+        if "content" in chunk:
+            return create_content_event(chunk.get("content", ""))
+        elif "metadata" in chunk:
+            metadata = chunk["metadata"]
+            citations = (
+                metadata.get("citations", []) if isinstance(metadata, dict) else []
+            )
+            return create_metadata_event(citations=citations, metadata=metadata)
+        elif "usage" in chunk:
+            usage_data = chunk["usage"]
+            if isinstance(usage_data, dict):
+                return create_token_usage_event(
+                    prompt_tokens=usage_data.get("prompt_tokens", 0),
+                    completion_tokens=usage_data.get("completion_tokens", 0),
+                    total_tokens=usage_data.get("total_tokens", 0),
+                    model=usage_data.get("model", "unknown"),
+                )
+        return None
 
     def run_with_document(
         self,
         knowledge_document_keys: List[str],
         message: str = None,
     ):
+        """Run streaming chat with document context"""
         try:
             context_for_prompt, sources_markdown = (
                 self._similarity_search_based_on_history(
@@ -185,14 +228,25 @@ class StreamingChat(HaivenBaseChat):
             else:
                 prompt = user_request
 
-            for chunk in self.run(prompt, user_request):
-                yield chunk, sources_markdown
+            # Stream content events
+            for event_str in self.run(prompt, user_request):
+                yield event_str, sources_markdown
+
+            # Add sources at the end if available
+            if sources_markdown:
+                sources_event = create_content_event("\n\n" + sources_markdown)
+                yield (
+                    ChatEventFormatter.format_for_streaming(sources_event),
+                    sources_markdown,
+                )
 
         except Exception as error:
-            if not str(error).strip():
-                error = "Error while the model was processing the input"
-            print(f"[ERROR]: {str(error)}")
-            yield f"[ERROR]: {str(error)}", ""
+            error_msg = (
+                str(error).strip() or "Error while the model was processing the input"
+            )
+            print(f"[ERROR]: {error_msg}")
+            error_event = create_error_event(error_msg)
+            yield ChatEventFormatter.format_for_streaming(error_event), ""
 
 
 class JSONChat(HaivenBaseChat):
@@ -206,43 +260,82 @@ class JSONChat(HaivenBaseChat):
         super().__init__(chat_client, knowledge_manager, contexts, user_context)
 
     def stream_from_model(self, new_message):
+        """Stream raw events from the model"""
         try:
             self.memory.append(HaivenHumanMessage(content=new_message))
             stream = self.chat_client.stream(self.memory)
+
             for chunk in stream:
-                if "content" in chunk:
-                    yield chunk.get("content", "")
-                elif "metadata" in chunk:
-                    yield chunk
+                event = self._convert_chunk_to_event(chunk)
+                if event:
+                    yield event
 
         except Exception as error:
-            if not str(error).strip():
-                error = "Error while the model was processing the input"
-            print(f"[ERROR]: {str(error)}")
-            yield f"[ERROR]: {str(error)}"
+            error_msg = (
+                str(error).strip() or "Error while the model was processing the input"
+            )
+            print(f"[ERROR]: {error_msg}")
+            yield create_error_event(error_msg)
 
     def run(self, message: str):
+        """Run JSON chat with unified event system"""
+
         def create_data_chunk(chunk):
             message = json.dumps({"data": chunk})
             return f"{message}\n\n"
 
         try:
-            data = enumerate(self.stream_from_model(message))
-            for i, chunk in data:
-                if "metadata" in chunk:
-                    yield json.dumps(chunk)
-                else:
-                    if i == 0:
+            for event in self.stream_from_model(message):
+                if isinstance(event, ContentEvent):
+                    # Update memory for content events
+                    if not hasattr(self, "_first_chunk"):
                         self.memory.append(HaivenAIMessage(content=""))
+                        self._first_chunk = True
+                    self.memory[-1].content += event.content
 
-                    self.memory[-1].content += chunk
-                    yield create_data_chunk(chunk)
+                # Format event for JSON chat - all formatting handled by ChatEventFormatter
+                formatted_event = ChatEventFormatter.format_for_json(event)
+                yield formatted_event
 
         except Exception as error:
-            if not str(error).strip():
-                error = "Error while the model was processing the input"
-            print(f"[ERROR]: {str(error)}")
-            yield f"[ERROR]: {str(error)}"
+            error_msg = (
+                str(error).strip() or "Error while the model was processing the input"
+            )
+            print(f"[ERROR]: {error_msg}")
+            error_event = create_error_event(error_msg)
+            yield ChatEventFormatter.format_for_json(error_event) + "\n\n"
+
+    def _convert_chunk_to_event(self, chunk) -> ChatEvent:
+        """Convert raw chunk from chat client to standardized event"""
+        if "content" in chunk:
+            content = chunk.get("content", "")
+            # Skip empty content chunks to avoid invalid JSON
+            if content.strip():
+                return create_content_event(content)
+        elif "metadata" in chunk:
+            metadata = chunk["metadata"]
+            citations = (
+                metadata.get("citations", []) if isinstance(metadata, dict) else []
+            )
+            return create_metadata_event(citations=citations, metadata=metadata)
+        elif "usage" in chunk:
+            usage_data = chunk["usage"]
+            if isinstance(usage_data, dict):
+                return create_token_usage_event(
+                    prompt_tokens=usage_data.get("prompt_tokens", 0),
+                    completion_tokens=usage_data.get("completion_tokens", 0),
+                    total_tokens=usage_data.get("total_tokens", 0),
+                    model=usage_data.get("model", "unknown"),
+                )
+        elif isinstance(chunk, str):
+            # Handle pre-formatted JSON strings from mocks
+            if chunk.startswith('{"data":') and chunk.endswith("}"):
+                return create_content_event(chunk)
+            else:
+                # Skip empty string chunks to avoid invalid JSON
+                if chunk.strip():
+                    return create_content_event(chunk)
+        return None
 
 
 class ServerChatSessionMemory:
@@ -325,7 +418,10 @@ class ServerChatSessionMemory:
         if chat_session_data["user"] != user_owner:
             return f"Chat session with ID {session_key} not found for this user"
 
-        chat_session: HaivenBaseChat = chat_session_data["chat"]
+        chat_session = chat_session_data["chat"]
+        if chat_session is None:
+            return f"Chat session with ID {session_key} has no chat data"
+
         return chat_session.memory_as_text()
 
 
@@ -362,18 +458,20 @@ class ChatManager:
         contexts: List[str] = None,
         user_context: str = None,
     ):
-        chat_client = self.llm_chat_factory.new_chat_client(model_config)
-        return self.chat_session_memory.get_or_create_chat(
-            lambda: StreamingChat(
-                chat_client,
+        def create_chat():
+            return StreamingChat(
+                self.llm_chat_factory.new_chat_client(model_config),
                 self.knowledge_manager,
-                stream_in_chunks=options.in_chunks if options else None,
+                stream_in_chunks=options.in_chunks if options else False,
                 contexts=contexts,
                 user_context=user_context,
-            ),
-            chat_session_key_value=session_id,
-            chat_category=options.category if options else None,
-            user_identifier=options.user_identifier if options else None,
+            )
+
+        return self.chat_session_memory.get_or_create_chat(
+            create_chat,
+            session_id,
+            options.category if options else "streaming",
+            options.user_identifier if options else "unknown",
         )
 
     def json_chat(
@@ -384,12 +482,17 @@ class ChatManager:
         contexts: List[str] = None,
         user_context: str = None,
     ):
-        chat_client = self.llm_chat_factory.new_chat_client(model_config)
+        def create_chat():
+            return JSONChat(
+                self.llm_chat_factory.new_chat_client(model_config),
+                self.knowledge_manager,
+                contexts=contexts,
+                user_context=user_context,
+            )
+
         return self.chat_session_memory.get_or_create_chat(
-            lambda: JSONChat(
-                chat_client, self.knowledge_manager, contexts, user_context
-            ),
-            chat_session_key_value=session_id,
-            chat_category=options.category if options else None,
-            user_identifier=options.user_identifier if options else None,
+            create_chat,
+            session_id,
+            options.category if options else "json",
+            options.user_identifier if options else "unknown",
         )

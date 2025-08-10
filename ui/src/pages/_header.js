@@ -4,8 +4,9 @@ import Link from "next/link";
 import { Button } from "antd";
 import { RiPushpinLine } from "react-icons/ri";
 import Pinboard from "./pinboard";
+import { FEATURES } from "../app/feature_toggle";
 
-export default function Header() {
+export default function Header({ featureToggleConfig }) {
   const [isPinboardVisible, setIsPinboardVisible] = useState(false);
 
   const openPinboard = () => {
@@ -14,6 +15,14 @@ export default function Header() {
 
   const closePinboard = () => {
     setIsPinboardVisible(false);
+  };
+
+  const openForm = () => {
+    // Open the form in a new tab
+    window.open(
+      "https://docs.google.com/forms/d/e/1FAIpQLSessXVgqe0CBv3NWtcmqq8-lYSPalP38PYQjI77QwI_1qS8Vw/viewform",
+      "_blank",
+    );
   };
 
   return (
@@ -37,12 +46,29 @@ export default function Header() {
             }}
           >
             <div>
+              <span>
+                <Link
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault(); // prevents navigation
+                    openForm();
+                  }}
+                >
+                  Submit Prompt
+                </Link>
+              </span>
+
               <span type="link">
                 <Link href="/about">About</Link>
               </span>
               <span type="link">
                 <Link href="/knowledge">Knowledge Overview</Link>
               </span>
+              {featureToggleConfig[FEATURES.API_KEY_AUTH_UI] === true && (
+                <span type="link">
+                  <Link href="/api-keys">API Keys</Link>
+                </span>
+              )}
             </div>
             <div className="separator"></div>
             <div className="pinboard">

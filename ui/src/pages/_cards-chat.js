@@ -9,6 +9,7 @@ import {
   RiFileCopyLine,
   RiPushpinLine,
   RiSendPlane2Line,
+  RiGlobalLine,
 } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
@@ -22,10 +23,16 @@ import {
   getSortedUserContexts,
   getSummaryForTheUserContext,
 } from "../app/_local_store";
+import LLMTokenUsage from "../app/_llm_token_usage";
 import PromptPreview from "../app/_prompt_preview";
 import MarkdownRenderer from "../app/_markdown_renderer";
 import { scenarioToText } from "../app/_dynamic_data_renderer";
 import EnrichCard from "../app/_enrich_card";
+import Citations from "../pages/_citations";
+import DownloadPrompt from "../app/_download_prompt";
+import { formattedUsage } from "../app/utils/tokenUtils";
+import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
+import { filterSSEEvents } from "../app/utils/_sse_event_filter";
 
 const CardsChat = ({
   promptId,
@@ -41,6 +48,7 @@ const CardsChat = ({
     useState({});
 
   const [scenarios, setScenarios] = useState([]);
+  const [citations, setCitations] = useState([]);
   const { loading, abortLoad, startLoad, StopLoad } = useLoader();
   const [selectedContexts, setSelectedContexts] = useState([]);
   const [promptInput, setPromptInput] = useState("");
@@ -57,9 +65,18 @@ const CardsChat = ({
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(false);
   const [isInputCollapsed, setIsInputCollapsed] = useState(false);
+  const [isCompanyResearch, setIsCompanyResearch] = useState(false);
+  const [isCompanyResearchEvolutionPage, setIsCompanyResearchEvolutionPage] =
+    useState(false);
+  const [followUpText, setFollowUpText] = useState("");
   const [usePromptId, setUsePromptId] = useState(true);
   const [chatSessionIdCardBuilding, setChatSessionIdCardBuilding] = useState();
   const [allContexts, setAllContexts] = useState([]);
+  // Aggregate token usage per page
+  const [tokenUsage, setTokenUsage] = useState({
+    input_tokens: 0,
+    output_tokens: 0,
+  });
 
   function combineAllContexts(contexts) {
     const userContexts = getSortedUserContexts();
@@ -80,6 +97,18 @@ const CardsChat = ({
       const firstStepEntry = prompts.find(
         (entry) => entry.value === selectedPromptId,
       );
+
+      const promptConfig = prompts.find(
+        (entry) => entry.value === selectedPromptId,
+      );
+      setIsCompanyResearch(promptConfig?.grounded === true);
+
+      // special case for one particular prompt
+      // TODO: How to make this a proper feature that doesn't rely on a prompt ID?
+      setIsCompanyResearchEvolutionPage(
+        selectedPromptId.includes("company-research-product-evolution"),
+      );
+
       if (firstStepEntry) {
         firstStepEntry.followUps.forEach((followUp) => {
           followUpResults[followUp.identifier] = "";
@@ -90,6 +119,9 @@ const CardsChat = ({
       combineAllContexts(contexts);
     }
     setUsePromptId(true);
+
+    // Reset token usage aggregation on mount (page load)
+    setTokenUsage({ input_tokens: 0, output_tokens: 0 });
 
     const handleStorageChange = () => {
       combineAllContexts(contexts);
@@ -188,9 +220,9 @@ const CardsChat = ({
     return requestBody;
   };
 
-  const buildRequestDataFollowUp = (followUpId) => {
+  const buildRequestDataFollowUp = (followUpId, followUpQuery) => {
     const requestBody = {
-      userinput: promptInput,
+      userinput: `${promptInput} ${followUpQuery}`,
       promptid: followUpId,
       scenarios: scenarios
         .filter((scenario) => scenario.exclude !== true)
@@ -210,6 +242,7 @@ const CardsChat = ({
 
   const sendCardBuildingPrompt = (requestData, shouldReset = false) => {
     setIsInputCollapsed(true);
+    // Do not reset token usage here; we want to aggregate per page
 
     if (shouldReset) {
       resetChatSession();
@@ -250,28 +283,49 @@ const CardsChat = ({
                 ...scenario,
               }));
 
-          if (data.data) {
+          // --- NEW: Use filterSSEEvents for all string chunks ---
+          if (typeof data === "string") {
+            const { text, events } = filterSSEEvents(data);
+            events.forEach((event) => {
+              if (event.type === "token_usage") {
+                const usage = formattedUsage(event.data);
+                setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+              }
+            });
+            ms += text;
+            // Continue to parse ms as before
+          } else if (typeof data === "object" && data.type === "token_usage") {
+            const usage = formattedUsage(data.data);
+            setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+            return;
+          } else if (data.metadata) {
+            // Handle metadata that comes as a separate object
+            if (data.metadata.citations) {
+              setCitations(data.metadata.citations);
+            }
+            return; // Prevent metadata from being added to JSON parsing stream (ms variable)
+          } else if (data.data) {
             ms += data.data;
-            ms = ms.trim().replace(/^[^[]+/, "");
-            if (ms.startsWith("[")) {
-              try {
-                output = parse(ms || "[]");
-              } catch (error) {
-                console.log("error", error);
-              }
-              if (Array.isArray(output)) {
-                setScenarios([...existingScenarios, ...output]);
+          }
+          ms = ms.trim().replace(/^[^[]+/, "");
+          if (ms.startsWith("[")) {
+            try {
+              output = parse(ms || "[]");
+            } catch (error) {
+              console.log("error", error);
+            }
+            if (Array.isArray(output)) {
+              setScenarios([...existingScenarios, ...output]);
+            } else {
+              abortLoad();
+              if (ms.includes("Error code:")) {
+                toast.error(ms);
               } else {
-                abortLoad();
-                if (ms.includes("Error code:")) {
-                  toast.error(ms);
-                } else {
-                  toast.warning(
-                    "Model failed to respond rightly, please rewrite your message and try again",
-                  );
-                }
-                console.log("response is not parseable into an array");
+                toast.warning(
+                  "Model failed to respond rightly, please rewrite your message and try again",
+                );
               }
+              console.log("response is not parseable into an array");
             }
           }
         },
@@ -288,13 +342,20 @@ const CardsChat = ({
     sendCardBuildingPrompt(buildRequestDataGetMore());
   };
 
-  const sendFollowUpPrompt = (apiEndpoint, onData, followUpId) => {
+  const sendFollowUpPrompt = (
+    apiEndpoint,
+    onData,
+    followUpId,
+    followUpQuery,
+  ) => {
     let ms = "";
 
     fetchSSE(
       apiEndpoint,
       {
-        body: JSON.stringify(buildRequestDataFollowUp(followUpId)),
+        body: JSON.stringify(
+          buildRequestDataFollowUp(followUpId, followUpQuery),
+        ),
         signal: startLoad(),
       },
       {
@@ -303,8 +364,27 @@ const CardsChat = ({
         },
         onMessageHandle: (data) => {
           try {
+            // If this is a string chunk, filter out SSE events
+            if (typeof data === "string") {
+              const { text, events } = filterSSEEvents(data);
+              // Handle token usage events if present
+              events.forEach((event) => {
+                if (event.type === "token_usage") {
+                  const usage = formattedUsage(event.data);
+                  setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+                }
+              });
+              ms += text;
+              onData(ms);
+              return;
+            }
+            // If this is a structured token usage event (for future-proofing)
+            if (typeof data === "object" && data.type === "token_usage") {
+              const usage = formattedUsage(data.data);
+              setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+              return;
+            }
             ms += data;
-
             onData(ms);
           } catch (error) {
             console.log("error", error, "data received", "'" + data + "'");
@@ -321,12 +401,14 @@ const CardsChat = ({
     sendFollowUpPrompt(
       "/api/prompt/follow-up",
       (result) => {
+        console.log("Ji", result);
         setFollowUpResults((prevResults) => ({
           ...prevResults,
           [followUpId]: result,
         }));
       },
       followUpId,
+      followUpText,
     );
   };
 
@@ -345,12 +427,15 @@ const CardsChat = ({
         ),
         children: (
           <div className="second-step-section">
-            <Button
-              onClick={() => onFollowUp(followUp.identifier)}
-              className="go-button"
-            >
-              {followUpResults[followUp.identifier] ? "REGENERATE" : "GENERATE"}
-            </Button>
+            {isCompanyResearchEvolutionPage &&
+              !followUpResults[followUp.identifier] && (
+                <Input.TextArea
+                  placeholder="Provide an overview of the account's product, to identify market competitors, and leverage generative AI to suggest impactful client-ready enhancements."
+                  onChange={(e, v) => {
+                    setFollowUpText(e.target.value);
+                  }}
+                />
+              )}
             {followUpResults[followUp.identifier] && (
               <>
                 <div className="generated-text-results">
@@ -376,8 +461,20 @@ const CardsChat = ({
                     content={followUpResults[followUp.identifier]}
                   />
                 </div>
+                <Input.TextArea
+                  placeholder="Please enter follow up query"
+                  onChange={(e, v) => {
+                    setFollowUpText(e.target.value);
+                  }}
+                />
               </>
             )}
+            <Button
+              onClick={() => onFollowUp(followUp.identifier)}
+              className="go-button"
+            >
+              {followUpResults[followUp.identifier] ? "SUBMIT" : "GENERATE"}
+            </Button>
           </div>
         ),
       };
@@ -518,11 +615,17 @@ const CardsChat = ({
   const title = (
     <div className="title">
       <h3>
+        {isCompanyResearch && <RiGlobalLine />}
         {selectedPromptConfiguration.title}
         <HelpTooltip
           text={selectedPromptConfiguration.help_prompt_description}
         />
       </h3>
+      <DownloadPrompt prompt={selectedPromptConfiguration} />
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 
@@ -545,6 +648,8 @@ const CardsChat = ({
     }
   };
 
+  const perplexityModelName = { chat: { name: "Perplexity AI" } };
+
   return (
     <>
       <Drawer
@@ -562,14 +667,21 @@ const CardsChat = ({
             avatar: "/boba/user-5-fill-dark-blue.svg",
           }}
           scenarioQueries={selectedPromptConfiguration.scenario_queries || []}
+          featureToggleConfig={featureToggleConfig}
+          setTokenUsage={setTokenUsage}
+          tokenUsage={tokenUsage}
         />
       </Drawer>
       <div id="canvas">
         <div className="prompt-chat-container">
           <div className="chat-container-wrapper">
-            <ChatHeader models={models} titleComponent={title} />
+            <ChatHeader
+              models={isCompanyResearch ? perplexityModelName : models}
+              titleComponent={title}
+            />
             <div className="card-chat-container card-chat-overflow">
               <CardsList
+                showBiggerCards={isCompanyResearch}
                 progress={progress}
                 isGenerating={isGenerating}
                 featureToggleConfig={featureToggleConfig}
@@ -581,7 +693,7 @@ const CardsChat = ({
                 onDelete={onDeleteCard}
               />
               {inputAreaRender()}
-              {scenarios.length > 0 && (
+              {scenarios.length > 0 && !isCompanyResearch && (
                 <div className="generate-more">
                   <Button
                     onClick={sendGetMorePrompt}
@@ -592,21 +704,28 @@ const CardsChat = ({
                   </Button>
                 </div>
               )}
-              <EnrichCard
-                startLoad={startLoad}
-                abortLoad={abortLoad}
-                loading={loading}
-                featureToggleConfig={featureToggleConfig}
-                chatSessionIdCardBuilding={chatSessionIdCardBuilding}
-                scenarios={scenarios}
-                setScenarios={setScenarios}
-                selectedPromptConfiguration={selectedPromptConfiguration}
-                setEnableGenerateMoreCards={setEnableGenerateMoreCards}
-                setIsGenerating={setIsGenerating}
-                setProgress={setProgress}
-                scenarioToJson={scenarioToJson}
-                attachContextsToRequestBody={attachContextsToRequestBody}
-              />
+              {!isCompanyResearch && (
+                <EnrichCard
+                  startLoad={startLoad}
+                  abortLoad={abortLoad}
+                  loading={loading}
+                  featureToggleConfig={featureToggleConfig}
+                  chatSessionIdCardBuilding={chatSessionIdCardBuilding}
+                  scenarios={scenarios}
+                  setScenarios={setScenarios}
+                  selectedPromptConfiguration={selectedPromptConfiguration}
+                  setEnableGenerateMoreCards={setEnableGenerateMoreCards}
+                  setIsGenerating={setIsGenerating}
+                  setProgress={setProgress}
+                  scenarioToJson={scenarioToJson}
+                  attachContextsToRequestBody={attachContextsToRequestBody}
+                  setTokenUsage={setTokenUsage}
+                  tokenUsage={tokenUsage}
+                />
+              )}
+              <div style={{ paddingLeft: "2em" }}>
+                <Citations citations={citations} />
+              </div>
               {scenarios.length > 0 && followUpCollapseItems.length > 0 && (
                 <div className="follow-up-container">
                   <div style={{ marginTop: "1em" }}>

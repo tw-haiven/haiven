@@ -5,6 +5,8 @@ from api.api_multi_step import ApiMultiStep
 from api.api_scenarios import ApiScenarios
 from api.api_creative_matrix import ApiCreativeMatrix
 from api.api_company_research import ApiCompanyResearch
+from api.api_features import ApiFeatures
+from api.api_key_management import ApiKeyManagementAPI
 from llms.chats import (
     ChatManager,
 )
@@ -14,6 +16,7 @@ from prompts.prompts_factory import PromptsFactory
 from config_service import ConfigService
 from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
 from prompts.inspirations import InspirationsManager
+from auth.api_key_auth_service import ApiKeyAuthService
 
 
 class BobaApi:
@@ -25,12 +28,13 @@ class BobaApi:
         config_service: ConfigService,
         image_service: ImageDescriptionService,
         disclaimer_and_guidelines: DisclaimerAndGuidelinesService,
+        api_key_auth_service: ApiKeyAuthService = None,
     ):
         self.knowledge_manager = knowledge_manager
         self.chat_manager = chat_manager
         self.config_service = config_service
         self.inspirations_manager = InspirationsManager()
-
+        self.api_key_auth_service = api_key_auth_service
         self.prompts_chat = prompts_factory.create_chat_prompt_list(
             self.knowledge_manager.knowledge_base_markdown, self.knowledge_manager
         )
@@ -38,12 +42,9 @@ class BobaApi:
         self.prompts_guided = prompts_factory_guided.create_guided_prompt_list(
             self.knowledge_manager.knowledge_base_markdown, self.knowledge_manager
         )
-
         self.model_config = self.config_service.get_chat_model()
-
         self.image_service = image_service
         self.disclaimer_and_guidelines = disclaimer_and_guidelines
-
         print(f"Model used for guided mode: {self.model_config.id}")
 
     def add_endpoints(self, app: FastAPI):
@@ -65,7 +66,6 @@ class BobaApi:
             self.model_config,
             self.prompts_chat,
         )
-
         ApiScenarios(
             app,
             self.chat_manager,
@@ -78,10 +78,13 @@ class BobaApi:
             self.model_config,
             self.prompts_guided,
         )
-
         ApiCompanyResearch(
             app,
             self.chat_manager,
             self.model_config,
-            self.prompts_guided,
+            self.prompts_chat,
         )
+        ApiFeatures(app)
+        # Only register API key management endpoints if API key auth is enabled
+        if self.api_key_auth_service and self.config_service.is_api_key_auth_enabled():
+            ApiKeyManagementAPI(app, self.api_key_auth_service, self.config_service)

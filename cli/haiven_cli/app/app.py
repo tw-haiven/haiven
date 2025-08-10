@@ -149,21 +149,6 @@ class App:
             metadata, f"{output_dir}/{_format_file_name(directory_name)}.md"
         )
 
-    def create_context_structure(self, context_name: str, parent_dir: str = "./"):
-        if not context_name:
-            raise ValueError("please provide context name for context_name option")
-
-        if not os.path.exists(parent_dir):
-            raise ValueError(f"parent directory {parent_dir} does not exist")
-
-        self.file_service.create_context_structure(context_name, parent_dir)
-        self.file_service.write_architecture_file(
-            f"{parent_dir}/{context_name}/architecture.md"
-        )
-        self.file_service.write_business_context_file(
-            f"{parent_dir}/{context_name}/business-context.md"
-        )
-
     def _get_csv_file_text_and_metadata(self, source_path: str):
         return self.file_service.get_text_and_metadata_from_csv(source_path)
 

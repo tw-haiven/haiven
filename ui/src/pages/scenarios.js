@@ -1,11 +1,7 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { fetchSSE } from "../app/_fetch_sse";
-import {
-  RiSendPlane2Line,
-  RiStopCircleFill,
-  RiAttachment2,
-} from "react-icons/ri";
+import { RiSendPlane2Line, RiStopCircleFill } from "react-icons/ri";
 import { UpOutlined } from "@ant-design/icons";
 import { Button, Drawer, Checkbox, Input, Select, Form, Collapse } from "antd";
 import { toast } from "react-toastify";
@@ -19,13 +15,16 @@ import {
   RiAliensLine,
 } from "react-icons/ri";
 import ChatHeader from "./_chat_header";
-import { scenarioToText } from "../app/_card_actions";
+import { scenarioToText } from "../app/_dynamic_data_renderer";
 import useLoader from "../hooks/useLoader";
 import ChatExploration from "./_chat_exploration";
 import CardsList from "../app/_cards-list";
 import HelpTooltip from "../app/_help_tooltip";
+import LLMTokenUsage from "../app/_llm_token_usage";
+import { formattedUsage } from "../app/utils/tokenUtils";
+import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
 
-const Home = ({ models }) => {
+const Home = ({ models, featureToggleConfig }) => {
   const [numOfScenarios, setNumOfScenarios] = useState("6");
   const [scenarios, setScenarios] = useState([]);
   const [disableChatInput, setDisableChatInput] = useState(false);
@@ -40,6 +39,16 @@ const Home = ({ models }) => {
   const [chatContext, setChatContext] = useState({});
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(true);
+  // Aggregate token usage per page
+  const [tokenUsage, setTokenUsage] = useState({
+    input_tokens: 0,
+    output_tokens: 0,
+  });
+
+  useEffect(() => {
+    // Reset token usage aggregation on mount (page load)
+    setTokenUsage({ input_tokens: 0, output_tokens: 0 });
+  }, []);
 
   const onClickAdvancedPromptOptions = (e) => {
     setPromptOptionsMenuExpanded(!isPromptOptionsMenuExpanded);
@@ -85,6 +94,7 @@ const Home = ({ models }) => {
   const onSubmitPrompt = async (prompt) => {
     setPrompt(prompt);
     setDisableChatInput(true);
+    // Do not reset token usage here; we want to aggregate per page
 
     const uri =
       "/api/make-scenario" +
@@ -122,6 +132,12 @@ const Home = ({ models }) => {
         },
         onMessageHandle: (data) => {
           try {
+            if (data.type === "token_usage") {
+              const usage = formattedUsage(data.data);
+              setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+              return;
+            }
+
             if (data.data) {
               ms += data.data;
               ms = ms.trim().replace(/^[^[]+/, "");
@@ -159,6 +175,10 @@ const Home = ({ models }) => {
         criteria like time horizon, realism, and optimism."
         />
       </h3>
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 
@@ -371,9 +391,18 @@ const Home = ({ models }) => {
             avatar: "/boba/user-5-fill-dark-blue.svg",
           }}
           scenarioQueries={[
-            "What are the key drivers for this scenario?",
-            "What are the key uncertainties?",
-            "What business opportunities could this trigger?",
+            {
+              name: "What are the key drivers for this scenario?",
+              description: "What are the key drivers for this scenario?",
+            },
+            {
+              name: "What are the key uncertainties?",
+              description: "What are the key uncertainties?",
+            },
+            {
+              name: "What business opportunities could this trigger?",
+              description: "What business opportunities could this trigger?",
+            },
           ]}
         />
       </Drawer>

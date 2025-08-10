@@ -10,31 +10,85 @@ import {
   RiCompasses2Line,
   RiBook2Line,
   RiDashboardHorizontalLine,
+  RiGlobalLine,
+  RiBriefcase2Line,
 } from "react-icons/ri";
-import { isFeatureEnabled, FEATURES } from "./feature_toggle";
 
 // Keeping the implementation of menu items for the "static" features in one place
 // Will usually be enhanced by the dynamically loaded prompts afterwards
 
-export const initialiseMenuCategoriesForSidebar = () => {
-  const categories = {
-    dashboard: {
-      key: "dashboard",
-      label: <Link href="/">Dashboard</Link>,
+export const THOUGHTWORKS_ONLY_CATEGORIES = [
+  "client-research",
+  "deliveryManagement",
+];
+
+export const initialiseMenuCategoriesForSidebar = (isThoughtworksInstance) => {
+  const addThoughtworksMenuItems = (categories) => {
+    categories.thoughtworksLabel = {
+      key: "thoughtworksLabel",
+      label: "Thoughtworks",
+      className: "menu-divider",
+      type: "group",
+    };
+    categories["client-research"] = {
+      key: "client-research",
+      label: "Client research",
+      icon: <RiGlobalLine style={{ fontSize: "large" }} />,
+      children: [
+        {
+          key: "company-research",
+          label: <Link href="/company-research">Company overview</Link>,
+          icon: (
+            <RiGlobalLine
+              style={{
+                marginTop: "-2px",
+                fontSize: "0.8rem",
+                verticalAlign: "middle",
+              }}
+            />
+          ),
+        },
+        {
+          key: "company-research-ai-tool",
+          label: (
+            <Link href="/company-research?config=ai-tool">
+              Company overview: AI tools
+            </Link>
+          ),
+          icon: (
+            <RiGlobalLine
+              style={{
+                marginTop: "-2px",
+                fontSize: "0.8rem",
+                verticalAlign: "middle",
+              }}
+            />
+          ),
+        },
+      ],
+    };
+    categories.deliveryManagement = {
+      key: "deliveryManagement",
+      label: "Delivery",
       icon: <RiDashboardHorizontalLine style={{ fontSize: "large" }} />,
-    },
-    knowledgeChat: {
-      key: "knowledgeChat",
-      label: <Link href="/knowledge-chat">Chat with Haiven</Link>,
-      icon: <RiChatQuoteLine style={{ fontSize: "large" }} />,
-    },
-    research: {
+      children: [],
+    };
+  };
+
+  const addSoftwareDeliveryMenuItems = (categories) => {
+    categories.softwareDeliveryLabel = {
+      key: "softwareDeliveryLabel",
+      label: "Software Delivery",
+      className: "menu-divider",
+      type: "group",
+    };
+    categories.research = {
       key: "research",
       label: "Research",
       icon: <RiBook2Line style={{ fontSize: "large" }} />,
       children: [],
-    },
-    ideate: {
+    };
+    categories.ideate = {
       key: "ideate",
       label: "Ideate",
       icon: <RiLightbulbLine style={{ fontSize: "large" }} />,
@@ -48,47 +102,56 @@ export const initialiseMenuCategoriesForSidebar = () => {
           label: <Link href="/scenarios">Scenario Design</Link>,
         },
       ],
-    },
-    analysis: {
+    };
+    categories.analysis = {
       key: "analyse",
       label: "Analyse",
       icon: <RiBookReadLine style={{ fontSize: "large" }} />,
       children: [],
-    },
-    coding: {
+    };
+    categories.coding = {
       key: "coding",
       label: "Coding",
       icon: <RiCodeBoxLine style={{ fontSize: "large" }} />,
       children: [],
-    },
-    testing: {
+    };
+    categories.testing = {
       key: "testing",
       label: "Testing",
       icon: <RiFlaskLine style={{ fontSize: "large" }} />,
       children: [],
-    },
-    architecture: {
+    };
+    categories.architecture = {
       key: "architecture",
       label: "Architecture",
       icon: <RiCompasses2Line style={{ fontSize: "large" }} />,
       children: [],
-    },
-    other: {
+    };
+    categories.other = {
       key: "other",
       label: "Other",
       icon: <RiChat2Line style={{ fontSize: "large" }} />,
       children: [],
+    };
+  };
+
+  const categories = {
+    dashboard: {
+      key: "dashboard",
+      label: <Link href="/">Dashboard</Link>,
+      icon: <RiDashboardHorizontalLine style={{ fontSize: "large" }} />,
+    },
+    knowledgeChat: {
+      key: "knowledgeChat",
+      label: <Link href="/knowledge-chat">Chat with Haiven</Link>,
+      icon: <RiChatQuoteLine style={{ fontSize: "large" }} />,
     },
   };
 
-  if (isFeatureEnabled(FEATURES.FEATURE_DELIVERY_MANAGEMENT)) {
-    categories.deliveryManagement = {
-      key: "deliveryManagement",
-      label: "Delivery Management",
-      icon: <RiDashboardHorizontalLine style={{ fontSize: "large" }} />,
-      children: [],
-    };
+  if (isThoughtworksInstance) {
+    addThoughtworksMenuItems(categories);
   }
+  addSoftwareDeliveryMenuItems(categories);
 
   return categories;
 };

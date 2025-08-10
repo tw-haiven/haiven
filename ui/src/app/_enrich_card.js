@@ -6,6 +6,9 @@ import { Button, Input } from "antd";
 import { fetchSSE } from "../app/_fetch_sse";
 import { toast } from "react-toastify";
 import { parse } from "best-effort-json-parser";
+import { formattedUsage } from "../app/utils/tokenUtils";
+import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
+import { filterSSEEvents } from "../app/utils/_sse_event_filter";
 
 /** ITERATION EXPERIMENT
  * (behind feature toggle, experimental implementation)
@@ -17,7 +20,6 @@ const EnrichCard = ({
   startLoad,
   abortLoad,
   loading,
-  featureToggleConfig,
   chatSessionIdCardBuilding,
   scenarios,
   setScenarios,
@@ -27,6 +29,8 @@ const EnrichCard = ({
   setProgress,
   scenarioToJson,
   attachContextsToRequestBody,
+  setTokenUsage,
+  tokenUsage,
 }) => {
   const [iterationPrompt, setIterationPrompt] = useState("");
   const submitIterationPrompt = (prompt) => {
@@ -121,7 +125,24 @@ const EnrichCard = ({
           }, 1000);
         },
         onMessageHandle: (data) => {
-          if (data.data) {
+          // Handle token usage events (new format)
+          if (data.type === "token_usage") {
+            const usage = formattedUsage(data.data);
+            setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+            return;
+          }
+
+          // Use the SSE event filter utility to extract token usage events (old format)
+          if (typeof data === "string") {
+            const { text, events } = filterSSEEvents(data);
+            events.forEach((event) => {
+              if (event.type === "token_usage" && setTokenUsage) {
+                const usage = formattedUsage(event.data);
+                setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+              }
+            });
+            ms += text;
+          } else if (data.data) {
             ms += data.data;
             ms = ms.trim().replace(/^[^[]+/, "");
             if (ms.startsWith("[")) {
@@ -141,7 +162,6 @@ const EnrichCard = ({
                     "Model failed to respond rightly, please rewrite your message and try again",
                   );
                 }
-                console.log("response is not parseable into an array");
               }
             }
           }
@@ -152,40 +172,37 @@ const EnrichCard = ({
 
   return (
     <>
-      {featureToggleConfig["cards_iteration"] === true &&
-        scenarios.length > 0 && (
-          <div style={{ width: "88%", paddingLeft: "2em" }}>
-            <h3>What else do you want to add to the cards?</h3>
-            <Disclaimer message="Clicking 'Enrich Cards' will disable the 'Generate More Cards' button." />
-            <HorizontalPossibilityPanel
-              disable={loading}
-              scenarioQueries={
-                selectedPromptConfiguration.scenario_queries || []
-              }
-              onClick={submitIterationPrompt}
-            />
+      {scenarios.length > 0 && (
+        <div style={{ width: "88%", paddingLeft: "2em" }}>
+          <h3>What else do you want to add to the cards?</h3>
+          <Disclaimer message="Clicking 'Enrich Cards' will disable the 'Generate More Cards' button." />
+          <HorizontalPossibilityPanel
+            disable={loading}
+            scenarioQueries={selectedPromptConfiguration.scenario_queries || []}
+            onClick={submitIterationPrompt}
+          />
 
-            <div style={{ display: "flex", gap: "8px" }}>
-              <Input
-                value={iterationPrompt}
-                onChange={(e, v) => {
-                  setIterationPrompt(e.target.value);
-                }}
-              />
-              <Button
-                style={{ marginBottom: "1px" }}
-                disabled={loading}
-                onClick={() => {
-                  setEnableGenerateMoreCards(false);
-                  sendIteration(iterationPrompt);
-                }}
-                className="go-button"
-              >
-                ENRICH CARDS
-              </Button>
-            </div>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <Input
+              value={iterationPrompt}
+              onChange={(e, v) => {
+                setIterationPrompt(e.target.value);
+              }}
+            />
+            <Button
+              style={{ marginBottom: "1px" }}
+              disabled={loading}
+              onClick={() => {
+                setEnableGenerateMoreCards(false);
+                sendIteration(iterationPrompt);
+              }}
+              className="go-button"
+            >
+              ENRICH CARDS
+            </Button>
           </div>
-        )}
+        </div>
+      )}
     </>
   );
 };

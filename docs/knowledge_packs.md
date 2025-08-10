@@ -138,6 +138,7 @@ Every prompt file has a frontmatter block that defines metadata about the prompt
 - `title`: "Title of the prompt that will show up in the UI dropdowns"
 - `system`: "System prompt" (optional)
 - `categories`: `["category1", "category2"]` // provide a list of task categories where this prompt should show up. Valid values: "analysis", "coding", "testing", "architecture"
+- `download_restricted`: `true` or `false` (optional, defaults to `false`) // if set to `true`, the prompt cannot be downloaded by users but is still available for use within the application
 - `help_prompt_description`: "Describe to the user what the prompt does"
 - `help_user_input`: "Describe for the user what type of input they need to give in order to get the best results from the prompt"
 - `help_sample_input`: "Provide an example of what the user input could look like"

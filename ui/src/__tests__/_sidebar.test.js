@@ -4,24 +4,14 @@ import { act } from "react";
 import Sidebar from "../pages/_sidebar";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { useRouter } from "next/router";
-import { getFeatureTogglesAsJson } from "../app/_local_store";
 
 vi.mock("next/router", () => ({
   useRouter: vi.fn(),
 }));
 
-vi.mock("../app/_local_store", async () => {
-  const actual = await vi.importActual("../app/_local_store");
-  return {
-    ...actual,
-    getFeatureTogglesAsJson: vi.fn(),
-  };
-});
-
 describe("Sidebar Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    getFeatureTogglesAsJson.mockReturnValue({});
   });
 
   const mockPrompts = [
@@ -48,7 +38,7 @@ describe("Sidebar Component", () => {
     });
 
     await act(async () => {
-      render(<Sidebar prompts={[]} />);
+      render(<Sidebar prompts={[]} featureToggleConfig={{}} />);
     });
 
     expect(
@@ -67,7 +57,7 @@ describe("Sidebar Component", () => {
     });
 
     await act(async () => {
-      render(<Sidebar prompts={mockPrompts} />);
+      render(<Sidebar prompts={mockPrompts} featureToggleConfig={{}} />);
     });
 
     expect(screen.getByText(/Research/i)).toBeInTheDocument();
@@ -86,7 +76,7 @@ describe("Sidebar Component", () => {
     });
 
     await act(async () => {
-      render(<Sidebar prompts={mockPrompts} />);
+      render(<Sidebar prompts={mockPrompts} featureToggleConfig={{}} />);
     });
 
     await act(async () => {
@@ -97,11 +87,6 @@ describe("Sidebar Component", () => {
   });
 
   describe("Sidebar Component - Delivery Management Feature Toggle via Env", () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-      getFeatureTogglesAsJson.mockReturnValue({});
-    });
-
     const mockPromptsForDeliveryManagement = [
       {
         identifier: "ahm-process",
@@ -123,9 +108,6 @@ describe("Sidebar Component", () => {
     ];
 
     it("should render Delivery Management category and its prompt when feature flag is true", async () => {
-      getFeatureTogglesAsJson.mockReturnValue({
-        FEATURE_DELIVERY_MANAGEMENT: true,
-      });
       const Sidebar = (await import("../pages/_sidebar")).default;
 
       useRouter.mockReturnValue({
@@ -133,11 +115,16 @@ describe("Sidebar Component", () => {
       });
 
       await act(async () => {
-        render(<Sidebar prompts={mockPromptsForDeliveryManagement} />);
+        render(
+          <Sidebar
+            prompts={mockPromptsForDeliveryManagement}
+            featureToggleConfig={{ THOUGHTWORKS: true }}
+          />,
+        );
       });
 
-      expect(screen.getByText(/Delivery Management/i)).toBeInTheDocument();
-      const deliveryManagement = screen.getByText(/Delivery Management/i);
+      expect(screen.getByText(/^Delivery/i)).toBeInTheDocument();
+      const deliveryManagement = screen.getByText(/^Delivery/i);
       await act(async () => {
         deliveryManagement.click();
       });
@@ -145,9 +132,6 @@ describe("Sidebar Component", () => {
     });
 
     it("should NOT render Delivery Management category when feature flag is false", async () => {
-      getFeatureTogglesAsJson.mockReturnValue({
-        FEATURE_DELIVERY_MANAGEMENT: false,
-      });
       const Sidebar = (await import("../pages/_sidebar")).default;
 
       useRouter.mockReturnValue({
@@ -155,12 +139,15 @@ describe("Sidebar Component", () => {
       });
 
       await act(async () => {
-        render(<Sidebar prompts={mockPromptsForDeliveryManagement} />);
+        render(
+          <Sidebar
+            prompts={mockPromptsForDeliveryManagement}
+            featureToggleConfig={{ THOUGHTWORKS: false }}
+          />,
+        );
       });
 
-      expect(
-        screen.queryByText(/Delivery Management/i),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Delivery/i)).not.toBeInTheDocument();
       expect(screen.queryByText(/AHM Process/i)).not.toBeInTheDocument();
     });
 
@@ -172,20 +159,19 @@ describe("Sidebar Component", () => {
       });
 
       await act(async () => {
-        render(<Sidebar prompts={mockPromptsForDeliveryManagement} />);
+        render(
+          <Sidebar
+            prompts={mockPromptsForDeliveryManagement}
+            featureToggleConfig={{}}
+          />,
+        );
       });
 
-      expect(
-        screen.queryByText(/Delivery Management/i),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Delivery/i)).not.toBeInTheDocument();
       expect(screen.queryByText(/AHM Process/i)).not.toBeInTheDocument();
     });
 
     it("should always render items under others regardless of the feature flag", async () => {
-      getFeatureTogglesAsJson.mockReturnValue({
-        FEATURE_DELIVERY_MANAGEMENT: false,
-      });
-
       const Sidebar = (await import("../pages/_sidebar")).default;
 
       useRouter.mockReturnValue({
@@ -193,7 +179,12 @@ describe("Sidebar Component", () => {
       });
 
       await act(async () => {
-        render(<Sidebar prompts={mockPromptsForOtherCategory} />);
+        render(
+          <Sidebar
+            prompts={mockPromptsForOtherCategory}
+            featureToggleConfig={{ THOUGHTWORKS: false }}
+          />,
+        );
       });
 
       expect(screen.getByText(/Ideate/i)).toBeInTheDocument();
@@ -202,6 +193,141 @@ describe("Sidebar Component", () => {
         ideate.click();
       });
       expect(screen.getByText(/Creative Matrix/i)).toBeInTheDocument();
+    });
+  });
+
+  describe("Grounded Research Icon", () => {
+    const mockPromptsWithGroundedAttribute = [
+      {
+        identifier: "grounded-research-1",
+        title: "Company Research Analysis",
+        categories: ["research"],
+        type: "chat",
+        show: true,
+        grounded: true,
+      },
+      {
+        identifier: "regular-prompt",
+        title: "Regular Prompt",
+        categories: ["research"],
+        type: "chat",
+        show: true,
+        grounded: false,
+      },
+    ];
+
+    it("should render RiGlobalLine icon for grounded research items", async () => {
+      useRouter.mockReturnValue({
+        pathname: "/scenarios",
+      });
+
+      await act(async () => {
+        render(
+          <Sidebar
+            prompts={mockPromptsWithGroundedAttribute}
+            featureToggleConfig={{}}
+          />,
+        );
+      });
+
+      const researchCategory = screen.getByText(/Research/i);
+      await act(async () => {
+        researchCategory.click();
+      });
+
+      // Check if the icon is present for company research item
+      const companyResearchItem = screen.getByText(
+        /Company Research Analysis/i,
+      );
+      expect(companyResearchItem.closest("a")).toContainHTML("svg");
+
+      // Check if the icon is not present for regular item
+      const regularItem = screen.getByText(/Regular Prompt/i);
+      expect(regularItem.closest("a")).not.toContainHTML("svg");
+    });
+
+    it("should maintain correct sorting with icons", async () => {
+      useRouter.mockReturnValue({
+        pathname: "/scenarios",
+      });
+
+      await act(async () => {
+        render(
+          <Sidebar
+            prompts={mockPromptsWithGroundedAttribute}
+            featureToggleConfig={{}}
+          />,
+        );
+      });
+
+      const researchCategory = screen.getByText(/Research/i);
+      await act(async () => {
+        researchCategory.click();
+      });
+
+      const items = screen.getAllByRole("link");
+      const itemTexts = items.map((item) => item.textContent.trim());
+
+      // Verify that items are sorted alphabetically regardless of icon presence
+      expect(itemTexts).toEqual([
+        "Dashboard",
+        "Chat with Haiven",
+        "Company Research Analysis",
+        "Regular Prompt",
+      ]);
+    });
+  });
+
+  describe("Thoughtworks-only Categories", () => {
+    const mockPromptsWithThoughtworksOnlyCategory = [
+      {
+        identifier: "client-research-prompt",
+        title: "Client Research Prompt",
+        categories: ["client-research"],
+        type: "chat",
+        show: true,
+      },
+      {
+        identifier: "regular-prompt",
+        title: "Regular Prompt",
+        categories: ["architecture"],
+        type: "chat",
+        show: true,
+      },
+    ];
+
+    it("should not add Thoughtworks-only category prompts to 'Other' when feature flag is false", async () => {
+      const Sidebar = (await import("../pages/_sidebar")).default;
+
+      useRouter.mockReturnValue({
+        pathname: "/",
+      });
+
+      await act(async () => {
+        render(
+          <Sidebar
+            prompts={mockPromptsWithThoughtworksOnlyCategory}
+            featureToggleConfig={{ THOUGHTWORKS: false }}
+          />,
+        );
+      });
+
+      // Architecture category should be present
+      const architectureCategory = screen.getByText(/Architecture/i);
+      await act(async () => {
+        architectureCategory.click();
+      });
+
+      // The regular prompt should be there
+      expect(screen.getByText(/Regular Prompt/i)).toBeInTheDocument();
+
+      // The client research prompt should not be added anywhere
+      expect(
+        screen.queryByText(/Client Research Prompt/i),
+      ).not.toBeInTheDocument();
+
+      // Other category should not be present at all
+      expect(screen.queryByText(/Other/i)).not.toBeInTheDocument();
     });
   });
 });

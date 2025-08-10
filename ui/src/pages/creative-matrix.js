@@ -1,5 +1,5 @@
 // © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input, Button, Select, Collapse, Form } from "antd";
 import { UpOutlined } from "@ant-design/icons";
 import {
@@ -13,8 +13,11 @@ import { parse } from "best-effort-json-parser";
 import { fetchSSE } from "../app/_fetch_sse";
 import ChatHeader from "./_chat_header";
 import useLoader from "../hooks/useLoader";
+import LLMTokenUsage from "../app/_llm_token_usage";
+import { formattedUsage } from "../app/utils/tokenUtils";
+import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
 
-const CreativeMatrix = ({ models }) => {
+const CreativeMatrix = ({ models, featureToggleConfig }) => {
   const [promptInput, setPromptInput] = useState("");
   const [rowsCSV, setRowsCSV] = useState("For Customers, For Employees");
   const [columnsCSV, setColumnsCSV] = useState(
@@ -22,6 +25,11 @@ const CreativeMatrix = ({ models }) => {
   );
   const [isPromptOptionsMenuExpanded, setPromptOptionsMenuExpanded] =
     useState(true);
+  // Aggregate token usage per page
+  const [tokenUsage, setTokenUsage] = useState({
+    input_tokens: 0,
+    output_tokens: 0,
+  });
   const [disableChatInput, setDisableChatInput] = useState(false);
   const [prompt, setPrompt] = useState(
     "Inspire me with generative AI use cases for Nike",
@@ -72,6 +80,11 @@ const CreativeMatrix = ({ models }) => {
       columnsCSV: "Column 1, Column 2, Column 3",
     },
   ]);
+
+  useEffect(() => {
+    // Reset token usage aggregation on mount (page load)
+    setTokenUsage({ input_tokens: 0, output_tokens: 0 });
+  }, []);
 
   const onChangeRowsCSV = (e) => {
     setRowsCSV(e.target.value);
@@ -132,6 +145,7 @@ const CreativeMatrix = ({ models }) => {
     setDisableChatInput(true);
     setPrompt("");
     setPromptOptionsMenuExpanded(false);
+    // Do not reset token usage here; we want to aggregate per page
 
     const uri =
       "/api/creative-matrix?rows=" +
@@ -165,6 +179,12 @@ const CreativeMatrix = ({ models }) => {
             abortLoad();
           },
           onMessageHandle: (data) => {
+            if (data.type === "token_usage") {
+              const usage = formattedUsage(data.data);
+              setTokenUsage((prev) => aggregateTokenUsage(prev, usage));
+              return;
+            }
+
             if (data.data) {
               ms += data.data;
               ms = ms.trim().replace(/^[^[]+/, "");
@@ -198,6 +218,10 @@ const CreativeMatrix = ({ models }) => {
   const title = (
     <div className="title">
       <h3>Creative Matrix</h3>
+      <LLMTokenUsage
+        tokenUsage={tokenUsage}
+        featureToggleConfig={featureToggleConfig}
+      />
     </div>
   );
 
