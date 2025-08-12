@@ -3,7 +3,7 @@ import { dismissModalIfPresent } from './test-utils';
 
 test.describe('US-002: Creative Matrix Generation Tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:8080/');
+    await page.goto('/');
     await dismissModalIfPresent(page);
     await page.getByRole('link', { name: /creative matrix/i }).click();
     await expect(page).toHaveURL(/\/creative-matrix/);

@@ -67,7 +67,7 @@ export async function waitForStreamingComplete(page: Page) {
 
 // Helper function to navigate to the main page and dismiss modal
 export async function navigateToMainPage(page: Page) {
-  await page.goto('http://localhost:8080/');
+  await page.goto('/');
   await dismissModalIfPresent(page);
   await page.waitForLoadState('networkidle');
 }

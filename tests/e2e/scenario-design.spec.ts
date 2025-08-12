@@ -3,7 +3,7 @@ import { dismissModalIfPresent } from './test-utils';
 
 test.describe('Haiven Scenario Design Page', () => {
   test('should navigate to Scenario Design and display content', async ({ page }) => {
-    await page.goto('http://localhost:8080/');
+    await page.goto('/');
     await dismissModalIfPresent(page);
     await page.getByRole('link', { name: /scenario design/i }).click();
     await expect(page).toHaveURL(/\/scenarios/);

@@ -3,7 +3,7 @@ import { dismissModalIfPresent } from './test-utils';
 
 test.describe('US-001: Pinboard Core Functionality Tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:8080/');
+    await page.goto('/');
     await dismissModalIfPresent(page);
   });
 
