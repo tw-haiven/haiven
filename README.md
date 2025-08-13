@@ -188,34 +188,13 @@ poetry run pytest -m 'not integration' tests/
 
 ### E2E Testing
 
-Haiven includes end-to-end test suite that runs against local instance, using Playwright to ensure the card follow-up/exploration feature works correctly across all supported pages.
+For end-to-end testing with Playwright (setup, environments, run modes, and reports), see tests/README.md for the authoritative instructions.
 
-#### Setup E2E Tests
+- Quick start and prerequisites
+- Running against local, demo, and prod environments
+- Headed, debug, UI modes, and viewing reports
 
-```bash
-# Setup e2e test environment
-./tests/run-e2e-tests.sh setup
-```
-
-#### Run E2E Tests
-
-```bash
-# Run all e2e tests
-./tests/run-e2e-tests.sh run
-
-# Show test report
-./tests/run-e2e-tests.sh run report
-```
-
-#### E2E Test Coverage
-
-The e2e tests cover:
-- **Requirements Breakdown** - Card generation and enrichment
-- **User Story Refinement** - User story creation and enhancement
-- **Fitness Functions Brainstorm** - Fitness function design and improvement
-- **Threat Modelling: STRIDE** - Security threat analysis and enrichment
-
-For more details, see [tests/e2e/README.md](tests/e2e/README.md).
+Refer to: tests/README.md
 
 ### 4. Deploy your own instance
 

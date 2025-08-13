@@ -1,5 +1,5 @@
 # Stage 0: Frontend build
-FROM node:22.6-alpine AS node-builder
+FROM node:22.18.0-alpine AS node-builder
 RUN apk add --no-cache libc6-compat
 RUN apk add --update python3 make g++ && rm -rf /var/cache/apk/*
 WORKDIR /ui

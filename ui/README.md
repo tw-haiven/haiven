@@ -6,7 +6,7 @@ Using the Boba PoC as a basis, we're working on a Javascript-based UI.
 
 Prerequisites:
 
-- Node.JS 22
+- Node and yarn - check `package.json` for current specific node version needed, we're often fighting with incompatibilities between next.js upgrades and node versions
 - Yarn
 
 ```
