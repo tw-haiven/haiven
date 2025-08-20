@@ -87,7 +87,7 @@ docker run \
         -e KNOWLEDGE_PACK_PATH=/knowledge-pack \
         -e AUTH_SWITCHED_OFF=true \
         -e ENABLED_PROVIDERS=ollama \
-        -e ENABLED_CHAT_MODEL=ollama-mxbai-chat-large \
+        -e ENABLED_CHAT_MODEL=ollama-local-llama3 \
         -e ENABLED_EMBEDDINGS_MODEL=ollama-mxbai-embed-large \
         -e ENABLED_VISION_MODEL=ollama-local-llava \
         -e OLLAMA_HOST=http://host.docker.internal:11434 \
