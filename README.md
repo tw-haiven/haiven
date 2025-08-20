@@ -47,7 +47,6 @@ You can run the application with the public sample knowledge pack `haiven-sample
 
 - Create a `.env` file with the content of [app/.env.azure.template](app/.env.azure.template)
 - Change the `AZURE_OPENAI_API_KEY` in that file to the API Key - (Thoughtworkers can ask the Haiven team for access to the "trial" Azure OpenAI API Key).
-
 ```
 mkdir haiven
 cd haiven
@@ -88,6 +87,7 @@ docker run \
         -e KNOWLEDGE_PACK_PATH=/knowledge-pack \
         -e AUTH_SWITCHED_OFF=true \
         -e ENABLED_PROVIDERS=ollama \
+        -e ENABLED_CHAT_MODEL=ollama-mxbai-chat-large \
         -e ENABLED_EMBEDDINGS_MODEL=ollama-mxbai-embed-large \
         -e ENABLED_VISION_MODEL=ollama-local-llava \
         -e OLLAMA_HOST=http://host.docker.internal:11434 \
