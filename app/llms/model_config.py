@@ -36,6 +36,8 @@ class ModelConfig:
             self.lite_id = "bedrock/" + self.config["model_id"]
         elif self.provider.lower() == "anthropic":
             self.lite_id = "anthropic/" + self.config["model_id"]
+        elif self.provider.lower() == "openai":
+            self.lite_id = "openai/" + self.config["model_name"]
         elif self.provider.lower() == "gcp":
             self.lite_id = "gemini/" + self.config["model"]
         elif self.provider.lower() == "ollama":
