@@ -42,6 +42,8 @@ class ModelConfig:
             self.lite_id = "ollama/" + self.config["model"]
         elif self.provider.lower() == "perplexity":
             self.lite_id = "perplexity/sonar-pro"
+        elif self.provider.lower() == "openai":
+            self.lite_id = "openai/" + self.config["model_name"]
 
     @classmethod
     def from_dict(cls, data):
