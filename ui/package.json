@@ -55,7 +55,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "24.3.0",
     "@types/react": "^19.1.10",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^5.0.1",
     "eslint": "9.33.0",
     "eslint-config-next": "15.4.6",
     "jsdom": "^26.1.0",
