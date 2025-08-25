@@ -31,7 +31,7 @@
     "hnswlib-node": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
     "jszip": "^3.10.1",
-    "mermaid": "^11.9.0",
+    "mermaid": "^11.10.1",
     "next": "^15.4.6",
     "partial-json-parser": "^1.2.2",
     "postcss": "8.5.6",
