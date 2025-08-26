@@ -211,17 +211,17 @@ cryptography = "*"
 
 [[package]]
 name = "boto3"
-version = "1.40.16"
+version = "1.40.17"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "boto3-1.40.16-py3-none-any.whl", hash = "sha256:4b7fbd2b469d5fa6325f0e90310b2d430c9a35e8a984a9919103e6d248422537"},
-    {file = "boto3-1.40.16.tar.gz", hash = "sha256:667bc3a9bd1f26579957d95a2612359103c343dd74d44f202d09a155ed4189c6"},
+    {file = "boto3-1.40.17-py3-none-any.whl", hash = "sha256:2cacecd689cb51d81fbf54f84b64d0e6e922fbc18ee513c568b9f61caf4221e0"},
+    {file = "boto3-1.40.17.tar.gz", hash = "sha256:e115dc87d5975d32dfa0ebaf19c39e360665317a350004fa94b03200fe853f2e"},
 ]
 
 [package.dependencies]
-botocore = ">=1.40.16,<1.41.0"
+botocore = ">=1.40.17,<1.41.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.13.0,<0.14.0"
 
@@ -230,13 +230,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.40.16"
+version = "1.40.17"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "botocore-1.40.16-py3-none-any.whl", hash = "sha256:0296a245cb349431279d825522ae70270edf8d8be7b91108fdcc086ea347c0b6"},
-    {file = "botocore-1.40.16.tar.gz", hash = "sha256:522a8b7e3837667aca978b5b2dd2d12c3834f58f13df3c8d3369070d883d608d"},
+    {file = "botocore-1.40.17-py3-none-any.whl", hash = "sha256:603951935c1a741ae70236bf15725c5293074f28503e7029ad0e24ece476a342"},
+    {file = "botocore-1.40.17.tar.gz", hash = "sha256:769cd04a6a612f2d48b5f456c676fd81733fab682870952f7e2887260ea6a2bc"},
 ]
 
 [package.dependencies]
@@ -4183,13 +4183,13 @@ typing-extensions = ">=3.7.4.3"
 
 [[package]]
 name = "typing-extensions"
-version = "4.14.1"
+version = "4.15.0"
 description = "Backported and Experimental Type Hints for Python 3.9+"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "typing_extensions-4.14.1-py3-none-any.whl", hash = "sha256:d1e1e3b58374dc93031d6eda2420a48ea44a36c2b4766a4fdeb3710755731d76"},
-    {file = "typing_extensions-4.14.1.tar.gz", hash = "sha256:38b39f4aeeab64884ce9f74c94263ef78f3c22467c8724005483154c26648d36"},
+    {file = "typing_extensions-4.15.0-py3-none-any.whl", hash = "sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548"},
+    {file = "typing_extensions-4.15.0.tar.gz", hash = "sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466"},
 ]
 
 [[package]]
@@ -4743,4 +4743,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "fa0ce6411271fe0842a1fbde5009791e5ce061ce40907dc3c590cd3622242587"
+content-hash = "7e985f11797427426946d21f2bec1b4aa1d85ce948ac1ab60bab7f1d1303a6fc"
