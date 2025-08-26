@@ -9,7 +9,7 @@ readme = "README.md"
 haiven-cli = "haiven_cli.main:cli"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 beautifulsoup4 = "^4.13.5"
 faiss-cpu = "^1.11.0.post1"
 langchain = "^0.3.27"

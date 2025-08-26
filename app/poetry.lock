@@ -1977,7 +1977,7 @@ files = [
 [package.dependencies]
 boto3 = ">=1.39.7"
 langchain-core = ">=0.3.74,<0.4.0"
-numpy = {version = ">=1,<2", markers = "python_version < \"3.12\""}
+numpy = {version = ">=1.26.0,<3", markers = "python_version >= \"3.12\""}
 pydantic = ">=2.10.0,<3"
 
 [package.extras]
@@ -2653,7 +2653,7 @@ files = [
 ]
 
 [package.dependencies]
-numpy = {version = ">=1.23.2", markers = "python_version == \"3.11\""}
+numpy = {version = ">=1.26.0", markers = "python_version >= \"3.12\""}
 python-dateutil = ">=2.8.2"
 pytz = ">=2020.1"
 tzdata = ">=2022.7"
@@ -4742,5 +4742,5 @@ cffi = ["cffi (>=1.11)"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = "~3.11"
-content-hash = "7e985f11797427426946d21f2bec1b4aa1d85ce948ac1ab60bab7f1d1303a6fc"
+python-versions = "~3.12"
+content-hash = "da43b80b836dc38cf32f8646840b934c2ea81732c1172975805a580561d3de84"

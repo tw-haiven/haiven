@@ -6,7 +6,7 @@ End-to-end Playwright tests for the Haiven application.
 
 Prerequisites:
 - Node and yarn - check `package.json` for current specific node version needed, we're often fighting with incompatibilities between next.js upgrades and node versions
-- For local runs: Python 3.11+, Poetry with app dependencies installed (the runner will start the backend via Poetry)
+- For local runs: Python 3.12+, Poetry with app dependencies installed (the runner will start the backend via Poetry)
 
 ```bash
 # From repository root

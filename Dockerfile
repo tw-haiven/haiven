@@ -14,7 +14,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN yarn build
 
 # Stage 1: Backend build environment
-FROM python:3.11-slim as builder
+FROM python:3.12-slim as builder
 
 WORKDIR /app
 
@@ -35,7 +35,7 @@ RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi --no-root
 
 # Stage 2: Production environment
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # Create a non-root user
 RUN addgroup --system --gid 999 appgroup \
@@ -44,7 +44,7 @@ RUN addgroup --system --gid 999 appgroup \
 WORKDIR /app
 
 # Copy the installed application dependencies from the builder stage
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY ./app /app
 COPY --from=node-builder /ui/out /app/resources/static/out
 

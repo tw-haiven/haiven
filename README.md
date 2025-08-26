@@ -146,7 +146,7 @@ If you want to use Azure, GCP or AWS, you need to set the corresponding environm
 #### Option 2: Run the code locally
 
 Prerequisites:
-- Python (3.11)
+- Python (3.12)
 - [Poetry](https://python-poetry.org/)
 - Node and yarn - check `package.json` for current specific node version needed, we're often fighting with incompatibilities between next.js upgrades and node versions
 - If you don't have OAuth integration and credentials set up yet, you can set `AUTH_SWITCHED_OFF=true` in the `.env` file.
