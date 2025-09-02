@@ -143,6 +143,8 @@ class ApiKeyAuthService:
             return True
         if request_path.startswith("/api/download-prompt"):
             return True
+        if request_path.startswith("/api/rules"):
+            return True
         return False
 
     async def authenticate_with_api_key(

@@ -3,3 +3,5 @@ description: Writing tests
 globs: 
 ---
 - Make sure the test can be run without pre-requisites - tests should always set up and clean up their own test data
+- use poetry to manage dependencies,
+- make sure that all code is covered

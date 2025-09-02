@@ -9,6 +9,19 @@ import time
 from starlette.responses import RedirectResponse
 
 
+@pytest.fixture(autouse=True)
+def env_cleanup():
+    """Automatically clean up environment variables after each test."""
+    # Store original value
+    original_value = os.environ.get("AUTH_SWITCHED_OFF")
+    yield
+    # Restore original value after test
+    if original_value is not None:
+        os.environ["AUTH_SWITCHED_OFF"] = original_value
+    elif "AUTH_SWITCHED_OFF" in os.environ:
+        del os.environ["AUTH_SWITCHED_OFF"]
+
+
 @pytest.fixture
 def minimal_server_app():
     # Minimal mocks for dependencies
