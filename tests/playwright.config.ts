@@ -68,7 +68,7 @@ export default defineConfig({
   // Only include webServer for local tests
   ...(isLocalTest && {
     webServer: {
-      command: 'cd ui && yarn copy && cd .. && poetry run app',
+      command: 'cd ../ui && yarn copy && cd .. && poetry run app',
       url: 'http://localhost:8080',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
