@@ -211,17 +211,17 @@ cryptography = "*"
 
 [[package]]
 name = "boto3"
-version = "1.40.21"
+version = "1.40.26"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "boto3-1.40.21-py3-none-any.whl", hash = "sha256:3772fb828864d3b7046c8bdf2f4860aaca4a79f25b7b060206c6a5f4944ea7f9"},
-    {file = "boto3-1.40.21.tar.gz", hash = "sha256:876ccc0b25517b992bd27976282510773a11ebc771aa5b836a238ea426c82187"},
+    {file = "boto3-1.40.26-py3-none-any.whl", hash = "sha256:8272deb4b82c4a0faa1231c2cd5c6d267d71ed6265abef545c1d5b7f0aa936d8"},
+    {file = "boto3-1.40.26.tar.gz", hash = "sha256:9a71684825cfd4548027f254eadf4dafb7fccc7523f20e2a1cb74033f4d74a6b"},
 ]
 
 [package.dependencies]
-botocore = ">=1.40.21,<1.41.0"
+botocore = ">=1.40.26,<1.41.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.13.0,<0.14.0"
 
@@ -230,13 +230,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.40.21"
+version = "1.40.26"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "botocore-1.40.21-py3-none-any.whl", hash = "sha256:574ecf9b68c1721650024a27e00e0080b6f141c281ebfce49e0d302969270ef4"},
-    {file = "botocore-1.40.21.tar.gz", hash = "sha256:f77e9c199df0252b14ea739a9ac99723940f6bde90f4c2e7802701553a62827b"},
+    {file = "botocore-1.40.26-py3-none-any.whl", hash = "sha256:c3e89787b1a360d0fd30f9066864415df02d54b07691cabc34a6b1a01c3d2549"},
+    {file = "botocore-1.40.26.tar.gz", hash = "sha256:f8f46b3978b7c324f4c0bef03505870c4c5240c736bfb63318da091942a29710"},
 ]
 
 [package.dependencies]
@@ -2120,13 +2120,13 @@ pytest = ["pytest (>=7.0.0)", "rich (>=13.9.4,<14.0.0)"]
 
 [[package]]
 name = "litellm"
-version = "1.76.1"
+version = "1.76.3"
 description = "Library to easily interface with LLM API providers"
 optional = false
 python-versions = "!=2.7.*,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,!=3.7.*,>=3.8"
 files = [
-    {file = "litellm-1.76.1-py3-none-any.whl", hash = "sha256:938f05075372f26098211ea9b3cb0a6bb7b46111330226b70d42d40bd307812f"},
-    {file = "litellm-1.76.1.tar.gz", hash = "sha256:d5a3a3efda04999b60ec0d1c29c1eaaa12f89a7b29db4bda691c7fb55b4fa6ad"},
+    {file = "litellm-1.76.3-py3-none-any.whl", hash = "sha256:d62e3ff2a80ec5e551c6d7a0fe199ffe718ecb6cbaa43fc9250dd8d7c0944352"},
+    {file = "litellm-1.76.3.tar.gz", hash = "sha256:fc81219c59b17b26cc81276ce32582f3715612877ab11c1ea2c26e4853ac67e8"},
 ]
 
 [package.dependencies]
@@ -2519,13 +2519,13 @@ pydantic = ">=2.9"
 
 [[package]]
 name = "openai"
-version = "1.102.0"
+version = "1.107.0"
 description = "The official Python library for the openai API"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "openai-1.102.0-py3-none-any.whl", hash = "sha256:d751a7e95e222b5325306362ad02a7aa96e1fab3ed05b5888ce1c7ca63451345"},
-    {file = "openai-1.102.0.tar.gz", hash = "sha256:2e0153bcd64a6523071e90211cbfca1f2bbc5ceedd0993ba932a5869f93b7fc9"},
+    {file = "openai-1.107.0-py3-none-any.whl", hash = "sha256:3dcfa3cbb116bd6924b27913b8da28c4a787379ff60049588547a1013e6d6438"},
+    {file = "openai-1.107.0.tar.gz", hash = "sha256:43e04927584e57d0e9e640ee0077c78baf8150098be96ebd5c512539b6c4e9a4"},
 ]
 
 [package.dependencies]
@@ -3280,13 +3280,13 @@ image = ["Pillow (>=8.0.0)"]
 
 [[package]]
 name = "pytest"
-version = "8.4.1"
+version = "8.4.2"
 description = "pytest: simple powerful testing with Python"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "pytest-8.4.1-py3-none-any.whl", hash = "sha256:539c70ba6fcead8e78eebbf1115e8b589e7565830d7d006a8723f19ac8a0afb7"},
-    {file = "pytest-8.4.1.tar.gz", hash = "sha256:7c67fd69174877359ed9371ec3af8a3d2b04741818c51e5e99cc1742251fa93c"},
+    {file = "pytest-8.4.2-py3-none-any.whl", hash = "sha256:872f880de3fc3a5bdc88a11b39c9710c3497a547cfa9320bc3c5e62fbf272e79"},
+    {file = "pytest-8.4.2.tar.gz", hash = "sha256:86c0d0b93306b961d58d62a4db4879f27fe25513d4b969df351abdddb3c30e01"},
 ]
 
 [package.dependencies]
@@ -3301,13 +3301,13 @@ dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "requests
 
 [[package]]
 name = "pytest-cov"
-version = "6.2.1"
+version = "6.3.0"
 description = "Pytest plugin for measuring coverage."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "pytest_cov-6.2.1-py3-none-any.whl", hash = "sha256:f5bc4c23f42f1cdd23c70b1dab1bbaef4fc505ba950d53e0081d0730dd7e86d5"},
-    {file = "pytest_cov-6.2.1.tar.gz", hash = "sha256:25cc6cc0a5358204b8108ecedc51a9b57b34cc6b8c967cc2c01a4e00d8a67da2"},
+    {file = "pytest_cov-6.3.0-py3-none-any.whl", hash = "sha256:440db28156d2468cafc0415b4f8e50856a0d11faefa38f30906048fe490f1749"},
+    {file = "pytest_cov-6.3.0.tar.gz", hash = "sha256:35c580e7800f87ce892e687461166e1ac2bcb8fb9e13aea79032518d6e503ff2"},
 ]
 
 [package.dependencies]
@@ -3320,13 +3320,13 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "virtualenv"]
 
 [[package]]
 name = "pytest-mock"
-version = "3.14.1"
+version = "3.15.0"
 description = "Thin-wrapper around the mock package for easier use with pytest"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "pytest_mock-3.14.1-py3-none-any.whl", hash = "sha256:178aefcd11307d874b4cd3100344e7e2d888d9791a6a1d9bfe90fbc1b74fd1d0"},
-    {file = "pytest_mock-3.14.1.tar.gz", hash = "sha256:159e9edac4c451ce77a5cdb9fc5d1100708d2dd4ba3c3df572f14097351af80e"},
+    {file = "pytest_mock-3.15.0-py3-none-any.whl", hash = "sha256:ef2219485fb1bd256b00e7ad7466ce26729b30eadfc7cbcdb4fa9a92ca68db6f"},
+    {file = "pytest_mock-3.15.0.tar.gz", hash = "sha256:ab896bd190316b9d5d87b277569dfcdf718b2d049a2ccff5f7aca279c002a1cf"},
 ]
 
 [package.dependencies]
@@ -3467,18 +3467,18 @@ files = [
 
 [[package]]
 name = "ragas"
-version = "0.3.2"
+version = "0.3.3"
 description = "Evaluation framework for RAG and LLM applications"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "ragas-0.3.2-py3-none-any.whl", hash = "sha256:ccf4447fdc6daf69b5fafb26d8baa5095e4194a4dc87091b2a118f68322e7f1b"},
-    {file = "ragas-0.3.2.tar.gz", hash = "sha256:a800a5326f0d5bfa086cf8832d4b1031e4b21ff063f83d7d9388ee36e1a93fe6"},
+    {file = "ragas-0.3.3-py3-none-any.whl", hash = "sha256:87ce8fcb53643fcb317f55155bced92e592b559a17a109776ecc607398adfbef"},
+    {file = "ragas-0.3.3.tar.gz", hash = "sha256:b0915ee51fa5682f84996798857f2e11238f37df23d135134970a924e8d668a7"},
 ]
 
 [package.dependencies]
 appdirs = "*"
-datasets = "*"
+datasets = ">=4.0.0"
 diskcache = ">=5.6.3"
 gitpython = "*"
 instructor = "*"
@@ -3499,8 +3499,9 @@ typer = "*"
 [package.extras]
 ai-frameworks = ["haystack-ai"]
 all = ["datacompy", "llama_index", "nltk", "pandas", "r2r", "rapidfuzz", "rouge_score", "sacrebleu", "sentence-transformers", "transformers"]
-examples = ["openai (>=1.0.0)"]
+dev-minimal = ["build (>=1.3.0)", "nbmake", "pre-commit (>=4.3.0)", "pyright (>=1.1.403)", "pytest", "pytest-asyncio", "pytest-xdist[psutil]", "ruff"]
 gdrive = ["google-api-python-client (>=2.178.0)", "google-auth (>=2.40.3)", "google-auth-oauthlib (>=1.2.2)"]
+test = ["scipy"]
 tracing = ["langfuse (>=3.2.4)", "mlflow (>=3.1.4)"]
 
 [[package]]
@@ -4778,4 +4779,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.12"
-content-hash = "2f7d08dc37a2849908f34809b0171b47f5baf67533384ed886e6de0a2dc24288"
+content-hash = "5eeed8790a20374076e472a03b8c6551be1c612ffa4afe1fb3fe535b687ead48"
