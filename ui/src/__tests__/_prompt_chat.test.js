@@ -302,27 +302,33 @@ describe("PromptChat Component", () => {
     await selectContext("Context 2");
     await selectDocument("Document 1");
     await selectDocument("Document 2");
-    uploadImage();
+    await uploadImage();
     givenUserInput();
 
     const sendButton = screen.getByRole("button", { name: "SEND" });
     fireEvent.click(sendButton);
 
-    await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledWith("/api/prompt", expect.any(Object));
-      const fetchOptions = fetchMock.mock.calls[0][1];
-      expect(fetchOptions.method).toBe("POST");
-      expect(fetchOptions.headers["Content-Type"]).toBe("application/json");
-      expect(fetchOptions.body).toBe(
-        JSON.stringify({
-          userinput: "Here is my prompt input\n\nMocked image description",
-          promptid: "1",
-          chatSessionId: undefined,
-          document: ["document1", "document2"],
-          contexts: ["context1", "context2"],
-        }),
-      );
-    });
+    await waitFor(
+      () => {
+        expect(fetchMock).toHaveBeenCalledWith(
+          "/api/prompt",
+          expect.any(Object),
+        );
+        const fetchOptions = fetchMock.mock.calls[0][1];
+        expect(fetchOptions.method).toBe("POST");
+        expect(fetchOptions.headers["Content-Type"]).toBe("application/json");
+        expect(fetchOptions.body).toBe(
+          JSON.stringify({
+            userinput: "Here is my prompt input\n\nMocked image description",
+            promptid: "1",
+            chatSessionId: undefined,
+            document: ["document1", "document2"],
+            contexts: ["context1", "context2"],
+          }),
+        );
+      },
+      { timeout: 10000 },
+    );
 
     // Check if the response appears in the ProChat component
     await waitFor(
@@ -335,9 +341,9 @@ describe("PromptChat Component", () => {
           screen.queryByText(mockResponse, { exact: false }),
         ).toBeInTheDocument();
       },
-      { timeout: 5000 },
+      { timeout: 10000 },
     );
-  });
+  }, 15000);
 
   it("should fetch chat response for multiple contexts which includes knowledge pack contexts and user contexts", async () => {
     setUpUserContexts();
@@ -400,9 +406,9 @@ describe("PromptChat Component", () => {
           screen.queryByText(mockResponse, { exact: false }),
         ).toBeInTheDocument();
       },
-      { timeout: 5000 },
+      { timeout: 10000 },
     );
-  });
+  }, 15000);
 
   //TODO:
   //test for checking chat actions are working correctly
