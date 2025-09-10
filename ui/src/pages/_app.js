@@ -14,6 +14,7 @@ import {
   getContextSnippets,
   getDocuments,
   getModels,
+  getRules,
 } from "../app/_boba_api";
 import { getFeatureTogglesAsJson } from "../app/feature_toggle";
 
@@ -28,6 +29,7 @@ export default function App({
   const [contexts, setContexts] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [models, setModels] = useState([]);
+  const [rules, setRules] = useState([]);
   const [featureToggleConfig, setFeatureToggleConfig] = useState({});
 
   const colorlightgray = "#edf1f3";
@@ -57,6 +59,7 @@ export default function App({
       setDocuments(data);
     });
     getModels(setModels);
+    getRules(setRules);
     initializeLocalStorage();
 
     const fetchToggles = async () => {
@@ -173,6 +176,7 @@ export default function App({
                 contexts={contexts}
                 documents={documents}
                 models={models}
+                rules={rules}
                 featureToggleConfig={featureToggleConfig}
               />
             </Layout.Content>

@@ -134,6 +134,19 @@ export const getInspirationById = async (inspirationId, onSuccess) => {
   });
 };
 
+export const getRules = async (onSuccess) =>
+  fetch("/api/rules/list", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((response) => {
+    response.json().then((data) => {
+      onSuccess(data.rules || []);
+    });
+  });
+
 // API Key Management Functions
 export const getApiKeys = async (onSuccess, onError) => {
   const response = await fetch("/api/apikeys", {

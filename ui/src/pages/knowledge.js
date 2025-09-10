@@ -4,12 +4,14 @@ import ReactMarkdown from "react-markdown";
 import { Collapse } from "antd";
 import MarkdownRenderer from "../app/_markdown_renderer";
 import DownloadAllPrompts from "../app/_download_all_prompts";
+import DownloadRules from "../app/_download_rules";
 import { FEATURES } from "../app/feature_toggle";
 
 const KnowledgePackPage = ({
   contexts,
   documents,
   prompts,
+  rules,
   featureToggleConfig,
 }) => {
   const [renderedSnippets, setRenderedSnippets] = useState();
@@ -78,7 +80,10 @@ const KnowledgePackPage = ({
       <div className={"knowledge-overview"}>
         <div className="knowledge-overview-header">
           <h1>Your knowledge</h1>
-          <DownloadAllPrompts prompts={prompts} />
+          <div className="download-buttons">
+            <DownloadAllPrompts prompts={prompts} />
+            <DownloadRules rules={rules} />
+          </div>
         </div>
         <p>
           This page shows an overview of the knowledge you currently have in
