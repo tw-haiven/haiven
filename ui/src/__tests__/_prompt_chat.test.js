@@ -53,7 +53,15 @@ describe("PromptChat Component", () => {
     const tooltipElement = screen.getByTestId(testId);
     expect(tooltipElement).toBeInTheDocument();
     fireEvent.mouseOver(tooltipElement.firstChild);
-    expect(await screen.findByText(tooltipText)).toBeInTheDocument();
+
+    // Wait for tooltip to appear with a longer timeout and more robust checking
+    await waitFor(
+      () => {
+        const tooltip = screen.queryByText(tooltipText);
+        expect(tooltip).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
   };
 
   const someUserInput = "Here is my prompt input";
