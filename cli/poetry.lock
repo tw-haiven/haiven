@@ -196,17 +196,17 @@ lxml = ["lxml"]
 
 [[package]]
 name = "boto3"
-version = "1.40.30"
+version = "1.40.39"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "boto3-1.40.30-py3-none-any.whl", hash = "sha256:04e89abf61240857bf7dec160e22f097eec68c502509b2bb3c5010a22cb91052"},
-    {file = "boto3-1.40.30.tar.gz", hash = "sha256:e95db539c938710917f4cb4fc5915f71b27f2c836d949a1a95df7895d2e9ec8b"},
+    {file = "boto3-1.40.39-py3-none-any.whl", hash = "sha256:e2cab5606269fe9f428981892aa592b7e0c087a038774475fa4cd6c8b5fe0a99"},
+    {file = "boto3-1.40.39.tar.gz", hash = "sha256:27ca06d4d6f838b056b4935c9eceb92c8d125dbe0e895c5583bcf7130627dcd2"},
 ]
 
 [package.dependencies]
-botocore = ">=1.40.30,<1.41.0"
+botocore = ">=1.40.39,<1.41.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.14.0,<0.15.0"
 
@@ -215,13 +215,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.40.30"
+version = "1.40.39"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "botocore-1.40.30-py3-none-any.whl", hash = "sha256:1d87874ad81234bec3e83f9de13618f67ccdfefd08d6b8babc041cd45007447e"},
-    {file = "botocore-1.40.30.tar.gz", hash = "sha256:8a74f77cfe5c519826d22f7613f89544cbb8491a1a49d965031bd997f89a8e3f"},
+    {file = "botocore-1.40.39-py3-none-any.whl", hash = "sha256:144e0e887a9fc198c6772f660fc006028bd1a9ce5eea3caddd848db3e421bc79"},
+    {file = "botocore-1.40.39.tar.gz", hash = "sha256:c6efc55cac341811ba90c693d20097db6e2ce903451d94496bccd3f672b1709d"},
 ]
 
 [package.dependencies]
@@ -1824,13 +1824,13 @@ windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "pypdf"
-version = "6.0.0"
+version = "6.1.0"
 description = "A pure-python PDF library capable of splitting, merging, cropping, and transforming PDF files"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "pypdf-6.0.0-py3-none-any.whl", hash = "sha256:56ea60100ce9f11fc3eec4f359da15e9aec3821b036c1f06d2b660d35683abb8"},
-    {file = "pypdf-6.0.0.tar.gz", hash = "sha256:282a99d2cc94a84a3a3159f0d9358c0af53f85b4d28d76ea38b96e9e5ac2a08d"},
+    {file = "pypdf-6.1.0-py3-none-any.whl", hash = "sha256:6b34e4147df20978bf270af19826692e0485431a9d3944617b9533bc77efb695"},
+    {file = "pypdf-6.1.0.tar.gz", hash = "sha256:0cba440d024da5a2a9304f03cd645346052827b84c5a461c6123e24ed5a3b0b9"},
 ]
 
 [package.extras]
@@ -1883,13 +1883,13 @@ testing = ["process-tests", "pytest-xdist", "virtualenv"]
 
 [[package]]
 name = "pytest-mock"
-version = "3.15.0"
+version = "3.15.1"
 description = "Thin-wrapper around the mock package for easier use with pytest"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "pytest_mock-3.15.0-py3-none-any.whl", hash = "sha256:ef2219485fb1bd256b00e7ad7466ce26729b30eadfc7cbcdb4fa9a92ca68db6f"},
-    {file = "pytest_mock-3.15.0.tar.gz", hash = "sha256:ab896bd190316b9d5d87b277569dfcdf718b2d049a2ccff5f7aca279c002a1cf"},
+    {file = "pytest_mock-3.15.1-py3-none-any.whl", hash = "sha256:0a25e2eb88fe5168d535041d09a4529a188176ae608a6d249ee65abc0949630d"},
+    {file = "pytest_mock-3.15.1.tar.gz", hash = "sha256:1849a238f6f396da19762269de72cb1814ab44416fa73a8686deac10b0d87a0f"},
 ]
 
 [package.dependencies]
@@ -2427,13 +2427,13 @@ typer = "0.12.5"
 
 [[package]]
 name = "typer-slim"
-version = "0.17.4"
+version = "0.19.2"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "typer_slim-0.17.4-py3-none-any.whl", hash = "sha256:b0edb16f7978d945b5bc23c057c2af99e58c0601827bddbbe240b4b52eb364bc"},
-    {file = "typer_slim-0.17.4.tar.gz", hash = "sha256:c25430a74e45546df3e76b53bdfd0a1d86569d319f9c387e76e1b25a4dd72a0c"},
+    {file = "typer_slim-0.19.2-py3-none-any.whl", hash = "sha256:1c9cdbbcd5b8d30f4118d3cb7c52dc63438b751903fbd980a35df1dfe10c6c91"},
+    {file = "typer_slim-0.19.2.tar.gz", hash = "sha256:6f601e28fb8249a7507f253e35fb22ccc701403ce99bea6a9923909ddbfcd133"},
 ]
 
 [package.dependencies]
@@ -2711,4 +2711,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "5766004da59a36ae51cf8cc3779aa5197e460090c5609e167832cd1d10be69db"
+content-hash = "ca7f32890d302ef81612552d944eb0a2ba962d216b6f24bcc8d24e76d3b924de"
