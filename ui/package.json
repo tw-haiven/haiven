@@ -26,7 +26,7 @@
     "d3-zoom": "^3.0.0",
     "diff": "^8.0.2",
     "dompurify": "^3.2.7",
-    "dotenv": "^17.2.2",
+    "dotenv": "^17.2.3",
     "google-search-results-nodejs": "^2.1.0",
     "hnswlib-node": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
