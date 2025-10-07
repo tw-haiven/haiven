@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@ant-design/pro-chat": "^1.15.3",
-    "@tailwindcss/postcss": "^4.1.13",
+    "@tailwindcss/postcss": "^4.1.14",
     "antd": "5.27.4",
     "antd-style": "^3.7.1",
     "best-effort-json-parser": "^1.2.1",
@@ -26,7 +26,7 @@
     "d3-zoom": "^3.0.0",
     "diff": "^8.0.2",
     "dompurify": "^3.2.7",
-    "dotenv": "^17.2.2",
+    "dotenv": "^17.2.3",
     "google-search-results-nodejs": "^2.1.0",
     "hnswlib-node": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
@@ -35,8 +35,8 @@
     "next": "^15.5.4",
     "partial-json-parser": "^1.2.2",
     "postcss": "8.5.6",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "react-icons": "^5.5.0",
     "react-markdown": "^10.1.0",
     "react-toastify": "^11.0.5",
@@ -46,21 +46,21 @@
     "remark-gfm": "^4.0.1",
     "replicate": "^1.2.0",
     "swr": "^2.3.6",
-    "tailwindcss": "^4.1.13"
+    "tailwindcss": "^4.1.14"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/node": "24.5.2",
-    "@types/react": "^19.1.15",
+    "@types/node": "24.7.0",
+    "@types/react": "^19.2.1",
     "@vitejs/plugin-react": "^5.0.4",
-    "eslint": "9.36.0",
+    "eslint": "9.37.0",
     "eslint-config-next": "15.5.4",
     "jsdom": "^27.0.0",
     "prettier": "3.6.2",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }
 }
