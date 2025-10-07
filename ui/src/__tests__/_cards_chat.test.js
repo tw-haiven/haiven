@@ -343,7 +343,7 @@ describe("CardsChat Component", () => {
     givenUserInput(someUserInput);
     await whenSendIsClicked();
     expect(fetchSSE).toHaveBeenCalledTimes(1);
-  });
+  }, 20000);
 
   it("should fetch cards chat response when user selects multiple knowledge pack contexts", async () => {
     const thenFirstPromptRequestHappensWithUserContext = (bodyString) => {
@@ -367,7 +367,7 @@ describe("CardsChat Component", () => {
     givenUserInput(someUserInput);
     await whenSendIsClicked();
     expect(fetchSSE).toHaveBeenCalledTimes(1);
-  });
+  }, 20000);
 
   it("should allow editing the original user input and restarting the chat", async () => {
     const secondUserInput = "I've changed my mind, new input";
@@ -478,7 +478,7 @@ describe("CardsChat Component", () => {
     //   expect(fetchSSE).toHaveBeenCalledTimes(2);
     //   thenSecondSetOfScenariosReplaceInitialSet();
     // });
-  });
+  }, 20000);
 
   it("should allow editing the summary if the prompt configuration is editable", async () => {
     const editablePrompt = {

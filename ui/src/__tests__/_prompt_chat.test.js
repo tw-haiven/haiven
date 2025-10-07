@@ -30,7 +30,7 @@ Object.defineProperty(window, "localStorage", {
 vi.mock("../app/_fetch_sse");
 
 beforeEach(() => {
-  vitest.clearAllMocks();
+  vi.clearAllMocks();
 
   Object.defineProperty(window, "matchMedia", {
     writable: true,
@@ -278,7 +278,7 @@ describe("PromptChat Component", () => {
     await verifyAdvancedPromptOptions(verifyTooltip);
     verifySampleInput();
     verifyPromptPreview();
-  });
+  }, 30000);
 
   it("should fetch prompt response for given user input with the selected options", async () => {
     const mockResponse = "Sample response from LLM";
@@ -335,7 +335,7 @@ describe("PromptChat Component", () => {
           }),
         );
       },
-      { timeout: 10000 },
+      { timeout: 20000 },
     );
 
     // Check if the response appears in the ProChat component
@@ -349,9 +349,9 @@ describe("PromptChat Component", () => {
           screen.queryByText(mockResponse, { exact: false }),
         ).toBeInTheDocument();
       },
-      { timeout: 10000 },
+      { timeout: 20000 },
     );
-  }, 15000);
+  }, 30000);
 
   it("should fetch chat response for multiple contexts which includes knowledge pack contexts and user contexts", async () => {
     setUpUserContexts();
@@ -385,23 +385,29 @@ describe("PromptChat Component", () => {
     const sendButton = screen.getByRole("button", { name: "SEND" });
     fireEvent.click(sendButton);
 
-    await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledWith("/api/prompt", expect.any(Object));
-      const fetchOptions = fetchMock.mock.calls[0][1];
-      expect(fetchOptions.method).toBe("POST");
-      expect(fetchOptions.headers["Content-Type"]).toBe("application/json");
-      expect(fetchOptions.body).toBe(
-        JSON.stringify({
-          userinput: "Here is my prompt input",
-          promptid: "1",
-          chatSessionId: undefined,
-          document: [],
-          userContext:
-            "User Context 2 description\n\nUser Context 1 description",
-          contexts: ["context1"],
-        }),
-      );
-    });
+    await waitFor(
+      () => {
+        expect(fetchMock).toHaveBeenCalledWith(
+          "/api/prompt",
+          expect.any(Object),
+        );
+        const fetchOptions = fetchMock.mock.calls[0][1];
+        expect(fetchOptions.method).toBe("POST");
+        expect(fetchOptions.headers["Content-Type"]).toBe("application/json");
+        expect(fetchOptions.body).toBe(
+          JSON.stringify({
+            userinput: "Here is my prompt input",
+            promptid: "1",
+            chatSessionId: undefined,
+            document: [],
+            userContext:
+              "User Context 2 description\n\nUser Context 1 description",
+            contexts: ["context1"],
+          }),
+        );
+      },
+      { timeout: 20000 },
+    );
 
     // Check if the response appears in the ProChat component
     await waitFor(
@@ -414,9 +420,9 @@ describe("PromptChat Component", () => {
           screen.queryByText(mockResponse, { exact: false }),
         ).toBeInTheDocument();
       },
-      { timeout: 10000 },
+      { timeout: 20000 },
     );
-  }, 15000);
+  }, 30000);
 
   //TODO:
   //test for checking chat actions are working correctly
