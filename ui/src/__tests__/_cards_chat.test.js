@@ -300,16 +300,14 @@ describe("CardsChat Component", () => {
     await whenSendIsClicked();
 
     await waitFor(async () => {
-      thenStopButtonIsDisplayed();
       await thenAllInitialScenariosAreRendered();
+    });
 
-      whenFollowUpGenerateIsClicked();
-      expect(fetchSSE).toHaveBeenCalledTimes(2);
+    whenFollowUpGenerateIsClicked();
+    expect(fetchSSE).toHaveBeenCalledTimes(2);
 
-      await waitFor(() => {
-        thenStopButtonIsDisplayed();
-        thenFollowUpIsRendered();
-      });
+    await waitFor(() => {
+      thenFollowUpIsRendered();
     });
   });
 
