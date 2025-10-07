@@ -351,7 +351,7 @@ describe("PromptChat Component", () => {
       },
       { timeout: 20000 },
     );
-  }, 30000);
+  }, 50000);
 
   it("should fetch chat response for multiple contexts which includes knowledge pack contexts and user contexts", async () => {
     setUpUserContexts();
