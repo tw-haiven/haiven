@@ -28,7 +28,7 @@
   "author": "Haiven Team",
   "license": "MIT",
   "devDependencies": {
-    "@playwright/test": "^1.40.0",
+    "@playwright/test": "^1.56.1",
     "@types/node": "^20.19.9",
     "typescript": "^5.0.0"
   },
