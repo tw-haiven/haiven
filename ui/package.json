@@ -18,7 +18,7 @@
   "dependencies": {
     "@ant-design/pro-chat": "^1.15.3",
     "@tailwindcss/postcss": "^4.1.14",
-    "antd": "5.27.4",
+    "antd": "5.27.6",
     "antd-style": "^3.7.1",
     "best-effort-json-parser": "^1.2.1",
     "d3-hierarchy": "^3.1.2",
