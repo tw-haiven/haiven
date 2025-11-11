@@ -4,7 +4,7 @@ import yaml
 from typing import List
 
 import frontmatter
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 from knowledge.markdown import KnowledgeBaseMarkdown
 from knowledge_manager import KnowledgeManager
 

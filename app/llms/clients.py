@@ -5,8 +5,7 @@ from typing import List, Dict, Any, Optional
 from config_service import ConfigService
 from llms.model_config import ModelConfig
 from pydantic import BaseModel
-from langchain.schema import AIMessage, HumanMessage, SystemMessage
-from langchain_core.messages.base import BaseMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, BaseMessage
 from llms.litellm_wrapper import llmCompletion
 
 
