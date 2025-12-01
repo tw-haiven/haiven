@@ -10,7 +10,7 @@ haiven-cli = "haiven_cli.main:cli"
 
 [tool.poetry.dependencies]
 python = "~3.12"
-beautifulsoup4 = "^4.14.2"
+beautifulsoup4 = "^4.14.3"
 faiss-cpu = "^1.13.0"
 langchain = "^1.0.8"
 langchain-openai = "^1.0.3"
