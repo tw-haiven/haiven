@@ -33,15 +33,73 @@ function updatePackages() {
   }
 
   try {
-    // Update all dependencies to their latest versions
-    console.log("Updating all dependencies to their latest versions...");
-    execSync("yarn upgrade --latest", { stdio: "inherit" });
+    // Read package.json
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+    const allDeps = {
+      ...packageJson.dependencies,
+      ...packageJson.devDependencies,
+    };
 
-    // Install the latest versions and update yarn.lock
-    console.log("Installing updated dependencies and updating yarn.lock...");
+    // Packages to exclude from --latest (keep within the current major version)
+    // These will be upgraded with yarn upgrade (respecting semver) instead
+    const excludeFromLatest = ["antd"];
+
+    console.log("Updating dependencies...");
+    console.log(
+      `Packages pinned to current major version: ${excludeFromLatest.join(", ")}`,
+    );
+
+    // Upgrade pinned packages respecting their semver range (e.g., ^5 stays in v5.x)
+    console.log(
+      "\nUpgrading pinned packages within their current major version...",
+    );
+    for (const pkg of excludeFromLatest) {
+      if (allDeps[pkg]) {
+        console.log(`  Upgrading ${pkg} (respecting semver range)...`);
+        try {
+          execSync(`yarn upgrade ${pkg}`, { stdio: "inherit" });
+        } catch (err) {
+          console.warn(`  Warning: Could not upgrade ${pkg}, continuing...`);
+        }
+      }
+    }
+
+    // Upgrade all other packages to the latest, excluding pinned ones
+    console.log(
+      "\nUpgrading remaining dependencies to their latest versions...",
+    );
+    const packagesToUpgrade = Object.keys(allDeps).filter(
+      (pkg) => !excludeFromLatest.includes(pkg),
+    );
+
+    // Upgrade in batches to avoid command line length limits
+    const batchSize = 20;
+    for (let i = 0; i < packagesToUpgrade.length; i += batchSize) {
+      const batch = packagesToUpgrade.slice(i, i + batchSize);
+      try {
+        execSync(`yarn upgrade --latest ${batch.join(" ")}`, {
+          stdio: "inherit",
+        });
+      } catch (err) {
+        console.warn(
+          "  Warning: Some packages failed to upgrade, continuing...",
+        );
+      }
+    }
+
+    // Install and update yarn.lock
+    console.log("\nInstalling updated dependencies and updating yarn.lock...");
     execSync("yarn install", { stdio: "inherit" });
 
-    console.log("All dependencies have been updated and yarn.lock is in sync.");
+    console.log(
+      "\n✓ All dependencies have been updated and yarn.lock is in sync.",
+    );
+    console.log("\nPackages kept within current major version:");
+    for (const pkg of excludeFromLatest) {
+      if (allDeps[pkg]) {
+        console.log(`  - ${pkg}: ${allDeps[pkg]}`);
+      }
+    }
   } catch (error) {
     console.error("Error updating dependencies:", error);
     process.exit(1);

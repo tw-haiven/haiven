@@ -108,10 +108,10 @@ upgrade_and_test() {
 }
 
 # Function to upgrade UI dependencies
-upgrade_ui() {
+upgrade_ui_and_test() {
     print_status "Upgrading dependencies in UI folder..."
     cd ui
-    
+
     if [ -f "update_packages.js" ]; then
         if command -v node &> /dev/null; then
             print_status "Running update_packages.js for UI..."
@@ -119,10 +119,13 @@ upgrade_ui() {
                 print_success "UI dependencies updated successfully"
             else
                 print_error "Failed to update UI dependencies"
+                cd ..
                 return 1
             fi
         else
             print_warning "Node.js not found. Skipping UI update."
+            cd ..
+            return 1
         fi
     elif command -v yarn &> /dev/null; then
         print_status "Using yarn to update UI dependencies..."
@@ -131,8 +134,20 @@ upgrade_ui() {
         print_success "UI dependencies updated with yarn"
     else
         print_warning "Neither update_packages.js nor yarn found for UI. Skipping."
+        cd ..
+        return 1
     fi
-    
+
+    # Run UI tests
+    print_status "Running UI tests..."
+    if yarn run test; then
+        print_success "UI tests passed"
+    else
+        print_error "UI tests failed"
+        cd ..
+        return 1
+    fi
+
     cd ..
 }
 
@@ -146,7 +161,7 @@ upgrade_and_test "cli" "CLI" "poetry run pytest -vv"
 upgrade_and_test "app" "App" "poetry run pytest -m 'not integration and not slow_integration'"
 
 # Upgrade UI
-upgrade_ui
+upgrade_ui_and_test
 
 # Upgrade root devscripts
 print_status "Upgrading devscripts dependencies..."
