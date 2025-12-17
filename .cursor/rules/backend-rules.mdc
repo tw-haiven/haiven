@@ -4,6 +4,7 @@ globs:
 ---
 
 - Our backend is in Python and in the app/ subfolder. The app needs to be started from that directory.
+- We use poetry to manage dependencies
 - The backend tests are in app/tests/
 - When running tests or the application, the virtual environment in app/.venv first needs to be activated
 - We're using constructor dependency injections to make our code more testable. Pass dependencies in via constructors, do not initialise them inside of a class.

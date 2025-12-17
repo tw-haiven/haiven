@@ -3,14 +3,14 @@ import { dismissModalIfPresent, waitForStreamingCompleteWithFallback, waitForEle
 
 test.describe('Client Research - Sources Verification', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:8080/boba/');
+    await page.goto('/boba/');
     await dismissModalIfPresent(page);
     await page.waitForLoadState('networkidle');
   });
 
   test('should verify Company Overview page has mandatory sources', async ({ page }) => {
     // Navigate to company research page using the correct URL
-    await page.goto('http://localhost:8080/boba/company-research');
+    await page.goto('/boba/company-research');
     await page.waitForLoadState('networkidle');
     
     // Wait for the textbox to be visible and stable
@@ -47,7 +47,7 @@ test.describe('Client Research - Sources Verification', () => {
 
   test('should verify Company Overview with AI tools config has sources', async ({ page }) => {
     // Navigate to company research page with AI tools config
-    await page.goto('http://localhost:8080/boba/company-research?config=ai-tool');
+    await page.goto('/boba/company-research?config=ai-tool');
     await page.waitForLoadState('networkidle');
     
     // Wait for the textbox to be visible and stable
@@ -72,7 +72,7 @@ test.describe('Client Research - Sources Verification', () => {
 
   test('should verify Ideas to Pitch page has sources', async ({ page }) => {
     // Navigate to ideas to pitch page
-    await page.goto('http://localhost:8080/boba/cards?prompt=company-research-ideas-to-pitch-cdbaba6g');
+    await page.goto('/boba/cards?prompt=company-research-ideas-to-pitch-cdbaba6g');
     await page.waitForLoadState('networkidle');
     
     // Wait for the textbox to be visible and stable

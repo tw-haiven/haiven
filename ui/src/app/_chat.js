@@ -9,7 +9,13 @@ import {
   RiStopCircleFill,
   RiAttachment2,
 } from "react-icons/ri";
-import React, { forwardRef, useImperativeHandle, useState } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useState,
+  useRef,
+  useEffect,
+} from "react";
 import MarkdownRenderer from "./_markdown_renderer";
 import { addToPinboard } from "./_local_store";
 import { toast } from "react-toastify";
@@ -28,6 +34,7 @@ const ChatWidget = forwardRef(
   ) => {
     const proChat = useProChat();
     const [form] = Form.useForm();
+    const textAreaRef = useRef(null);
 
     const [isLoading, setIsLoading] = useState(false);
     const [prompt, setPrompt] = useState("");
@@ -38,6 +45,16 @@ const ChatWidget = forwardRef(
       id: null,
       content: "",
     });
+
+    // Restore focus to input after response completes
+    useEffect(() => {
+      if (!isLoading && conversationStarted && textAreaRef.current) {
+        // Use a small delay to ensure the DOM has fully updated
+        setTimeout(() => {
+          textAreaRef.current?.focus();
+        }, 100);
+      }
+    }, [isLoading, conversationStarted]);
 
     const pin = {
       icon: () => {
@@ -119,6 +136,9 @@ const ChatWidget = forwardRef(
         setPrompt(value);
         form.setFieldsValue({ question: value });
       },
+      focusInput: () => {
+        textAreaRef.current?.focus();
+      },
     }));
 
     const onClickAdvancedPromptOptions = (e) => {
@@ -183,6 +203,7 @@ const ChatWidget = forwardRef(
               className="chat-text-area"
             >
               <Input.TextArea
+                ref={textAreaRef}
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 disabled={isLoading}

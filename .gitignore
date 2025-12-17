@@ -74,6 +74,7 @@ poetry.toml
 /tests/playwright-report/
 /tests/blob-report/
 /tests/playwright/.cache/
+/tests/playwright/.auth/
 /tests/node_modules
 
 .mcp.json

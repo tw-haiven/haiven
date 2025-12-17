@@ -1,6 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import io
-import os
 from typing import List, Optional
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -20,8 +19,8 @@ from config_service import ConfigService
 from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
 from logger import HaivenLogger
 from loguru import logger
-import hashlib
 import json
+from auth import auth_util
 
 
 class PromptRequestBody(BaseModel):
@@ -70,37 +69,15 @@ class HaivenBaseApi:
 
     def _is_api_key_auth(self, request):
         """Check if the request is using API key authentication."""
-        if request.session and request.session.get("user"):
-            user = request.session.get("user")
-            return user.get("auth_type") == "api_key"
-        return False
+        return auth_util.is_api_key_auth(request)
 
     def _get_request_source(self, request):
         """Get the source of the request (mcp, ui, or unknown)."""
-        # Check if auth is switched off
-        if os.environ.get("AUTH_SWITCHED_OFF") == "true":
-            return "unknown"
-
-        # Check if it's an API key auth (MCP)
-        if self._is_api_key_auth(request):
-            return "mcp"
-
-        # Default to UI
-        return "ui"
+        return auth_util.get_request_source(request)
 
     def get_hashed_user_id(self, request):
-        if request.session and request.session.get("user"):
-            user = request.session.get("user")
-            # Check if auth_type is api_key, if so use user_id directly from the session
-            if user.get("auth_type") == "api_key":
-                user_id = user.get("user_id")
-            else:
-                user_id = user.get("email")
-
-            if user_id is not None:
-                hashed_user_id = hashlib.sha256(user_id.encode("utf-8")).hexdigest()
-                return hashed_user_id
-        return None
+        """Get the hashed user ID from the request session."""
+        return auth_util.get_hashed_user_id(request)
 
     def stream_json_chat(
         self,

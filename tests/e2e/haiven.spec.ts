@@ -3,7 +3,7 @@ import { dismissModalIfPresent, waitForStreamingComplete } from './test-utils';
 
 test.describe('Haiven Application Navigation', () => {
   test('should load the main page', async ({ page }) => {
-    await page.goto('http://localhost:8080/boba/');
+    await page.goto('/boba/');
     await dismissModalIfPresent(page);
     
     // Verify main page elements are present
@@ -12,7 +12,7 @@ test.describe('Haiven Application Navigation', () => {
   });
 
   test('should navigate to About page', async ({ page }) => {
-    await page.goto('http://localhost:8080/boba/about');
+    await page.goto('/boba/about');
     await dismissModalIfPresent(page);
     
     // Verify About page loads
@@ -20,7 +20,7 @@ test.describe('Haiven Application Navigation', () => {
   });
 
   test('should navigate to Knowledge Overview page', async ({ page }) => {
-    await page.goto('http://localhost:8080/boba/knowledge');
+    await page.goto('/boba/knowledge');
     await dismissModalIfPresent(page);
     
     // Verify Knowledge page loads
@@ -28,7 +28,7 @@ test.describe('Haiven Application Navigation', () => {
   });
 
   test('should navigate to API Keys page', async ({ page }) => {
-    await page.goto('http://localhost:8080/boba/api-keys');
+    await page.goto('/boba/api-keys');
     await dismissModalIfPresent(page);
     
     // Verify API Keys page loads
@@ -38,7 +38,7 @@ test.describe('Haiven Application Navigation', () => {
 
 test.describe('Haiven Sidebar Navigation', () => {
   test('should expand Research sidebar menu item', async ({ page }) => {
-    await page.goto('http://localhost:8080/boba/');
+    await page.goto('/boba/');
     await dismissModalIfPresent(page);
 
     // Use text-based selector with exact matching for more reliable selection
@@ -57,7 +57,7 @@ test.describe('Haiven Sidebar Navigation', () => {
   });
 
   test('should show Ideate submenu items', async ({ page }) => {
-    await page.goto('http://localhost:8080/boba/');
+    await page.goto('/boba/');
     await dismissModalIfPresent(page);
 
     // Use text-based selector for more reliability
@@ -79,7 +79,7 @@ test.describe('Haiven Sidebar Navigation', () => {
 test.describe('Haiven Prompt and Chat Interactions', () => {
   
   test('should interact with a document tab in Knowledge Overview', async ({ page }) => {
-    await page.goto('http://localhost:8080/boba/knowledge');
+    await page.goto('/boba/knowledge');
     await dismissModalIfPresent(page);
 
     // Wait for page to load
@@ -106,7 +106,7 @@ test.describe('Haiven Prompt and Chat Interactions', () => {
   });
 
   test('should send a chat message and see a response', async ({ page }) => {
-    await page.goto('http://localhost:8080/boba/knowledge-chat');
+    await page.goto('/boba/knowledge-chat');
     await dismissModalIfPresent(page);
     
     // Wait for page to load

@@ -5,15 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
+    "test:local": "playwright test --project=local",
+    "test:demo": "playwright test --project=demo",
+    "test:prod": "playwright test --project=prod",
+    "auth:demo": "node setup-auth.js demo",
+    "auth:prod": "node setup-auth.js prod",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
     "test:ui": "playwright test --ui",
     "test:report": "playwright show-report",
-    "test:install": "playwright install",
-    "test:codegen": "playwright codegen http://localhost:8080",
-    "test:chromium": "playwright test --project=chromium",
-    "test:firefox": "playwright test --project=firefox",
-    "test:setup": "cd ../ui && yarn install && cd ../tests && npm install && npm run test:install"
+    "install": "playwright install",
+    "setup": "npm install && npm run install"
   },
   "keywords": [
     "playwright",
@@ -26,11 +28,11 @@
   "author": "Haiven Team",
   "license": "MIT",
   "devDependencies": {
-    "@playwright/test": "^1.40.0",
+    "@playwright/test": "^1.56.1",
     "@types/node": "^20.19.9",
     "typescript": "^5.0.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "22.18.0"
   }
 }

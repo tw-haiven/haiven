@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 import frontmatter
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 from langchain_community.vectorstores import FAISS
 from embeddings.client import EmbeddingsClient
 from embeddings.documents import KnowledgeDocument

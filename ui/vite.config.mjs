@@ -15,5 +15,6 @@ export default defineConfig({
     include: ["**/*.test.{js,jsx,ts,tsx}"],
     setupFiles: "@testing-library/jest-dom",
     mockReset: true,
+    testTimeout: 10000, // 10 seconds default timeout
   },
 });

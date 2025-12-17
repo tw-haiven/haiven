@@ -64,12 +64,12 @@ jobs:
         id: setup_python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - uses: pre-commit/action@v3.0.1
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.6'
+          node-version: '22.18.0'
       - name: Install Yarn
         run:
           npm install yarn

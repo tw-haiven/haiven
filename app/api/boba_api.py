@@ -7,6 +7,7 @@ from api.api_creative_matrix import ApiCreativeMatrix
 from api.api_company_research import ApiCompanyResearch
 from api.api_features import ApiFeatures
 from api.api_key_management import ApiKeyManagementAPI
+from api.api_rules import ApiRules
 from llms.chats import (
     ChatManager,
 )
@@ -85,6 +86,7 @@ class BobaApi:
             self.prompts_chat,
         )
         ApiFeatures(app)
+        ApiRules(app, self.config_service)
         # Only register API key management endpoints if API key auth is enabled
         if self.api_key_auth_service and self.config_service.is_api_key_auth_enabled():
             ApiKeyManagementAPI(app, self.api_key_auth_service, self.config_service)

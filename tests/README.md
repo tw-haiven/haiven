@@ -4,19 +4,40 @@ End-to-end Playwright tests for the Haiven application.
 
 ## Quick Start
 
+Prerequisites:
+- Node and yarn - check `package.json` for current specific node version needed, we're often fighting with incompatibilities between next.js upgrades and node versions
+- For local runs: Python 3.12+, Poetry with app dependencies installed (the runner will start the backend via Poetry)
+
 ```bash
 # From repository root
 cd tests
 
-# Setup
+# Setup (installs Playwright browsers and test deps)
 ./run-e2e-tests.sh setup
 
-# Run all tests
+# Run all tests (default project per Playwright config)
 ./run-e2e-tests.sh run
 
-# Run with UI
-./run-e2e-tests.sh run ui
+# Run against local environment (builds UI and starts backend per playwright.config)
+./run-e2e-tests.sh run local
+
+# Run against demo environment
+./run-e2e-tests.sh run demo
+
+# Run against production environment
+./run-e2e-tests.sh run prod
+
+# Other useful modes
+./run-e2e-tests.sh run headed   # headed browser
+./run-e2e-tests.sh run debug    # debug mode
+./run-e2e-tests.sh run ui       # Playwright UI
+./run-e2e-tests.sh run report   # open last HTML report
 ```
+
+Notes:
+- Local project run uses the Playwright webServer to: `cd ui && yarn copy && cd .. && poetry run app`, then targets http://localhost:8080.
+- Demo and Prod projects use base URLs defined in tests/playwright.config.ts.
+
 # Haiven E2E Test Coverage Documentation
 
 ## Test Status
@@ -33,7 +54,7 @@ The Playwright tests are currently running but experiencing some timeout issues 
 
 ### 2. Card System Tests (`haiven-card-tests.spec.ts`)
 **Coverage:** Core card generation and enrichment functionality
-- **Navigation:** Tests navigation to Requirements Breakdown page
+- **Navigation:** Tests navigation to Requirement Breakdown page
 - **Card Generation:** Tests initial card generation with valid user input
 - **Individual Card Controls:** Tests card interaction buttons and dialogs
 - **Copy Functionality:** Tests "COPY ALL" button functionality
@@ -99,8 +120,8 @@ The test suite includes sophisticated utility functions:
 
 ### Configuration
 - **Timeouts:** 60-second test timeout with 30-second action/navigation timeouts
-- **Retries:** 1 retry locally, 2 in CI
-- **Workers:** Limited to 2 parallel workers to reduce system load
+- **Retries:** One retry locally, 2 in CI
+- **Workers:** Limited to 2 parallel workers to reduce the system's load
 - **Screenshots/Videos:** Captured on failure for debugging
 
 ## Important Areas Covered
@@ -128,7 +149,7 @@ The test suite includes sophisticated utility functions:
 
 ## Test Quality Features
 - **Robust Selectors:** Uses multiple selector strategies for reliability
-- **Content Validation:** Verifies substantial content generation rather than just presence
+- **Content Validation:** Verifies significant content generation rather than just presence
 - **State Management:** Tests UI state changes and button enabling/disabling
 - **Error Handling:** Includes timeout and fallback mechanisms
 - **Cross-Page Testing:** Tests functionality across different application pages

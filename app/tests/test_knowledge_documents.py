@@ -3,7 +3,7 @@ import os
 from unittest.mock import MagicMock
 
 import pytest
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 from embeddings.model import EmbeddingModel
 from knowledge.documents import KnowledgeBaseDocuments
 

@@ -1,7 +1,7 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 from langchain_community.vectorstores import FAISS
 from typing import List
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 
 
 class KnowledgeDocument:

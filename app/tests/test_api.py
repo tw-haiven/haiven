@@ -62,10 +62,19 @@ class TestApi(unittest.TestCase):
         self.app = FastAPI()
         self.app.add_middleware(SessionMiddleware, secret_key="some-random-string")
         self.client = TestClient(self.app)
+        # Store original environment variable value
+        self.original_auth_switched_off = os.environ.get("AUTH_SWITCHED_OFF")
+        # Always start with a clean environment for each test
+        if "AUTH_SWITCHED_OFF" in os.environ:
+            del os.environ["AUTH_SWITCHED_OFF"]
 
     def tearDown(self):
         # Clean up code to run after each test
-        pass
+        # Restore original environment variable value
+        if self.original_auth_switched_off is not None:
+            os.environ["AUTH_SWITCHED_OFF"] = self.original_auth_switched_off
+        elif "AUTH_SWITCHED_OFF" in os.environ:
+            del os.environ["AUTH_SWITCHED_OFF"]
 
     def test_apikey_endpoints_use_service(self):
         # Arrange
@@ -1157,7 +1166,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(get_analytics_source(mock_request_empty_session), "ui")
 
         # Test auth switched off scenario
-        with patch.dict(os.environ, {"AUTH_SWITCHED_OFF": "true"}):
+        with patch.dict(os.environ, {"AUTH_SWITCHED_OFF": "true"}, clear=False):
             self.assertEqual(get_analytics_source(mock_request_auth_off), "unknown")
             self.assertEqual(get_analytics_source(mock_request_mcp), "unknown")
             self.assertEqual(get_analytics_source(mock_request_ui), "unknown")

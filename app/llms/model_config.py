@@ -44,6 +44,8 @@ class ModelConfig:
             self.lite_id = "ollama/" + self.config["model"]
         elif self.provider.lower() == "perplexity":
             self.lite_id = "perplexity/sonar-pro"
+        elif self.provider.lower() == "openai":
+            self.lite_id = "openai/" + self.config["model_name"]
         elif self.provider.lower() == "xai":
             self.lite_id = "xai/" + self.config["model"]
 

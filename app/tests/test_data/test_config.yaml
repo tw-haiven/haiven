@@ -1,5 +1,7 @@
 application_name: Test Application
 
+knowledge_pack_path: app/tests/test_data/test_knowledge_pack
+
 # API Key Repository Configuration for Testing
 api_key_repository:
   type: file

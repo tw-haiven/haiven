@@ -73,7 +73,7 @@ setup_e2e_tests() {
     
     # Install Playwright browsers
     print_status "Installing Playwright browsers..."
-    npm run test:install
+    npm run install
     
     print_success "E2E tests setup completed"
 }
@@ -97,11 +97,14 @@ run_tests() {
         "ui")
             npm run test:ui
             ;;
-        "chromium")
-            npm run test:chromium
+        "local")
+            npm run test:local
             ;;
-        "firefox")
-            npm run test:firefox
+        "demo")
+            npm run test:demo
+            ;;
+        "prod")
+            npm run test:prod
             ;;
         "report")
             npm run test:report
@@ -110,10 +113,13 @@ run_tests() {
             print_error "Unknown test type: $test_type"
             print_status "Available options:"
             print_status "  all - Run all tests"
+            print_status "  local - Run tests against local project (starts server)"
+            print_status "  demo - Run tests against demo environment"
+            print_status "  prod - Run tests against production environment"
             print_status "  headed - Run tests in headed mode"
             print_status "  debug - Run tests in debug mode"
             print_status "  ui - Run tests with Playwright UI"
-            print_status "  chromium/firefox - Run specific browser"
+            print_status "  report - Show test report"
              exit 1
             ;;
     esac
@@ -132,10 +138,12 @@ show_help() {
     echo ""
     echo "Options for 'run' command:"
     echo "  all       Run all tests - default"
+    echo "  local     Run tests against local project (starts server)"
+    echo "  demo      Run tests against demo environment"
+    echo "  prod      Run tests against production environment"
     echo "  headed    Run tests in headed mode"
     echo "  debug     Run tests in debug mode"
     echo "  ui        Run tests with Playwright UI"
-    echo "  chromium  Run tests in Chromium only"
     echo "  report    Show test report"
     echo ""
 }
