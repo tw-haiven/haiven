@@ -45,7 +45,7 @@
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "replicate": "^1.4.0",
-    "swr": "^2.3.7",
+    "swr": "^2.3.8",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
