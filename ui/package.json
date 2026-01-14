@@ -24,7 +24,7 @@
     "d3-hierarchy": "^3.1.2",
     "d3-selection": "^3.0.0",
     "d3-zoom": "^3.0.0",
-    "diff": "^8.0.2",
+    "diff": "^8.0.3",
     "dompurify": "^3.3.1",
     "dotenv": "^17.2.3",
     "google-search-results-nodejs": "^2.1.0",
