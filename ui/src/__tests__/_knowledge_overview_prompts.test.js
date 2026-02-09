@@ -48,7 +48,11 @@ describe("Knowledge overview prompts section", () => {
     fireEvent.click(screen.getByText("Architecture"));
 
     expect(screen.getByText("Architecture Prompt")).toBeInTheDocument();
-    expect(screen.getByTestId("prompt-preview-button")).toBeInTheDocument();
-    expect(screen.getByTestId("download-prompt-button")).toBeInTheDocument();
+    expect(screen.getAllByTestId("prompt-preview-button").length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getAllByTestId("download-prompt-button").length).toBeGreaterThan(
+      0,
+    );
   });
 });

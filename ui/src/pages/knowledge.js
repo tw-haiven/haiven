@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Collapse } from "antd";
 import MarkdownRenderer from "../app/_markdown_renderer";
-import DownloadAllPrompts from "../app/_download_all_prompts";
+import DownloadPrompt from "../app/_download_prompt";
+import DownloadPromptCategory from "../app/_download_prompt_category";
 import DownloadRules from "../app/_download_rules";
-import { FEATURES } from "../app/feature_toggle";
+import PromptOverviewPreview from "../app/_prompt_overview_preview";
+import { buildPromptCategories } from "../app/utils/promptGroupingUtils";
 
 const KnowledgePackPage = ({
   contexts,
@@ -16,6 +18,7 @@ const KnowledgePackPage = ({
 }) => {
   const [renderedSnippets, setRenderedSnippets] = useState();
   const [renderedDocuments, setRenderedDocuments] = useState();
+  const [renderedPrompts, setRenderedPrompts] = useState();
 
   const buildTextSnippetsOverview = () => {
     const renderContexts = [];
@@ -70,10 +73,53 @@ const KnowledgePackPage = ({
     setRenderedDocuments(renderContexts);
   };
 
+  const buildPromptsOverview = () => {
+    const categoryItems = buildPromptCategories(prompts, featureToggleConfig);
+
+    const promptItems = categoryItems.map((category) => {
+      const categoryLabel = (
+        <div className="knowledge-overview-header">
+          <span>{category.label}</span>
+          <DownloadPromptCategory
+            category={category.key}
+            label={category.label}
+          />
+        </div>
+      );
+
+      const promptEntries = category.prompts.map((prompt) => (
+        <div
+          className="snippet"
+          key={`${category.key}-${prompt.identifier}`}
+        >
+          <div className="knowledge-overview-header">
+            <h4 className="snippet-title">{prompt.title}</h4>
+            <div className="advanced-prompting">
+              <PromptOverviewPreview prompt={prompt} />
+              <DownloadPrompt prompt={prompt} />
+            </div>
+          </div>
+          {prompt.help_prompt_description && (
+            <ReactMarkdown>{prompt.help_prompt_description}</ReactMarkdown>
+          )}
+        </div>
+      ));
+
+      return {
+        key: category.key,
+        label: categoryLabel,
+        children: promptEntries,
+      };
+    });
+
+    setRenderedPrompts(promptItems);
+  };
+
   useEffect(() => {
     buildTextSnippetsOverview();
     buildDocumentsOverview();
-  }, [contexts, documents]);
+    buildPromptsOverview();
+  }, [contexts, documents, prompts, featureToggleConfig]);
 
   return (
     <div id="canvas">
@@ -81,7 +127,6 @@ const KnowledgePackPage = ({
         <div className="knowledge-overview-header">
           <h1>Your knowledge</h1>
           <div className="download-buttons">
-            <DownloadAllPrompts prompts={prompts} />
             <DownloadRules rules={rules} />
           </div>
         </div>
@@ -109,6 +154,15 @@ const KnowledgePackPage = ({
               documents" section.
             </p>
             <Collapse accordion items={renderedDocuments}></Collapse>
+          </div>
+          <div className="knowledge-list">
+            <h2>Prompts</h2>
+            <p>
+              Browse the prompts available in your knowledge pack. Each
+              category includes preview and download actions for individual
+              prompts, plus a download option for the whole category.
+            </p>
+            <Collapse accordion items={renderedPrompts}></Collapse>
           </div>
         </div>
       </div>
