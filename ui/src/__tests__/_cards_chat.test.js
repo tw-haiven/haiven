@@ -466,7 +466,9 @@ describe("CardsChat Component", () => {
     );
     expect(collapseHeader).toBeInTheDocument();
     fireEvent.click(collapseHeader);
-    givenUserInput(secondUserInput);
+    await waitFor(() => {
+      givenUserInput(secondUserInput);
+    });
 
     await whenSendIsClicked();
 
