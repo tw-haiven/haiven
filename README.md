@@ -139,9 +139,7 @@ Find more documentation about knowledge packs and how to adapt them [here](docs/
 ### 3. Run locally
 #### Option 1: Run the base image locally
 
-See "quickest way to try it out" above, which describes how to run the base Docker image with Ollama as the model provider.
-
-If you want to use Azure, GCP or AWS, you need to set the corresponding environment variables as documented in the `.env.***.template` files, and feed those to the container.
+See "quickest way to try it out" above, which describes how to run the base Docker image with various model providers.
 
 #### Option 2: Run the code locally
 
