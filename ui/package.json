@@ -25,7 +25,7 @@
     "d3-selection": "^3.0.0",
     "d3-zoom": "^3.0.0",
     "diff": "^8.0.3",
-    "dompurify": "^3.3.1",
+    "dompurify": "^3.3.2",
     "dotenv": "^17.3.1",
     "google-search-results-nodejs": "^2.1.0",
     "hnswlib-node": "^3.0.0",
