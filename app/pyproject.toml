@@ -34,7 +34,7 @@ python-dotenv = "^1.2.1"
 toml = "^0.10.2"
 pillow = "^12.1.1"
 python-multipart = "^0.0.22"
-litellm = "^1.81.14"
+litellm = "^1.83.0"
 tenacity = "^9.1.4"
 starlette = "^0.52.1"
 
