@@ -48,14 +48,14 @@ models:
       azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4.1}
       api_key: ${AZURE_OPENAI_API_KEY}
 
-  - id: gemini-2.0-flash
-    name: Gemini 2.0 Flash
+  - id: gemini-3-flash-preview
+    name: Gemini 3.0 Flash
     provider: GCP
     features:
       - text-generation
       - image-to-text
     config:
-      model: gemini-2.0-flash
+      model: gemini-3-flash-preview
 
   - id: aws-claude-sonnet-3.5
     name: Claude-Sonnet-3.5 on AWS Bedrock

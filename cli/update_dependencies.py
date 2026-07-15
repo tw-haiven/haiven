@@ -1,6 +1,15 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
 import os
-import toml
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - only used on older Python versions
+    tomllib = None
+
+try:
+    import toml
+except ModuleNotFoundError:
+    toml = None
 
 
 def update_package(package_name, group=None):
@@ -11,8 +20,16 @@ def update_package(package_name, group=None):
 
 
 def get_packages_from_pyproject(pyproject_path):
-    with open(pyproject_path, "r") as file:
-        pyproject = toml.load(file)
+    if tomllib is not None:
+        with open(pyproject_path, "rb") as file:
+            pyproject = tomllib.load(file)
+    elif toml is not None:
+        with open(pyproject_path, "r", encoding="utf-8") as file:
+            pyproject = toml.load(file)
+    else:
+        raise ModuleNotFoundError(
+            "No TOML parser available. Use Python 3.11+ or install the toml package."
+        )
 
     dependencies = pyproject.get("tool", {}).get("poetry", {}).get("dependencies", {})
     dev_dependencies = (
