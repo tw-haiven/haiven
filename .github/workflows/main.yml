@@ -47,7 +47,7 @@ jobs:
           retention-days: 7
 
       - name: Upload SARIF to GitHub
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9
         with:
           sarif_file: semgrep.sarif
           category: semgrep
@@ -62,12 +62,12 @@ jobs:
       - uses: 'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10'
       - name: Set up Python
         id: setup_python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
-      - uses: pre-commit/action@v3.0.1
+      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22.18.0'
       - name: Install Yarn
@@ -82,7 +82,7 @@ jobs:
           cd ui
           yarn test
       - name: Install Poetry
-        uses: snok/install-poetry@v1
+        uses: snok/install-poetry@a783c322200f0519c7926aa6faa857c4e23e9263
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
@@ -122,13 +122,13 @@ jobs:
       - uses: 'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10'
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: docker/metadata-action@v5
+      - uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051
         id: metadata
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository }}
