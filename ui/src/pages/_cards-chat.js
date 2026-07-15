@@ -33,6 +33,7 @@ import DownloadPrompt from "../app/_download_prompt";
 import { formattedUsage } from "../app/utils/tokenUtils";
 import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
 import { filterSSEEvents } from "../app/utils/_sse_event_filter";
+import { extractTopLevelJsonArray } from "../app/utils/jsonArrayStream";
 
 const CardsChat = ({
   promptId,
@@ -251,7 +252,8 @@ const CardsChat = ({
     const uri = "/api/prompt";
 
     let ms = "";
-    let output = [];
+    let output = null;
+    let hasShownInvalidResponseWarning = false;
 
     fetchSSE(
       uri,
@@ -266,7 +268,10 @@ const CardsChat = ({
           abortLoad();
         },
         onFinish: () => {
-          if (ms == "") {
+          if (
+            ms == "" ||
+            (!Array.isArray(output) && !hasShownInvalidResponseWarning)
+          ) {
             toast.warning(
               "Model failed to respond rightly, please rewrite your message and try again",
             );
@@ -307,7 +312,7 @@ const CardsChat = ({
           } else if (data.data) {
             ms += data.data;
           }
-          ms = ms.trim().replace(/^[^[]+/, "");
+          ms = extractTopLevelJsonArray(ms);
           if (ms.startsWith("[")) {
             try {
               output = parse(ms || "[]");
@@ -317,6 +322,7 @@ const CardsChat = ({
             if (Array.isArray(output)) {
               setScenarios([...existingScenarios, ...output]);
             } else {
+              hasShownInvalidResponseWarning = true;
               abortLoad();
               if (ms.includes("Error code:")) {
                 toast.error(ms);

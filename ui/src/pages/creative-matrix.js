@@ -16,6 +16,7 @@ import useLoader from "../hooks/useLoader";
 import LLMTokenUsage from "../app/_llm_token_usage";
 import { formattedUsage } from "../app/utils/tokenUtils";
 import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
+import { extractTopLevelJsonArray } from "../app/utils/jsonArrayStream";
 
 const CreativeMatrix = ({ models, featureToggleConfig }) => {
   const [promptInput, setPromptInput] = useState("");
@@ -187,7 +188,7 @@ const CreativeMatrix = ({ models, featureToggleConfig }) => {
 
             if (data.data) {
               ms += data.data;
-              ms = ms.trim().replace(/^[^[]+/, "");
+              ms = extractTopLevelJsonArray(ms);
               if (ms.startsWith("[")) {
                 try {
                   output = parse(ms || "[]");

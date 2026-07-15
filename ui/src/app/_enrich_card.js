@@ -9,6 +9,7 @@ import { parse } from "best-effort-json-parser";
 import { formattedUsage } from "../app/utils/tokenUtils";
 import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
 import { filterSSEEvents } from "../app/utils/_sse_event_filter";
+import { extractTopLevelJsonArray } from "../app/utils/jsonArrayStream";
 
 /** ITERATION EXPERIMENT
  * (behind feature toggle, experimental implementation)
@@ -144,7 +145,7 @@ const EnrichCard = ({
             ms += text;
           } else if (data.data) {
             ms += data.data;
-            ms = ms.trim().replace(/^[^[]+/, "");
+            ms = extractTopLevelJsonArray(ms);
             if (ms.startsWith("[")) {
               try {
                 output = parse(ms || "[]");

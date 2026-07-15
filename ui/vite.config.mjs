@@ -4,10 +4,9 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  esbuild: {
+  oxc: {
     include: /\.js$/,
-    exclude: [],
-    loader: "jsx",
+    lang: "jsx",
   },
   test: {
     environment: "jsdom",

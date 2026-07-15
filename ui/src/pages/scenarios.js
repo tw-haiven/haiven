@@ -23,6 +23,7 @@ import HelpTooltip from "../app/_help_tooltip";
 import LLMTokenUsage from "../app/_llm_token_usage";
 import { formattedUsage } from "../app/utils/tokenUtils";
 import { aggregateTokenUsage } from "../app/utils/_aggregate_token_usage";
+import { extractTopLevelJsonArray } from "../app/utils/jsonArrayStream";
 
 const Home = ({ models, featureToggleConfig }) => {
   const [numOfScenarios, setNumOfScenarios] = useState("6");
@@ -140,7 +141,7 @@ const Home = ({ models, featureToggleConfig }) => {
 
             if (data.data) {
               ms += data.data;
-              ms = ms.trim().replace(/^[^[]+/, "");
+              ms = extractTopLevelJsonArray(ms);
               if (ms.startsWith("[")) {
                 try {
                   output = parse(ms || "[]");
